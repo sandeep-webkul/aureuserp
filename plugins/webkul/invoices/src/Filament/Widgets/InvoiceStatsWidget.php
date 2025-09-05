@@ -17,54 +17,77 @@ class InvoiceStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $query = Invoice::query();
-
         $filters = $this->filters;
 
-        if (! empty($filters['start_date'])) {
-            $query->whereDate('invoice_date', '>=', $filters['start_date']);
+        $baseQuery = Invoice::query();
+
+        if (!empty($filters['start_date'])) {
+            $baseQuery->whereDate('invoice_date', '>=', $filters['start_date']);
         }
 
-        if (! empty($filters['end_date'])) {
-            $query->whereDate('invoice_date', '<=', $filters['end_date']);
+        if (!empty($filters['end_date'])) {
+            $baseQuery->whereDate('invoice_date', '<=', $filters['end_date']);
         }
 
-        if (! empty($filters['salesperson_id'])) {
-            $query->where('invoice_user_id', $filters['salesperson_id']);
+        if (!empty($filters['salesperson_id'])) {
+            $baseQuery->where('invoice_user_id', $filters['salesperson_id']);
         }
 
-        if (! empty($filters['product_id'])) {
-            $query->whereHas('lines', function ($q) use ($filters) {
+        if (!empty($filters['product_id'])) {
+            $baseQuery->whereHas('lines', function ($q) use ($filters) {
                 $q->where('display_type', 'product')
                     ->where('product_id', $filters['product_id']);
             });
         }
 
-        $invoices = $query->get();
+        $totalInvoiced = (clone $baseQuery)->sum('amount_total');
+        $invoiceCount = (clone $baseQuery)->count();
+        $unpaidAmount = (clone $baseQuery)->where('payment_state', 'not_paid')->sum('amount_total');
+        $paidCount = (clone $baseQuery)->where('payment_state', 'paid')->count();
+        $unpaidCount = (clone $baseQuery)->where('payment_state', 'not_paid')->count();
 
-        $totalInvoiced = $invoices->sum('amount_total');
-        $unpaidAmount = $invoices->where('payment_state', 'not_paid')->sum('amount_total');
-
-        $invoiceCount = $invoices->count();
         $averageInvoice = $invoiceCount > 0 ? $totalInvoiced / $invoiceCount : 0;
 
-        $paidCount = $invoices->where('payment_state', 'paid')->count();
-        $unpaidCount = $invoices->where('payment_state', 'not_paid')->count();
+   
+        $colorForUnpaid = $unpaidAmount > 0 ? 'warning' : 'success';
+        $unpaidRatio = $invoiceCount > 0 ? ($unpaidCount / $invoiceCount) : 0;
+
+        $colorForUnpaidCount = match (true) {
+            $unpaidRatio < 0.25 => 'success',
+            $unpaidRatio < 0.5 => 'warning',
+            default => 'danger',
+        };
+
+        $unpaidDescription = match (true) {
+            $unpaidRatio < 0.25 => 'Healthy Credit',
+            $unpaidRatio < 0.5 => 'Watch List',
+            default => 'High Risk',
+        };
+
+
+        $colorForPaidCount = $paidCount > 0 ? 'success' : 'secondary';
 
         return [
-            Stat::make('Invoiced', number_format($totalInvoiced, 2))
-                ->description('Unpaid: '.number_format($unpaidAmount, 2))
-                ->color('primary'),
+            Stat::make('Total Invoiced', money(number_format($totalInvoiced, 2)))
+                ->description('Unpaid Amount: ' . money(number_format($unpaidAmount, 2)))
+                ->color($colorForUnpaid)
+                ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make('Average Invoice', number_format($averageInvoice, 2))
-                ->description("Count: {$invoiceCount}")
-                ->color('info'),
+            Stat::make('Average Invoice', money(number_format($averageInvoice, 2)))
+                ->description("Total Invoices: {$invoiceCount}")
+                ->color('info')
+                ->icon('heroicon-o-chart-bar'),
 
             Stat::make('Paid Invoices', $paidCount)
-                ->color('success'),
+                ->description($paidCount > 0 ? "All good!" : "No invoices paid yet")
+                ->color($colorForPaidCount)
+                ->icon('heroicon-o-check-circle'),
 
             Stat::make('Unpaid Invoices', $unpaidCount)
-                ->color('danger'),
+                ->description($unpaidDescription)
+                ->color($colorForUnpaidCount)
+                ->icon('heroicon-o-exclamation-circle'),
+
         ];
     }
 }

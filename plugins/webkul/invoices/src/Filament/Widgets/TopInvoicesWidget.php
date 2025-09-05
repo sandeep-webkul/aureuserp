@@ -20,7 +20,7 @@ class TopInvoicesWidget extends BaseWidget
 
     public function getColumnSpan(): int|string
     {
-        return 'full'; // Full-width
+        return 'full';
     }
 
     public function table(Table $table): Table
@@ -58,7 +58,6 @@ class TopInvoicesWidget extends BaseWidget
     {
         $query = Invoice::query();
 
-        // Apply filters
         if (! empty($this->filters['start_date'])) {
             $query->whereDate('created_at', '>=', $this->filters['start_date']);
         }
@@ -78,7 +77,7 @@ class TopInvoicesWidget extends BaseWidget
             });
         }
 
-        return $query->with('invoiceUser') // Eager load relation for performance
+        return $query->with('invoiceUser')
             ->orderByDesc('amount_total')
             ->limit(10);
     }

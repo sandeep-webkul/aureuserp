@@ -72,7 +72,6 @@ class Invoices extends BaseDashboard
                                     break;
                             }
 
-                            // Set start_date and end_date automatically based on selected range
                             $set('start_date', $startDate);
                             $set('end_date', $endDate);
                         }),

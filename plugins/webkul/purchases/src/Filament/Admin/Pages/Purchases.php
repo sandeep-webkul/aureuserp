@@ -10,10 +10,11 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Webkul\Partner\Models\Partner;
-use Webkul\Purchase\Filament\Widgets;
 use Webkul\Product\Models\Product;
 use Webkul\Purchase\Filament\Admin\Widgets\PurchaseStatsWidget;
-use Webkul\Security\Models\User;
+use Webkul\Purchase\Filament\Admin\Widgets\TopOrdersWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopPurchasedProductsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopVendorsWidget;
 use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 
 class Purchases extends BaseDashboard
@@ -22,7 +23,7 @@ class Purchases extends BaseDashboard
 
     protected static string $routePath = 'purchase';
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?string $cluster = DashboardCluster::class;
 
@@ -74,43 +75,41 @@ class Purchases extends BaseDashboard
                                     break;
                             }
 
-                            // Set start_date and end_date automatically based on selected range
                             $set('start_date', $startDate);
                             $set('end_date', $endDate);
                         }),
 
                     DatePicker::make('start_date')
                         ->label('Start Date')
-                        ->maxDate(fn(Get $get) => $get('end_date') ?: now())
-                        ->default(fn(Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
+                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
+                        ->default(fn (Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
 
                     DatePicker::make('end_date')
                         ->label('End Date')
-                        ->minDate(fn(Get $get) => $get('start_date') ?: now())
+                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
                         ->maxDate(now())
-                        ->default(fn(Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
+                        ->default(fn (Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
                     Select::make('product_id')
                         ->label('Product')
-                        ->options(fn() => Product::pluck('name', 'id'))
+                        ->options(fn () => Product::pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Products')
                         ->reactive(),
 
-                    Select::make('vendor_id')
+                    Select::make('partner_id')
                         ->label('Vendor')
-                        ->options(fn() => Partner::where('sub_type', 'supplier')->pluck('name', 'id'))
+                        ->options(fn () => Partner::where('sub_type', 'supplier')->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Vendors')
                         ->reactive(),
-
 
                 ])
                 ->columns(3),
@@ -121,6 +120,10 @@ class Purchases extends BaseDashboard
     {
         return [
             PurchaseStatsWidget::class,
+            TopOrdersWidget::class,
+            TopVendorsWidget::class,
+            TopPurchasedProductsWidget::class,
+
         ];
     }
 }

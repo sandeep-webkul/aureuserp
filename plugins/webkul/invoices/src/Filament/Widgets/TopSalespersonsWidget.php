@@ -49,7 +49,6 @@ class TopSalespersonsWidget extends BaseWidget
             ->with('invoiceUser')
             ->groupBy('invoice_user_id');
 
-        // Apply filters
         if (! empty($this->filters['start_date'])) {
             $query->whereDate('created_at', '>=', $this->filters['start_date']);
         }

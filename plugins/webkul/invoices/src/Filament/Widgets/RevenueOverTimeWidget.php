@@ -13,16 +13,16 @@ class RevenueOverTimeWidget extends ChartWidget
 
     protected static ?string $heading = 'Revenue Over Time';
 
-    protected static bool $isLazy = false; // Ensure it loads immediately
+    protected static bool $isLazy = false;
 
     protected function getType(): string
     {
-        return 'line'; // Can be 'line' or 'bar'
+        return 'line';
     }
 
     public function getColumnSpan(): int|string
     {
-        return 'full'; // 'full' = 12 columns, full width
+        return 'full';
     }
 
     protected function getData(): array
@@ -30,13 +30,12 @@ class RevenueOverTimeWidget extends ChartWidget
         $query = Invoice::query()
             ->where('payment_state', 'paid');
 
-        // 🧠 Apply dashboard filters
         if (! empty($this->filters['start_date'])) {
-            $query->whereDate('invoice_date', '>=', $this->filters['start_date']);
+            $query->whereDate('created_at', '>=', $this->filters['start_date']);
         }
 
         if (! empty($this->filters['end_date'])) {
-            $query->whereDate('invoice_date', '<=', $this->filters['end_date']);
+            $query->whereDate('created_at', '<=', $this->filters['end_date']);
         }
 
         if (! empty($this->filters['salesperson_id'])) {
@@ -50,13 +49,11 @@ class RevenueOverTimeWidget extends ChartWidget
             });
         }
 
-        // 📅 Group by day and sum amount_total
-        $results = $query->selectRaw('DATE(invoice_date) as date, SUM(amount_total) as total')
-            ->groupByRaw('DATE(invoice_date)')
-            ->orderByRaw('DATE(invoice_date)')
+        $results = $query->selectRaw('DATE(created_at) as date, SUM(amount_total) as total')
+            ->groupByRaw('DATE(created_at)')
+            ->orderByRaw('DATE(created_at)')
             ->get();
 
-        // 🧾 Convert to labels and data
         $labels = $results->pluck('date')->map(fn ($date) => date('M d', strtotime($date)))->toArray();
         $data = $results->pluck('total')->map(fn ($amount) => round((float) $amount, 2))->toArray();
 
@@ -65,7 +62,7 @@ class RevenueOverTimeWidget extends ChartWidget
                 [
                     'label'           => 'Revenue',
                     'data'            => $data,
-                    'backgroundColor' => '#3b82f6', // Optional styling
+                    'backgroundColor' => '#3b82f6',
                 ],
             ],
             'labels' => $labels,
