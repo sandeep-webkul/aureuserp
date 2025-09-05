@@ -7,22 +7,19 @@ use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Webkul\Invoice\Models\Invoice;
 
-class TopCustomersWidget extends BaseWidget
+class TopSalespersonsWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $pollingInterval = '15s';
+    protected static ?string $heading = 'Top Salespersons';
 
     protected static bool $isLazy = false;
 
-    protected static ?string $heading = 'Top Customers';
-
     public function getTableRecordKey($record): string
     {
-        return (string) $record->partner_id;
+        return (string) $record->invoice_user_id;
     }
 
     public function table(Table $table): Table
@@ -30,35 +27,39 @@ class TopCustomersWidget extends BaseWidget
         return $table
             ->query($this->getFilteredQuery())
             ->columns([
-                Tables\Columns\TextColumn::make('customer_name')
-                    ->label('Customer'),
+                Tables\Columns\TextColumn::make('invoiceUser.name')
+                    ->label('Salesperson'),
 
-                Tables\Columns\TextColumn::make('invoice_count')
+                Tables\Columns\TextColumn::make('invoices_count')
                     ->label('Invoices'),
 
                 Tables\Columns\TextColumn::make('total_billed')
                     ->label('Total Billed')
-                    ->money('INR'),
+                    ->money('USD'),
             ])
-            ->paginated(false);
+            ->paginated(false)
+            ->defaultSort('total_billed', 'desc');
     }
 
     protected function getFilteredQuery(): Builder
     {
         $query = Invoice::query()
-            ->selectRaw('partners_partners.id as partner_id, partners_partners.name as customer_name, COUNT(accounts_account_moves.id) as invoice_count, SUM(accounts_account_moves.amount_total) as total_billed')
-            ->join('partners_partners', 'accounts_account_moves.partner_id', '=', 'partners_partners.id');
+            ->whereNotNull('invoice_user_id')
+            ->selectRaw('invoice_user_id, SUM(amount_total) as total_billed, COUNT(*) as invoices_count')
+            ->with('invoiceUser')
+            ->groupBy('invoice_user_id');
 
+        // Apply filters
         if (! empty($this->filters['start_date'])) {
-            $query->whereDate('accounts_account_moves.created_at', '>=', Carbon::parse($this->filters['start_date']));
+            $query->whereDate('created_at', '>=', $this->filters['start_date']);
         }
 
         if (! empty($this->filters['end_date'])) {
-            $query->whereDate('accounts_account_moves.created_at', '<=', Carbon::parse($this->filters['end_date']));
+            $query->whereDate('created_at', '<=', $this->filters['end_date']);
         }
 
         if (! empty($this->filters['salesperson_id'])) {
-            $query->where('accounts_account_moves.invoice_user_id', $this->filters['salesperson_id']);
+            $query->where('invoice_user_id', $this->filters['salesperson_id']);
         }
 
         if (! empty($this->filters['product_id'])) {
@@ -68,9 +69,6 @@ class TopCustomersWidget extends BaseWidget
             });
         }
 
-        return $query
-            ->groupBy('partners_partners.id', 'partners_partners.name')
-            ->orderByDesc('total_billed')
-            ->limit(10);
+        return $query->orderByDesc('total_billed')->limit(10);
     }
 }

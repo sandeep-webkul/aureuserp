@@ -79,23 +79,23 @@ class Invoices extends BaseDashboard
 
                     DatePicker::make('start_date')
                         ->label('Start Date')
-                        ->maxDate(fn(Get $get) => $get('end_date') ?: now())
-                        ->default(fn(Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
+                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
+                        ->default(fn (Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
 
                     DatePicker::make('end_date')
                         ->label('End Date')
-                        ->minDate(fn(Get $get) => $get('start_date') ?: now())
+                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
                         ->maxDate(now())
-                        ->default(fn(Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
+                        ->default(fn (Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
                     Select::make('product_id')
                         ->label('Product')
-                        ->options(fn() => Product::pluck('name', 'id'))
+                        ->options(fn () => Product::pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Products')
@@ -103,7 +103,7 @@ class Invoices extends BaseDashboard
 
                     Select::make('salesperson_id')
                         ->label('Salesperson')
-                        ->options(fn() => User::pluck('name', 'id'))
+                        ->options(fn () => User::pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Salespersons')
@@ -121,6 +121,7 @@ class Invoices extends BaseDashboard
             Widgets\RevenueOverTimeWidget::make(),
             Widgets\TopInvoicesWidget::make(),
             Widgets\TopCustomersWidget::make(),
+            Widgets\TopSalespersonsWidget::make(),
         ];
     }
 }
