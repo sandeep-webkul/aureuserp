@@ -68,6 +68,8 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = AccountMove::class;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
@@ -735,7 +737,7 @@ class InvoiceResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live()
+            ->live(debounce: 500)
             ->reactive()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
@@ -1008,5 +1010,11 @@ class InvoiceResource extends Resource
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

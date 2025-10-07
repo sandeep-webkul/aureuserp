@@ -463,7 +463,7 @@ class BillResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live()
+            ->live(debounce: 500)
             ->reactive()
             ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.add-product'))
@@ -724,5 +724,11 @@ class BillResource extends Resource
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

@@ -35,6 +35,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -80,6 +81,8 @@ class QuotationResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
@@ -611,6 +614,15 @@ class QuotationResource extends Resource
                     ->schema([
                         Grid::make()
                             ->schema([
+                                TextEntry::make('name')
+                                    ->placeholder('-')
+                                    ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.section.general.entries.sale-order'))
+                                    ->icon('heroicon-o-document')
+                                    ->weight('bold')
+                                    ->size(TextSize::Large),
+                            ])->columns(2),
+                        Grid::make()
+                            ->schema([
                                 TextEntry::make('partner.name')
                                     ->placeholder('-')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.section.general.entries.customer'))
@@ -1031,7 +1043,7 @@ class QuotationResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live()
+            ->live(debounce: 500)
             ->reactive()
             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.title'))
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.add-product'))
@@ -1594,5 +1606,11 @@ class QuotationResource extends Resource
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
             'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }
