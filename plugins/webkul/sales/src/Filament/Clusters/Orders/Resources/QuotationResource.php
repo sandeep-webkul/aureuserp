@@ -940,7 +940,7 @@ class QuotationResource extends Resource
                 TextInput::make('name')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.description'))
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated(),
                 TextInput::make('quantity')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.quantity'))
@@ -949,7 +949,7 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated(),
                 Select::make('product_uom_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.uom'))
@@ -971,7 +971,7 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated(),
                 TextInput::make('discount')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.discount-percentage'))
@@ -979,7 +979,7 @@ class QuotationResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
-                    ->live()
+                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                     ->dehydrated(),
                 Actions::make([
@@ -1043,7 +1043,7 @@ class QuotationResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live(debounce: 500)
+            ->live()
             ->reactive()
             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.title'))
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.add-product'))
@@ -1175,7 +1175,7 @@ class QuotationResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateHydrated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get))
                     ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
@@ -1185,7 +1185,7 @@ class QuotationResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL])))
                     ->visible(fn ($record): bool => in_array($record?->order?->state, [OrderState::SALE])),
                 TextInput::make('qty_invoiced')
@@ -1194,7 +1194,7 @@ class QuotationResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->readOnly()
                     ->visible(fn ($record): bool => in_array($record?->order?->state, [OrderState::SALE])),
                 Select::make('product_uom_id')
@@ -1221,7 +1221,7 @@ class QuotationResource extends Resource
                     ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
                 TextInput::make('product_packaging_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.packaging-qty'))
-                    ->live()
+                    ->live(onBlur: true)
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(99999999999)
@@ -1247,7 +1247,7 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
                     ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
                 TextInput::make('margin')
@@ -1255,7 +1255,7 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
                     ->readOnly(),
@@ -1264,7 +1264,7 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->maxValue(100)
-                    ->live()
+                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
                     ->readOnly(),
@@ -1288,7 +1288,7 @@ class QuotationResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
-                    ->live()
+                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
                     ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),

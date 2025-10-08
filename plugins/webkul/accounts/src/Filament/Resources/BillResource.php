@@ -463,7 +463,7 @@ class BillResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live(debounce: 500)
+            ->live()
             ->reactive()
             ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.add-product'))
@@ -529,7 +529,7 @@ class BillResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
@@ -570,7 +570,7 @@ class BillResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
@@ -581,7 +581,7 @@ class BillResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),

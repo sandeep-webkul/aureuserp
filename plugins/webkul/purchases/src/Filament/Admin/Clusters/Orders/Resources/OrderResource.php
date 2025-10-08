@@ -809,7 +809,7 @@ class OrderResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
@@ -846,7 +846,7 @@ class OrderResource extends Resource
                     ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging-qty'))
-                    ->live()
+                    ->live(onBlur: true)
                     ->numeric()
                     ->maxValue(99999999999)
                     ->afterStateUpdated(function (Set $set, Get $get) {
@@ -875,7 +875,7 @@ class OrderResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
@@ -903,7 +903,7 @@ class OrderResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
