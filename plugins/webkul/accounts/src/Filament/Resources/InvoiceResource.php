@@ -814,7 +814,7 @@ class InvoiceResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
@@ -856,7 +856,7 @@ class InvoiceResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
@@ -867,7 +867,7 @@ class InvoiceResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
