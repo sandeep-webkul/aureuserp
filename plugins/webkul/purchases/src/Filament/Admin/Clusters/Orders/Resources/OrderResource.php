@@ -42,6 +42,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -766,11 +767,35 @@ class OrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS)->whereNull('is_configurable'),
+                        fn ($query) => $query->where('type', ProductType::GOODS)->withTrashed()->whereNull('is_configurable'),
                     )
                     ->searchable()
                     ->preload()
                     ->live()
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
+                        }
+
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
+                    })
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductUpdated($set, $get);
                     })

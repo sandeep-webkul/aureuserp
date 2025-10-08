@@ -30,6 +30,7 @@ use Filament\Support\Enums\TextSize;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
@@ -508,16 +509,39 @@ class BillResource extends Resource
             ->schema([
                 Select::make('product_id')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.product'))
-                    ->relationship('product', 'name')
+                    ->relationship(
+                        name: 'product',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->withTrashed()
+                            ->whereNull('is_configurable'),
+                    )
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->getOptionLabelFromRecordUsing(function (Model $record) {
-                        if ($record->product) {
-                            return $record->product->name;
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
                         }
 
-                        return $record->name;
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
                     })
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))

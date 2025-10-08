@@ -44,6 +44,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
@@ -790,14 +791,31 @@ class InvoiceResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query) => $query->where('is_configurable', null),
+                        fn (Builder $query) => $query->withTrashed()->where('is_configurable', null),
                     )
-                    ->getOptionLabelFromRecordUsing(function (Model $record) {
-                        if ($record->product) {
-                            return $record->product->name;
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
                         }
 
-                        return $record->name;
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
                     })
                     ->searchable()
                     ->preload()
