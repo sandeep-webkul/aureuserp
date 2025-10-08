@@ -216,12 +216,13 @@ class UserResource extends Resource
                     ])
                     ->columns(3),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 ImageColumn::make('partner.avatar')
                     ->defaultImageUrl(fn ($record) => $record->avatar_url)
@@ -472,7 +473,7 @@ class UserResource extends Resource
                         ])->columnSpan(1),
                     ]),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function canDeleteUser(User $record): bool
