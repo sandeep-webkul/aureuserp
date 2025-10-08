@@ -54,6 +54,8 @@ class BillResource extends Resource
 {
     protected static ?string $model = AccountMove::class;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $shouldRegisterNavigation = false;
