@@ -296,6 +296,7 @@ class QuotationResource extends Resource
     {
         return $table
             ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.number'))
