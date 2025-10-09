@@ -395,7 +395,7 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.actions.delete.notification.body')),
                         ),
                     ForceDeleteAction::make()
-                        ->action(function (Product $record) {
+                        ->action(function (ForceDeleteAction $action, Product $record) {
                             try {
                                 $record->forceDelete();
                             } catch (QueryException $e) {
@@ -404,6 +404,7 @@ class ProductResource extends Resource
                                     ->title(__('products::filament/resources/product.table.actions.force-delete.notification.error.title'))
                                     ->body(__('products::filament/resources/product.table.actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
                             }
                         })
                         ->successNotification(
@@ -471,7 +472,7 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
@@ -480,6 +481,7 @@ class ProductResource extends Resource
                                     ->title(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
                             }
                         })
                         ->successNotification(
