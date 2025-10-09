@@ -26,6 +26,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -522,6 +523,15 @@ class OrderResource extends Resource
 
                 Section::make(__('purchases::filament/admin/clusters/orders/resources/order.infolist.sections.general.title'))
                     ->schema([
+                        Grid::make()
+                            ->schema([
+                                TextEntry::make('name')
+                                    ->placeholder('-')
+                                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.sections.general.entries.purchase-order'))
+                                    ->icon('heroicon-o-document')
+                                    ->weight('bold')
+                                    ->size(TextSize::Large),
+                            ])->columns(2),
                         Grid::make(2)
                             ->schema([
                                 Group::make([
@@ -799,7 +809,7 @@ class OrderResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
@@ -836,7 +846,7 @@ class OrderResource extends Resource
                     ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging-qty'))
-                    ->live()
+                    ->live(onBlur: true)
                     ->numeric()
                     ->maxValue(99999999999)
                     ->afterStateUpdated(function (Set $set, Get $get) {
@@ -865,7 +875,7 @@ class OrderResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
@@ -893,7 +903,7 @@ class OrderResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
@@ -1158,5 +1168,11 @@ class OrderResource extends Resource
     public static function getProductSettings(): ProductSettings
     {
         return once(fn () => app(ProductSettings::class));
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

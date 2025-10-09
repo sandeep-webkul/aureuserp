@@ -657,4 +657,10 @@ class PurchaseAgreementResource extends Resource
             'view'   => ViewPurchaseAgreement::route('/{record}/view'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
+    }
 }
