@@ -193,6 +193,7 @@ class ProductResource extends Resource
     {
         return $table
             ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 IconColumn::make('is_favorite')
                     ->label("\u{200B}")
