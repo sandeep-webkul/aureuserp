@@ -95,6 +95,10 @@ class PartnerResource extends Resource
                                             ->relationship(
                                                 name: 'parent',
                                                 titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->where(function ($q) {
+                                                    $q->where('account_type', 'company')
+                                                        ->orWhere('sub_type', 'company');
+                                                })
                                             )
                                             ->visible(fn (Get $get): bool => $get('account_type') === AccountType::INDIVIDUAL)
                                             ->searchable()
