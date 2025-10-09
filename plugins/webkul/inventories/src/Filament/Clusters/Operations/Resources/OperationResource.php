@@ -242,9 +242,11 @@ class OperationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 IconColumn::make('is_favorite')
-                    ->label('')
+                    ->label("\u{200B}")
                     ->icon(fn (Operation $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Operation $record): string => $record->is_favorite ? 'warning' : 'gray')
                     ->action(function (Operation $record): void {

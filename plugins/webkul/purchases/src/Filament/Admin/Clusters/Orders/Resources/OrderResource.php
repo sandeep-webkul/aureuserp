@@ -288,9 +288,11 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 IconColumn::make('priority')
-                    ->label('')
+                    ->label("\u{200B}")
                     ->icon(fn (Order $record): string => $record->priority ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Order $record): string => $record->priority ? 'warning' : 'gray')
                     ->action(function (Order $record): void {
