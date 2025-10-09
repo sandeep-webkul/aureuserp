@@ -46,6 +46,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
@@ -923,12 +924,36 @@ class QuotationResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('is_configurable', null),
+                        fn ($query) => $query->withTrashed()->where('is_configurable', null),
                     )
                     ->searchable()
                     ->preload()
                     ->live()
                     ->dehydrated(true)
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
+                        }
+
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
+                    })
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         $product = Product::withTrashed()->find($get('product_id'));
 
@@ -1130,38 +1155,40 @@ class QuotationResource extends Resource
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: function ($query, Settings\ProductSettings $settings) {
-                            if (! $settings?->enable_variants) {
-                                return $query->whereNull('parent_id')
-                                    ->where(function ($q) {
-                                        $q->where('is_configurable', true)
-                                            ->orWhere(function ($subq) {
-                                                $subq->whereNull('is_configurable')
-                                                    ->orWhere('is_configurable', false);
-                                            });
-                                    });
-                            }
-
-                            return $query->withTrashed()->where(function ($q) {
-                                $q->whereNull('parent_id')
-                                    ->orWhereNotNull('parent_id');
-                            });
-                        }
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->withTrashed()
+                            ->whereNull('is_configurable'),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
-                    ->disableOptionWhen(function ($label, $record) {
+                    ->disableOptionWhen(function ($label, $record, $value, $state, $component) {
                         $isDeleted = str_contains($label, ' (Deleted)');
 
-                        $isOrderLocked =
-                            $record && (
-                                $record->order?->locked
-                                || in_array($record?->order?->state, [OrderState::CANCEL])
-                            );
+                        $isOrderLocked = $record && (
+                            $record->order?->locked
+                            || in_array($record?->order?->state, [OrderState::CANCEL])
+                        );
 
-                        return $isDeleted || $isOrderLocked;
+                        $isDuplicate = false;
+                        if ($component?->getParentRepeater()) {
+                            $repeater = $component->getParentRepeater();
+
+                            $isDuplicate = collect($repeater->getState())
+                                ->pluck(
+                                    (string) str($component->getStatePath())
+                                        ->after("{$repeater->getStatePath()}.")
+                                        ->after('.'),
+                                )
+                                ->flatten()
+                                ->diff(Arr::wrap($state))
+                                ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                                ->contains($value);
+                        }
+
+                        return $isDeleted || $isOrderLocked || $isDuplicate;
                     })
+
                     ->searchable()
                     ->preload()
                     ->live()
