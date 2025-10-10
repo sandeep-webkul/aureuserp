@@ -3,6 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\EditProduct;
@@ -41,6 +42,23 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->values()
+            ->all();
+
+        $table = $table->filters([
+            \Filament\Tables\Filters\QueryBuilder::make()
+                ->constraints(collect($filtered)->all()),
+        ]);
+
+        return $table;
     }
 
     public static function getPages(): array
