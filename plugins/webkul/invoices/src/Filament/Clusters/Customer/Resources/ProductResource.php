@@ -3,6 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
@@ -50,12 +51,11 @@ class ProductResource extends BaseProductResource
 
         $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
             ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
-            ->values()
             ->all();
 
         $table = $table->filters([
-            \Filament\Tables\Filters\QueryBuilder::make()
-                ->constraints(collect($filtered)->all()),
+            QueryBuilder::make()
+                ->constraints($filtered),
         ]);
 
         return $table;
