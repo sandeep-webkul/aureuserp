@@ -731,18 +731,6 @@ class EmployeeResource extends Resource
                                                                         'name'  => $get('name'),
                                                                         'email' => $get('work_email'),
                                                                     ])
-                                                                    ->mutateDataUsing(function (array $data): array {
-                                                                        $data['partner'] = [
-                                                                            'creator_id' => Auth::user()->id,
-                                                                            'company_id' => $data['default_company_id'] ?? null,
-                                                                            'avatar'     => $data['avatar'] ?? null,
-                                                                        ];
-
-                                                                        return $data;
-                                                                    })
-                                                                    ->after(function ($record) {
-                                                                        $record->update(['partner_id' => $record->partner->id]);
-                                                                    })
                                                                     ->modalHeading(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
                                                                     ->modalSubmitActionLabel(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
                                                             ),
