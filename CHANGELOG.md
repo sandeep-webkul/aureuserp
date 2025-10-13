@@ -1,3 +1,36 @@
+# 🚀 CHANGELOG — v1.2.0
+
+### 🐛 Fixes
+
+* #804 [fixed] - improved navigations.
+* #805 [fixed] - fix Bank model filename.
+* #806 [fixed] - issue_template_fixed.
+* #808 [fixed] - Fixed Route [login] not defined error.
+* #812 [fixed] - fixed unique name issue.
+* #813 [fixed] - Improve Page Navigation Layout for Clustered and Record Views.
+* #816 [fixed] - refactor codebase.
+* #541 [fixed] - Parent Products Should Not Be Displayed in Product Dropdown.
+* #822 [fixed] - Reorderable Columns.
+* #826 [fixed] - fix employee updation when related user already selected.
+* #828 [fixed] - Update APP_NAME from AureusERP to YourERP.
+* #817 [fixed] - Conflicting notifications.
+* #818 [fixed] - Company dropdown in customer creation form shows all users, customers, employees, and companies.
+* #831 [fixed] - Translation appearing on the recruitment dashboard graph.
+
+
+
+* #809 [fixed] - Refactor email notification handling for PO/RFQ with detailed status messages.
+* #835 [fixed] - Add “Open Product” action in product repeater items.
+* #821 [fixed] - Internal server error when creating a quotation with optional products.
+* #833 [fixed] - Force deleting a single applicant deletes the entire data grid.
+* #834 [fixed] - Getting server error when adding a rule in the filter of any data grid.
+* #832 [fixed] - “Favourite” label missing from column reordering settings.
+* #824 [fixed] - Plugins hide quickly when browse by phone screen.
+* #827 [fixed] - Role permission automatically removed after creating a user from employee creation.
+
+
+
+
 # 🚀 CHANGELOG — v1.1.0
 
 ### 🐛 Fixes
