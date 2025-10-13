@@ -742,7 +742,7 @@ class OperationResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->live(onBlur:true)
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
                     ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
                 TextInput::make('quantity')
@@ -818,18 +818,15 @@ class OperationResource extends Resource
                 Action::make('openProduct')
                     ->tooltip('Open product')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(function (array $arguments, Repeater $component): ?string {
-                        $itemData = $component->getRawItemState($arguments['item']);
-
-                        $product = Product::find($itemData['product_id']);
-
-                        if (! $product) {
-                            return null;
-                        }
-
-                        return ProductResource::getUrl('edit', ['record' => $product]);
-                    }, shouldOpenInNewTab: true)
-                    ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['product_id'])),
+                    ->url(
+                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                            'record' => $get("moves.{$arguments['item']}.product_id"),
+                        ])
+                    )
+                    ->openUrlInNewTab()
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("moves.{$arguments['item']}.product_id"))
+                    ),
             ])
             ->deletable(fn ($record): bool => ! in_array($record?->state, [OperationState::DONE, OperationState::CANCELED]))
             ->addable(fn ($record): bool => ! in_array($record?->state, [OperationState::DONE, OperationState::CANCELED]));
@@ -1233,22 +1230,22 @@ class OperationResource extends Resource
         return null;
     }
 
-    static public function getOperationSettings(): OperationSettings
+    public static function getOperationSettings(): OperationSettings
     {
         return once(fn () => app(OperationSettings::class));
     }
 
-    static public function getProductSettings(): ProductSettings
+    public static function getProductSettings(): ProductSettings
     {
         return once(fn () => app(ProductSettings::class));
     }
 
-    static public function getTraceabilitySettings(): TraceabilitySettings
+    public static function getTraceabilitySettings(): TraceabilitySettings
     {
         return once(fn () => app(TraceabilitySettings::class));
     }
 
-    static public function getWarehouseSettings(): WarehouseSettings
+    public static function getWarehouseSettings(): WarehouseSettings
     {
         return once(fn () => app(WarehouseSettings::class));
     }
