@@ -6,10 +6,10 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
@@ -71,9 +71,9 @@ class ActivityAction extends Action
 
                             Group::make()
                                 ->schema([
-                                    TextEntry::make('plan_summary')
+                                    Placeholder::make('plan_summary')
                                         ->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.plan-summary'))
-                                        ->state(function (Get $get) {
+                                        ->content(function (Get $get) {
                                             if (! $get('activity_plan_id')) {
                                                 return null;
                                             }
