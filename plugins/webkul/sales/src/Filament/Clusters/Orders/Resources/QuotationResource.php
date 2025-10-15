@@ -1023,8 +1023,8 @@ class QuotationResource extends Resource
                         if (! $productData || ! $productData['product_id']) {
                             Notification::make()
                                 ->danger()
-                                ->title(__('Missing product data'))
-                                ->body(__('Unable to process the selected product.'))
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.body'))
                                 ->send();
 
                             return;
@@ -1038,8 +1038,8 @@ class QuotationResource extends Resource
                         if ($productExists) {
                             Notification::make()
                                 ->warning()
-                                ->title(__('Product Already Exists'))
-                                ->body(__('This product is already in the order lines. Please update the existing line instead.'))
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.body'))
                                 ->send();
 
                             return;
@@ -1050,7 +1050,7 @@ class QuotationResource extends Resource
                         if (! $product) {
                             Notification::make()
                                 ->danger()
-                                ->title(__('Product Not Found'))
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-not-found.title'))
                                 ->send();
 
                             return;
