@@ -55,6 +55,7 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
 use Webkul\Purchase\Livewire\Summary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
@@ -968,7 +969,22 @@ class OrderResource extends Resource
                 ]);
 
                 return $data;
-            });
+            })->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(function (array $arguments, Get $get): ?string {
+                        $productId = $get("products.{$arguments['item']}.product_id");
+
+                        if (! $productId) {
+                            return null;
+                        }
+
+                        return ProductResource::getUrl('edit', ['record' => $productId]);
+                    }, shouldOpenInNewTab: true)
+                    ->hidden(fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     private static function afterProductUpdated(Set $set, Get $get): void
