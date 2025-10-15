@@ -292,7 +292,7 @@ class OrderResource extends Resource
             ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 IconColumn::make('priority')
-                    ->label("\u{200B}")
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.favorite'))
                     ->icon(fn (Order $record): string => $record->priority ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Order $record): string => $record->priority ? 'warning' : 'gray')
                     ->action(function (Order $record): void {
