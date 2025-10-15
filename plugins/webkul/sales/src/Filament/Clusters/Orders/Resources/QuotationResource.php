@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -24,6 +25,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -34,6 +36,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables;
@@ -44,10 +47,12 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Js;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
@@ -73,6 +78,7 @@ use Webkul\Sale\Settings\ProductSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry as InfolistsRepeatableEntry;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
@@ -653,58 +659,107 @@ class QuotationResource extends Resource
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.title'))
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
-                                RepeatableEntry::make('lines')
+                                InfolistsRepeatableEntry::make('lines')
                                     ->hiddenLabel()
+                                    ->table([
+                                        TableColumn::make('product.name')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product')),
+                                        TableColumn::make('product_uom_qty')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
+                                            ->alignment(Alignment::Center),
+                                        TableColumn::make('uom.name')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                                        TableColumn::make('product.lead_time')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time')),
+                                        TableColumn::make('product.packaging_qty')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty'))
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
+                                        TableColumn::make('product_packaging.name')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging'))
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
+                                        TableColumn::make('price_unit')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
+                                            ->alignment(Alignment::End),
+                                        TableColumn::make('purchase_price')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
+                                            ->alignment(Alignment::End),
+                                        TableColumn::make('margin')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
+                                            ->alignment(Alignment::End)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
+                                        TableColumn::make('margin_percentage')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
+                                            ->alignment(Alignment::End)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
+                                        TableColumn::make('taxes.name')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
+                                            ->alignment(Alignment::Center),
+                                        TableColumn::make('discount_percentage')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
+                                            ->alignment(Alignment::End)
+                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
+                                        TableColumn::make('sub_total')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
+                                            ->alignment(Alignment::End),
+                                    ])
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product'))
-                                            ->icon('heroicon-o-cube'),
+                                            ->icon('heroicon-o-cube')
+                                            ->iconColor('primary'),
                                         TextEntry::make('product_uom_qty')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
-                                            ->icon('heroicon-o-hashtag'),
+                                            ->icon('heroicon-o-hashtag')
+                                            ->iconColor('gray'),
                                         TextEntry::make('uom.name')
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
-                                            ->icon('heroicon-o-scale'),
+                                            ->icon('heroicon-o-scale')
+                                            ->iconColor('warning'),
                                         TextEntry::make('customer_lead')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time'))
-                                            ->icon('heroicon-o-clock'),
+                                            ->icon('heroicon-o-clock')
+                                            ->iconColor('info')
+                                            ->suffix(' days'),
                                         TextEntry::make('product_packaging_qty')
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty'))
-                                            ->icon('heroicon-o-arrow-path-rounded-square'),
+                                            ->icon('heroicon-o-arrow-path-rounded-square')
+                                            ->iconColor('gray'),
                                         TextEntry::make('product_packaging_id')
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging'))
-                                            ->icon('heroicon-o-archive-box'),
+                                            ->icon('heroicon-o-archive-box')
+                                            ->iconColor('gray'),
                                         TextEntry::make('price_unit')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
                                             ->icon('heroicon-o-currency-dollar')
-                                            ->money(fn ($record) => $record->currency->code),
+                                            ->iconColor('success')
+                                            ->money(fn ($record) => $record->currency->code)
+                                            ->weight(FontWeight::Medium),
                                         TextEntry::make('purchase_price')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
                                             ->icon('heroicon-o-banknotes')
-                                            ->money(fn ($record) => $record->currency->code),
+                                            ->iconColor('danger')
+                                            ->money(fn ($record) => $record->currency->code)
+                                            ->weight(FontWeight::Medium),
                                         TextEntry::make('margin')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
                                             ->icon('heroicon-o-currency-dollar')
+                                            ->iconColor('success')
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
-                                            ->money(fn ($record) => $record->currency->code),
+                                            ->money(fn ($record) => $record->currency->code)
+                                            ->weight(FontWeight::Medium)
+                                            ->color(fn ($state) => $state >= 0 ? 'success' : 'danger'),
                                         TextEntry::make('margin_percent')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
                                             ->icon('heroicon-o-chart-bar')
+                                            ->iconColor('warning')
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
-                                            ->suffix('%'),
+                                            ->suffix('%')
+                                            ->weight(FontWeight::Medium)
+                                            ->color(fn ($state) => $state >= 0 ? 'success' : 'danger'),
                                         TextEntry::make('taxes.name')
                                             ->badge()
                                             ->state(function ($record): array {
@@ -713,22 +768,26 @@ class QuotationResource extends Resource
                                                 ])->toArray();
                                             })
                                             ->icon('heroicon-o-receipt-percent')
+                                            ->iconColor('info')
                                             ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
+                                            ->color('info')
                                             ->weight(FontWeight::Bold),
                                         TextEntry::make('discount')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
                                             ->icon('heroicon-o-tag')
+                                            ->iconColor('warning')
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
-                                            ->suffix('%'),
+                                            ->suffix('%')
+                                            ->weight(FontWeight::Medium),
                                         TextEntry::make('price_subtotal')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
                                             ->icon('heroicon-o-calculator')
-                                            ->money(fn ($record) => $record->currency->code),
-                                    ])->columns(5),
+                                            ->iconColor('primary')
+                                            ->money(fn ($record) => $record->currency->code)
+                                            ->weight(FontWeight::Bold)
+                                            ->size(TextSize::Large),
+                                    ]),
                                 Livewire::make(Summary::class, function ($record, PriceSettings $settings) {
                                     return [
                                         'currency'     => $record->currency,
@@ -1654,5 +1713,103 @@ class QuotationResource extends Resource
     {
         return parent::getEloquentQuery()
             ->orderByDesc('id');
+    }
+
+    protected function toEmbeddedTableHtml(): string
+    {
+        $items = $this->getItems();
+        $tableColumns = $this->getTableColumns();
+
+        $attributes = $this->getExtraAttributeBag()
+            ->class([
+                'fi-in-table-repeatable',
+                'overflow-x-auto',
+            ]);
+
+        if (empty($items)) {
+            $attributes = $attributes
+                ->merge([
+                    'x-tooltip' => filled($tooltip = $this->getEmptyTooltip())
+                        ? '{
+                            content: '.Js::from($tooltip).',
+                            theme: $store.theme,
+                            allowHTML: '.Js::from($tooltip instanceof Htmlable).',
+                        }'
+                        : null,
+                ], escape: false);
+
+            $placeholder = $this->getPlaceholder();
+
+            ob_start(); ?>
+
+            <div <?= $attributes->toHtml() ?>>
+                <?php if (filled($placeholder)) { ?>
+                    <p class="fi-in-placeholder">
+                        <?= e($placeholder) ?>
+                    </p>
+                <?php } ?>
+            </div>
+
+            <?php return $this->wrapEmbeddedHtml(ob_get_clean());
+        }
+
+        ob_start(); ?>
+
+        <div <?= $attributes->toHtml() ?>>
+            <table>
+                <thead>
+                    <tr>
+                        <?php foreach ($tableColumns as $column) { ?>
+                            <th
+                                class="<?= Arr::toCssClasses([
+                                    'fi-wrapped' => $column->canHeaderWrap(),
+                                    (($columnAlignment = $column->getAlignment()) instanceof Alignment) ? ('fi-align-'.$columnAlignment->value) : $columnAlignment,
+                                ]) ?>"
+                                <?php if (filled($columnWidth = $column->getWidth())) { ?>
+                                    style="width: <?= $columnWidth ?>"
+                                <?php } ?>
+                            >
+                                <?php if (! $column->isHeaderLabelHidden()) { ?>
+                                    <?= e($column->getLabel()) ?>
+                                <?php } else { ?>
+                                    <span class="fi-sr-only">
+                                        <?= e($column->getLabel()) ?>
+                                    </span>
+                                <?php } ?>
+                            </th>
+                        <?php } ?>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php foreach ($items as $item) { ?>
+                        <tr>
+                            <?php $counter = 0 ?>
+
+                            <?php foreach ($item->getComponents(withHidden: true) as $component) { ?>
+                                <?php throw_unless(
+                                    $component instanceof Component,
+                                    new Exception('Table repeatable entries must only contain schema components, but ['.$component::class.'] was used.'),
+                                ) ?>
+
+                                <?php if (count($tableColumns) > $counter) { ?>
+                                    <?php $counter++ ?>
+
+                                    <?php if ($component->isVisible()) { ?>
+                                        <td>
+                                            <?= $component->toHtml() ?>
+                                        </td>
+                                    <?php } else { ?>
+                                        <td class="fi-hidden"></td>
+                                    <?php } ?>
+                                <?php } ?>
+                            <?php } ?>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+
+        <?php return $this->wrapEmbeddedHtml(ob_get_clean());
     }
 }
