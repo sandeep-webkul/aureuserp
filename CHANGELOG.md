@@ -16,9 +16,6 @@
 * #817 [fixed] - Conflicting notifications.
 * #818 [fixed] - Company dropdown in customer creation form shows all users, customers, employees, and companies.
 * #831 [fixed] - Translation appearing on the recruitment dashboard graph.
-
-
-
 * #809 [fixed] - Refactor email notification handling for PO/RFQ with detailed status messages.
 * #835 [fixed] - Add “Open Product” action in product repeater items.
 * #821 [fixed] - Internal server error when creating a quotation with optional products.
@@ -28,6 +25,7 @@
 * #824 [fixed] - Plugins hide quickly when browse by phone screen.
 * #827 [fixed] - Role permission automatically removed after creating a user from employee creation.
 * #848 [fixed] - Exception error when applying country filter on Company data grid.
+* #850 [fixed] - Prefilled data not loading automatically in form fields.
 
 
 
