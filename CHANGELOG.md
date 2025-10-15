@@ -27,6 +27,7 @@
 * #832 [fixed] - “Favourite” label missing from column reordering settings.
 * #824 [fixed] - Plugins hide quickly when browse by phone screen.
 * #827 [fixed] - Role permission automatically removed after creating a user from employee creation.
+* #848 [fixed] - Exception error when applying country filter on Company data grid.
 
 
 
