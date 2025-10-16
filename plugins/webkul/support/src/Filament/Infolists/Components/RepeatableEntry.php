@@ -56,7 +56,7 @@ class RepeatableEntry extends BaseRepeatableEntry
         ob_start(); ?>
 
         <div <?= $attributes->toHtml() ?>>
-            <table style="width: auto; min-width: 100%;">
+            <table style="width: auto;">
                 <thead>
                     <tr>
                         <?php foreach ($tableColumns as $column) { ?>
@@ -95,7 +95,7 @@ class RepeatableEntry extends BaseRepeatableEntry
 
                                     <?php if ($component->isVisible()) { ?>
                                         <td >
-                                            <div style=" min-width: max-content;">
+                                            <div style="min-width: max-content; padding:6px 2px">
                                                 <?= $component->toHtml() ?>
                                             </div>
                                         </td>
