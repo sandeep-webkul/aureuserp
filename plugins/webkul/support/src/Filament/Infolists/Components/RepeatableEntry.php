@@ -6,16 +6,15 @@ use Exception;
 use Filament\Infolists\Components\RepeatableEntry as BaseRepeatableEntry;
 use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\Alignment;
+use Filament\Tables\Table\Concerns\HasColumnManager;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Js;
-use Illuminate\View\ComponentAttributeBag;
-use Illuminate\View\ComponentSlot;
-
-use function Filament\Support\generate_href_html;
 
 class RepeatableEntry extends BaseRepeatableEntry
 {
+    use HasColumnManager;
+
     protected function toEmbeddedTableHtml(): string
     {
         $items = $this->getItems();
@@ -23,10 +22,9 @@ class RepeatableEntry extends BaseRepeatableEntry
 
         $attributes = $this->getExtraAttributeBag()
             ->class([
-                'fi-in-table-repeatable',
-            ])->merge([
-                'style' => 'overflow-x: auto; max-width: 100%;',
-            ], escape: false);
+                'fi-fo-table-repeater',
+                'overflow-x-auto',
+            ]);
 
         if (empty($items)) {
             $attributes = $attributes
@@ -58,7 +56,7 @@ class RepeatableEntry extends BaseRepeatableEntry
         ob_start(); ?>
 
         <div <?= $attributes->toHtml() ?>>
-            <table>
+            <table style="width: auto; min-width: 100%;">
                 <thead>
                     <tr>
                         <?php foreach ($tableColumns as $column) { ?>
@@ -67,9 +65,7 @@ class RepeatableEntry extends BaseRepeatableEntry
                                     'fi-wrapped' => $column->canHeaderWrap(),
                                     (($columnAlignment = $column->getAlignment()) instanceof Alignment) ? ('fi-align-'.$columnAlignment->value) : $columnAlignment,
                                 ]) ?>"
-                                <?php if (filled($columnWidth = $column->getWidth())) { ?>
-                                    style="width: <?= $columnWidth ?>"
-                                <?php } ?>
+                                style="<?= filled($columnWidth = $column->getWidth()) ? 'width: '.$columnWidth.';' : '' ?> white-space: nowrap; min-width: fit-content;"
                             >
                                 <?php if (! $column->isHeaderLabelHidden()) { ?>
                                     <?= e($column->getLabel()) ?>
@@ -98,8 +94,10 @@ class RepeatableEntry extends BaseRepeatableEntry
                                     <?php $counter++ ?>
 
                                     <?php if ($component->isVisible()) { ?>
-                                        <td>
-                                            <?= $component->toHtml() ?>
+                                        <td >
+                                            <div style=" min-width: max-content;">
+                                                <?= $component->toHtml() ?>
+                                            </div>
                                         </td>
                                     <?php } else { ?>
                                         <td class="fi-hidden"></td>
@@ -113,113 +111,5 @@ class RepeatableEntry extends BaseRepeatableEntry
         </div>
 
         <?php return $this->wrapEmbeddedHtml(ob_get_clean());
-    }
-
-    public function wrapEmbeddedHtml(string $html): string
-    {
-        $view = $this->getEntryWrapperAbsoluteView();
-
-        if ($view !== 'filament-infolists::components.entry-wrapper') {
-            return view($this->getEntryWrapperAbsoluteView(), [
-                'entry' => $this,
-                'slot'  => new ComponentSlot($html),
-            ])->toHtml();
-        }
-
-        $hasInlineLabel = $this->hasInlineLabel();
-        $alignment = $this->getAlignment();
-        $label = $this->getLabel();
-        $labelSrOnly = $this->isLabelHidden();
-        $action = $this->getAction();
-        $url = $this->getUrl();
-
-        $wrapperTag = match (true) {
-            filled($url)    => 'a',
-            filled($action) => 'button',
-            default         => 'div',
-        };
-
-        if (! $alignment instanceof Alignment) {
-            $alignment = filled($alignment) ? (Alignment::tryFrom($alignment) ?? $alignment) : null;
-        }
-
-        $aboveLabelSchema = $this->getChildSchema($this::ABOVE_LABEL_SCHEMA_KEY)?->toHtmlString();
-        $belowLabelSchema = $this->getChildSchema($this::BELOW_LABEL_SCHEMA_KEY)?->toHtmlString();
-        $beforeLabelSchema = $this->getChildSchema($this::BEFORE_LABEL_SCHEMA_KEY)?->toHtmlString();
-        $afterLabelSchema = $this->getChildSchema($this::AFTER_LABEL_SCHEMA_KEY)?->toHtmlString();
-        $beforeContentSchema = $this->getChildSchema($this::BEFORE_CONTENT_SCHEMA_KEY)?->toHtmlString();
-        $afterContentSchema = $this->getChildSchema($this::AFTER_CONTENT_SCHEMA_KEY)?->toHtmlString();
-
-        $attributes = $this->getExtraEntryWrapperAttributesBag()
-            ->class([
-                'fi-in-entry',
-                'fi-in-entry-has-inline-label' => $hasInlineLabel,
-            ])->merge([
-                'style' => 'width: 100%;',
-            ], escape: false);
-
-        $contentAttributes = (new ComponentAttributeBag)
-            ->merge([
-                'type'              => ($wrapperTag === 'button') ? 'button' : null,
-                'wire:click'        => $wireClickAction = $action?->getLivewireClickHandler(),
-                'wire:loading.attr' => ($wrapperTag === 'button') ? 'disabled' : null,
-                'wire:target'       => $wireClickAction,
-            ], escape: false)
-            ->class([
-                'fi-in-entry-content',
-                (($alignment instanceof Alignment) ? "fi-align-{$alignment->value}" : (is_string($alignment) ? $alignment : '')),
-            ]);
-
-        ob_start(); ?>
-
-        <div <?= $attributes->toHtml() ?>>
-            <?php if (filled($label) && $labelSrOnly) { ?>
-                <dt class="fi-in-entry-label fi-hidden">
-                    <?= e($label) ?>
-                </dt>
-            <?php } ?>
-
-            <?php if ((filled($label) && (! $labelSrOnly)) || $hasInlineLabel || $aboveLabelSchema || $belowLabelSchema || $beforeLabelSchema || $afterLabelSchema) { ?>
-                <div class="fi-in-entry-label-col">
-                    <?= $aboveLabelSchema?->toHtml() ?>
-
-                    <?php if ((filled($label) && (! $labelSrOnly)) || $beforeLabelSchema || $afterLabelSchema) { ?>
-                        <div class="fi-in-entry-label-ctn">
-                            <?= $beforeLabelSchema?->toHtml() ?>
-
-                            <?php if (filled($label) && (! $labelSrOnly)) { ?>
-                                <dt class="fi-in-entry-label">
-                                    <?= e($label) ?>
-                                </dt>
-                            <?php } ?>
-
-                            <?= $afterLabelSchema?->toHtml() ?>
-                        </div>
-                    <?php } ?>
-
-                    <?= $belowLabelSchema?->toHtml() ?>
-                </div>
-            <?php } ?>
-
-            <div class="fi-in-entry-content-col">
-                <?= $this->getChildSchema($this::ABOVE_CONTENT_SCHEMA_KEY)?->toHtml() ?>
-
-                <dd class="fi-in-entry-content-ctn">
-                    <?= $beforeContentSchema?->toHtml() ?>
-
-                    <<?= $wrapperTag ?> <?php if ($wrapperTag === 'a') {
-                        echo generate_href_html($url, $this->shouldOpenUrlInNewTab())->toHtml();
-                    } ?> <?= $contentAttributes->toHtml() ?>>
-                        <?= $html ?>
-                    </<?= $wrapperTag ?>>
-
-                    <?= $afterContentSchema?->toHtml() ?>
-                </dd>
-
-                <?= $this->getChildSchema($this::BELOW_CONTENT_SCHEMA_KEY)?->toHtml() ?>
-            </div>
-        </div>
-
-        <?php return ob_get_clean();
     }
 }
