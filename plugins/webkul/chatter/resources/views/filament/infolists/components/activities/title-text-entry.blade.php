@@ -11,12 +11,12 @@
 
         <div class="min-w-0 flex-1 space-y-2 pt-[6px]">
             <div class="flex items-center gap-x-2">
-                <div class="min-w-0 flex items-center gap-x-2">
-                    <div class="truncate text-sm font-medium cursor-pointer text-gray-900 dark:text-gray-100">
+                <div class="flex items-center gap-x-2.5">
+                    <div class="text-base font-semibold leading-none align-bottom text-black cursor-pointer dark:text-gray-100 font-inter">
                         {{ $getRecord()->causer?->name }}
                     </div>
 
-                    <div class="shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div class="text-sm font-normal leading-none align-bottom text-gray-500 dark:text-gray-400 font-inter">
                         {{ $getRecord()->created_at->diffForHumans() }}
                     </div>
                 </div>
