@@ -44,6 +44,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Livewire;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncoTermResource;
@@ -54,6 +55,8 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
+use Webkul\Purchase\Livewire\Summary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
@@ -61,6 +64,7 @@ use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Package;
 
@@ -240,7 +244,14 @@ class OrderResource extends Resource
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.title'))
                             ->schema([
                                 static::getProductRepeater(),
-
+                                Livewire::make(Summary::class, function (Get $get) {
+                                    return [
+                                        'currency' => Currency::find($get('currency_id')),
+                                        'products' => $get('products'),
+                                    ];
+                                })
+                                    ->live()
+                                    ->reactive(),
                             ]),
 
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.title'))
@@ -316,7 +327,7 @@ class OrderResource extends Resource
             ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 IconColumn::make('priority')
-                    ->label("\u{200B}")
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.favorite'))
                     ->icon(fn (Order $record): string => $record->priority ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Order $record): string => $record->priority ? 'warning' : 'gray')
                     ->action(function (Order $record): void {
@@ -992,7 +1003,22 @@ class OrderResource extends Resource
                 ]);
 
                 return $data;
-            });
+            })->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(function (array $arguments, Get $get): ?string {
+                        $productId = $get("products.{$arguments['item']}.product_id");
+
+                        if (! $productId) {
+                            return null;
+                        }
+
+                        return ProductResource::getUrl('edit', ['record' => $productId]);
+                    }, shouldOpenInNewTab: true)
+                    ->hidden(fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     private static function afterProductUpdated(Set $set, Get $get): void
