@@ -228,6 +228,8 @@ class PurchaseAgreementResource extends Resource
         return Repeater::make('lines')
             ->hiddenLabel()
             ->relationship()
+            ->compact()
+            ->reorderable()
             ->table([
                 TableColumn::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.product'))
