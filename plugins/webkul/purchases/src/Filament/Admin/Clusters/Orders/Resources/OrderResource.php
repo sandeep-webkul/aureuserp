@@ -19,7 +19,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -55,14 +54,13 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
-use Webkul\Purchase\Livewire\Summary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
+use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
-use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Package;
 
@@ -166,7 +164,40 @@ class OrderResource extends Resource
                                     ->relationship('requisition', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->visible(static::getOrderSettings()->enable_purchase_agreements),
+                                    ->visible(static::getOrderSettings()->enable_purchase_agreements)
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        if (! $state) {
+                                            $set('products', []);
+
+                                            return;
+                                        }
+
+                                        $requisition = Requisition::find($state);
+                                        if (! $requisition) {
+                                            $set('products', []);
+
+                                            return;
+                                        }
+
+                                        $products = [];
+                                        foreach ($requisition->lines as $line) {
+                                            $product = $line->product;
+                                            $uom = $line->uom;
+
+                                            $products[] = [
+                                                'product_id'  => $product?->id,
+                                                'uom_id'      => $uom?->id,
+                                                'product_qty' => $line->qty,
+                                                'price_unit'  => $line->price_unit,
+                                            ];
+                                        }
+                                        $set('products', $products);
+
+                                        foreach (array_keys($products) as $key) {
+                                            self::calculateLineTotals($set, $get, "products.$key.");
+                                        }
+                                    })
+                                    ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.currency'))
                                     ->relationship('currency', 'name')
@@ -209,14 +240,7 @@ class OrderResource extends Resource
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.title'))
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(Summary::class, function (Get $get) {
-                                    return [
-                                        'currency' => Currency::find($get('currency_id')),
-                                        'products' => $get('products'),
-                                    ];
-                                })
-                                    ->live()
-                                    ->reactive(),
+
                             ]),
 
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.title'))

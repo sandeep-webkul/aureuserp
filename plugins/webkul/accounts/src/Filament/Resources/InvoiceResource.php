@@ -142,7 +142,6 @@ class InvoiceResource extends Resource
                                             ->afterStateUpdated(function (Set $set, $state) {
                                                 $partner = $state ? Partner::find($state) : null;
 
-                                                $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
                                                 $set('invoice_user_id', $partner?->user?->id);
                                                 $set('preferred_payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
                                                 $set('invoice_payment_term_id', $partner?->propertyPaymentTerm?->id);
