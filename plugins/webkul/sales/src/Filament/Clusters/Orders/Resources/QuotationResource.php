@@ -659,49 +659,51 @@ class QuotationResource extends Resource
                                     ->hiddenLabel()
                                     ->table([
                                         InfolistTableColumn::make('product.name')
-                                            ->alignment(Alignment::Start)
+                                            ->alignment(Alignment::Center)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product')),
                                         InfolistTableColumn::make('product_uom_qty')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('uom.name')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('customer_lead')
+                                            ->alignment(Alignment::Center)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time')),
                                         InfolistTableColumn::make('product_packaging_qty')
+                                            ->alignment(Alignment::Center)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty')),
                                         InfolistTableColumn::make('productPackaging.name')
+                                            ->alignment(Alignment::Center)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging')),
                                         InfolistTableColumn::make('price_unit')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('purchase_price')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('margin')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
-                                            ->alignment(Alignment::Start)
+                                            ->alignment(Alignment::Center)
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
                                         InfolistTableColumn::make('margin_percent')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
-                                            ->alignment(Alignment::Start)
+                                            ->alignment(Alignment::Center)
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
                                         InfolistTableColumn::make('taxes.name')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('discount')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
-                                            ->alignment(Alignment::Start)
+                                            ->alignment(Alignment::Center)
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_subtotal')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
                                         InfolistTableColumn::make('price_subtotal')
-                                            ->alignment(Alignment::Start)
+                                            ->alignment(Alignment::Center)
                                             ->hiddenLabel(true),
                                     ])
-                                    ->columnManager()
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->placeholder('-')
@@ -714,7 +716,7 @@ class QuotationResource extends Resource
                                             ->icon('heroicon-o-hashtag')
                                             ->color('warning')
                                             ->iconColor('danger')
-                                            ->alignment(Alignment::Start),
+                                            ->alignment(Alignment::Center),
 
                                         TextEntry::make('uom.name')
                                             ->formatStateUsing(function ($state, ProductSettings $settings) {
@@ -1223,6 +1225,8 @@ class QuotationResource extends Resource
             ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
             ->columnManagerColumns(2)
+            ->reorderable()
+            ->compact()
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.product'))
