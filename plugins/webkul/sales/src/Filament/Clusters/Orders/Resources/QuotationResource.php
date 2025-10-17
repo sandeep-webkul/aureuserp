@@ -697,7 +697,11 @@ class QuotationResource extends Resource
                                         InfolistTableColumn::make('price_subtotal')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
                                             ->alignment(Alignment::Start),
+                                        InfolistTableColumn::make('price_subtotal')
+                                            ->alignment(Alignment::Start)
+                                            ->hiddenLabel(true),
                                     ])
+                                    ->columnManager()
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->placeholder('-')
@@ -822,6 +826,15 @@ class QuotationResource extends Resource
                                             ->money(fn ($record) => $record->currency->code)
                                             ->weight(FontWeight::Bold)
                                             ->size(TextSize::Large),
+                                        Actions::make([
+                                            Action::make('viewProduct')
+                                                ->tooltip('Open product')
+                                                ->iconButton(false)
+                                                ->icon('heroicon-m-arrow-top-right-on-square')
+                                                ->url(fn ($record): ?string => $record->product_id ? ProductResource::getUrl('view', ['record' => $record->product_id]) : null)
+                                                ->openUrlInNewTab()
+                                                ->visible(fn ($record): bool => filled($record->product_id)),
+                                        ]),
                                     ]),
 
                                 Livewire::make(Summary::class, function ($record, PriceSettings $settings) {

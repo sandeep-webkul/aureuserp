@@ -65,7 +65,7 @@ class RepeatableEntry extends BaseRepeatableEntry
                                     'fi-wrapped' => $column->canHeaderWrap(),
                                     (($columnAlignment = $column->getAlignment()) instanceof Alignment) ? ('fi-align-'.$columnAlignment->value) : $columnAlignment,
                                 ]) ?>"
-                                style="<?= filled($columnWidth = $column->getWidth()) ? 'width: '.$columnWidth.';' : '' ?> white-space: nowrap; min-width: fit-content;"
+                                style="<?= filled($columnWidth = $column->getWidth()) ? 'width: '.$columnWidth.';' : '' ?> white-space: nowrap; min-width: fit-content; padding:15px 5px"
                             >
                                 <?php if (! $column->isHeaderLabelHidden()) { ?>
                                     <?= e($column->getLabel()) ?>

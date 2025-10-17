@@ -51,7 +51,7 @@ class TableColumn extends Component
         return $this;
     }
 
-    public function getLabel(): string|Htmlable
+    public function getLabel(): string|Htmlable|null
     {
         return $this->evaluate($this->label);
     }
