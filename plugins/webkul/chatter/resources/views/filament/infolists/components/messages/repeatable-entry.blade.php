@@ -22,22 +22,16 @@
                 @foreach ($childComponentContainers as $container)
                     @php
                         $createdAt = data_get($container->getRecord(), 'created_at');
-
                         $dt = null;
-
                         try {
                             $dt = $createdAt instanceof \Carbon\CarbonInterface
                                 ? $createdAt
                                 : \Carbon\Carbon::parse($createdAt);
                         } catch (\Throwable $e) {}
-
                         $currentLabel = match (true) {
                             $dt?->isToday() => __('chatter::views/filament/infolists/components/messages/repeatable-entry.today'),
-
                             $dt?->isYesterday() => __('chatter::views/filament/infolists/components/messages/repeatable-entry.yesterday'),
-
                             $dt => $dt->format('M j, Y'),
-
                             default => null,
                         };
                     @endphp
@@ -60,13 +54,18 @@
 
                     <article
                         @class([
-                            'rounded-xl p-4 text-base shadow-sm ring-1 overflow-x-hidden [overflow-wrap:anywhere] space-y-1 m-0.5',
-                            'bg-gray-50 ring-gray-200 dark:bg-gray-800/50 dark:ring-gray-800' => data_get($container->getRecord(), 'type') === 'note',
-                            'bg-white/70 ring-black/5 dark:bg-gray-900/60 dark:ring-white/5' => data_get($container->getRecord(), 'type') !== 'note',
+                            'rounded-xl px-3 py-2 text-base overflow-x-hidden [overflow-wrap:anywhere] space-y-1 m-0.5',
+                            'bg-gray-50/80 ring-gray-200 dark:bg-gray-950 dark:ring-gray-800' => data_get($container->getRecord(), 'type') === 'note',
+                            'ring-black/5  dark:ring-white/5' => data_get($container->getRecord(), 'type') !== 'note',
+                            'shadow-sm ring-1 bg-gray-50/80 dark:bg-gray-950' => ! (
+                                data_get($container->getRecord(), 'type') === 'notification' &&
+                                data_get($container->getRecord(), 'event') === 'updated'
+                            ),
                         ])
                     >
                         {{ $container }}
                     </article>
+
                 @endforeach
             </div>
         @elseif ($placeholder = $getPlaceholder())

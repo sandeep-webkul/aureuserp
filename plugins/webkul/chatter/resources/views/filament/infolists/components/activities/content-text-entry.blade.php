@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <div class="rounded-xl p-3 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50 dark:bg-gray-800/50 dark:ring-gray-800 space-y-1">
+    <div class="rounded-xl p-3 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50/80 dark:bg-gray-950 dark:ring-gray-800 space-y-1">
         <div class="grid grid-cols-3 gap-6">
 
             {{-- Activity Type --}}

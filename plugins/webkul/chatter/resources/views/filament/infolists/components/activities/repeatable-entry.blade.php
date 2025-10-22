@@ -24,7 +24,6 @@
                 @foreach ($childComponentContainers as $container)
                     @php
                         $recordType = data_get($container->getRecord(), 'type');
-
                         $isNote = $recordType === 'note';
                     @endphp
 
@@ -46,9 +45,3 @@
         @endif
     </div>
 </x-dynamic-component>
-
-<style>
-.container > *:first-child {
-    gap: 8px;
-}
-</style>

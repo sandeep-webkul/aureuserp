@@ -1,8 +1,8 @@
 <livewire:chatter-panel
-    :record="$record ?? $this->record"
-    :activityPlans="$activityPlans ?? $this->activityPlans"
-    :resource="$resource ?? $this->resource"
-    :followerViewMail="$followerViewMail ?? $this->followerViewMail"
-    :messageViewMail="$messageViewMail ?? $this->messageViewMail"
+    :record="$record"
+    :resource-class="$resourceClass"
+    :follower-view-mail-path="$followerMailViewPath"
+    :is-follower-action-visible="$isFileActionVisible"
+    :is-file-action-visible="$isFollowerActionVisible"
     lazy
 />

@@ -12,7 +12,7 @@
         <div class="flex-1 pt-0.5 space-y-1">
             <div class="flex items-center justify-between gap-2.5">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-base font-semibold text-black dark:text-gray-100 font-inter cursor-pointer">
+                    <span class="text-base font-semibold dark:text-gray-100 text-gray-900 font-inter cursor-pointer">
                         {{ $getRecord()->causer?->name }}
                     </span>
 
@@ -24,7 +24,7 @@
                 <x-filament::icon-button
                     wire:click="pinMessage({{ $getRecord()->id }})"
                     :icon="$getRecord()->pinned_at ? 'icon-un-pin' : 'icon-pin'"
-                    :color="$getRecord()->pinned_at ? 'primary' : 'gray'"
+                    color="success"
                     :tooltip="$getRecord()->pinned_at 
                         ? __('chatter::views/filament/infolists/components/messages/title-text-entry.unpin') 
                         : __('chatter::views/filament/infolists/components/messages/title-text-entry.pin')"
