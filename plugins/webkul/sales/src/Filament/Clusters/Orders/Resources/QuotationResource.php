@@ -22,7 +22,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -713,10 +712,6 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
                                             ->toggleable()
                                             ->alignment(Alignment::Center),
-                                        InfolistTableColumn::make('price_subtotal')
-                                            ->alignment(Alignment::Center)
-                                            ->toggleable()
-                                            ->hiddenLabel(true),
                                     ])
                                     ->schema([
                                         TextEntry::make('product.name')
@@ -842,15 +837,18 @@ class QuotationResource extends Resource
                                             ->money(fn ($record) => $record->currency->code)
                                             ->weight(FontWeight::Bold)
                                             ->size(TextSize::Large),
-                                        Actions::make([
-                                            Action::make('viewProduct')
-                                                ->tooltip('Open product')
-                                                ->iconButton(false)
-                                                ->icon('heroicon-m-arrow-top-right-on-square')
-                                                ->url(fn ($record): ?string => $record->product_id ? ProductResource::getUrl('view', ['record' => $record->product_id]) : null)
-                                                ->openUrlInNewTab()
-                                                ->visible(fn ($record): bool => filled($record->product_id)),
-                                        ]),
+                                    ])
+                                    ->extraItemActions([
+                                        Action::make('viewProduct')
+                                            ->tooltip('Open product')
+                                            ->iconButton(true)
+                                            ->icon('heroicon-m-arrow-top-right-on-square')
+                                            ->openUrlInNewTab()
+                                            ->url(fn ($record): ?string => isset($record['product_id']) && filled($record['product_id'])
+                                                ? ProductResource::getUrl('view', ['record' => $record['product_id']])
+                                                : null
+                                            )
+                                            ->visible(true),
                                     ]),
 
                                 Livewire::make(Summary::class, function ($record, PriceSettings $settings) {

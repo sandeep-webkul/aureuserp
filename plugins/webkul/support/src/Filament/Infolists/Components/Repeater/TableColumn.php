@@ -28,6 +28,11 @@ class TableColumn extends Component
 
     protected bool|Closure $isHeaderLabelHidden = false;
 
+    public function __construct(string $name)
+    {
+        $this->name($name);
+    }
+
     public static function make(string|Closure $name): static
     {
         $columnClass = static::class;
