@@ -43,7 +43,7 @@
                 ->merge($getExtraAttributes(), escape: false)
                 ->class([
                     'fi-fo-table-repeater',
-                    'fo-compact' => $isCompact,
+                    'fi-compact' => $isCompact,
                 ]) 
         }}
     >
@@ -58,7 +58,7 @@
                                 || $isReorderableWithDragAndDrop
                             )
                         )
-                            <th class="fi-fo-table-repeater-empty-header-cell"></th>
+                            <th class="fi-fo-table-repeater-empty-header-cell" style="width: 45px"></th>
                         @endif
 
                         @foreach ($tableColumns as $tableColumn)
@@ -90,7 +90,7 @@
                             || $isCloneable 
                             || $isDeletable
                         )
-                            <th class="text-center !w-[50px] align-middle fi-fo-table-repeater-empty-header-cell">
+                            <th class="text-center align-middle fi-fo-table-repeater-empty-header-cell" style="width: 75px">
                                 @if ($hasColumnManagerDropdown)
                                     <x-filament::dropdown
                                         shift
@@ -238,7 +238,7 @@
                                         || $cloneActionIsVisible 
                                         || $deleteActionIsVisible
                                     )
-                                        <div class="flex flex-col items-center gap-2">
+                                        <div class="flex flex-row items-center gap-2">
                                             @foreach ($visibleExtraItemActions as $extraItemAction)
                                                 <div x-on:click.stop>
                                                     {{ $extraItemAction(['item' => $itemKey]) }}
