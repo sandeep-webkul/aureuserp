@@ -17,4 +17,9 @@ class PluginManagerServiceProvider extends ServiceProvider
             ->hasRoute('web')
             ->hasSeeder('Webkul\\PluginManager\\Database\\Seeders\\PluginSeeder');
     }
+
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'plugins');
+    }
 }

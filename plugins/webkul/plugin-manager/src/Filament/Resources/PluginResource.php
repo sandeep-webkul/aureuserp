@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\TextSize;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -24,6 +25,7 @@ use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
 use Webkul\Support\Models\Plugin;
 use Webkul\Support\Package;
@@ -110,7 +112,7 @@ class PluginResource extends Resource
                 'sm'  => 1,
                 'md'  => 2,
                 'lg'  => 2,
-                'xl'  => 4,
+                'xl'  => 3,
                 '2xl' => 4,
             ])
             ->filters([
@@ -142,10 +144,10 @@ class PluginResource extends Resource
                         ->label('Install')
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
-                        ->visible(fn ($record) => ! $record->is_installed)
+                        ->visible(fn($record) => ! $record->is_installed)
                         ->requiresConfirmation()
                         ->modalHeading('Install Plugin')
-                        ->modalDescription(fn ($record) => "Are you sure you want to install the '{$record->name}' plugin? This will run migrations and seeders.")
+                        ->modalDescription(fn($record) => "Are you sure you want to install the '{$record->name}' plugin? This will run migrations and seeders.")
                         ->modalSubmitActionLabel('Install Plugin')
                         ->action(function ($record) {
                             $php = escapeshellarg(PHP_BINARY);
@@ -181,32 +183,94 @@ class PluginResource extends Resource
                         ->label('Uninstall')
                         ->icon('heroicon-o-trash')
                         ->color('danger')
-                        ->visible(fn ($record) => $record->is_installed)
-                        ->requiresConfirmation()
+                          ->modalWidth(Width::ExtraLarge)
+                        ->visible(fn($record) => $record->is_installed)
                         ->modalHeading('Uninstall Plugin')
-                        ->modalDescription(fn ($record) => "Are you sure you want to uninstall the '{$record->name}' plugin? This will remove all data and cannot be undone.")
+                       ->modalContent(function ($record) {
+                            $dependents = $record->getDependentsFromConfig();
+                            $package = $record->getPackage();
+                            $tables = [];
+
+                            if ($package && !empty($package->migrationFileNames)) {
+                                foreach ($package->migrationFileNames as $migrationFile) {
+                                    if (preg_match('/create_(.*?)_table/', $migrationFile, $matches) ||
+                                        preg_match('/alter_(.*?)_table/', $migrationFile, $matches)) {
+                                        $table = $matches[1];
+                                        $count = \Schema::hasTable($table) ? DB::table($table)->count() : 0;
+                                        if ($count > 0) {
+                                            $tables[] = [
+                                                'table' => $table,
+                                                'count' => $count,
+                                            ];
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (!empty($dependents)) {
+                                foreach ($dependents as $dependent) {
+                                    $dependentPlugin = Plugin::where('name', $dependent)->first();
+                                    $dependentPackage = $dependentPlugin ? $dependentPlugin->getPackage() : null;
+                                    if ($dependentPackage && !empty($dependentPackage->migrationFileNames)) {
+                                        foreach ($dependentPackage->migrationFileNames as $migrationFile) {
+                                            if (preg_match('/create_(.*?)_table/', $migrationFile, $matches) ||
+                                                preg_match('/alter_(.*?)_table/', $migrationFile, $matches)) {
+                                                $table = $matches[1];
+                                                $count = \Schema::hasTable($table) ? DB::table($table)->count() : 0;
+                                                if ($count > 0) { 
+                                                    $exists = false;
+                                                    foreach ($tables as $existingTable) {
+                                                        if ($existingTable['table'] === $table) {
+                                                            $exists = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (!$exists) {
+                                                        $tables[] = [
+                                                            'table' => $table,
+                                                            'count' => $count,
+                                                        ];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            return view('plugins::uninstall-modal', [
+                                'record' => $record,
+                                'dependents' => $dependents,
+                                'tables' => $tables,
+                            ]);
+                        })
                         ->modalSubmitActionLabel('Uninstall Plugin')
                         ->action(function ($record) {
                             try {
                                 $dependents = $record->getDependentsFromConfig();
 
                                 if (!empty($dependents)) {
-                                    $dependentsStr = implode(', ', $dependents);
+                                    foreach ($dependents as $dependent) {
+                                        $dependentPlugin = Plugin::where('name', $dependent)->first();
+                                        if ($dependentPlugin && $dependentPlugin->is_installed) {
+                                            $php = escapeshellarg(PHP_BINARY);
+                                            $artisan = escapeshellarg(base_path('artisan'));
+                                            $cmd = "$php $artisan {$dependent}:uninstall --force";
+                                            exec($cmd, $output, $exitCode);
 
-                                    Notification::make()
-                                        ->title('Cannot Uninstall')
-                                        ->body("This plugin has dependents: {$dependentsStr}. Please uninstall them first.")
-                                        ->danger()
-                                        ->send();
-
-                                    return;
+                                            // Update plugin status in database
+                                            $dependentPlugin->update([
+                                                'is_installed' => false,
+                                                'is_active' => false,
+                                            ]);
+                                            dump($dependentPlugin);
+                                        }
+                                    }
                                 }
 
                                 $php = escapeshellarg(PHP_BINARY);
-
                                 $artisan = escapeshellarg(base_path('artisan'));
-
-                                $cmd = "$php $artisan $record->name:uninstall";
+                                $cmd = "$php $artisan {$record->name}:uninstall";
 
                                 exec($cmd, $output, $exitCode);
 
@@ -215,9 +279,15 @@ class PluginResource extends Resource
                                     'is_active'    => false,
                                 ]);
 
+                                $message = "The '{$record->name}' plugin has been uninstalled.";
+                                if (!empty($dependents)) {
+                                    $dependentsStr = implode(', ', array_map('ucfirst', $dependents));
+                                    $message .= " Dependents uninstalled: {$dependentsStr}.";
+                                }
+
                                 Notification::make()
                                     ->title('Plugin Uninstalled Successfully')
-                                    ->body("The '{$record->name}' plugin has been uninstalled.")
+                                    ->body($message)
                                     ->success()
                                     ->send();
                             } catch (\Exception $e) {
