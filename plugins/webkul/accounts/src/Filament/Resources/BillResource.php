@@ -336,26 +336,25 @@ class BillResource extends Resource
                                     ->hiddenLabel()
                                     ->table([
                                         InfolistTableColumn::make('name')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.product')),
                                         InfolistTableColumn::make('quantity')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.quantity')),
                                         InfolistTableColumn::make('uom.name')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.unit')),
                                         InfolistTableColumn::make('price_unit')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.unit-price')),
                                         InfolistTableColumn::make('discount')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage')),
                                         InfolistTableColumn::make('taxes.name')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.taxes')),
-
                                         InfolistTableColumn::make('price_subtotal')
-                                            ->alignStart()
+                                            ->alignCenter()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.sub-total')),
                                     ])
                                     ->schema([
