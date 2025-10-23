@@ -615,6 +615,8 @@ class OperationResource extends Resource
     {
         return Repeater::make('moves')
             ->hiddenLabel()
+            ->compact()
+            ->reorderable()
             ->relationship(
                 modifyQueryUsing: fn (Builder $query) => $query->with([
                     'product' => fn ($q) => $q->withTrashed(),

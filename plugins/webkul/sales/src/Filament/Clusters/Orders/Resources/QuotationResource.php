@@ -1287,8 +1287,8 @@ class QuotationResource extends Resource
             ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
             ->columnManagerColumns(2)
-            ->reorderable()
             ->compact()
+            ->reorderable()
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.product'))
