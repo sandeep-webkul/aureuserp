@@ -841,14 +841,20 @@ class QuotationResource extends Resource
                                     ->extraItemActions([
                                         Action::make('viewProduct')
                                             ->tooltip('Open product')
-                                            ->iconButton(true)
+                                            ->size(fn () => 'sm') // problematic if not evaluated
+                                            ->iconButton()
                                             ->icon('heroicon-m-arrow-top-right-on-square')
-                                            ->openUrlInNewTab()
-                                            ->url(fn ($record): ?string => isset($record['product_id']) && filled($record['product_id'])
-                                                ? ProductResource::getUrl('view', ['record' => $record['product_id']])
-                                                : null
-                                            )
-                                            ->visible(true),
+                                            ->url(function (array $arguments, Get $get): ?string {
+                                                $productId = $get('lines')[$arguments['item']]['product_id'] ?? null;
+
+                                                return $productId ? ProductResource::getUrl('view', ['record' => $productId]) : null;
+                                            })
+                                            ->openUrlInNewTab(true)
+                                            ->visible(function (array $arguments, Get $get): bool {
+                                                $productId = $get('lines')[$arguments['item']]['product_id'] ?? null;
+
+                                                return filled($productId) ?? null;
+                                            }),
                                     ]),
 
                                 Livewire::make(Summary::class, function ($record, PriceSettings $settings) {
