@@ -67,8 +67,9 @@ class PluginResource extends Resource
                         Split::make([
                             TextColumn::make('name')
                                 ->weight('semibold')
+                                ->searchable()
                                 ->size(TextSize::Large)
-                                ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                                ->formatStateUsing(fn(string $state): string => ucfirst($state))
                                 ->grow(false),
                             TextColumn::make('latest_version')
                                 ->label(__('plugin-manager::filament/resources/plugin.table.version'))
@@ -97,7 +98,7 @@ class PluginResource extends Resource
 
                             TextColumn::make('dependencies_count')
                                 ->label(__('plugin-manager::filament/resources/plugin.table.dependencies'))
-                                ->state(fn ($record) => count($record->getDependenciesFromConfig()))
+                                ->state(fn($record) => count($record->getDependenciesFromConfig()))
                                 ->badge()
                                 ->color('warning')
                                 ->suffix(__('plugin-manager::filament/resources/plugin.table.dependencies_suffix'))
@@ -120,13 +121,13 @@ class PluginResource extends Resource
                         ->icon('heroicon-o-eye'),
 
                     Action::make('install')
-                        ->label('Install')
+                        ->label(__('plugin-manager::filament/resources/plugin.actions.install.title'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
-                        ->visible(fn ($record) => ! $record->is_installed)
+                        ->visible(fn($record) => ! $record->is_installed)
                         ->requiresConfirmation()
-                        ->modalHeading(fn ($record) => __('plugin-manager::filament/resources/plugin.actions.install.heading', ['name' => $record->name]))
-                        ->modalDescription(fn ($record) => __('plugin-manager::filament/resources/plugin.actions.install.description', ['name' => $record->name]))
+                        ->modalHeading(fn($record) => __('plugin-manager::filament/resources/plugin.actions.install.heading', ['name' => $record->name]))
+                        ->modalDescription(fn($record) => __('plugin-manager::filament/resources/plugin.actions.install.description', ['name' => $record->name]))
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
                             $php = escapeshellarg(PHP_BINARY);
@@ -150,7 +151,7 @@ class PluginResource extends Resource
                                     ->send();
                             } catch (\Exception $e) {
                                 Notification::make()
-                                    ->title('Installation Failed')
+                                    ->title(__('plugin-manager::filament/resources/plugin.notifications.installed-failed.title'))
                                     ->body($e->getMessage())
                                     ->danger()
                                     ->persistent()
@@ -161,11 +162,11 @@ class PluginResource extends Resource
                         }),
 
                     Action::make('uninstall')
-                        ->label('Uninstall')
+                        ->label(__('plugin-manager::filament/resources/plugin.actions.uninstall.title'))
                         ->icon('heroicon-o-trash')
                         ->color('danger')
                         ->modalWidth(Width::ExtraLarge)
-                        ->visible(fn ($record) => $record->is_installed)
+                        ->visible(fn($record) => $record->is_installed)
                         ->modalHeading(__('plugin-manager::filament/resources/plugin.actions.uninstall.heading'))
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.uninstall.submit'))
                         ->modalContent(function ($record) {
@@ -280,7 +281,7 @@ class PluginResource extends Resource
                                         'is_active'    => false,
                                     ]);
                                 } catch (\Exception $e) {
-                                    $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
+                                    $errors[] = "Failed to uninstall '{$pluginName}': " . $e->getMessage();
                                 }
                             };
 
@@ -307,7 +308,7 @@ class PluginResource extends Resource
                                     ->send();
                             } else {
                                 Notification::make()
-                                    ->title('Uninstallation Failed')
+                                    ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-failed.title'))
                                     ->body(implode(' ', $errors))
                                     ->danger()
                                     ->persistent()
@@ -323,7 +324,7 @@ class PluginResource extends Resource
             ->recordActionsAlignment('end')
             ->defaultSort('sort', 'asc')
             ->reorderable('sort')
-            ->paginated([12, 24, 48]);
+            ->paginated([16, 24, 32]);
     }
 
     public static function infolist(Schema $schema): Schema
@@ -336,7 +337,7 @@ class PluginResource extends Resource
                             ->schema([
                                 TextEntry::make('name')
                                     ->label(__('plugin-manager::filament/resources/plugin.infolist.name'))
-                                    ->formatStateUsing(fn (string $state) => ucfirst($state))
+                                    ->formatStateUsing(fn(string $state) => ucfirst($state))
                                     ->weight('bold')
                                     ->size('lg'),
 
@@ -361,13 +362,13 @@ class PluginResource extends Resource
                                     ->badge(),
                             ]),
                         TextEntry::make('license')
-                            ->label('License')
+                            ->label(__('plugin-manager::filament/resources/plugin.infolist.license'))
                             ->default('MIT')
                             ->badge()
                             ->color('success'),
 
                         TextEntry::make('summary')
-                            ->label('Description')
+                            ->label(__('plugin-manager::filament/resources/plugin.infolist.summary'))
                             ->columnSpanFull(),
                     ]),
                 Group::make([
@@ -388,13 +389,13 @@ class PluginResource extends Resource
                                 })
                                 ->schema([
                                     TextEntry::make('name')
-                                        ->label('Plugin Name')
-                                        ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                                        ->label(__('plugin-manager::filament/resources/plugin.infolist.dependencies-repeater.name'))
+                                        ->formatStateUsing(fn(string $state): string => ucfirst($state))
                                         ->badge()
                                         ->color('warning'),
 
                                     IconEntry::make('is_installed')
-                                        ->label('Installed')
+                                        ->label(__('plugin-manager::filament/resources/plugin.infolist.dependencies-repeater.is_installed'))
                                         ->boolean()
                                         ->trueIcon('heroicon-s-check-circle')
                                         ->falseIcon('heroicon-o-x-circle')
@@ -402,11 +403,10 @@ class PluginResource extends Resource
                                         ->falseColor('danger'),
                                 ])
                                 ->columns(2)
-                                ->visible(fn ($record) => count($record->dependencies ?? []) > 0)
-                                ->placeholder('No dependencies required'),
+                                ->placeholder(__('plugin-manager::filament/resources/plugin.infolist.dependencies-repeater.placeholder')),
 
                             RepeatableEntry::make('dependents')
-                                ->label('Plugins That Depend On This')
+                                ->label(__('plugin-manager::filament/resources/plugin.infolist.dependents-repeater.title'))
                                 ->state(function ($record) {
                                     $dependents = [];
                                     foreach ($record->getDependentsFromConfig() as $dep) {
@@ -420,13 +420,13 @@ class PluginResource extends Resource
                                 })
                                 ->schema([
                                     TextEntry::make('name')
-                                        ->label('Plugin Name')
-                                        ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                                        ->label(__('plugin-manager::filament/resources/plugin.infolist.dependents-repeater.name'))
+                                        ->formatStateUsing(fn(string $state): string => ucfirst($state))
                                         ->badge()
                                         ->color('info'),
 
                                     IconEntry::make('is_installed')
-                                        ->label('Installed')
+                                        ->label(__('plugin-manager::filament/resources/plugin.infolist.dependents-repeater.is_installed'))
                                         ->boolean()
                                         ->trueIcon('heroicon-s-check-circle')
                                         ->falseIcon('heroicon-o-x-circle')
@@ -434,8 +434,7 @@ class PluginResource extends Resource
                                         ->falseColor('gray'),
                                 ])
                                 ->columns(2)
-                                ->visible(fn ($record) => count($record->dependents ?? []) > 0)
-                                ->placeholder('No dependents'),
+                                ->placeholder(__('plugin-manager::filament/resources/plugin.infolist.dependents-repeater.placeholder')),
                         ]),
                 ]),
             ]);
