@@ -656,6 +656,7 @@ class QuotationResource extends Resource
                                 RepeatableEntry::make('lines')
                                     ->hiddenLabel()
                                     ->columnManager()
+                                    ->columnManagerColumns(2)
                                     ->table([
                                         InfolistTableColumn::make('product.name')
                                             ->alignment(Alignment::Center)

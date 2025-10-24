@@ -172,7 +172,7 @@ class RepeatableEntry extends BaseRepeatableEntry
 
     public function hasDeferredColumnManager(): bool
     {
-        return false;
+        return true;
     }
 
     /**
