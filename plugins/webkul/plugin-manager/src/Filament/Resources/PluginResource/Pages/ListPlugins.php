@@ -5,12 +5,41 @@ namespace Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
 use Webkul\Support\Models\Plugin;
 
 class ListPlugins extends ListRecords
 {
     protected static string $resource = PluginResource::class;
+
+    public function getTabs(): array
+    {
+        $packages = Plugin::getAllPluginPackages();
+        $excludedPlugins = ['accounts', 'products', 'payments', 'full-calendar'];
+
+        $installablePlugins = array_filter(array_keys($packages), function ($pluginName) use ($packages, $excludedPlugins) {
+            return ! in_array($pluginName, $excludedPlugins) && ! $packages[$pluginName]->isCore;
+        });
+
+        return [
+            'all' => Tab::make('All Plugins')
+                ->badge(Plugin::whereIn('name', $installablePlugins)->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('name', $installablePlugins)),
+
+            'installed' => Tab::make('Installed')
+                ->badge(Plugin::whereIn('name', $installablePlugins)->where('is_installed', true)->count())
+                ->modifyQueryUsing(
+                    fn ($query) => $query->where('is_installed', true)->whereIn('name', $installablePlugins)
+                ),
+
+            'not_installed' => Tab::make('Not Installed')
+                ->badge(Plugin::whereIn('name', $installablePlugins)->where('is_installed', false)->count())
+                ->modifyQueryUsing(
+                    fn ($query) => $query->where('is_installed', false)->whereIn('name', $installablePlugins)
+                ),
+        ];
+    }
 
     protected function getHeaderActions(): array
     {
@@ -25,19 +54,19 @@ class ListPlugins extends ListRecords
                 ->modalSubmitActionLabel('Sync Plugins')
                 ->action(function () {
                     try {
+                        $excludedPlugins = ['accounts', 'products', 'payments', 'full-calendar'];
                         $packages = Plugin::getAllPluginPackages();
                         $synced = 0;
 
                         foreach ($packages as $pluginName => $package) {
-                            if ($package->isCore) {
+                            if ($package->isCore || in_array($pluginName, $excludedPlugins)) {
                                 continue;
                             }
 
                             $composerPath = base_path("plugins/webkul/{$pluginName}/composer.json");
-                            $composerData = [];
-                            if (file_exists($composerPath)) {
-                                $composerData = json_decode(file_get_contents($composerPath), true);
-                            }
+                            $composerData = file_exists($composerPath)
+                                ? json_decode(file_get_contents($composerPath), true)
+                                : [];
 
                             $plugin = Plugin::updateOrCreate(
                                 ['name' => $pluginName],
@@ -54,15 +83,10 @@ class ListPlugins extends ListRecords
                             );
 
                             $dependencies = $plugin->getDependenciesFromConfig();
-                            if (!empty($dependencies)) {
-                                $dependencyIds = [];
-                                foreach ($dependencies as $dependencyName) {
-                                    $dependencyPlugin = Plugin::where('name', $dependencyName)->first();
-                                    if ($dependencyPlugin) {
-                                        $dependencyIds[] = $dependencyPlugin->id;
-                                    }
-                                }
-                                $plugin->dependencies()->sync($dependencyIds);
+                            if (! empty($dependencies)) {
+                                $plugin->dependencies()->sync(
+                                    Plugin::whereIn('name', $dependencies)->pluck('id')
+                                );
                             }
 
                             if ($plugin->wasRecentlyCreated) {
@@ -83,6 +107,7 @@ class ListPlugins extends ListRecords
                             ->send();
                     }
                 }),
+
         ];
     }
 }

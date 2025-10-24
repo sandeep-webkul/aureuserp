@@ -2,24 +2,35 @@
 
 namespace Webkul\PluginManager;
 
-use Illuminate\Support\ServiceProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Webkul\Support\Package;
+use Webkul\Support\PackageServiceProvider;
 
-class PluginManagerServiceProvider extends ServiceProvider
+class PluginManagerServiceProvider extends PackageServiceProvider
 {
-    public static string $name = 'plugins';
+    public static string $name = 'plugin-manager';
+
+    public static string $viewNamespace = 'plugin-manager';
 
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->isCore()
             ->hasViews()
             ->hasTranslations()
-            ->hasRoute('web')
             ->hasSeeder('Webkul\\PluginManager\\Database\\Seeders\\PluginSeeder');
     }
 
-    public function boot(): void
+    public function packageBooted(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'plugins');
+        $this->registerCustomCss();
+    }
+
+    public function registerCustomCss()
+    {
+        FilamentAsset::register([
+            Css::make('plugins', __DIR__.'/../resources/dist/plugin.css'),
+        ], 'plugins');
     }
 }

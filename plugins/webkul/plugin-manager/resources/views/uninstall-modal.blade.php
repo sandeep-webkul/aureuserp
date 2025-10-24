@@ -51,7 +51,7 @@
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
             The following database tables contain data that will be permanently deleted
         </p>
-        <div class="mt-3 space-y-2">
+        <div class="mt-3 max-h-50 overflow-y-auto scrollbar-thin-transparent space-y-2">
             @foreach($tables as $tableData)
                 <div class="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2 dark:bg-gray-800">
                     <div>
