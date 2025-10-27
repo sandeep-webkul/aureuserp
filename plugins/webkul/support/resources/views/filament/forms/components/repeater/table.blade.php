@@ -238,7 +238,7 @@
                                         || $cloneActionIsVisible 
                                         || $deleteActionIsVisible
                                     )
-                                        <div class="flex flex-row items-center gap-2">
+                                        <div class="flex flex-row items-center justify-center gap-2">
                                             @foreach ($visibleExtraItemActions as $extraItemAction)
                                                 <div x-on:click.stop>
                                                     {{ $extraItemAction(['item' => $itemKey]) }}

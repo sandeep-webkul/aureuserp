@@ -3,17 +3,12 @@
 namespace Webkul\Support\Filament\Infolists\Components;
 
 use Closure;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Concerns\HasExtraItemActions;
 use Filament\Infolists\Components\RepeatableEntry as BaseRepeatableEntry;
 use Filament\Schemas\Components\Component;
-use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Table\Concerns\HasColumnManager;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Js;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn;
 
 class RepeatableEntry extends BaseRepeatableEntry
@@ -23,16 +18,25 @@ class RepeatableEntry extends BaseRepeatableEntry
 
     protected ?string $columnManagerSessionKey = null;
 
+    protected bool|Closure|null $isRepeaterHasTableView = false;
+
     public function table(array|Closure|null $columns): static
     {
+        $this->isRepeaterHasTableView = true;
+
         $this->tableColumns = $columns;
 
         return $this;
     }
 
+    public function hasTableView(): bool
+    {
+        return $this->evaluate($this->isRepeaterHasTableView) || filled($this->getTableColumns());
+    }
+
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeater_'.$this->getStatePath().'_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeatable_entry_'.$this->getStatePath().'_column_manager';
     }
 
     public function getMappedColumns(): array
@@ -172,7 +176,7 @@ class RepeatableEntry extends BaseRepeatableEntry
 
     public function hasDeferredColumnManager(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -195,163 +199,37 @@ class RepeatableEntry extends BaseRepeatableEntry
         }
     }
 
-    protected function toEmbeddedTableHtml(): string
+    public function toEmbeddedHtml(): string
     {
-        $items = $this->getItems();
-        $tableColumns = $this->getTableColumns();
-        $extraActions = $this->getExtraItemActions();
-        $hasExtraActions = ! empty($extraActions);
-        $hasColumnManager = $this->hasColumnManager();
-
-        $attributes = $this->getExtraAttributeBag()
-            ->class([
-                'fi-fo-table-repeater',
-                'overflow-x-auto',
-            ]);
-
-        if (empty($items)) {
-            $attributes = $attributes
-                ->merge([
-                    'x-tooltip' => filled($tooltip = $this->getEmptyTooltip())
-                        ? '{
-                            content: '.Js::from($tooltip).',
-                            theme: $store.theme,
-                            allowHTML: '.Js::from($tooltip instanceof Htmlable).',
-                        }'
-                        : null,
-                ], escape: false);
-
-            $placeholder = $this->getPlaceholder();
-
-            ob_start(); ?>
-
-            <div <?= $attributes->toHtml() ?>>
-                <?php if (filled($placeholder)) { ?>
-                    <p class="fi-in-placeholder">
-                        <?= e($placeholder) ?>
-                    </p>
-                <?php } ?>
-            </div>
-
-            <?php return $this->wrapEmbeddedHtml(ob_get_clean());
+        if ($this->hasTableView()) {
+            return $this->toEmbeddedTableHtml();
         }
 
-        ob_start(); ?>
+        return (string) parent::toEmbeddedHtml();
+    }
 
-        <div <?= $attributes->toHtml() ?>>
-            <table style="width: max-content;">
-                <thead>
-                    <tr>
-                        <?php foreach ($tableColumns as $column) { ?>
-                            <th
-                                class="<?= Arr::toCssClasses([
-                                    'fi-wrapped' => $column->canHeaderWrap(),
-                                    (($columnAlignment = $column->getAlignment()) instanceof Alignment) ? ('fi-align-'.$columnAlignment->value) : $columnAlignment,
-                                ]) ?>"
-                                style="<?= filled($columnWidth = $column->getWidth())
-                                    ? 'width: '.$columnWidth.'; white-space: nowrap; min-width: fit-content; padding: 15px 5px;'
-                                    : 'white-space: nowrap; min-width: fit-content; padding: 15px 5px;' ?>"
-                            >
-                                <?php if (! $column->isHeaderLabelHidden()) { ?>
-                                    <?= e($column->getLabel()) ?>
-                                <?php } else { ?>
-                                    <span class="fi-sr-only">
-                                        <?= e($column->getLabel()) ?>
-                                    </span>
-                                <?php } ?>
-                            </th>
-                        <?php } ?>
-
-                       <?php if ($hasColumnManager) { ?>
-                            <th class="text-center align-middle fi-fo-table-repeater-empty-header-cell" style="width: 75px; white-space: nowrap;">
-                                <?php
-                                // Render the Blade component properly here:
-                                echo \Illuminate\Support\Facades\Blade::render(<<<'BLADE'
-                                    <x-filament::dropdown
-                                        shift
-                                        placement="bottom-end"
-                                        :max-height="$maxHeight"
-                                        :width="$width"
-                                        :wire:key="$key"
-                                        class="inline-block fi-ta-col-manager-dropdown"
-                                        x-data="{ open: false }"
-                                        x-on:click="$dispatch('toggle-dropdown')"
-                                        x-on:toggle-dropdown="open = !open"
-                                    >
-                                        <x-slot name="trigger">
-                                            {!! $triggerAction !!}
-                                        </x-slot>
-                                        <x-support::column-manager
-                                            heading-tag="h2"
-                                            :apply-action="$applyAction"
-                                            :table-columns="$mappedColumns"
-                                            :columns="$columns"
-                                            has-reorderable-columns="false"
-                                            :has-toggleable-columns="$hasToggleableColumns"
-                                            reorder-animation-duration="300"
-                                            :repeater-key="$statePath"
-                                        />
-                                    </x-filament::dropdown>
-                                BLADE, [
-                                    'maxHeight'            => $this->getColumnManagerMaxHeight(),
-                                    'width'                => $this->getColumnManagerWidth(),
-                                    'key'                  => $this->getId().'.table.column-manager.'.$this->getStatePath(),
-                                    'triggerAction'        => $this->getColumnManagerTriggerAction()->toHtml(),
-                                    'applyAction'          => $this->getColumnManagerApplyAction(),
-                                    'mappedColumns'        => $this->getMappedColumns(),
-                                    'columns'              => $this->getColumnManagerColumns(),
-                                    'hasToggleableColumns' => $this->hasToggleableColumns(),
-                                    'statePath'            => $this->getStatePath(),
-                                ]);
-                           ?>
-                            </th>
-                        <?php } ?>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <?php foreach ($items as $index => $item) { ?>
-                        <tr>
-                            <?php $counter = 0 ?>
-                            <?php foreach ($item->getComponents(withHidden: true) as $component) { ?>
-                                <?php throw_unless(
-                                    $component instanceof Component,
-                                    new Exception('Table repeatable entries must only contain schema components, but ['.$component::class.'] was used.'),
-                                ) ?>
-                                <?php if (count($tableColumns) > $counter) { ?>
-                                    <?php $counter++ ?>
-                                    <?php if ($component->isVisible()) { ?>
-                                        <td>
-                                            <div style="min-width: max-content; padding: 6px 2px"><?= $component->toHtml() ?></div>
-                                        </td>
-                                    <?php } else { ?>
-                                        <td class="fi-hidden"></td>
-                                    <?php } ?>
-                                <?php } ?>
-                            <?php } ?>
-
-                            <?php if ($hasExtraActions) { ?>
-                                <td>
-                                    <div style="min-width: max-content; padding: 6px 2px" class="flex items-center gap-2">
-                                        <?php foreach ($extraActions as $action) { ?>
-                                            <?php $action = $action(['item' => $index]); ?>
-                                            <div x-on:click.stop>
-                                                <?= $action->toHtml() ?>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </td>
-                            <?php } ?>
-
-                            <?php if ($hasColumnManager) { ?>
-                                <td style="padding: 6px 2px;"></td>
-                            <?php } ?>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </div>
-
-        <?php return $this->wrapEmbeddedHtml(ob_get_clean());
+    protected function toEmbeddedTableHtml(): string
+    {
+        return $this->wrapEmbeddedHtml(
+            view('support::filament.infolists.components.repeatable-entry.table', [
+                'getItems'                      => fn () => $this->getItems(),
+                'getTableColumns'               => fn () => $this->getTableColumns(),
+                'getExtraItemActions'           => fn () => $this->getExtraItemActions(),
+                'hasColumnManager'              => fn () => $this->hasColumnManager(),
+                'getExtraAttributeBag'          => fn () => $this->getExtraAttributeBag(),
+                'getEmptyTooltip'               => fn () => $this->getEmptyTooltip(),
+                'getPlaceholder'                => fn () => $this->getPlaceholder(),
+                'getColumnManagerMaxHeight'     => fn () => $this->getColumnManagerMaxHeight(),
+                'getColumnManagerWidth'         => fn () => $this->getColumnManagerWidth(),
+                'getId'                         => fn () => $this->getId(),
+                'getStatePath'                  => fn () => $this->getStatePath(),
+                'getColumnManagerTriggerAction' => fn () => $this->getColumnManagerTriggerAction(),
+                'getColumnManagerApplyAction'   => fn () => $this->getColumnManagerApplyAction(),
+                'getMappedColumns'              => fn () => $this->getMappedColumns(),
+                'getColumnManagerColumns'       => fn () => $this->getColumnManagerColumns(),
+                'hasToggleableColumns'          => fn () => $this->hasToggleableColumns(),
+                'wrapEmbeddedHtml'              => fn ($html) => $this->wrapEmbeddedHtml($html),
+            ])->render()
+        );
     }
 }
