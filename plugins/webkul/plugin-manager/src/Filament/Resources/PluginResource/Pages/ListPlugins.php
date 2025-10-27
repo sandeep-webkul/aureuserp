@@ -58,12 +58,14 @@ class ListPlugins extends ListRecords
     {
         try {
             $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
+
             $packages = collect(Plugin::getAllPluginPackages())
                 ->reject(fn ($package, $name) => $package->isCore || in_array($name, $excluded));
 
             $synced = 0;
 
             $packages->each(function ($package, $name) use (&$synced) {
+
                 $composerPath = base_path("plugins/webkul/{$name}/composer.json");
 
                 $composer = file_exists($composerPath)

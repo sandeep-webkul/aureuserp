@@ -90,8 +90,8 @@ class PluginResource extends Resource
                                 ->inline()
                                 ->grow(false)
                                 ->formatStateUsing(fn ($record) => $record->is_installed
-                                        ? __('plugin-manager::filament/resources/plugin.status.installed')
-                                        : __('plugin-manager::filament/resources/plugin.status.not_installed'))
+                                    ? __('plugin-manager::filament/resources/plugin.status.installed')
+                                    : __('plugin-manager::filament/resources/plugin.status.not_installed'))
                                 ->color(fn ($record) => $record->is_installed ? 'success' : 'gray'),
 
                             TextColumn::make('dependencies_count')
@@ -106,7 +106,11 @@ class PluginResource extends Resource
                 ]),
             ])
             ->contentGrid([
-                'sm' => 1, 'md' => 2, 'lg' => 2, 'xl' => 3, '2xl' => 4,
+                'sm'  => 1,
+                'md'  => 2,
+                'lg'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -135,13 +139,15 @@ class PluginResource extends Resource
             ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
             ->action(function ($record) {
                 try {
-                    $cmd = sprintf('%s %s %s:install',
+                    $cmd = sprintf(
+                        '%s %s %s:install',
                         escapeshellarg(PHP_BINARY),
                         escapeshellarg(base_path('artisan')),
                         $record->name
                     );
 
                     exec($cmd);
+
                     $record->update(['is_installed' => true, 'is_active' => true]);
 
                     Notification::make()
@@ -149,7 +155,6 @@ class PluginResource extends Resource
                         ->body(__('plugin-manager::filament/resources/plugin.notifications.installed.body', ['name' => $record->name]))
                         ->success()
                         ->send();
-
                 } catch (\Throwable $e) {
                     Notification::make()
                         ->title(__('plugin-manager::filament/resources/plugin.notifications.installed-failed.title'))
@@ -185,16 +190,24 @@ class PluginResource extends Resource
             ->merge($dependents ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->getPackage()]) : []);
 
         $packages->each(function ($package) use (&$tables) {
-            if (! $package || empty($package->migrationFileNames)) {
+
+            if (
+                ! $package
+                || empty($package->migrationFileNames)
+            ) {
                 return;
             }
 
             collect($package->migrationFileNames)->each(function ($migrationFile) use (&$tables) {
+
                 if (preg_match('/create_(.*?)_table/', $migrationFile, $matches)) {
                     $table = $matches[1];
                     $count = DBSchema::hasTable($table) ? DB::table($table)->count() : 0;
 
-                    if ($count > 0 && $tables->where('table', $table)->isEmpty()) {
+                    if (
+                        $count > 0 &&
+                        $tables->where('table', $table)->isEmpty()
+                    ) {
                         $tables->push(['table' => $table, 'count' => $count]);
                     }
                 }
@@ -209,37 +222,52 @@ class PluginResource extends Resource
         $errors = [];
         $dependents = $record->getDependentsFromConfig();
 
-        collect($dependents)->push($record->name)->each(function ($pluginName) use (&$errors) {
-            $plugin = Plugin::where('name', $pluginName)->first();
-            if (! $plugin?->is_installed) {
-                return;
-            }
+        collect($dependents)
+            ->push($record->name)
+            ->each(function ($pluginName) use (&$errors) {
 
-            try {
-                $package = $plugin->getPackage();
-                if (! $package) {
-                    throw new \Exception("Package for '{$pluginName}' not found.");
+                $plugin = Plugin::where('name', $pluginName)->first();
+
+                if (! $plugin?->is_installed) {
+                    return;
                 }
 
-                collect(array_merge($package->migrationFileNames, $package->settingFileNames))
-                    ->reverse()
-                    ->each(function ($migration) use ($pluginName) {
-                        $path = base_path("plugins/webkul/{$pluginName}/database/migrations/{$migration}.php");
-                        if (file_exists($path)) {
-                            $instance = require $path;
-                            if (is_object($instance) && method_exists($instance, 'down')) {
-                                $instance->down();
+                try {
+                    $package = $plugin->getPackage();
+
+                    if (! $package) {
+                        throw new \Exception("Package for '{$pluginName}' not found.");
+                    }
+
+                    collect(array_merge($package->migrationFileNames, $package->settingFileNames))
+                        ->reverse()
+                        ->each(function ($migration) use ($pluginName) {
+
+                            $path = base_path("plugins/webkul/{$pluginName}/database/migrations/{$migration}.php");
+
+                            if (file_exists($path)) {
+
+                                $instance = require $path;
+
+                                if (
+                                    is_object($instance) &&
+                                    method_exists($instance, 'down')
+                                ) {
+                                    $instance->down();
+                                }
                             }
-                        }
-                        DB::table('migrations')->where('migration', $migration)->delete();
-                    });
 
-                $plugin->update(['is_installed' => false, 'is_active' => false]);
+                            DB::table('migrations')
+                                ->where('migration', $migration)
+                                ->delete();
+                        });
 
-            } catch (\Throwable $e) {
-                $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
-            }
-        });
+                    $plugin->update(['is_installed' => false, 'is_active' => false]);
+
+                } catch (\Throwable $e) {
+                    $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
+                }
+            });
 
         if (empty($errors)) {
             Notification::make()
@@ -262,30 +290,34 @@ class PluginResource extends Resource
         return $schema->components([
             Section::make(__('plugin-manager::filament/resources/plugin.infolist.section.plugin'))
                 ->schema([
-                    Grid::make(2)->schema([
-                        TextEntry::make('name')
-                            ->label(__('plugin-manager::filament/resources/plugin.infolist.name'))
-                            ->formatStateUsing(fn ($state) => ucfirst($state))
-                            ->weight('bold')
-                            ->size('lg'),
+                    Grid::make(2)
+                        ->schema([
+                            TextEntry::make('name')
+                                ->label(__('plugin-manager::filament/resources/plugin.infolist.name'))
+                                ->formatStateUsing(fn ($state) => ucfirst($state))
+                                ->weight('bold')
+                                ->size('lg'),
 
-                        TextEntry::make('latest_version')
-                            ->label(__('plugin-manager::filament/resources/plugin.infolist.version'))
-                            ->badge()
-                            ->color('info'),
-                    ]),
+                            TextEntry::make('latest_version')
+                                ->label(__('plugin-manager::filament/resources/plugin.infolist.version'))
+                                ->badge()
+                                ->color('info'),
+                        ]),
 
-                    Grid::make(2)->schema([
-                        IconEntry::make('is_installed')
-                            ->label(__('plugin-manager::filament/resources/plugin.infolist.is_installed'))
-                            ->boolean()
-                            ->trueIcon('heroicon-s-check-circle')
-                            ->falseIcon('heroicon-o-x-circle')
-                            ->trueColor('success')
-                            ->falseColor('gray'),
+                    Grid::make(2)
+                        ->schema([
+                            IconEntry::make('is_installed')
+                                ->label(__('plugin-manager::filament/resources/plugin.infolist.is_installed'))
+                                ->boolean()
+                                ->trueIcon('heroicon-s-check-circle')
+                                ->falseIcon('heroicon-o-x-circle')
+                                ->trueColor('success')
+                                ->falseColor('gray'),
 
-                        TextEntry::make('author')->label('Author')->badge(),
-                    ]),
+                            TextEntry::make('author')
+                                ->label('Author')
+                                ->badge(),
+                        ]),
 
                     TextEntry::make('license')
                         ->label(__('plugin-manager::filament/resources/plugin.infolist.license'))
@@ -342,7 +374,8 @@ class PluginResource extends Resource
         $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
 
         $installable = collect(Plugin::getAllPluginPackages())
-            ->reject(fn ($pkg, $name) => in_array($name, $excluded) || $pkg->isCore)
+            ->reject(fn ($pkg, $name) => in_array($name, $excluded)
+                || $pkg->isCore)
             ->keys();
 
         return parent::getEloquentQuery()->whereIn('name', $installable);
