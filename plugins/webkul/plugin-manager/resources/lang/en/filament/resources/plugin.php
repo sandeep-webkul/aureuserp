@@ -32,15 +32,15 @@ return [
 
     'actions' => [
         'install' => [
-            'title'      => 'Install',
+            'title'       => 'Install',
             'heading'     => 'Install Plugin :name',
             'description' => "Are you sure you want to install the ':name' plugin? This will run migrations and seeders.",
             'submit'      => 'Install Plugin',
         ],
         'uninstall' => [
             'title'      => 'Uninstall',
-            'heading' => 'Uninstall Plugin',
-            'submit'  => 'Uninstall Plugin',
+            'heading'    => 'Uninstall Plugin',
+            'submit'     => 'Uninstall Plugin',
         ],
     ],
 
@@ -62,26 +62,31 @@ return [
     ],
 
     'infolist' => [
+        'section'  => [
+            'plugin'       => ' Plugin Information',
+            'dependencies' => 'Dependencies',
+        ],
         'name'         => 'Plugin Name',
         'version'      => 'Version',
         'dependencies' => 'Required Plugins',
         'dependents'   => 'Plugins That Depend On This',
         'is_installed' => 'Installation Status',
-        'license'    => 'License',
-        'summary'    => 'Description',
+        'license'      => 'License',
+        'summary'      => 'Description',
 
         'dependencies-repeater' => [
-            'name' => 'Plugin Name',
+            'title'        => 'Required Plugins',
+            'name'         => 'Plugin Name',
             'is_installed' => 'Installed',
-            'placeholder' => 'No dependencies required',
+            'placeholder'  => 'No dependencies required',
         ],
 
         'dependents-repeater' => [
-            'title'  => 'Plugins That Depend On This',
-            'name' => 'Plugin Name',
+            'title'        => 'Plugins That Depend On This',
+            'name'         => 'Plugin Name',
             'is_installed' => 'Installed',
-            'placeholder' => 'No dependents',
-        ]
+            'placeholder'  => 'No dependents',
+        ],
 
     ],
 

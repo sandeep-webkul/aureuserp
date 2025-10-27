@@ -15,29 +15,27 @@ class ListPlugins extends ListRecords
 
     public function getTabs(): array
     {
-        $packages = Plugin::getAllPluginPackages();
-        $excludedPlugins = ['accounts', 'products', 'payments', 'full-calendar'];
+        $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
 
-        $installablePlugins = array_filter(array_keys($packages), function ($pluginName) use ($packages, $excludedPlugins) {
-            return ! in_array($pluginName, $excludedPlugins) && ! $packages[$pluginName]->isCore;
-        });
+        $packages = collect(Plugin::getAllPluginPackages())
+            ->reject(fn ($pkg, $name) => $pkg->isCore || in_array($name, $excluded))
+            ->keys();
+
+        $query = fn ($installed = null) => Plugin::whereIn('name', $packages)
+            ->when(! is_null($installed), fn ($q) => $q->where('is_installed', $installed));
 
         return [
-            'all' => Tab::make('All Plugins')
-                ->badge(Plugin::whereIn('name', $installablePlugins)->count())
-                ->modifyQueryUsing(fn ($query) => $query->whereIn('name', $installablePlugins)),
+            'all' => Tab::make(__('All Plugins'))
+                ->badge($query()->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('name', $packages)),
 
-            'installed' => Tab::make('Installed')
-                ->badge(Plugin::whereIn('name', $installablePlugins)->where('is_installed', true)->count())
-                ->modifyQueryUsing(
-                    fn ($query) => $query->where('is_installed', true)->whereIn('name', $installablePlugins)
-                ),
+            'installed' => Tab::make(__('Installed'))
+                ->badge($query(true)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('is_installed', true)->whereIn('name', $packages)),
 
-            'not_installed' => Tab::make('Not Installed')
-                ->badge(Plugin::whereIn('name', $installablePlugins)->where('is_installed', false)->count())
-                ->modifyQueryUsing(
-                    fn ($query) => $query->where('is_installed', false)->whereIn('name', $installablePlugins)
-                ),
+            'not_installed' => Tab::make(__('Not Installed'))
+                ->badge($query(false)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('is_installed', false)->whereIn('name', $packages)),
         ];
     }
 
@@ -45,69 +43,71 @@ class ListPlugins extends ListRecords
     {
         return [
             Action::make('sync_plugins')
-                ->label('Sync Available Plugins')
+                ->label(__('Sync Available Plugins'))
                 ->icon('heroicon-o-arrow-path')
                 ->color('info')
                 ->requiresConfirmation()
-                ->modalHeading('Sync Plugins')
-                ->modalDescription('This will scan the plugins directory and register any new plugins found.')
-                ->modalSubmitActionLabel('Sync Plugins')
-                ->action(function () {
-                    try {
-                        $excludedPlugins = ['accounts', 'products', 'payments', 'full-calendar'];
-                        $packages = Plugin::getAllPluginPackages();
-                        $synced = 0;
-
-                        foreach ($packages as $pluginName => $package) {
-                            if ($package->isCore || in_array($pluginName, $excludedPlugins)) {
-                                continue;
-                            }
-
-                            $composerPath = base_path("plugins/webkul/{$pluginName}/composer.json");
-                            $composerData = file_exists($composerPath)
-                                ? json_decode(file_get_contents($composerPath), true)
-                                : [];
-
-                            $plugin = Plugin::updateOrCreate(
-                                ['name' => $pluginName],
-                                [
-                                    'author'         => $composerData['authors'][0]['name'] ?? 'Webkul',
-                                    'summary'        => $composerData['description'] ?? $package->description ?? '',
-                                    'description'    => $composerData['description'] ?? $package->description ?? '',
-                                    'latest_version' => $composerData['version'] ?? '1.0.0',
-                                    'license'        => $composerData['license'] ?? 'MIT',
-                                    'is_active'      => true,
-                                    'is_installed'   => false,
-                                    'sort'           => 1,
-                                ]
-                            );
-
-                            $dependencies = $plugin->getDependenciesFromConfig();
-                            if (! empty($dependencies)) {
-                                $plugin->dependencies()->sync(
-                                    Plugin::whereIn('name', $dependencies)->pluck('id')
-                                );
-                            }
-
-                            if ($plugin->wasRecentlyCreated) {
-                                $synced++;
-                            }
-                        }
-
-                        Notification::make()
-                            ->title('Plugins Synced Successfully')
-                            ->body("Found and synced {$synced} new plugin(s).")
-                            ->success()
-                            ->send();
-                    } catch (\Exception $e) {
-                        Notification::make()
-                            ->title('Sync Failed')
-                            ->body($e->getMessage())
-                            ->danger()
-                            ->send();
-                    }
-                }),
-
+                ->modalHeading(__('Sync Plugins'))
+                ->modalDescription(__('This will scan and register any new plugins found.'))
+                ->modalSubmitActionLabel(__('Sync Plugins'))
+                ->action(fn () => $this->syncPlugins()),
         ];
+    }
+
+    protected function syncPlugins(): void
+    {
+        try {
+            $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
+            $packages = collect(Plugin::getAllPluginPackages())
+                ->reject(fn ($package, $name) => $package->isCore || in_array($name, $excluded));
+
+            $synced = 0;
+
+            $packages->each(function ($package, $name) use (&$synced) {
+                $composerPath = base_path("plugins/webkul/{$name}/composer.json");
+
+                $composer = file_exists($composerPath)
+                    ? json_decode(file_get_contents($composerPath), true) ?? []
+                    : [];
+
+                $plugin = Plugin::updateOrCreate(
+                    ['name' => $name],
+                    [
+                        'author'         => data_get($composer, 'authors.0.name', 'Webkul'),
+                        'summary'        => data_get($composer, 'description', $package->description ?? ''),
+                        'description'    => data_get($composer, 'description', $package->description ?? ''),
+                        'latest_version' => data_get($composer, 'version', '1.0.0'),
+                        'license'        => data_get($composer, 'license', 'MIT'),
+                        'is_active'      => true,
+                        'is_installed'   => false,
+                        'sort'           => 1,
+                    ]
+                );
+
+                if ($deps = $plugin->getDependenciesFromConfig()) {
+                    $plugin->dependencies()->sync(
+                        Plugin::whereIn('name', $deps)->pluck('id')
+                    );
+                }
+
+                if ($plugin->wasRecentlyCreated) {
+                    $synced++;
+                }
+            });
+
+            Notification::make()
+                ->title(__('Plugins Synced Successfully'))
+                ->body(__('Found and synced :count new plugin(s).', ['count' => $synced]))
+                ->success()
+                ->send();
+        } catch (\Throwable $e) {
+            report($e);
+
+            Notification::make()
+                ->title(__('Sync Failed'))
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 }
