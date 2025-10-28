@@ -1,5 +1,9 @@
 # 🚀 CHANGELOG — v1.2.0
 
+### Upgrade
+
+* Upgraded to **Filament v4.1** — added support for the new Compact Repeater layout, improved Column Manager synchronization in repeatable entries, and refined overall UI consistency for a smoother user experience.
+
 ### 🐛 Fixes
 
 * #804 [fixed] - improved navigations.
@@ -26,6 +30,11 @@
 * #827 [fixed] - Role permission automatically removed after creating a user from employee creation.
 * #848 [fixed] - Exception error when applying country filter on Company data grid.
 * #850 [fixed] - Prefilled data not loading automatically in form fields.
+* #853 [fixed] - filament version upgrade 4.1.
+* #854 [fixed] - Customer ID displayed when editing an invoice linked to a soft-deleted customer.
+* #856 [fixed] - fixed namespace issue in ci/cd.
+* #857 [fixed] - update the ui of the chatter.
+* #858 [fixed] - Plugin Manager with GUI Install/Uninstall.
 
 
 
