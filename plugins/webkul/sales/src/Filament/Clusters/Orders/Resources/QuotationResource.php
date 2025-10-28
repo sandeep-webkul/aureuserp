@@ -976,7 +976,6 @@ class QuotationResource extends Resource
             ->hiddenLabel()
             ->live()
             ->compact()
-            ->reorderable()
             ->reactive()
             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.title'))
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.add-product'))
