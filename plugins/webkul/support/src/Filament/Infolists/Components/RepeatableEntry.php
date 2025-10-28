@@ -1,35 +1,24 @@
 <?php
 
-namespace Webkul\Support\Filament\Forms\Components;
+namespace Webkul\Support\Filament\Infolists\Components;
 
 use Closure;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Repeater as BaseRepeater;
+use Filament\Forms\Components\Concerns\HasExtraItemActions;
+use Filament\Infolists\Components\RepeatableEntry as BaseRepeatableEntry;
+use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Table\Concerns\HasColumnManager;
-use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn;
 
-class Repeater extends BaseRepeater
+class RepeatableEntry extends BaseRepeatableEntry
 {
     use HasColumnManager;
+    use HasExtraItemActions;
 
     protected ?string $columnManagerSessionKey = null;
 
     protected bool|Closure|null $isRepeaterHasTableView = false;
-
-    public function getDefaultView(): string
-    {
-        if ($this->hasTableView()) {
-            return 'support::filament.forms.components.repeater.table';
-        }
-
-        return (string) parent::getDefaultView();
-    }
-
-    public function isReorderableWithDragAndDrop(): bool
-    {
-        return $this->evaluate($this->isReorderableWithDragAndDrop) && $this->isReorderable();
-    }
 
     public function table(array|Closure|null $columns): static
     {
@@ -47,7 +36,7 @@ class Repeater extends BaseRepeater
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeater_'.$this->getStatePath().'_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeatable_entry_'.$this->getStatePath().'_column_manager';
     }
 
     public function getMappedColumns(): array
@@ -77,6 +66,29 @@ class Repeater extends BaseRepeater
                 ];
             }
         )->toArray();
+    }
+
+    public function getColumnManagerTriggerAction(): Action
+    {
+        $action = Action::make('openColumnManager')
+            ->label(__('filament-tables::table.actions.column_manager.label'))
+            ->iconButton()
+            ->icon('heroicon-s-view-columns')
+            ->color('gray')
+            ->livewireClickHandlerEnabled(false)
+            ->authorize(true);
+
+        if ($this->modifyColumnManagerTriggerActionUsing) {
+            $action = $this->evaluate($this->modifyColumnManagerTriggerActionUsing, [
+                'action' => $action,
+            ]) ?? $action;
+        }
+
+        if ($action->getView() === Action::BUTTON_VIEW) {
+            $action->defaultSize(Size::Small->value);
+        }
+
+        return $action;
     }
 
     public function getTableColumns(): array
@@ -115,6 +127,11 @@ class Repeater extends BaseRepeater
         return collect($columns)->contains(fn ($column) => $column->isToggleable());
     }
 
+    public function hasColumnManager(): bool
+    {
+        return $this->hasToggleableColumns();
+    }
+
     public function getColumnManagerApplyAction(): Action
     {
         $action = Action::make('applyTableColumnManager')
@@ -128,29 +145,6 @@ class Repeater extends BaseRepeater
             $action = $this->evaluate($this->modifyColumnManagerApplyActionUsing, [
                 'action' => $action,
             ]) ?? $action;
-        }
-
-        return $action;
-    }
-
-    public function getColumnManagerTriggerAction(): Action
-    {
-        $action = Action::make('openColumnManager')
-            ->label(__('filament-tables::table.actions.column_manager.label'))
-            ->iconButton()
-            ->icon('heroicon-s-view-columns')
-            ->color('gray')
-            ->livewireClickHandlerEnabled(false)
-            ->authorize(true);
-
-        if ($this->modifyColumnManagerTriggerActionUsing) {
-            $action = $this->evaluate($this->modifyColumnManagerTriggerActionUsing, [
-                'action' => $action,
-            ]) ?? $action;
-        }
-
-        if ($action->getView() === Action::BUTTON_VIEW) {
-            $action->defaultSize(Size::Small->value);
         }
 
         return $action;
@@ -183,5 +177,59 @@ class Repeater extends BaseRepeater
     public function hasDeferredColumnManager(): bool
     {
         return false;
+    }
+
+    /**
+     * Public wrapper so Livewire can call applyRepeaterColumnManager on this component.
+     */
+    public function applyRepeaterColumnManager(string $repeaterKey, array $columns): void
+    {
+        if ($repeaterKey === $this->getStatePath()) {
+            $this->applyTableColumnManager($columns);
+        }
+    }
+
+    /**
+     * Public wrapper so Livewire can call resetRepeaterColumnManager on this component.
+     */
+    public function resetRepeaterColumnManager(string $repeaterKey): void
+    {
+        if ($repeaterKey === $this->getStatePath()) {
+            $this->resetTableColumnManager();
+        }
+    }
+
+    public function toEmbeddedHtml(): string
+    {
+        if ($this->hasTableView()) {
+            return $this->toEmbeddedTableHtml();
+        }
+
+        return (string) parent::toEmbeddedHtml();
+    }
+
+    protected function toEmbeddedTableHtml(): string
+    {
+        return $this->wrapEmbeddedHtml(
+            view('support::filament.infolists.components.repeatable-entry.table', [
+                'getItems'                      => fn () => $this->getItems(),
+                'getTableColumns'               => fn () => $this->getTableColumns(),
+                'getExtraItemActions'           => fn () => $this->getExtraItemActions(),
+                'hasColumnManager'              => fn () => $this->hasColumnManager(),
+                'getExtraAttributeBag'          => fn () => $this->getExtraAttributeBag(),
+                'getEmptyTooltip'               => fn () => $this->getEmptyTooltip(),
+                'getPlaceholder'                => fn () => $this->getPlaceholder(),
+                'getColumnManagerMaxHeight'     => fn () => $this->getColumnManagerMaxHeight(),
+                'getColumnManagerWidth'         => fn () => $this->getColumnManagerWidth(),
+                'getId'                         => fn () => $this->getId(),
+                'getStatePath'                  => fn () => $this->getStatePath(),
+                'getColumnManagerTriggerAction' => fn () => $this->getColumnManagerTriggerAction(),
+                'getColumnManagerApplyAction'   => fn () => $this->getColumnManagerApplyAction(),
+                'getMappedColumns'              => fn () => $this->getMappedColumns(),
+                'getColumnManagerColumns'       => fn () => $this->getColumnManagerColumns(),
+                'hasToggleableColumns'          => fn () => $this->hasToggleableColumns(),
+                'wrapEmbeddedHtml'              => fn ($html) => $this->wrapEmbeddedHtml($html),
+            ])->render()
+        );
     }
 }
