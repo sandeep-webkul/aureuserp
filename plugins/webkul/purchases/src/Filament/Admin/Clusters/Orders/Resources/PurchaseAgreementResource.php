@@ -604,7 +604,7 @@ class PurchaseAgreementResource extends Resource
                                         InfolistTableColumn::make('qty')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.quantity')),
                                         InfolistTableColumn::make('uom.name')
-                                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.entries.unit')),
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.uom')),
                                         InfolistTableColumn::make('price_unit')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.unit-price')),
                                     ])

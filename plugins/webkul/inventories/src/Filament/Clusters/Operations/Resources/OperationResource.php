@@ -490,74 +490,82 @@ class OperationResource extends Resource
                         Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.title'))
                             ->schema([
                                 RepeatableEntry::make('moves')
+                                    ->columnManager()
+                                    ->columnManagerColumns(2)
                                     ->table([
                                         InfolistTableColumn::make('product.name')
                                             ->alignStart()
+                                            ->width(250)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.product')),
                                         InfolistTableColumn::make('finalLocation.full_name')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location')),
                                         InfolistTableColumn::make('description_picking')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description')),
                                         InfolistTableColumn::make('scheduled_at')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at')),
                                         InfolistTableColumn::make('deadline')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline')),
                                         InfolistTableColumn::make('productPackaging.name')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.packaging')),
                                         InfolistTableColumn::make('product_qty')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.demand')),
                                         InfolistTableColumn::make('quantity')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.quantity')),
                                         InfolistTableColumn::make('uom.name')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.unit')),
                                         InfolistTableColumn::make('is_picked')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.picked')),
                                     ])
                                     ->schema([
-                                        TextEntry::make('product.name')
-                                            ->icon('heroicon-o-cube')
-                                            ->iconColor('success'),
+                                        TextEntry::make('product.name'),
                                         TextEntry::make('finalLocation.full_name')
-                                            ->icon('heroicon-o-map-pin')
                                             ->placeholder('—')
                                             ->visible(static::getWarehouseSettings()->enable_locations),
                                         TextEntry::make('description_picking')
-                                            ->icon('heroicon-o-document-text')
                                             ->placeholder('—'),
                                         TextEntry::make('scheduled_at')
-                                            ->dateTime()
-                                            ->icon('heroicon-o-calendar')
+                                            ->date()
                                             ->placeholder('—'),
                                         TextEntry::make('deadline')
-                                            ->dateTime()
-                                            ->icon('heroicon-o-clock')
+                                            ->date()
                                             ->placeholder('—'),
-
                                         TextEntry::make('productPackaging.name')
-                                            ->icon('heroicon-o-gift')
                                             ->visible(static::getProductSettings()->enable_packagings)
                                             ->placeholder('—'),
-                                        TextEntry::make('product_qty')
-                                            ->icon('heroicon-o-calculator'),
-
+                                        TextEntry::make('product_qty'),
                                         TextEntry::make('quantity')
-                                            ->icon('heroicon-o-scale')
                                             ->placeholder('—'),
                                         TextEntry::make('uom.name')
-                                            ->icon('heroicon-o-beaker')
                                             ->visible(static::getProductSettings()->enable_uom),
-                                        IconEntry::make('is_picked')
-                                            ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
-                                            ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
+                                        IconEntry::make('is_picked'),
                                     ]),
                             ]),
 

@@ -96,24 +96,21 @@
             <tbody>
                 @foreach ($items as $index => $item)
                     <tr>
-                        @php $counter = 0; @endphp
+                       @php
+                            $visibleColumns = collect($tableColumns)
+                                ->mapWithKeys(fn ($col) => [$col->getName() => $col]);
+                        @endphp
 
                         @foreach ($item->getComponents(withHidden: true) as $component)
                             @continue(! ($component instanceof \Filament\Schemas\Components\Component))
+                            
+                            @continue(! $visibleColumns->has($component->getName()))
 
-                            @if (count($tableColumns) > $counter)
-                                @php $counter++; @endphp
-
-                                @if ($component->isVisible())
-                                    <td>
-                                        <div style="min-width: max-content; padding: 6px 2px;">
-                                            {!! $component->toHtml() !!}
-                                        </div>
-                                    </td>
-                                @else
-                                    <td class="fi-hidden"></td>
-                                @endif
-                            @endif
+                            <td>
+                                <div style="min-width: max-content; padding: 6px 2px;">
+                                    {!! $component->toHtml() !!}
+                                </div>
+                            </td>
                         @endforeach
 
                         @if ($hasExtraActions)

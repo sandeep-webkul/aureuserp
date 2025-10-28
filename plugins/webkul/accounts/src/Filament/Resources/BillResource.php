@@ -333,71 +333,70 @@ class BillResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 RepeatableEntry::make('lines')
+                                    ->columnManager()
+                                    ->columnManagerColumns(2)
+                                    ->live()
                                     ->hiddenLabel()
                                     ->table([
                                         InfolistTableColumn::make('name')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.product')),
                                         InfolistTableColumn::make('quantity')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.quantity')),
-                                        InfolistTableColumn::make('uom.name')
+                                        InfolistTableColumn::make('uom')
                                             ->alignCenter()
+                                            ->toggleable()
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.unit')),
                                         InfolistTableColumn::make('price_unit')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.unit-price')),
                                         InfolistTableColumn::make('discount')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage')),
-                                        InfolistTableColumn::make('taxes.name')
+                                        InfolistTableColumn::make('taxes')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.taxes')),
                                         InfolistTableColumn::make('price_subtotal')
                                             ->alignCenter()
+                                            ->toggleable()
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.repeater.products.entries.sub-total')),
                                     ])
                                     ->schema([
                                         TextEntry::make('name')
-                                            ->placeholder('-')
-                                            ->iconColor('success')
-                                            ->icon('heroicon-o-cube'),
+                                            ->placeholder('-'),
                                         TextEntry::make('quantity')
+                                            ->placeholder('-'),
+                                        TextEntry::make('uom')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
-                                            ->iconColor('info')
-                                            ->icon('heroicon-o-hashtag'),
-                                        TextEntry::make('uom.name')
-                                            ->placeholder('-')
-                                            ->iconColor('warning')
-                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
-                                            ->icon('heroicon-o-scale'),
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                                         TextEntry::make('price_unit')
-                                            ->iconColor('warning')
                                             ->placeholder('-')
-                                            ->icon('heroicon-o-currency-dollar')
                                             ->money(fn ($record) => $record->currency->name),
                                         TextEntry::make('discount')
                                             ->placeholder('-')
-                                            ->iconColor('success')
-                                            ->icon('heroicon-o-tag')
                                             ->suffix('%'),
-                                        TextEntry::make('taxes.name')
+                                        TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {
                                                 return $record->taxes->map(fn ($tax) => [
                                                     'name' => $tax->name,
                                                 ])->toArray();
                                             })
-                                            ->icon('heroicon-o-receipt-percent')
                                             ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
                                             ->weight(FontWeight::Bold),
                                         TextEntry::make('price_subtotal')
                                             ->placeholder('-')
-                                            ->icon('heroicon-o-calculator')
-                                            ->iconColor('success')
                                             ->money(fn ($record) => $record->currency->name),
-                                    ])->columns(5),
+                                    ]),
                                 Livewire::make(InvoiceSummary::class, function ($record) {
                                     return [
                                         'currency'  => $record->currency,

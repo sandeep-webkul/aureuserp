@@ -584,92 +584,106 @@ class OrderResource extends Resource
                             ->schema([
                                 RepeatableEntry::make('lines')
                                     ->hiddenLabel()
+                                    ->columnManager()
+                                    ->columnManagerColumns(2)
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.title'))
                                     ->table([
-                                        InfolistTableColumn::make('product.name')
+                                        InfolistTableColumn::make('name')
                                             ->alignStart()
+                                            ->toggleable()
+                                            ->width(250)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.product')),
                                         InfolistTableColumn::make('planned_at')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.expected-arrival')),
                                         InfolistTableColumn::make('product_qty')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.quantity')),
                                         InfolistTableColumn::make('qty_received')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.received')),
                                         InfolistTableColumn::make('qty_invoiced')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.billed')),
-                                        InfolistTableColumn::make('uom.name')
+                                        InfolistTableColumn::make('uom')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->visible(static::getProductSettings()->enable_uom)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.unit')),
                                         InfolistTableColumn::make('product_packaging_qty')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->visible(static::getProductSettings()->enable_packagings)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.packaging-qty')),
-                                        InfolistTableColumn::make('productPackaging.name')
+                                        InfolistTableColumn::make('productPackaging')
                                             ->alignStart()
+                                            ->width(200)
+                                            ->toggleable()
+                                            ->visible(static::getProductSettings()->enable_packagings)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.packaging')),
                                         InfolistTableColumn::make('price_unit')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.unit-price')),
-                                        InfolistTableColumn::make('taxes.name')
+                                        InfolistTableColumn::make('taxes')
                                             ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.taxes')),
                                         InfolistTableColumn::make('discount')
                                             ->alignStart()
+                                            ->width(120)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.discount-percentage')),
                                         InfolistTableColumn::make('price_subtotal')
                                             ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.amount')),
                                     ])
                                     ->schema([
 
-                                        TextEntry::make('product.name')
-                                            ->iconColor('success')
-                                            ->icon('heroicon-o-cube'),
+                                        TextEntry::make('name'),
                                         TextEntry::make('planned_at')
-                                            ->iconColor('primary')
-                                            ->dateTime()
-                                            ->icon('heroicon-o-calendar'),
-                                        TextEntry::make('product_qty')
-                                            ->iconColor('success')
-                                            ->icon('heroicon-o-calculator'),
+                                            ->date(),
+                                        TextEntry::make('product_qty'),
                                         TextEntry::make('qty_received')
-                                            ->iconColor('success')
-                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
-                                            ->icon('heroicon-o-calculator'),
+                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE])),
                                         TextEntry::make('qty_invoiced')
-                                            ->iconColor('primary')
-                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
-                                            ->icon('heroicon-o-calculator'),
-                                        TextEntry::make('uom.name')
-                                            ->iconColor('primary')
-                                            ->icon('heroicon-o-beaker')
+                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE])),
+                                        TextEntry::make('uom')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->visible(static::getProductSettings()->enable_uom),
                                         TextEntry::make('product_packaging_qty')
-
-                                            ->icon('heroicon-o-calculator')
                                             ->visible(static::getProductSettings()->enable_packagings),
-                                        TextEntry::make('productPackaging.name')
-                                            ->icon('heroicon-o-gift')
+                                        TextEntry::make('productPackaging')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->visible(static::getProductSettings()->enable_packagings),
                                         TextEntry::make('price_unit')
-
                                             ->money(fn ($record) => $record->order->currency->code),
-                                        TextEntry::make('taxes.name')
-
+                                        TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {
                                                 return $record->taxes->map(fn ($tax) => [
                                                     'name' => $tax->name,
                                                 ])->toArray();
                                             })
-                                            ->icon('heroicon-o-receipt-percent')
                                             ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-'),
                                         TextEntry::make('discount')
-
                                             ->suffix('%'),
                                         TextEntry::make('price_subtotal')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.amount'))

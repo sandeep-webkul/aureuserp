@@ -659,7 +659,7 @@ class QuotationResource extends Resource
                                     ->columnManager()
                                     ->columnManagerColumns(2)
                                     ->table([
-                                        InfolistTableColumn::make('product')
+                                        InfolistTableColumn::make('name')
                                             ->width(250)
                                             ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product')),
@@ -717,7 +717,7 @@ class QuotationResource extends Resource
                                             ->width(150),
                                     ])
                                     ->schema([
-                                        TextEntry::make('product.name')
+                                        TextEntry::make('name')
                                             ->placeholder('-')
                                             ->tooltip(fn ($record) => $record->product->name)
                                             ->iconColor('primary'),
@@ -726,9 +726,9 @@ class QuotationResource extends Resource
                                             ->placeholder('-')
                                             ->numeric(),
 
-                                        TextEntry::make('uom.name')
+                                        TextEntry::make('uom')
                                             ->formatStateUsing(function ($state, ProductSettings $settings) {
-                                                return $settings->enable_uom && $state ? $state : '-';
+                                                return $settings->enable_uom && $state ? $state['name'] : '-';
                                             }),
 
                                         TextEntry::make('customer_lead')
@@ -741,7 +741,8 @@ class QuotationResource extends Resource
                                                 return $settings->enable_packagings && $state ? $state : '-';
                                             }),
 
-                                        TextEntry::make('productPackaging.name')
+                                        TextEntry::make('productPackaging')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
 
@@ -766,7 +767,7 @@ class QuotationResource extends Resource
                                                 return $settings->enable_margin && $state ? $state : '-';
                                             })
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
-                                        TextEntry::make('taxes.name')
+                                        TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {
                                                 return $record->taxes->map(fn ($tax) => ['name' => $tax->name])->toArray();
@@ -780,7 +781,8 @@ class QuotationResource extends Resource
                                                 return $settings->enable_discount && $state ? $state : '-';
                                             })
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
-                                            ->numeric(),
+                                            ->numeric()
+                                            ->suffix('%'),
 
                                         TextEntry::make('price_subtotal')
                                             ->placeholder('-')
@@ -824,66 +826,53 @@ class QuotationResource extends Resource
                             ->schema([
                                 RepeatableEntry::make('optionalLines')
                                     ->hiddenLabel()
+                                    ->columnManager()
                                     ->table([
-                                        InfolistTableColumn::make('product.name')
+                                        InfolistTableColumn::make('name')
+                                            ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product')),
                                         InfolistTableColumn::make('uom.name')
+                                            ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.uom'))
                                             ->alignment(Alignment::Start)
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
-                                        InfolistTableColumn::make('product_uom_qty')
+                                        InfolistTableColumn::make('quantity')
+                                            ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.quantity'))
                                             ->alignment(Alignment::Start),
-                                        InfolistTableColumn::make('discount_percentage')
+                                        InfolistTableColumn::make('discount')
+                                            ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
                                             ->alignment(Alignment::Start)
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_unit')
+                                            ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.unit-price'))
-                                            ->alignment(Alignment::Start),
-                                        InfolistTableColumn::make('sub_total')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.sub-total'))
                                             ->alignment(Alignment::Start),
                                     ])
                                     ->schema([
-                                        TextEntry::make('product.name')
+                                        TextEntry::make('name')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product'))
-                                            ->icon('heroicon-o-cube')
-                                            ->iconColor('success')
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('uom.name')
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.uom'))
-                                            ->icon('heroicon-o-scale')
-                                            ->iconColor('warning')
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('quantity')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.quantity'))
-                                            ->icon('heroicon-o-hashtag')
-                                            ->iconColor('success')
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('discount')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
-                                            ->icon('heroicon-o-tag')
-                                            ->iconColor('warning')
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                                             ->suffix('%')
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('price_unit')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.unit-price'))
-                                            ->icon('heroicon-o-currency-dollar')
-                                            ->iconColor('warning')
-                                            ->color('success')
-                                            ->alignment(Alignment::Start),
-                                        TextEntry::make('price_subtotal')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.sub-total'))
-                                            ->icon('heroicon-o-calculator')
                                             ->alignment(Alignment::Start),
                                     ])->columns(4),
                             ]),
@@ -1009,11 +998,6 @@ class QuotationResource extends Resource
                     ->width(250)
                     ->markAsRequired()
                     ->toggleable(),
-                TableColumn::make('name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.columns.description'))
-                    ->width(250)
-                    ->markAsRequired()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('quantity')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.columns.quantity'))
                     ->width(150)
@@ -1079,11 +1063,6 @@ class QuotationResource extends Resource
                         $set('price_unit', $product->price);
                     })
                     ->required(),
-                TextInput::make('name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.description'))
-                    ->required()
-                    ->live(onBlur: true)
-                    ->dehydrated(),
                 TextInput::make('quantity')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.quantity'))
                     ->required()
@@ -1240,7 +1219,6 @@ class QuotationResource extends Resource
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
             ->columnManagerColumns(2)
             ->compact()
-            ->reorderable()
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.product'))
