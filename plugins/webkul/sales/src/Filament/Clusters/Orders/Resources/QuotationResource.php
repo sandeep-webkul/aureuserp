@@ -828,7 +828,7 @@ class QuotationResource extends Resource
                                     ->hiddenLabel()
                                     ->columnManager()
                                     ->table([
-                                        InfolistTableColumn::make('name')
+                                        InfolistTableColumn::make('product')
                                             ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product')),
                                         InfolistTableColumn::make('uom.name')
@@ -851,8 +851,9 @@ class QuotationResource extends Resource
                                             ->alignment(Alignment::Start),
                                     ])
                                     ->schema([
-                                        TextEntry::make('name')
+                                        TextEntry::make('product')
                                             ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product'))
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('uom.name')
