@@ -33,8 +33,6 @@ class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    protected static ?int $navigationSort = 100;
-
     public static function getNavigationGroup(): string
     {
         return __('plugin-manager::filament/resources/plugin.navigation.group');

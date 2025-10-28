@@ -3,7 +3,7 @@
 return [
 
     'navigation' => [
-        'group' => 'Plugin Manager',
+        'group' => 'Plugins',
     ],
 
     'title' => 'Plugin',

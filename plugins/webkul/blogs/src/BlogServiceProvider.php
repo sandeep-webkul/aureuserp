@@ -40,7 +40,7 @@ class BlogServiceProvider extends PackageServiceProvider
                     ->runsMigrations();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})
-            ->icon('website');
+            ->icon('blog');
     }
 
     public function packageBooted(): void
