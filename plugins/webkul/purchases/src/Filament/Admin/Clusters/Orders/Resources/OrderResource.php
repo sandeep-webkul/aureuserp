@@ -756,7 +756,6 @@ class OrderResource extends Resource
             ->hiddenLabel()
             ->live()
             ->compact()
-            ->reorderable()
             ->reactive()
             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.title'))
             ->addActionLabel(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.add-product-line'))

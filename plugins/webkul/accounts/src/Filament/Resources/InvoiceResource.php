@@ -764,7 +764,6 @@ class InvoiceResource extends Resource
             ->relationship('lines')
             ->hiddenLabel()
             ->compact()
-            ->reorderable()
             ->live(onBlur: true)
             ->reactive()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))

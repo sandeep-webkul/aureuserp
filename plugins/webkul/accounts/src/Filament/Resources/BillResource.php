@@ -494,7 +494,6 @@ class BillResource extends Resource
             ->addActionLabel(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->compact()
-            ->reorderable()
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
             ->deleteAction(fn (Action $action) => $action->requiresConfirmation())

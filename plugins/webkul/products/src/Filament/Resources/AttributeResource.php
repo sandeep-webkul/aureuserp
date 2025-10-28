@@ -65,7 +65,6 @@ class AttributeResource extends Resource
                         Repeater::make(__('products::filament/resources/attribute.form.sections.options.title'))
                             ->hiddenLabel()
                             ->compact()
-                            ->reorderable()
                             ->relationship('options')
                             ->schema([
                                 TextInput::make('name')
