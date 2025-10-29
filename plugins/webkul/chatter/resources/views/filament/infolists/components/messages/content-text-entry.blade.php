@@ -161,7 +161,10 @@
                                             @endisset
 
                                             @if(isset($change['old_value']) && isset($change['new_value']))
-                                                <span class="text-gray-700 mx-1">→</span>
+                                                 <x-filament::icon
+                                                    icon="heroicon-o-arrow-long-right"
+                                                    class="inline mx-1 text-gray-400 dark:text-gray-500"
+                                                />
                                             @endif
 
                                             @isset($change['new_value'])

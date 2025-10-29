@@ -109,6 +109,9 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'amount_tax'     => 'decimal:4',
+        'amount_total'   => 'decimal:4',
+        'amount_untaxed' => 'decimal:4',
         'state'          => OrderState::class,
         'invoice_status' => InvoiceStatus::class,
     ];

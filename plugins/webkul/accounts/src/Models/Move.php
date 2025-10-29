@@ -141,10 +141,21 @@ class Move extends Model implements Sortable
     ];
 
     protected $casts = [
-        'invoice_date_due' => 'datetime',
-        'state'            => MoveState::class,
-        'payment_state'    => PaymentState::class,
-        'move_type'        => MoveType::class,
+        'checked'                           => 'boolean',
+        'invoice_date_due'                  => 'date',
+        'amount_tax'                        => 'decimal:4',
+        'amount_total'                      => 'decimal:4',
+        'amount_residual'                   => 'decimal:4',
+        'amount_untaxed'                    => 'decimal:4',
+        'amount_tax_signed'                 => 'decimal:4',
+        'amount_residual_signed'            => 'decimal:4',
+        'amount_untaxed_signed'             => 'decimal:4',
+        'amount_total_in_currency_signed'   => 'decimal:4',
+        'amount_untaxed_in_currency_signed' => 'decimal:4',
+        'amount_total_signed'               => 'decimal:4',
+        'state'                             => MoveState::class,
+        'payment_state'                     => PaymentState::class,
+        'move_type'                         => MoveType::class,
     ];
 
     public $sortable = [

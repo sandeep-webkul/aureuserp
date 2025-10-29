@@ -97,6 +97,7 @@ class Order extends Model
         'planned_at'               => 'datetime',
         'calendar_start_at'        => 'datetime',
         'effective_date'           => 'datetime',
+        'untaxed_amount'           => 'decimal:4',
     ];
 
     protected array $logAttributes = [

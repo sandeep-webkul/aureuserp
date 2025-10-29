@@ -16,7 +16,7 @@ trait HasLogActivity
     public static function bootHasLogActivity()
     {
         static::created(fn (Model $model) => $model->logModelActivity('created'));
-        static::updated(fn (Model $model) => $model->logModelActivity('updated'));
+        static::updated(fn (Model $model) => ! $model->wasRecentlyCreated ? $model->logModelActivity('updated') : null);
 
         if (method_exists(static::class, 'bootSoftDeletes')) {
             static::deleted(function (Model $model) {
