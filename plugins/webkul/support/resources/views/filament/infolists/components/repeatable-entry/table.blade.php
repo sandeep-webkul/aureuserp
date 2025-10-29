@@ -107,7 +107,7 @@
                             @continue(! $visibleColumns->has($component->getName()))
 
                             <td>
-                                <div style="min-width: max-content; padding: 6px 2px;">
+                                <div>
                                     {!! $component->toHtml() !!}
                                 </div>
                             </td>
