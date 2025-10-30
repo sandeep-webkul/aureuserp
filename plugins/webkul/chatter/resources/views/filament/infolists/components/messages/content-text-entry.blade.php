@@ -127,7 +127,7 @@
             )
                 <div class="mt-3 overflow-hidden rounded-xl shadow-sm ring-1 ring-black/5 bg-white/70 dark:bg-gray-900/60 dark:ring-white/5">
                     <div class="divide-y divide-gray-200 dark:divide-gray-800">
-                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-3 space-y-1">
+                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-3 space-y-2">
                             @foreach($changes as $field => $change)
                                 @if(is_array($change))
                                     @php
