@@ -72,7 +72,11 @@ trait HasLogActivity
     {
         $normalized = [];
 
-        foreach (property_exists($this, 'logAttributes') ? $this->logAttributes : [] as $key => $value) {
+        $attributes = method_exists($this, 'getLogAttributeLabels')
+            ? $this->getLogAttributeLabels()
+            : [];
+
+        foreach ($attributes as $key => $value) {
             if (is_int($key)) {
                 $normalized[$value] = $value;
             } else {
@@ -249,7 +253,8 @@ trait HasLogActivity
 
                     if ($oldValue !== $newValue) {
                         $changes[$key] = [
-                            'type'      => is_null($oldValue) ? 'added' : 'modified',                            'old_value' => $oldValue,
+                            'type'      => is_null($oldValue) ? 'added' : 'modified',
+                            'old_value' => $oldValue,
                             'new_value' => $newValue,
                         ];
                     }

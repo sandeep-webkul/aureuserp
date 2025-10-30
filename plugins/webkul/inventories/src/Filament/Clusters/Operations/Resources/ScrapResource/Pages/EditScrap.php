@@ -14,9 +14,12 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditScrap extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ScrapResource::class;
 
     protected function getRedirectUrl(): string

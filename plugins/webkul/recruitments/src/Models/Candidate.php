@@ -38,26 +38,30 @@ class Candidate extends Model
         'is_active',
     ];
 
-    protected array $logAttributes = [
-        'company.name'     => 'Company',
-        'partner.name'     => 'Contact',
-        'degree.name'      => 'Degree',
-        'user.name'        => 'Manager',
-        'employee.name'    => 'Employee',
-        'creator.name'     => 'Created By',
-        'phone_sanitized'  => 'Phone',
-        'email_normalized' => 'Email',
-        'email_cc'         => 'Email CC',
-        'name'             => 'Candidate Name',
-        'email_from'       => 'Email From',
-        'phone',
-        'linkedin_profile',
-        'availability_date',
-        'is_active' => 'Status',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'company.name'      => trans('recruitments::models/candidate.log-attributes.company'),
+            'partner.name'      => trans('recruitments::models/candidate.log-attributes.contact'),
+            'degree.name'       => trans('recruitments::models/candidate.log-attributes.degree'),
+            'user.name'         => trans('recruitments::models/candidate.log-attributes.manager'),
+            'employee.name'     => trans('recruitments::models/candidate.log-attributes.employee'),
+            'creator.name'      => trans('recruitments::models/candidate.log-attributes.creator'),
+            'phone_sanitized'   => trans('recruitments::models/candidate.log-attributes.phone'),
+            'email_normalized'  => trans('recruitments::models/candidate.log-attributes.email'),
+            'email_cc'          => trans('recruitments::models/candidate.log-attributes.email_cc'),
+            'name'              => trans('recruitments::models/candidate.log-attributes.name'),
+            'email_from'        => trans('recruitments::models/candidate.log-attributes.email_from'),
+            'phone'             => trans('recruitments::models/candidate.log-attributes.phone_raw'),
+            'linkedin_profile'  => trans('recruitments::models/candidate.log-attributes.linkedin_profile'),
+            'availability_date' => trans('recruitments::models/candidate.log-attributes.availability_date'),
+            'is_active'         => trans('recruitments::models/candidate.log-attributes.is_active'),
+        ];
+    }
 
     protected $casts = [
         'candidate_properties' => 'array',
+        'is_active'            => 'boolean',
     ];
 
     public function company()
