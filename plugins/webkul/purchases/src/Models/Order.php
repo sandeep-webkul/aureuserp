@@ -29,6 +29,11 @@ class Order extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/order.title');
+    }
+
     /**
      * Table name.
      *
@@ -103,31 +108,31 @@ class Order extends Model
     public function getLogAttributeLabels(): array
     {
         return [
-            'name'               => trans('purchases::models/order.log-attributes.name'),
-            'description'        => trans('purchases::models/order.log-attributes.description'),
-            'priority'           => trans('purchases::models/order.log-attributes.priority'),
-            'origin'             => trans('purchases::models/order.log-attributes.origin'),
-            'partner_reference'  => trans('purchases::models/order.log-attributes.partner_reference'),
-            'state'              => trans('purchases::models/order.log-attributes.state'),
-            'invoice_status'     => trans('purchases::models/order.log-attributes.invoice_status'),
-            'receipt_status'     => trans('purchases::models/order.log-attributes.receipt_status'),
-            'untaxed_amount'     => trans('purchases::models/order.log-attributes.untaxed_amount'),
-            'currency_rate'      => trans('purchases::models/order.log-attributes.currency_rate'),
-            'ordered_at'         => trans('purchases::models/order.log-attributes.ordered_at'),
-            'approved_at'        => trans('purchases::models/order.log-attributes.approved_at'),
-            'planned_at'         => trans('purchases::models/order.log-attributes.planned_at'),
-            'calendar_start_at'  => trans('purchases::models/order.log-attributes.calendar_start_at'),
-            'incoterm_location'  => trans('purchases::models/order.log-attributes.incoterm_location'),
-            'effective_date'     => trans('purchases::models/order.log-attributes.effective_date'),
-            'requisition.name'   => trans('purchases::models/order.log-attributes.requisition'),
-            'partner.name'       => trans('purchases::models/order.log-attributes.vendor'),
-            'currency.name'      => trans('purchases::models/order.log-attributes.currency'),
-            'fiscalPosition'     => trans('purchases::models/order.log-attributes.fiscal_position'),
-            'paymentTerm.name'   => trans('purchases::models/order.log-attributes.payment_term'),
-            'incoterm.name'      => trans('purchases::models/order.log-attributes.incoterm'),
-            'user.name'          => trans('purchases::models/order.log-attributes.buyer'),
-            'company.name'       => trans('purchases::models/order.log-attributes.company'),
-            'creator.name'       => trans('purchases::models/order.log-attributes.creator'),
+            'name'               => __('purchases::models/order.log-attributes.name'),
+            'description'        => __('purchases::models/order.log-attributes.description'),
+            'priority'           => __('purchases::models/order.log-attributes.priority'),
+            'origin'             => __('purchases::models/order.log-attributes.origin'),
+            'partner_reference'  => __('purchases::models/order.log-attributes.partner_reference'),
+            'state'              => __('purchases::models/order.log-attributes.state'),
+            'invoice_status'     => __('purchases::models/order.log-attributes.invoice_status'),
+            'receipt_status'     => __('purchases::models/order.log-attributes.receipt_status'),
+            'untaxed_amount'     => __('purchases::models/order.log-attributes.untaxed_amount'),
+            'currency_rate'      => __('purchases::models/order.log-attributes.currency_rate'),
+            'ordered_at'         => __('purchases::models/order.log-attributes.ordered_at'),
+            'approved_at'        => __('purchases::models/order.log-attributes.approved_at'),
+            'planned_at'         => __('purchases::models/order.log-attributes.planned_at'),
+            'calendar_start_at'  => __('purchases::models/order.log-attributes.calendar_start_at'),
+            'incoterm_location'  => __('purchases::models/order.log-attributes.incoterm_location'),
+            'effective_date'     => __('purchases::models/order.log-attributes.effective_date'),
+            'requisition.name'   => __('purchases::models/order.log-attributes.requisition'),
+            'partner.name'       => __('purchases::models/order.log-attributes.vendor'),
+            'currency.name'      => __('purchases::models/order.log-attributes.currency'),
+            'fiscalPosition'     => __('purchases::models/order.log-attributes.fiscal_position'),
+            'paymentTerm.name'   => __('purchases::models/order.log-attributes.payment_term'),
+            'incoterm.name'      => __('purchases::models/order.log-attributes.incoterm'),
+            'user.name'          => __('purchases::models/order.log-attributes.buyer'),
+            'company.name'       => __('purchases::models/order.log-attributes.company'),
+            'creator.name'       => __('purchases::models/order.log-attributes.creator'),
         ];
     }
 

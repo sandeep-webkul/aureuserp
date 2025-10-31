@@ -6,10 +6,11 @@ use BackedEnum;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 trait HasLogActivity
 {
+    abstract public function getModelTitle();
+
     /**
      * Boot the trait
      */
@@ -353,7 +354,7 @@ trait HasLogActivity
      */
     protected function generateActivityDescription(string $event): string
     {
-        $modelName = Str::headline(class_basename(static::class));
+        $modelName = $this->getModelTitle();
 
         return match ($event) {
             'created'      => __('chatter::traits/has-log-activity.activity-log-failed.events.created', [

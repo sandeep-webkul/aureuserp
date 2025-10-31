@@ -18,6 +18,11 @@ class LeaveAllocation extends Model
 
     protected $table = 'time_off_leave_allocations';
 
+    public function getModelTitle(): string
+    {
+        return __('time-off::models/leave-allocation.title');
+    }
+
     protected $fillable = [
         'holiday_status_id',
         'employee_id',

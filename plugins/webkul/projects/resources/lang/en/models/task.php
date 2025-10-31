@@ -1,8 +1,9 @@
 <?php
 
 return [
-    'log-attributes' => [
+    'title'          => 'Task',
 
+    'log-attributes' => [
         'title'             => 'Title',
         'description'       => 'Description',
         'color'             => 'Color',

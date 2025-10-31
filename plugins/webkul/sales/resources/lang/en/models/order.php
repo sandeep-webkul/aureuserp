@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Sales Order',
+
     'log-attributes' => [
         'medium'             => 'Medium',
         'utm_source'         => 'UTM Source',

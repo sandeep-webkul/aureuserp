@@ -28,6 +28,11 @@ class Scrap extends Model
      */
     protected $table = 'inventories_scraps';
 
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/scrap.title');
+    }
+
     /**
      * Fillable.
      *
@@ -72,7 +77,6 @@ class Scrap extends Model
             'company.name'                              => __('inventories::models/scrap.log-attributes.company'),
             'creator.name'                              => __('inventories::models/scrap.log-attributes.creator'),
         ];
-
     }
 
     /**

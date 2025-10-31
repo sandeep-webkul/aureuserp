@@ -21,6 +21,11 @@ class Leave extends Model
 
     protected $table = 'time_off_leaves';
 
+    public function getModelTitle(): string
+    {
+        return __('time-off::models/leave.title');
+    }
+
     protected $fillable = [
         'user_id',
         'manager_id',

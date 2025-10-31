@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Candidate',
+
     'log-attributes' => [
         'company'           => 'Company',
         'contact'           => 'Contact',

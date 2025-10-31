@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Operation',
+
     'log-attributes' => [
         'name'                         => 'Name',
         'origin'                       => 'Origin',

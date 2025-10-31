@@ -32,6 +32,11 @@ class Project extends Model implements Sortable
      */
     protected $table = 'projects_projects';
 
+    public function getModelTitle(): string
+    {
+        return __('projects::models/project.title');
+    }
+
     /**
      * Fillable.
      *

@@ -19,6 +19,11 @@ class Team extends Model implements Sortable
 
     protected $table = 'sales_teams';
 
+    public function getModelTitle(): string
+    {
+        return __('sales::models/team.title');
+    }
+
     protected $fillable = [
         'sort',
         'company_id',
@@ -38,12 +43,12 @@ class Team extends Model implements Sortable
     public function getLogAttributeLabels(): array
     {
         return [
-            'name'               => trans('sales::models/team.log-attributes.name'),
-            'company.name'       => trans('sales::models/team.log-attributes.company'),
-            'user.name'          => trans('sales::models/team.log-attributes.team_leader'),
-            'creator.name'       => trans('sales::models/team.log-attributes.creator'),
-            'is_active'          => trans('sales::models/team.log-attributes.status'),
-            'invoiced_target'    => trans('sales::models/team.log-attributes.invoiced_target'),
+            'name'               => __('sales::models/team.log-attributes.name'),
+            'company.name'       => __('sales::models/team.log-attributes.company'),
+            'user.name'          => __('sales::models/team.log-attributes.team_leader'),
+            'creator.name'       => __('sales::models/team.log-attributes.creator'),
+            'is_active'          => __('sales::models/team.log-attributes.status'),
+            'invoiced_target'    => __('sales::models/team.log-attributes.invoiced_target'),
         ];
     }
 

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Leave Allocation',
+
     'log-attributes' => [
         'time_off_type'                        => 'Time Off Type',
         'employee'                             => 'Employee',

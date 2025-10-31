@@ -20,6 +20,11 @@ class Payment extends Model
 
     protected $table = 'accounts_account_payments';
 
+    public function getModelTitle(): string
+    {
+        return __('accounts::models/payment.title');
+    }
+
     protected $fillable = [
         'move_id',
         'journal_id',

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Payment',
+
     'log-attributes' => [
         'name',
         'move'                    => 'Move',

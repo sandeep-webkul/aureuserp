@@ -33,6 +33,11 @@ class Order extends Model
 
     protected $table = 'sales_orders';
 
+    public function getModelTitle(): string
+    {
+        return __('sales::models/order.title');
+    }
+
     protected $fillable = [
         'utm_source_id',
         'medium_id',
@@ -76,38 +81,38 @@ class Order extends Model
     public function getLogAttributeLabels(): array
     {
         return [
-            'medium.name'          => trans('sales::models/order.log-attributes.medium'),
-            'utmSource.name'       => trans('sales::models/order.log-attributes.utm_source'),
-            'partner.name'         => trans('sales::models/order.log-attributes.customer'),
-            'partnerInvoice.name'  => trans('sales::models/order.log-attributes.invoice_address'),
-            'partnerShipping.name' => trans('sales::models/order.log-attributes.shipping_address'),
-            'fiscalPosition.name'  => trans('sales::models/order.log-attributes.fiscal_position'),
-            'paymentTerm.name'     => trans('sales::models/order.log-attributes.payment_term'),
-            'currency.name'        => trans('sales::models/order.log-attributes.currency'),
-            'user.name'            => trans('sales::models/order.log-attributes.salesperson'),
-            'team.name'            => trans('sales::models/order.log-attributes.sales_team'),
-            'creator.name'         => trans('sales::models/order.log-attributes.creator'),
-            'company.name'         => trans('sales::models/order.log-attributes.company'),
-            'name'                 => trans('sales::models/order.log-attributes.order_reference'),
-            'state'                => trans('sales::models/order.log-attributes.order_status'),
-            'client_order_ref'     => trans('sales::models/order.log-attributes.customer_reference'),
-            'origin'               => trans('sales::models/order.log-attributes.source_document'),
-            'reference'            => trans('sales::models/order.log-attributes.reference'),
-            'signed_by'            => trans('sales::models/order.log-attributes.signed_by'),
-            'invoice_status'       => trans('sales::models/order.log-attributes.invoice_status'),
-            'validity_date'        => trans('sales::models/order.log-attributes.validity_date'),
-            'note'                 => trans('sales::models/order.log-attributes.note'),
-            'currency_rate'        => trans('sales::models/order.log-attributes.currency_rate'),
-            'amount_untaxed'       => trans('sales::models/order.log-attributes.subtotal'),
-            'amount_tax'           => trans('sales::models/order.log-attributes.tax'),
-            'amount_total'         => trans('sales::models/order.log-attributes.total'),
-            'locked'               => trans('sales::models/order.log-attributes.locked'),
-            'require_signature'    => trans('sales::models/order.log-attributes.require_signature'),
-            'require_payment'      => trans('sales::models/order.log-attributes.require_payment'),
-            'commitment_date'      => trans('sales::models/order.log-attributes.commitment_date'),
-            'date_order'           => trans('sales::models/order.log-attributes.order_date'),
-            'signed_on'            => trans('sales::models/order.log-attributes.signed_on'),
-            'prepayment_percent'   => trans('sales::models/order.log-attributes.prepayment_percent'),
+            'medium.name'          => __('sales::models/order.log-attributes.medium'),
+            'utmSource.name'       => __('sales::models/order.log-attributes.utm_source'),
+            'partner.name'         => __('sales::models/order.log-attributes.customer'),
+            'partnerInvoice.name'  => __('sales::models/order.log-attributes.invoice_address'),
+            'partnerShipping.name' => __('sales::models/order.log-attributes.shipping_address'),
+            'fiscalPosition.name'  => __('sales::models/order.log-attributes.fiscal_position'),
+            'paymentTerm.name'     => __('sales::models/order.log-attributes.payment_term'),
+            'currency.name'        => __('sales::models/order.log-attributes.currency'),
+            'user.name'            => __('sales::models/order.log-attributes.salesperson'),
+            'team.name'            => __('sales::models/order.log-attributes.sales_team'),
+            'creator.name'         => __('sales::models/order.log-attributes.creator'),
+            'company.name'         => __('sales::models/order.log-attributes.company'),
+            'name'                 => __('sales::models/order.log-attributes.order_reference'),
+            'state'                => __('sales::models/order.log-attributes.order_status'),
+            'client_order_ref'     => __('sales::models/order.log-attributes.customer_reference'),
+            'origin'               => __('sales::models/order.log-attributes.source_document'),
+            'reference'            => __('sales::models/order.log-attributes.reference'),
+            'signed_by'            => __('sales::models/order.log-attributes.signed_by'),
+            'invoice_status'       => __('sales::models/order.log-attributes.invoice_status'),
+            'validity_date'        => __('sales::models/order.log-attributes.validity_date'),
+            'note'                 => __('sales::models/order.log-attributes.note'),
+            'currency_rate'        => __('sales::models/order.log-attributes.currency_rate'),
+            'amount_untaxed'       => __('sales::models/order.log-attributes.subtotal'),
+            'amount_tax'           => __('sales::models/order.log-attributes.tax'),
+            'amount_total'         => __('sales::models/order.log-attributes.total'),
+            'locked'               => __('sales::models/order.log-attributes.locked'),
+            'require_signature'    => __('sales::models/order.log-attributes.require_signature'),
+            'require_payment'      => __('sales::models/order.log-attributes.require_payment'),
+            'commitment_date'      => __('sales::models/order.log-attributes.commitment_date'),
+            'date_order'           => __('sales::models/order.log-attributes.order_date'),
+            'signed_on'            => __('sales::models/order.log-attributes.signed_on'),
+            'prepayment_percent'   => __('sales::models/order.log-attributes.prepayment_percent'),
         ];
     }
 

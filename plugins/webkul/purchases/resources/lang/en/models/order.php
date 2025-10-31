@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Order',
+
     'log-attributes' => [
         'name'                => 'Order Name',
         'description'         => 'Description',

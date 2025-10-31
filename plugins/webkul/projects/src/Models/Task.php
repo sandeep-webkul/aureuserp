@@ -31,6 +31,11 @@ class Task extends Model implements Sortable
      */
     protected $table = 'projects_tasks';
 
+    public function getModelTitle(): string
+    {
+        return __('projects::models/task.title');
+    }
+
     /**
      * Fillable.
      *

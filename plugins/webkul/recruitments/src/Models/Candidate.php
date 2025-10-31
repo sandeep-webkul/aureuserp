@@ -19,6 +19,11 @@ class Candidate extends Model
 
     protected $table = 'recruitments_candidates';
 
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/candidate.title');
+    }
+
     protected $fillable = [
         'message_bounced',
         'company_id',
@@ -41,21 +46,21 @@ class Candidate extends Model
     public function getLogAttributeLabels(): array
     {
         return [
-            'company.name'      => trans('recruitments::models/candidate.log-attributes.company'),
-            'partner.name'      => trans('recruitments::models/candidate.log-attributes.contact'),
-            'degree.name'       => trans('recruitments::models/candidate.log-attributes.degree'),
-            'user.name'         => trans('recruitments::models/candidate.log-attributes.manager'),
-            'employee.name'     => trans('recruitments::models/candidate.log-attributes.employee'),
-            'creator.name'      => trans('recruitments::models/candidate.log-attributes.creator'),
-            'phone_sanitized'   => trans('recruitments::models/candidate.log-attributes.phone'),
-            'email_normalized'  => trans('recruitments::models/candidate.log-attributes.email'),
-            'email_cc'          => trans('recruitments::models/candidate.log-attributes.email_cc'),
-            'name'              => trans('recruitments::models/candidate.log-attributes.name'),
-            'email_from'        => trans('recruitments::models/candidate.log-attributes.email_from'),
-            'phone'             => trans('recruitments::models/candidate.log-attributes.phone_raw'),
-            'linkedin_profile'  => trans('recruitments::models/candidate.log-attributes.linkedin_profile'),
-            'availability_date' => trans('recruitments::models/candidate.log-attributes.availability_date'),
-            'is_active'         => trans('recruitments::models/candidate.log-attributes.is_active'),
+            'company.name'      => __('recruitments::models/candidate.log-attributes.company'),
+            'partner.name'      => __('recruitments::models/candidate.log-attributes.contact'),
+            'degree.name'       => __('recruitments::models/candidate.log-attributes.degree'),
+            'user.name'         => __('recruitments::models/candidate.log-attributes.manager'),
+            'employee.name'     => __('recruitments::models/candidate.log-attributes.employee'),
+            'creator.name'      => __('recruitments::models/candidate.log-attributes.creator'),
+            'phone_sanitized'   => __('recruitments::models/candidate.log-attributes.phone'),
+            'email_normalized'  => __('recruitments::models/candidate.log-attributes.email'),
+            'email_cc'          => __('recruitments::models/candidate.log-attributes.email_cc'),
+            'name'              => __('recruitments::models/candidate.log-attributes.name'),
+            'email_from'        => __('recruitments::models/candidate.log-attributes.email_from'),
+            'phone'             => __('recruitments::models/candidate.log-attributes.phone_raw'),
+            'linkedin_profile'  => __('recruitments::models/candidate.log-attributes.linkedin_profile'),
+            'availability_date' => __('recruitments::models/candidate.log-attributes.availability_date'),
+            'is_active'         => __('recruitments::models/candidate.log-attributes.is_active'),
         ];
     }
 

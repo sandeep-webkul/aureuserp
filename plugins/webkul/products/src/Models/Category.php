@@ -23,6 +23,11 @@ class Category extends Model
      */
     protected $table = 'products_categories';
 
+    public function getModelTitle(): string
+    {
+        return __('products::models/category.title');
+    }
+
     /**
      * Fillable.
      *
@@ -45,7 +50,6 @@ class Category extends Model
             'parent.name'          => __('products::models/category.log-attributes.parent'),
             'creator.name'         => __('products::models/category.log-attributes.creator'),
         ];
-
     }
 
     public function parent(): BelongsTo

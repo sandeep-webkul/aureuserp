@@ -29,6 +29,11 @@ class Product extends Model implements Sortable
      */
     protected $table = 'products_products';
 
+    public function getModelTitle(): string
+    {
+        return __('products::models/product.title');
+    }
+
     /**
      * Fillable.
      *

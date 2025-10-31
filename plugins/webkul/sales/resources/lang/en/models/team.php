@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Team',
+
     'log-attributes' => [
         'name'            => 'Team Name',
         'company'         => 'Company',

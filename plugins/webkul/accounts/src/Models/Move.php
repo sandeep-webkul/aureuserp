@@ -28,6 +28,11 @@ class Move extends Model implements Sortable
 
     protected $table = 'accounts_account_moves';
 
+    public function getModelTitle(): string
+    {
+        return __('accounts::models/move.title');
+    }
+
     protected $fillable = [
         'sort',
         'journal_id',
@@ -141,7 +146,6 @@ class Move extends Model implements Sortable
             'is_manually_modified'              => __('accounts::models/move.log-attributes.is_manually_modified'),
             'is_move_sent'                      => __('accounts::models/move.log-attributes.is_move_sent'),
         ];
-
     }
 
     protected $casts = [

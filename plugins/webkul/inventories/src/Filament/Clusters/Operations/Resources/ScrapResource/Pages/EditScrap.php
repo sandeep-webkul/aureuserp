@@ -39,7 +39,7 @@ class EditScrap extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             Action::make('validate')
                 ->label(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.label'))
                 ->color('gray')

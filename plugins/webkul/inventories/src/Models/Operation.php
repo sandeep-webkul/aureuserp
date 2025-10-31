@@ -31,6 +31,11 @@ class Operation extends Model
      */
     protected $table = 'inventories_operations';
 
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/operation.title');
+    }
+
     /**
      * Fillable.
      *
@@ -105,7 +110,6 @@ class Operation extends Model
             'company.name'                  => __('inventories::models/operation.log-attributes.company'),
             'creator.name'                  => __('inventories::models/operation.log-attributes.creator'),
         ];
-
     }
 
     public function user(): BelongsTo

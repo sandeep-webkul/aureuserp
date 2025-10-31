@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Move',
+
     'log-attributes' => [
         'medium'                            => 'Medium',
         'source'                            => 'UTM Source',

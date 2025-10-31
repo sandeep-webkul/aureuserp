@@ -35,29 +35,34 @@ class Product extends BaseProduct
         parent::__construct($attributes);
     }
 
+    public function getModelTitle(): string
+    {
+        return __('invoices::models/product.title');
+    }
+
     protected function getLogAttributeLabels(): array
     {
         return [
-            'type'                 => __('inventories::models/product.log-attributes.type'),
-            'name'                 => __('inventories::models/product.log-attributes.name'),
-            'service_tracking'     => __('inventories::models/product.log-attributes.service_tracking'),
-            'reference'            => __('inventories::models/product.log-attributes.reference'),
-            'barcode'              => __('inventories::models/product.log-attributes.barcode'),
-            'price'                => __('inventories::models/product.log-attributes.price'),
-            'cost'                 => __('inventories::models/product.log-attributes.cost'),
-            'volume'               => __('inventories::models/product.log-attributes.volume'),
-            'weight'               => __('inventories::models/product.log-attributes.weight'),
-            'description'          => __('inventories::models/product.log-attributes.description'),
-            'description_purchase' => __('inventories::models/product.log-attributes.description_purchase'),
-            'description_sale'     => __('inventories::models/product.log-attributes.description_sale'),
-            'enable_sales'         => __('inventories::models/product.log-attributes.enable_sales'),
-            'enable_purchase'      => __('inventories::models/product.log-attributes.enable_purchase'),
-            'is_favorite'          => __('inventories::models/product.log-attributes.is_favorite'),
-            'is_configurable'      => __('inventories::models/product.log-attributes.is_configurable'),
-            'parent.name'          => __('inventories::models/product.log-attributes.parent'),
-            'category.name'        => __('inventories::models/product.log-attributes.category'),
-            'company.name'         => __('inventories::models/product.log-attributes.company'),
-            'creator.name'         => __('inventories::models/product.log-attributes.creator'),
+            'type'                 => __('invoices::models/product.log-attributes.type'),
+            'name'                 => __('invoices::models/product.log-attributes.name'),
+            'service_tracking'     => __('invoices::models/product.log-attributes.service_tracking'),
+            'reference'            => __('invoices::models/product.log-attributes.reference'),
+            'barcode'              => __('invoices::models/product.log-attributes.barcode'),
+            'price'                => __('invoices::models/product.log-attributes.price'),
+            'cost'                 => __('invoices::models/product.log-attributes.cost'),
+            'volume'               => __('invoices::models/product.log-attributes.volume'),
+            'weight'               => __('invoices::models/product.log-attributes.weight'),
+            'description'          => __('invoices::models/product.log-attributes.description'),
+            'description_purchase' => __('invoices::models/product.log-attributes.description_purchase'),
+            'description_sale'     => __('invoices::models/product.log-attributes.description_sale'),
+            'enable_sales'         => __('invoices::models/product.log-attributes.enable_sales'),
+            'enable_purchase'      => __('invoices::models/product.log-attributes.enable_purchase'),
+            'is_favorite'          => __('invoices::models/product.log-attributes.is_favorite'),
+            'is_configurable'      => __('invoices::models/product.log-attributes.is_configurable'),
+            'parent.name'          => __('invoices::models/product.log-attributes.parent'),
+            'category.name'        => __('invoices::models/product.log-attributes.category'),
+            'company.name'         => __('invoices::models/product.log-attributes.company'),
+            'creator.name'         => __('invoices::models/product.log-attributes.creator'),
         ];
     }
 

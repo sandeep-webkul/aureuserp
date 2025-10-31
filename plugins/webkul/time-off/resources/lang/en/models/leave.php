@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Leave',
+
     'log-attributes' => [
         'user'                     => 'User',
         'manager'                  => 'Manager',

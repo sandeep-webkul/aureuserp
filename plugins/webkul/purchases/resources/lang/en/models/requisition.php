@@ -1,8 +1,10 @@
 <?php
 
 return [
+    'title'          => 'Purchase Agreement',
+
     'log-attributes' => [
-        'name'        => 'Requisition Name',
+        'name'        => 'Purchase Agreement Name',
         'type'        => 'Type',
         'state'       => 'Status',
         'reference'   => 'Reference',

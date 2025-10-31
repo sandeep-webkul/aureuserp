@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title'          => 'Project',
+
     'log-attributes' => [
         'name'                     => 'Name',
         'tasks_label'              => 'Tasks Label',

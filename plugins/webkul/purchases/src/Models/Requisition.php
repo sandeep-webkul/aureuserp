@@ -29,6 +29,11 @@ class Requisition extends Model
      */
     protected $table = 'purchases_requisitions';
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/requisition.title');
+    }
+
     /**
      * Fillable.
      *

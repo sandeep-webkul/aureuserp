@@ -49,9 +49,15 @@
                                         'mp3', 'wav', 'ogg' => 'heroicon-o-musical-note',
                                         default => 'heroicon-o-document',
                                     };
+                                    $isNote = $record->type === 'note';
                                 @endphp
 
-                                <div class="flex items-center gap-3 px-3 py-3 w-full rounded-xl border bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+                                <div @class([
+                                    'flex items-center gap-3 px-3 py-3 w-full rounded-xl',
+                                    'bg-amber-100 dark:bg-amber-800' => $isNote,
+                                    'bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700' => ! $isNote,
+                                ])>
+
                                     {{-- File Preview / Icon --}}
                                     <div class="relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0">
                                         @if ($isImage)

@@ -9,12 +9,12 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Notifications\Notification;
@@ -500,9 +500,9 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
                             Group::make()
                                 ->schema([
-                                    Placeholder::make('plan_summary')
+                                    TextEntry::make('plan_summary')
                                         ->label(__('chatter::livewire/chatter-panel.edit-activity.form.fields.plan-summary'))
-                                        ->content(function (Get $get) {
+                                        ->state(function (Get $get) {
                                             if (! $get('activity_plan_id')) {
                                                 return null;
                                             }

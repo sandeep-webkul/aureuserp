@@ -22,7 +22,7 @@ class ViewScrap extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE)
                 ->action(function (DeleteAction $action, Scrap $record) {

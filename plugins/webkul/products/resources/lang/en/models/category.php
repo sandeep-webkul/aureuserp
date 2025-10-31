@@ -1,8 +1,9 @@
 <?php
 
 return [
-    'log-attributes' => [
+    'title'          => 'Category',
 
+    'log-attributes' => [
         'name'                 => 'Name',
         'full_name'            => 'Full Name',
         'parent_path'          => 'Parent Path',
