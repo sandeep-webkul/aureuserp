@@ -113,10 +113,6 @@ class TopCustomerWidget extends BaseWidget
             $query->whereIn('sales_orders.team_id', (array) $filters['salesteam_id']);
         });
 
-        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
-            $query->whereIn('sales_orders.partner_id', (array) $filters['customer_id']);
-        });
-
         return $query;
     }
 

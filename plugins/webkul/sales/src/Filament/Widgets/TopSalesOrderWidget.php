@@ -21,7 +21,7 @@ class TopSalesOrderWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return 'Top Products by Revenue';
+        return __('sales::filament/pages/sales-dashboard.widgets.top-sales-orders.heading');
     }
 
     public function table(Table $table): Table
@@ -54,14 +54,14 @@ class TopSalesOrderWidget extends BaseWidget
 
     protected function applyFilters(Builder $query): Builder
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
         $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
-            $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '>=', $filters['start_date']));
+            $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '>=', $filters['start_date']));
         });
 
         $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
-            $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '<=', $filters['end_date']));
+            $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '<=', $filters['end_date']));
         });
 
         $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
@@ -95,17 +95,17 @@ class TopSalesOrderWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('product_id')
-                ->label('Product')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.product'))
                 ->formatStateUsing(fn ($state, $record) => $record->product?->name ?? '—')
                 ->sortable()
                 ->searchable(),
 
             Tables\Columns\TextColumn::make('total_qty')
-                ->label('Quantity Sold')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.qty_sold'))
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')
-                ->label('Revenue')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_revenue'))
                 ->money($this->getActiveCurrency(), true)
                 ->sortable(),
         ];

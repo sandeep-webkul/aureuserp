@@ -203,7 +203,7 @@ class StatsOverviewWidget extends BaseWidget
 
     protected function applyDateRange($query, bool $previous = false)
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
         $start = ! empty($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subMonth();
         $end = ! empty($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
 
@@ -262,7 +262,7 @@ class StatsOverviewWidget extends BaseWidget
 
     protected function getChartData($query, array $config): array
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
         $start = ! empty($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subMonth();
         $end = ! empty($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
 

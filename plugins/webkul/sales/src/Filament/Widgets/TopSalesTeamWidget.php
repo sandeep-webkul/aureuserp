@@ -62,7 +62,7 @@ class TopSalesTeamWidget extends BaseWidget
 
     protected function applyFilters(Builder $query): Builder
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
         $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereDate('date_order', '>=', $filters['start_date']);
@@ -96,7 +96,7 @@ class TopSalesTeamWidget extends BaseWidget
 
     protected function getActiveCurrency(): ?string
     {
-        return Currency::where('active', true)->value('name');
+        return Currency::where('active', true)->value('name') ?? 'USD';
     }
 
     public function getTableRecordKey($record): string

@@ -95,7 +95,7 @@ class TopSalesCountryWidget extends BaseWidget
                 ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.country'))
                 ->sortable(),
             Tables\Columns\TextColumn::make('total_products')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_orders'))
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_products'))
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')

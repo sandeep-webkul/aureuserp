@@ -35,7 +35,7 @@ class YearlyComparisonWidget extends ChartWidget
                         $previousYearSales,
                         $currentYearSales,
                     ],
-                    'backgroundColor'    => ['#a3e635', '#3b82f6'],
+                    'backgroundColor'    => ['#3b82f6', '#a3e635'],
                     'borderColor'        => '#1e293b',
                     'borderWidth'        => 1,
                     'barPercentage'      => 0.5,
@@ -57,7 +57,15 @@ class YearlyComparisonWidget extends ChartWidget
 
     protected function applyFilters(Builder $query): Builder
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
+
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
+            $query->whereDate('date_order', '>=', $filters['start_date']);
+        });
+
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
+            $query->whereDate('date_order', '<=', $filters['end_date']);
+        });
 
         $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereIn('user_id', (array) $filters['salesperson_id']);

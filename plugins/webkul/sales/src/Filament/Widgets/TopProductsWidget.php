@@ -38,7 +38,7 @@ class TopProductsWidget extends BaseWidget
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_qty')
-                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_orders'))
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.qty_sold'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_revenue')
@@ -68,7 +68,7 @@ class TopProductsWidget extends BaseWidget
 
     protected function applyFilters(Builder $query): Builder
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
         $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '>=', $filters['start_date']));

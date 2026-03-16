@@ -87,7 +87,7 @@ return [
             'heading' => 'Top Products',
             'column'  => [
                 'product'       => 'Product',
-                'total_orders'  => 'Total Orders',
+                'qty_sold'      => 'Quantity Sold',
                 'total_revenue' => 'Total Revenue',
             ],
         ],
@@ -101,12 +101,22 @@ return [
             ],
         ],
 
+        'top-sales-orders' => [
+            'heading' => 'Top Sales Orders',
+            'column'  => [
+                'order'         => 'Order',
+                'customer'      => 'Customer',
+                'order_date'    => 'Order Date',
+                'total_amount'  => 'Total Amount',
+            ],
+        ],
+
         'top-sales-countries' => [
             'heading' => 'Top Sales Countries',
             'column'  => [
-                'country'       => 'Country',
-                'total_orders'  => 'Total Orders',
-                'total_revenue' => 'Total Revenue',
+                'country'        => 'Country',
+                'total_products' => 'Total Products',
+                'total_revenue'  => 'Total Revenue',
             ],
         ],
     ],
