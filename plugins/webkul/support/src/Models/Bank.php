@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\BankFactory;
 
@@ -13,11 +14,6 @@ class Bank extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'code',
@@ -45,6 +41,15 @@ class Bank extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($bank) {
+            $bank->creator_id ??= Auth::id();
+        });
     }
 
     protected static function newFactory(): BankFactory

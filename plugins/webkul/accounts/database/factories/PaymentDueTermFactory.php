@@ -17,14 +17,27 @@ class PaymentDueTermFactory extends Factory
     {
         return [
             'payment_id'      => PaymentTerm::factory(),
-            'creator_id'      => User::factory(),
-            'value'           => $this->faker->randomElement([DueTermValue::PERCENT->value, DueTermValue::FIXED->value]),
-            'value_amount'    => $this->faker->randomFloat(2, 0, 100),
-            'delay_type'      => DelayType::DAYS_AFTER->value,
-            'days_next_month' => $this->faker->numberBetween(0, 31),
-            'nb_days'         => $this->faker->numberBetween(0, 60),
-            'created_at'      => now(),
-            'updated_at'      => now(),
+            'creator_id'      => User::query()->value('id') ?? User::factory(),
+            'value'           => DueTermValue::PERCENT,
+            'value_amount'    => 100.0,
+            'delay_type'      => DelayType::DAYS_AFTER,
+            'days_next_month' => 0,
+            'nb_days'         => 30,
         ];
+    }
+
+    public function fixed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'value'        => DueTermValue::FIXED,
+            'value_amount' => fake()->randomFloat(2, 100, 1000),
+        ]);
+    }
+
+    public function endOfMonth(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'delay_type' => DelayType::DAYS_AFTER_END_OF_MONTH,
+        ]);
     }
 }

@@ -7,10 +7,17 @@ return [
         'fields' => [
             'journal'              => 'Journal',
             'amount'               => 'Amount',
+            'currency'             => 'Currency',
             'payment-method-line'  => 'Payment Method Line',
             'payment-date'         => 'Payment Date',
             'partner-bank-account' => 'Partner Bank Account',
-            'communication'        => 'Communication',
+            'communication'        => 'Memo',
+        ],
+    ],
+
+    'notifications' => [
+        'payment-failed' => [
+            'title' => 'Payment Failed',
         ],
     ],
 ];

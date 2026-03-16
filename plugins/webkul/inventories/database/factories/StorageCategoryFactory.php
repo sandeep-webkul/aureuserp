@@ -26,9 +26,35 @@ class StorageCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => fake()->name(),
-            'sort'       => fake()->randomNumber(),
-            'creator_id' => User::factory(),
+            'name'               => fake()->words(2, true),
+            'sort'               => 0,
+            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::MIXED,
+            'max_weight'         => 0.0,
+
+            // Relationships
+            'company_id' => \Webkul\Support\Models\Company::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
+    }
+
+    public function emptyOnly(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::EMPTY,
+        ]);
+    }
+
+    public function sameProduct(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::SAME,
+        ]);
+    }
+
+    public function withMaxWeight(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'max_weight' => fake()->randomFloat(2, 10, 1000),
+        ]);
     }
 }

@@ -6,6 +6,11 @@ return [
         'group' => 'Inventory',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'origin'  => 'Origin',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -190,5 +195,12 @@ return [
         'ready'    => 'Ready',
         'done'     => 'Done',
         'canceled' => 'Canceled',
+    ],
+
+    'notifications' => [
+        'uom-precision-warning' => [
+            'title' => 'Unit of Measure Precision Warning',
+            'body'  => 'You are using a unit of measure smaller than the one used to stock this product. This can lead to rounding issues on reserved quantities. Consider using the smallest unit of measure for stock valuation, or reduce the rounding precision of your base unit.',
+        ],
     ],
 ];

@@ -52,8 +52,8 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Project\Enums\TaskState;
@@ -72,17 +72,18 @@ use Webkul\Project\Models\TaskStage;
 use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\UserResource;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 
 class TaskResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Task::class;
 
     protected static ?string $slug = 'project/tasks';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -116,7 +117,7 @@ class TaskResource extends Resource
             ->components([
                 Group::make()
                     ->schema([
-                        ProgressStepper::make('stage_id')
+                        FormProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
                             ->required()
@@ -186,8 +187,10 @@ class TaskResource extends Resource
                                     ->preload()
                                     ->live()
                                     ->createOptionForm(fn (Schema $schema): Schema => ProjectResource::form($schema))
-                                    ->afterStateUpdated(function (Set $set) {
+                                    ->afterStateUpdated(function (Set $set, $state) {
                                         $set('milestone_id', null);
+                                        $project = $state ? Project::find($state) : null;
+                                        $set('partner_id', $project?->partner_id);
                                     }),
                                 Select::make('milestone_id')
                                     ->label(__('projects::filament/resources/task.form.sections.settings.fields.milestone'))
@@ -213,8 +216,6 @@ class TaskResource extends Resource
                                             ->required(),
                                         Hidden::make('project_id')
                                             ->default($get('project_id')),
-                                        Hidden::make('creator_id')
-                                            ->default(fn () => Auth::user()->id),
                                     ])
                                     ->hidden(function (Get $get) {
                                         $project = Project::find($get('project_id'));
@@ -662,6 +663,12 @@ class TaskResource extends Resource
             ->components([
                 Group::make()
                     ->schema([
+                        InfolistProgressStepper::make('stage_id')
+                            ->hiddenLabel()
+                            ->inline()
+                            ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                            ->default(TaskStage::first()?->id),
+
                         Section::make(__('projects::filament/resources/task.infolist.sections.general.title'))
                             ->schema([
                                 TextEntry::make('title')

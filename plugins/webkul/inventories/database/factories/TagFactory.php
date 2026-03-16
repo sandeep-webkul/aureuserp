@@ -26,9 +26,9 @@ class TagFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => fake()->name(),
-            'color'      => fake()->hexColor(),
-            'creator_id' => User::factory(),
+            'name'       => fake()->words(2, true),
+            'sort'       => 0,
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }
