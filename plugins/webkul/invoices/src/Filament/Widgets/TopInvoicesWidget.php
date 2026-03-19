@@ -7,6 +7,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Invoice\Models\Invoice;
 
@@ -45,9 +46,9 @@ class TopInvoicesWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('payment_state')
                     ->label('Payment State')
-                    ->color(fn (PaymentState $state) => $state->getColor())
-                    ->icon(fn (PaymentState $state) => $state->getIcon())
-                    ->formatStateUsing(fn (PaymentState $state) => $state->getLabel())
+                    ->color(fn(PaymentState $state) => $state->getColor())
+                    ->icon(fn(PaymentState $state) => $state->getIcon())
+                    ->formatStateUsing(fn(PaymentState $state) => $state->getLabel())
                     ->badge(),
             ])
             ->defaultSort('amount_total', 'desc')
@@ -76,7 +77,9 @@ class TopInvoicesWidget extends BaseWidget
                     ->where('product_id', $this->filters['product_id']);
             });
         }
-
+        
+        $query->where('move_type', MoveType::OUT_INVOICE);
+        
         return $query->with('invoiceUser')
             ->orderByDesc('amount_total')
             ->limit(10);

@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
 
 class InvoiceStatsWidget extends BaseWidget
@@ -39,6 +40,8 @@ class InvoiceStatsWidget extends BaseWidget
                     ->where('product_id', $filters['product_id']);
             });
         }
+        
+        $baseQuery->where('move_type', MoveType::OUT_INVOICE);
 
         $totalInvoiced = (clone $baseQuery)->sum('amount_total');
         $invoiceCount = (clone $baseQuery)->count();

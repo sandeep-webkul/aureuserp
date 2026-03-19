@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Widgets;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
 
 class RevenueOverTimeWidget extends ChartWidget
@@ -50,6 +51,8 @@ class RevenueOverTimeWidget extends ChartWidget
                     ->where('product_id', $this->filters['product_id']);
             });
         }
+        
+        $query->where('move_type', MoveType::OUT_INVOICE);
 
         $results = $query->selectRaw('DATE(created_at) as date, SUM(amount_total) as total')
             ->groupByRaw('DATE(created_at)')

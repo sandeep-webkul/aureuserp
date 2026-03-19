@@ -57,6 +57,8 @@ class TopVendorsWidget extends BaseWidget
             $query->whereDate('purchases_orders.ordered_at', '<=', Carbon::parse($this->filters['end_date']));
         }
 
+        $query->where('sub_type', 'supplier');
+
         return $query
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->orderByDesc('total_purchased')

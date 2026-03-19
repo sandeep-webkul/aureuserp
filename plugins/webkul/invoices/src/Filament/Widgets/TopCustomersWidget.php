@@ -67,7 +67,9 @@ class TopCustomersWidget extends BaseWidget
                     ->where('product_id', $this->filters['product_id']);
             });
         }
-
+        
+        $query->where('sub_type', 'customer');
+        
         return $query
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->orderByDesc('total_billed')
