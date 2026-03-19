@@ -57,7 +57,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\DistanceUnit;
 use Webkul\Employee\Enums\Gender;
 use Webkul\Employee\Enums\MaritalStatus;
@@ -87,7 +86,9 @@ class EmployeeResource extends Resource
 
     protected static ?string $model = Employee::class;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 1;
 
@@ -119,7 +120,6 @@ class EmployeeResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('employees::filament/resources/employee.global-search.name')       => $record?->name ?? '—',
             __('employees::filament/resources/employee.global-search.department') => $record?->department?->name ?? '—',
             __('employees::filament/resources/employee.global-search.work-email') => $record?->work_email ?? '—',
             __('employees::filament/resources/employee.global-search.work-phone') => $record?->work_phone ?? '—',
@@ -426,8 +426,6 @@ class EmployeeResource extends Resource
                                                                                         return $livewire->record->partner?->id ?? $get('name');
                                                                                     })
                                                                                     ->required(),
-                                                                                Hidden::make('creator_id')
-                                                                                    ->default(fn () => Auth::user()->id),
                                                                                 Select::make('bank_id')
                                                                                     ->relationship('bank', 'name')
                                                                                     ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.bank'))
@@ -727,33 +725,12 @@ class EmployeeResource extends Resource
                                                             ->createOptionForm(fn (Schema $schema) => UserResource::form($schema))
                                                             ->createOptionAction(
                                                                 fn (Action $action, Get $get) => $action
-                                                                    ->fillForm(function (array $arguments) use ($get): array {
-                                                                        return [
-                                                                            'name'  => $get('name'),
-                                                                            'email' => $get('work_email'),
-                                                                        ];
-                                                                    })
+                                                                    ->fillForm(fn () => [
+                                                                        'name'  => $get('name'),
+                                                                        'email' => $get('work_email'),
+                                                                    ])
                                                                     ->modalHeading(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
                                                                     ->modalSubmitActionLabel(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
-                                                                    ->action(function (array $data, $component) {
-                                                                        $user = User::create($data);
-
-                                                                        $partner = $user->partner()->create([
-                                                                            'creator_id' => Auth::user()->id,
-                                                                            'user_id'    => $user->id,
-                                                                            'company_id' => $data['default_company_id'] ?? null,
-                                                                            'avatar'     => $data['avatar'] ?? null,
-                                                                            ...$data,
-                                                                        ]);
-
-                                                                        $user->update([
-                                                                            'partner_id' => $partner->id,
-                                                                        ]);
-
-                                                                        $component->state($user->id);
-
-                                                                        return $user;
-                                                                    })
                                                             ),
                                                         Select::make('departure_reason_id')
                                                             ->relationship('departureReason', 'name')
@@ -813,8 +790,7 @@ class EmployeeResource extends Resource
                                     ->columns(3),
                             ]),
                     ])
-                    ->columnSpan('full')
-                    ->persistTabInQueryString(),
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -1747,7 +1723,6 @@ class EmployeeResource extends Resource
 
                             ]),
                     ])
-                    ->persistTabInQueryString()
                     ->columnSpan('full'),
             ]);
     }
@@ -1795,8 +1770,6 @@ class EmployeeResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required(fn (Get $get) => Country::find($get('country_id'))?->state_required),
-                    Hidden::make('creator_id')
-                        ->default(fn () => Auth::user()->id),
                 ])->columns(2),
         ];
     }

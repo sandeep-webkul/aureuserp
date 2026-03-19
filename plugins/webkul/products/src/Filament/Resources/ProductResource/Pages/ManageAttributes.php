@@ -51,8 +51,9 @@ class ManageAttributes extends ManageRelatedRecords
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
-                    ->disableOptionWhen(function (string $value) {
-                        return $this->getOwnerRecord()->attributes->contains('attribute_id', $value);
+                    ->disableOptionWhen(function ($value, $state) {
+                        return $this->getOwnerRecord()->attributes->contains('attribute_id', $value)
+                            && $state !== $value;
                     })
                     ->searchable()
                     ->preload()
@@ -120,9 +121,6 @@ class ManageAttributes extends ManageRelatedRecords
                             ->body(__('products::filament/resources/product/pages/manage-attributes.table.actions.edit.notification.body')),
                     ),
                 DeleteAction::make()
-                    ->after(function (ProductAttribute $record) {
-                        $this->updateOrCreateVariants($record);
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

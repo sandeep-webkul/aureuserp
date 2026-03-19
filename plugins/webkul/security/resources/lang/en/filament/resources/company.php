@@ -9,7 +9,6 @@ return [
     ],
 
     'global-search' => [
-        'name'  => 'Name',
         'email' => 'Email',
     ],
 
@@ -89,16 +88,17 @@ return [
 
     'table' => [
         'columns' => [
-            'logo'                 => 'Logo',
-            'company-name'         => 'Company Name',
-            'branches'             => 'Branches',
-            'email'                => 'Email',
-            'city'                 => 'City',
-            'country'              => 'Country',
-            'currency'             => 'Currency',
-            'status'               => 'Status',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'logo'         => 'Logo',
+            'company-name' => 'Company Name',
+            'branches'     => 'Branches',
+            'email'        => 'Email',
+            'city'         => 'City',
+            'country'      => 'Country',
+            'currency'     => 'Currency',
+            'created-by'   => 'Created By',
+            'status'       => 'Status',
+            'created-at'   => 'Created At',
+            'updated-at'   => 'Updated At',
         ],
 
         'groups' => [
@@ -109,6 +109,7 @@ return [
             'email'        => 'Email',
             'phone'        => 'Phone',
             'currency'     => 'Currency',
+            'created-by'   => 'Created By',
             'created-at'   => 'Created At',
             'updated-at'   => 'Updated At',
         ],
@@ -130,6 +131,11 @@ return [
                 'notification' => [
                     'title' => 'Company deleted',
                     'body'  => 'The company has been deleted successfully.',
+
+                    'default-company' => [
+                        'title' => 'Company cannot be deleted',
+                        'body'  => 'This company is set as the default company in Manage Users settings. Please change the default company before deleting.',
+                    ],
                 ],
             ],
 
@@ -137,6 +143,19 @@ return [
                 'notification' => [
                     'title' => 'Company restored',
                     'body'  => 'The company has been restored successfully.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Company force deleted',
+                        'body'  => 'The company has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Unable to force delete company',
+                        'body'  => 'This company is associated with existing records and cannot be deleted.',
+                    ],
                 ],
             ],
         ],
@@ -160,6 +179,10 @@ return [
                 'notification' => [
                     'title' => 'Companies force deleted',
                     'body'  => 'The companies has been force deleted successfully.',
+                    'error' => [
+                        'title' => 'Unable to force delete companies',
+                        'body'  => 'One or more companies are associated with existing records and cannot be deleted.',
+                    ],
                 ],
             ],
         ],

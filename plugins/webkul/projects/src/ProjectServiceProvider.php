@@ -2,10 +2,11 @@
 
 namespace Webkul\Project;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ProjectServiceProvider extends PackageServiceProvider
 {
@@ -14,6 +15,7 @@ class ProjectServiceProvider extends PackageServiceProvider
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->hasRoute('api')
             ->hasTranslations()
             ->hasMigrations([
                 '2024_12_12_074920_create_projects_project_stages_table',
@@ -41,11 +43,19 @@ class ProjectServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('projects');
     }
 
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(ProjectPlugin::make());
+        });
     }
 }

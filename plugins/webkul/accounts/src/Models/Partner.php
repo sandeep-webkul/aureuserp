@@ -2,6 +2,8 @@
 
 namespace Webkul\Account\Models;
 
+use Webkul\Account\Database\Factories\PartnerFactory;
+use Webkul\Partner\Database\Factories\PartnerFactory as BasePartnerFactory;
 use Webkul\Partner\Models\Partner as BasePartner;
 
 class Partner extends BasePartner
@@ -51,7 +53,7 @@ class Partner extends BasePartner
 
     public function propertyAccountPosition()
     {
-        return $this->belongsTo(Account::class, 'property_account_position_id');
+        return $this->belongsTo(FiscalPosition::class, 'property_account_position_id');
     }
 
     public function propertyPaymentTerm()
@@ -72,5 +74,10 @@ class Partner extends BasePartner
     public function propertyInboundPaymentMethodLine()
     {
         return $this->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id');
+    }
+
+    protected static function newFactory(): BasePartnerFactory
+    {
+        return PartnerFactory::new();
     }
 }

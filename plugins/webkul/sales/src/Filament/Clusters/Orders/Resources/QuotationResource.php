@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -18,12 +19,10 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -34,6 +33,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables;
@@ -51,8 +51,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Filament\Clusters\Orders;
@@ -62,30 +65,33 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQ
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
-use Webkul\Sale\Livewire\Summary;
-use Webkul\Sale\Models\Order;
-use Webkul\Sale\Models\OrderLine;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
+use Webkul\Sale\Livewire\QuotationSummary;
+use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
-use Webkul\Sale\Settings;
+use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Settings\PriceSettings;
-use Webkul\Sale\Settings\ProductSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Package;
 
 class QuotationResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $cluster = Orders::class;
 
@@ -99,11 +105,25 @@ class QuotationResource extends Resource
         return __('sales::filament/clusters/orders/resources/quotation.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'client_order_ref'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('sales::filament/clusters/orders/resources/quotation.global-search.customer')  => $record->partner?->name ?? '—',
+            __('sales::filament/clusters/orders/resources/quotation.global-search.reference') => $record->client_order_ref ?? '—',
+            __('sales::filament/clusters/orders/resources/quotation.global-search.amount')    => $record->amount_total ? money($record->amount_total) : '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -138,15 +158,18 @@ class QuotationResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query
-                                                    ->withTrashed()
-                                                    ->where('sub_type', 'customer')
-                                                    ->orderBy('id')
+                                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->required()
                                             ->live()
+                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                $partner = $state ? Partner::find($state) : null;
+
+                                                $set('user_id', $partner?->user?->id);
+                                                $set('payment_term_id', $partner?->propertyPaymentTerm?->id);
+                                            })
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL]))
                                             ->columnSpan(1)
                                             ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
@@ -185,15 +208,22 @@ class QuotationResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(Summary::class, function (Get $get, PriceSettings $settings) {
+                                Livewire::make(QuotationSummary::class, function (Get $get, PriceSettings $settings, $livewire) {
+                                    $totals = self::calculateQuotationTotals($get, $livewire);
+
                                     return [
-                                        'currency'     => Currency::find($get('currency_id')),
-                                        'products'     => $get('products'),
-                                        'enableMargin' => $settings->enable_margin,
+                                        'currency'         => Currency::find($get('currency_id')),
+                                        'enableMargin'     => $settings->enable_margin,
+                                        'subtotal'         => $totals['subtotal'],
+                                        'totalTax'         => $totals['totalTax'],
+                                        'grandTotal'       => $totals['grandTotal'],
+                                        'margin'           => $totals['margin'],
+                                        'marginPercentage' => $totals['marginPercentage'],
                                     ];
                                 })
-                                    ->live()
-                                    ->reactive(),
+                                    ->key('quotationSummary')
+                                    ->reactive()
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
                         Tab::make(__('Optional Products'))
                             ->hidden(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
@@ -265,7 +295,7 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->afterStateUpdated(function (Set $set, Get $get) {
-                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+                                                $company = $get('company_id') ? Company::find($get('company_id')) : null;
 
                                                 if ($company) {
                                                     $set('currency_id', $company->currency_id);
@@ -276,7 +306,11 @@ class QuotationResource extends Resource
                                             ->default(Auth::user()->default_company_id),
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
-                                            ->relationship('currency', 'name')
+                                            ->relationship(
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
+                                            )
                                             ->required()
                                             ->searchable()
                                             ->preload()
@@ -307,6 +341,55 @@ class QuotationResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.creation-date'))
+                    ->placeholder('-')
+                    ->date()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('partner.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer'))
+                    ->placeholder('-')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-person'))
+                    ->placeholder('-')
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('amount_untaxed')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.untaxed-amount'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Total'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('amount_tax')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-tax'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Taxes'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('amount_total')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-total'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Total Amount'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('expected_date')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.expected-date'))
+                    ->placeholder('-')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('team.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-team'))
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('state')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.status'))
                     ->placeholder('-')
@@ -317,66 +400,22 @@ class QuotationResource extends Resource
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.invoice-status'))
                     ->placeholder('-')
                     ->badge()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.creation-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('amount_untaxed')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.untaxed-amount'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Total'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('amount_tax')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-tax'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Taxes'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('amount_total')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-total'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Total Amount'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('commitment_date')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.commitment-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('expected_date')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.expected-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('partner.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer'))
-                    ->placeholder('-')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('user.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-person'))
-                    ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('team.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-team'))
-                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('client_order_ref')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer-reference'))
                     ->placeholder('-')
                     ->badge()
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersFormColumns(2)
             ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        RelationshipConstraint::make('user.name')
+                        RelationshipConstraint::make('user')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.sales-person'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -388,7 +427,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('utm_source_id.name')
+                        RelationshipConstraint::make('utmSource')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.utm-source'))
                             ->icon('heroicon-o-speaker-wave')
                             ->multiple()
@@ -400,7 +439,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('company.name')
+                        RelationshipConstraint::make('company')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.company'))
                             ->icon('heroicon-o-building-office')
                             ->multiple()
@@ -412,7 +451,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partner.name')
+                        RelationshipConstraint::make('partner')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.customer'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -424,7 +463,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('journal.name')
+                        RelationshipConstraint::make('journal')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.journal'))
                             ->icon('heroicon-o-speaker-wave')
                             ->multiple()
@@ -436,7 +475,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerInvoice.name')
+                        RelationshipConstraint::make('partnerInvoice')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.invoice-address'))
                             ->icon('heroicon-o-map')
                             ->multiple()
@@ -448,7 +487,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerShipping.name')
+                        RelationshipConstraint::make('partnerShipping')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.shipping-address'))
                             ->icon('heroicon-o-map')
                             ->multiple()
@@ -460,7 +499,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('fiscalPosition.name')
+                        RelationshipConstraint::make('fiscalPosition')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.fiscal-position'))
                             ->multiple()
                             ->selectable(
@@ -471,7 +510,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentTerm.name')
+                        RelationshipConstraint::make('paymentTerm')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.payment-term'))
                             ->icon('heroicon-o-currency-dollar')
                             ->multiple()
@@ -483,7 +522,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('currency.name')
+                        RelationshipConstraint::make('currency')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.currency'))
                             ->icon('heroicon-o-banknotes')
                             ->multiple()
@@ -606,12 +645,20 @@ class QuotationResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = OrderState::options();
+
+                        if ($record->state != OrderState::CANCEL->value) {
+                            unset($options[OrderState::CANCEL->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(OrderState::DRAFT->value),
+
                 Section::make(__('sales::filament/clusters/orders/resources/quotation.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -654,129 +701,244 @@ class QuotationResource extends Resource
                             ->schema([
                                 RepeatableEntry::make('lines')
                                     ->hiddenLabel()
+                                    ->live()
+                                    ->columnManager()
+                                    ->columnManagerColumns(2)
+                                    ->table([
+                                        InfolistTableColumn::make('name')
+                                            ->width(250)
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product')),
+                                        InfolistTableColumn::make('product_uom_qty')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
+                                            ->width(100)
+                                            ->toggleable(),
+                                        InfolistTableColumn::make('uom')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
+                                            ->width(100)
+                                            ->toggleable(),
+                                        InfolistTableColumn::make('customer_lead')
+                                            ->width(100)
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time')),
+                                        InfolistTableColumn::make('product_packaging_qty')
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->width(150)
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty')),
+                                        InfolistTableColumn::make('productPackaging')
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->width(150)
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging')),
+                                        InfolistTableColumn::make('price_unit')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
+                                            ->toggleable()
+                                            ->width(100),
+                                        InfolistTableColumn::make('purchase_price')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
+                                            ->toggleable()
+                                            ->width(100),
+                                        InfolistTableColumn::make('margin')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->width(100)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
+                                        InfolistTableColumn::make('margin_percent')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->width(100)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
+                                        InfolistTableColumn::make('taxes')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
+                                            ->toggleable()
+                                            ->width(150),
+                                        InfolistTableColumn::make('discount')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->width(100)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount),
+                                        InfolistTableColumn::make('price_subtotal')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
+                                            ->toggleable()
+                                            ->width(100),
+                                    ])
                                     ->schema([
-                                        TextEntry::make('product.name')
+                                        TextEntry::make('name')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product'))
-                                            ->icon('heroicon-o-cube'),
+                                            ->tooltip(fn ($record) => $record->product->name)
+                                            ->iconColor('primary'),
+
                                         TextEntry::make('product_uom_qty')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
-                                            ->icon('heroicon-o-hashtag'),
-                                        TextEntry::make('uom.name')
-                                            ->placeholder('-')
-                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
-                                            ->icon('heroicon-o-scale'),
+                                            ->numeric(),
+
+                                        TextEntry::make('uom')
+                                            ->formatStateUsing(function ($state, ProductSettings $settings) {
+                                                return $settings->enable_uom && $state ? $state['name'] : '-';
+                                            }),
+
                                         TextEntry::make('customer_lead')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time'))
-                                            ->icon('heroicon-o-clock'),
+                                            ->numeric()
+                                            ->suffix(' days'),
+
                                         TextEntry::make('product_packaging_qty')
-                                            ->placeholder('-')
-                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty'))
-                                            ->icon('heroicon-o-arrow-path-rounded-square'),
-                                        TextEntry::make('product_packaging_id')
-                                            ->placeholder('-')
-                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging'))
-                                            ->icon('heroicon-o-archive-box'),
-                                        TextEntry::make('price_unit')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
-                                            ->icon('heroicon-o-currency-dollar')
-                                            ->money(fn ($record) => $record->currency->code),
-                                        TextEntry::make('purchase_price')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
-                                            ->icon('heroicon-o-banknotes')
-                                            ->money(fn ($record) => $record->currency->code),
-                                        TextEntry::make('margin')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
-                                            ->icon('heroicon-o-currency-dollar')
-                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
-                                            ->money(fn ($record) => $record->currency->code),
-                                        TextEntry::make('margin_percent')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
-                                            ->icon('heroicon-o-chart-bar')
-                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
-                                            ->suffix('%'),
-                                        TextEntry::make('taxes.name')
-                                            ->badge()
-                                            ->state(function ($record): array {
-                                                return $record->taxes->map(fn ($tax) => [
-                                                    'name' => $tax->name,
-                                                ])->toArray();
-                                            })
-                                            ->icon('heroicon-o-receipt-percent')
+                                            ->formatStateUsing(function ($state, ProductSettings $settings) {
+                                                return $settings->enable_packagings && $state ? $state : '-';
+                                            }),
+
+                                        TextEntry::make('productPackaging')
                                             ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
-                                            ->weight(FontWeight::Bold),
-                                        TextEntry::make('discount')
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
+
+                                        TextEntry::make('price_unit')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
-                                            ->icon('heroicon-o-tag')
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                                            ->money(fn ($record) => $record->currency->code)
+                                            ->weight(FontWeight::Medium),
+
+                                        TextEntry::make('purchase_price')
+                                            ->placeholder('-')
+                                            ->money(fn ($record) => $record->currency->code),
+
+                                        TextEntry::make('margin')
+                                            ->formatStateUsing(function ($state, PriceSettings $settings) {
+                                                return $settings->enable_margin && $state ? $state : '-';
+                                            })
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
+                                            ->money(fn ($record) => $record->currency->code),
+
+                                        TextEntry::make('margin_percent')
+                                            ->formatStateUsing(function ($state, PriceSettings $settings) {
+                                                return $settings->enable_margin && $state ? $state : '-';
+                                            })
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
+                                        TextEntry::make('taxes')
+                                            ->badge()
+                                            ->state(function ($record): array {
+                                                return $record->taxes->map(fn ($tax) => ['name' => $tax->name])->toArray();
+                                            })
+
+                                            ->formatStateUsing(fn ($state) => $state['name'])
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('discount')
+                                            ->formatStateUsing(function ($state, PriceSettings $settings) {
+                                                return $settings->enable_discount && $state ? $state : '-';
+                                            })
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
+                                            ->numeric()
                                             ->suffix('%'),
+
                                         TextEntry::make('price_subtotal')
                                             ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
-                                            ->icon('heroicon-o-calculator')
                                             ->money(fn ($record) => $record->currency->code),
-                                    ])->columns(5),
-                                Livewire::make(Summary::class, function ($record, PriceSettings $settings) {
+                                    ])
+                                    ->extraItemActions([
+                                        Action::make('viewProduct')
+                                            ->tooltip('Open product')
+                                            ->size(fn () => 'sm') // problematic if not evaluated
+                                            ->iconButton()
+                                            ->icon('heroicon-m-arrow-top-right-on-square')
+                                            ->url(function (array $arguments, Get $get): ?string {
+                                                $productId = $get('lines')[$arguments['item']]['product_id'] ?? null;
+
+                                                return $productId ? ProductResource::getUrl('view', ['record' => $productId]) : null;
+                                            })
+                                            ->openUrlInNewTab(true)
+                                            ->visible(function (array $arguments, Get $get): bool {
+                                                $productId = $get('lines')[$arguments['item']]['product_id'] ?? null;
+
+                                                return filled($productId) ?? null;
+                                            }),
+                                    ]),
+
+                                Livewire::make(QuotationSummary::class, function ($record, PriceSettings $settings) {
+                                    $subtotal = 0;
+                                    $totalTax = 0;
+                                    $grandTotal = 0;
+                                    $margin = 0;
+
+                                    foreach ($record->lines as $line) {
+                                        $subtotal += floatval($line->price_subtotal ?? 0);
+                                        $totalTax += floatval($line->price_tax ?? 0);
+                                        $grandTotal += floatval($line->price_total ?? 0);
+                                        $margin += floatval($line->margin ?? 0);
+                                    }
+
+                                    $marginPercentage = ($subtotal > 0) ? ($margin / $subtotal) * 100 : 0;
+
                                     return [
-                                        'currency'     => $record->currency,
-                                        'enableMargin' => $settings->enable_margin,
-                                        'products'     => $record->lines->map(function ($item) {
-                                            return [
-                                                ...$item->toArray(),
-                                                'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
-                                            ];
-                                        })->toArray(),
+                                        'currency'         => $record->currency,
+                                        'enableMargin'     => $settings->enable_margin,
+                                        'subtotal'         => round($subtotal, 2),
+                                        'totalTax'         => round($totalTax, 2),
+                                        'grandTotal'       => round($grandTotal, 2),
+                                        'margin'           => round($margin, 2),
+                                        'marginPercentage' => round($marginPercentage, 2),
                                     ];
-                                }),
+                                })
+                                    ->key('quotation-summary-view'),
                             ]),
+
                         Tab::make(__('Optional Products'))
                             ->icon('heroicon-o-arrow-path-rounded-square')
-                            ->hidden(fn (Order $record) => $record->optionalLines->isEmpty())
+                            ->hidden(fn ($record) => $record->optionalLines->isEmpty())
                             ->schema([
                                 RepeatableEntry::make('optionalLines')
                                     ->hiddenLabel()
+                                    ->columnManager()
+                                    ->table([
+                                        InfolistTableColumn::make('product')
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product')),
+                                        InfolistTableColumn::make('uom.name')
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.uom'))
+                                            ->alignment(Alignment::Start)
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                                        InfolistTableColumn::make('quantity')
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.quantity'))
+                                            ->alignment(Alignment::Start),
+                                        InfolistTableColumn::make('discount')
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
+                                            ->alignment(Alignment::Start)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount),
+                                        InfolistTableColumn::make('price_unit')
+                                            ->toggleable()
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.unit-price'))
+                                            ->alignment(Alignment::Start),
+                                    ])
                                     ->schema([
-                                        TextEntry::make('product.name')
+                                        TextEntry::make('product')
                                             ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => $state['name'])
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.product'))
-                                            ->icon('heroicon-o-cube'),
+                                            ->alignment(Alignment::Start),
                                         TextEntry::make('uom.name')
                                             ->placeholder('-')
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.uom'))
-                                            ->icon('heroicon-o-scale'),
+                                            ->alignment(Alignment::Start),
                                         TextEntry::make('quantity')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.quantity'))
-                                            ->icon('heroicon-o-hashtag'),
+                                            ->alignment(Alignment::Start),
                                         TextEntry::make('discount')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
-                                            ->icon('heroicon-o-tag')
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
-                                            ->suffix('%'),
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
+                                            ->suffix('%')
+                                            ->alignment(Alignment::Start),
                                         TextEntry::make('price_unit')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.unit-price'))
-                                            ->icon('heroicon-o-currency-dollar'),
-                                        TextEntry::make('price_subtotal')
-                                            ->placeholder('-')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.sub-total'))
-                                            ->icon('heroicon-o-calculator'),
+                                            ->alignment(Alignment::Start),
                                     ])->columns(4),
                             ]),
+
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
@@ -857,6 +1019,7 @@ class QuotationResource extends Resource
                                             ])->columns(2),
                                     ]),
                             ]),
+
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
@@ -876,6 +1039,7 @@ class QuotationResource extends Resource
             ->relationship('optionalLines')
             ->hiddenLabel()
             ->live()
+            ->compact()
             ->reactive()
             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.title'))
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.add-product'))
@@ -897,11 +1061,6 @@ class QuotationResource extends Resource
                     ->width(250)
                     ->markAsRequired()
                     ->toggleable(),
-                TableColumn::make('name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.columns.description'))
-                    ->width(250)
-                    ->markAsRequired()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('quantity')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.columns.quantity'))
                     ->width(150)
@@ -957,18 +1116,17 @@ class QuotationResource extends Resource
                             ->contains($value);
                     })
                     ->afterStateUpdated(function (Set $set, Get $get) {
+                        if (! $get('product_id')) {
+                            return;
+                        }
+
                         $product = Product::withTrashed()->find($get('product_id'));
 
                         $set('name', $product->name);
-
                         $set('price_unit', $product->price);
+                        $set('product_uom_id', $product->uom_id);
                     })
                     ->required(),
-                TextInput::make('name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.description'))
-                    ->required()
-                    ->live(onBlur: true)
-                    ->dehydrated(),
                 TextInput::make('quantity')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.quantity'))
                     ->required()
@@ -983,11 +1141,14 @@ class QuotationResource extends Resource
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::withTrashed()->find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
-                    ->live()
-                    ->default(UOM::first()?->id)
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
@@ -1007,61 +1168,104 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                     ->dehydrated(),
-                Actions::make([
-                    Action::make('add_order_line')
-                        ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
-                        ->hiddenLabel()
-                        ->icon('heroicon-o-shopping-cart')
-                        ->action(function ($state, $livewire, $record) use ($parentSet, $parentGet) {
-                            $data = [
-                                'product_id'      => $state['product_id'],
-                                'product_qty'     => $state['quantity'],
-                                'price_unit'      => $state['price_unit'],
-                                'discount'        => $state['discount'],
-                                'name'            => $state['name'],
-                                'customer_lead'   => 0,
-                                'purchase_price'  => 0,
-                                'product_uom_qty' => 0,
-                            ];
+            ])
+            ->extraItemActions([
+                Action::make('add_order_line')
+                    ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-shopping-cart')
+                    ->action(function ($state, $livewire, $record, $arguments) use ($parentGet, $parentSet) {
+                        $uuid = $arguments['item'];
+                        $productData = $state[$uuid] ?? null;
 
-                            $parentSet('products', [
-                                ...$parentGet('products'),
-                                $data,
-                            ]);
-
-                            $user = Auth::user();
-
-                            $data['order_id'] = $livewire->record->id;
-                            $data['creator_id'] = $user->id;
-                            $data['company_id'] = $user?->default_company_id;
-                            $data['currency_id'] = $livewire->record->currency_id;
-                            $data['product_uom_id'] = $state['product_uom_id'];
-                            $orderLine = OrderLine::create($data);
-
-                            $record->line_id = $orderLine->id;
-
-                            $record->save();
-
-                            $livewire->refreshFormData(['products']);
-
-                            $products = collect($parentGet('products'))->values();
-
-                            $orderLineEntry = $products->first(fn ($product) => $product['id'] == $orderLine->id);
-
-                            $orderLine->update($orderLineEntry);
-
+                        if (! $productData || ! $productData['product_id']) {
                             Notification::make()
-                                ->success()
-                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
-                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
+                                ->danger()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.body'))
                                 ->send();
-                        })
-                        ->extraAttributes([
-                            'style' => 'margin-top: 2rem;',
-                        ]),
-                ])->hidden(fn ($record) => ! $record ?? false),
+
+                            return;
+                        }
+
+                        $existingProducts = $parentGet('products') ?? [];
+                        $productExists = collect($existingProducts)->contains(function ($product) use ($productData) {
+                            return ($product['product_id'] ?? null) == $productData['product_id'];
+                        });
+
+                        if ($productExists) {
+                            Notification::make()
+                                ->warning()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.body'))
+                                ->send();
+
+                            return;
+                        }
+
+                        $product = Product::withTrashed()->find($productData['product_id']);
+
+                        if (! $product) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-not-found.title'))
+                                ->send();
+
+                            return;
+                        }
+
+                        $newLineData = [
+                            'product_id'            => $productData['product_id'],
+                            'product_qty'           => $productData['quantity'] ?? 1,
+                            'price_unit'            => $productData['price_unit'] ?? 0,
+                            'discount'              => $productData['discount'] ?? 0,
+                            'name'                  => $productData['name'] ?? $product->name,
+                            'product_uom_id'        => $productData['product_uom_id'] ?? $product->uom_id,
+                            'customer_lead'         => 0,
+                            'purchase_price'        => $product->cost ?? 0,
+                            'product_uom_qty'       => 0,
+                            'price_subtotal'        => 0,
+                            'price_tax'             => 0,
+                            'price_total'           => 0,
+                            'margin'                => 0,
+                            'margin_percent'        => 0,
+                            'taxes'                 => $product->productTaxes->pluck('id')->toArray(),
+                            'product_packaging_id'  => null,
+                            'product_packaging_qty' => null,
+                        ];
+
+                        $tempState = $newLineData;
+
+                        $tempSet = function ($key, $value) use (&$tempState) {
+                            $tempState[$key] = $value;
+                        };
+
+                        $tempGet = function ($key) use (&$tempState, $parentGet) {
+                            if (str_starts_with($key, '../../')) {
+                                $parentKey = str_replace('../../', '', $key);
+
+                                return $parentGet($parentKey);
+                            }
+
+                            return $tempState[$key] ?? null;
+                        };
+
+                        static::afterProductUpdated($tempSet, $tempGet);
+
+                        $currentProducts = $parentGet('products') ?? [];
+                        $parentSet('products', [...$currentProducts, $tempState]);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
+                            ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
+                            ->send();
+                    })
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("optionalProducts.{$arguments['item']}.product_id"))
+                    ),
             ]);
     }
 
@@ -1078,9 +1282,18 @@ class QuotationResource extends Resource
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
             ->deletable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]) && $record?->state !== OrderState::SALE)
-            ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
+            ->deleteAction(function (Action $action) {
+                $action->requiresConfirmation();
+
+                $action->after(function (Get $get, $livewire) {
+                    $totals = self::calculateQuotationTotals($get, $livewire);
+
+                    $livewire->dispatch('itemUpdated', $totals);
+                });
+            })
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
             ->columnManagerColumns(2)
+            ->compact()
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.product'))
@@ -1089,69 +1302,70 @@ class QuotationResource extends Resource
                     ->toggleable(),
                 TableColumn::make('product_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('qty_delivered')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.qty-delivered'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable()
                     ->markAsRequired()
                     ->visible(fn () => in_array($record?->state, [OrderState::SALE])),
                 TableColumn::make('qty_invoiced')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.qty-invoiced'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable()
                     ->visible(fn () => in_array($record?->state, [OrderState::SALE])),
                 TableColumn::make('product_uom_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.uom'))
                     ->width(150)
+                    ->toggleable()
                     ->markAsRequired()
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom),
                 TableColumn::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.lead-time'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('product_packaging_qty')
                     ->toggleable()
-                    ->width(180)
+                    ->width(150)
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging-qty'))
                     ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
                 TableColumn::make('product_packaging_id')
                     ->toggleable()
-                    ->width(200)
+                    ->width(150)
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging'))
                     ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
                 TableColumn::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('margin')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.margin'))
                     ->width(100)
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
                 TableColumn::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.margin-percentage'))
                     ->width(100)
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
                 TableColumn::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->width(150)
                     ->toggleable(),
                 TableColumn::make('discount')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.discount-percentage'))
-                    ->width(250)
-                    ->toggleable()
-                    ->visible(fn () => resolve(Settings\PriceSettings::class)->enable_discount),
+                    ->width(100)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn () => resolve(PriceSettings::class)->enable_discount),
                 TableColumn::make('price_subtotal')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.amount'))
                     ->width(100)
                     ->toggleable(),
             ])
-            ->schema([
+            ->schema(fn ($record) => [
                 Select::make('product_id')
                     ->label(fn (ProductSettings $settings) => $settings->enable_variants ? __('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.product-variants') : __('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.product-simple'))
                     ->relationship(
@@ -1164,15 +1378,13 @@ class QuotationResource extends Resource
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
-                    ->disableOptionWhen(function ($label, $record, $value, $state, $component) {
+                    ->disableOptionWhen(function ($label, $value, $state, $component) use ($record) {
                         $isDeleted = str_contains($label, ' (Deleted)');
 
-                        $isOrderLocked = $record && (
-                            $record->order?->locked
-                            || in_array($record?->order?->state, [OrderState::CANCEL])
-                        );
+                        $isOrderLocked = $record?->locked || in_array($record?->state, [OrderState::CANCEL]);
 
                         $isDuplicate = false;
+
                         if ($component?->getParentRepeater()) {
                             $repeater = $component->getParentRepeater();
 
@@ -1197,6 +1409,7 @@ class QuotationResource extends Resource
                     ->dehydrated(true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
                     ->required()
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL]))
                     ->selectablePlaceholder(false),
                 TextInput::make('product_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.quantity'))
@@ -1205,41 +1418,45 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->afterStateHydrated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get))
-                    ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('qty_delivered')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.qty-delivered'))
                     ->required()
-                    ->default(1)
+                    ->default(0)
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL])))
-                    ->visible(fn ($record): bool => in_array($record?->order?->state, [OrderState::SALE])),
+                    ->disabled(fn ($record): bool => $record?->order->locked || in_array($record?->order->state, [OrderState::CANCEL]) || $record?->qty_delivered_method == QtyDeliveredMethod::STOCK_MOVE)
+                    ->visible(fn (): bool => in_array($record?->state, [OrderState::SALE])),
                 TextInput::make('qty_invoiced')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.qty-invoiced'))
                     ->required()
-                    ->default(1)
+                    ->default(0)
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->readOnly()
-                    ->visible(fn ($record): bool => in_array($record?->order?->state, [OrderState::SALE])),
+                    ->disabled()
+                    ->visible(fn (): bool => in_array($record?->state, [OrderState::SALE])),
                 Select::make('product_uom_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.uom'))
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::withTrashed()->find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
                     ->live()
-                    ->default(UOM::first()?->id)
+                    ->native(false)
                     ->selectablePlaceholder(false)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_uom)
-                    ->disableOptionWhen(fn ($value, $record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
+                    ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.lead-time'))
                     ->numeric()
@@ -1247,7 +1464,7 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('product_packaging_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.packaging-qty'))
                     ->live(onBlur: true)
@@ -1256,19 +1473,21 @@ class QuotationResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductPackagingQtyUpdated($set, $get))
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 Select::make('product_packaging_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.packaging'))
                     ->relationship(
                         'productPackaging',
                         'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id')),
                     )
                     ->searchable()
                     ->preload()
                     ->live()
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductPackagingUpdated($set, $get))
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_packagings)
-                    ->disableOptionWhen(fn ($value, $record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
+                    ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.unit-price'))
                     ->numeric()
@@ -1278,39 +1497,34 @@ class QuotationResource extends Resource
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('margin')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.margin'))
                     ->numeric()
                     ->default(0)
                     ->maxValue(99999999999)
-                    ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->readOnly(),
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
+                    ->readonly(),
                 TextInput::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.margin-percentage'))
                     ->numeric()
                     ->default(0)
                     ->maxValue(100)
-                    ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->readOnly(),
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
+                    ->readonly(),
                 Select::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.taxes'))
                     ->relationship(
                         'taxes',
                         'name',
-                        fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
+                        fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE),
                     )
                     ->searchable()
                     ->multiple()
                     ->preload()
-                    ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->live()
-                    ->disableOptionWhen(fn ($value, $record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('discount')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.discount-percentage'))
                     ->numeric()
@@ -1318,13 +1532,13 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->readOnly(fn ($record): bool => $record && ($record->order?->locked || in_array($record?->order?->state, [OrderState::CANCEL]))),
+                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('price_subtotal')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.amount'))
                     ->default(0)
-                    ->readOnly(),
+                    ->disabled(),
                 Hidden::make('product_uom_qty')
                     ->default(0),
                 Hidden::make('price_tax')
@@ -1336,7 +1550,21 @@ class QuotationResource extends Resource
                     ->default(0),
             ])
             ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire))
-            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire));
+            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire))
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(
+                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                            'record' => $get("products.{$arguments['item']}.product_id"),
+                        ])
+                    )
+                    ->openUrlInNewTab()
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     public static function mutateProductRelationship(array $data, $record): array
@@ -1361,7 +1589,7 @@ class QuotationResource extends Resource
         ];
     }
 
-    private static function afterProductUpdated(Set $set, Get $get): void
+    private static function afterProductUpdated($set, $get): void
     {
         if (! $get('product_id')) {
             return;
@@ -1371,7 +1599,7 @@ class QuotationResource extends Resource
 
         $set('product_uom_id', $product->uom_id);
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($product->uom_id, $get('product_qty'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1398,7 +1626,9 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $product = Product::withTrashed()->find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1417,7 +1647,9 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $product = Product::withTrashed()->find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1482,15 +1714,25 @@ class QuotationResource extends Resource
         self::calculateLineTotals($set, $get);
     }
 
-    private static function calculateUnitQuantity($uomId, $quantity)
+    private static function calculateUnitQuantity($fromUomId, $quantity, $toUomId = null): float
     {
-        if (! $uomId) {
-            return $quantity;
+        if (! $fromUomId || ! filled($quantity)) {
+            return (float) ($quantity ?? 0);
         }
 
-        $uom = Uom::find($uomId);
+        $fromUom = UOM::find($fromUomId);
 
-        return (float) ($quantity ?? 0) / $uom->factor;
+        if (! $fromUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        $toUom = $toUomId ? UOM::find($toUomId) : $fromUom;
+
+        if (! $toUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        return $fromUom->computeQuantity((float) ($quantity ?? 0), $toUom, false);
     }
 
     private static function calculateUnitPrice($get)
@@ -1511,13 +1753,13 @@ class QuotationResource extends Resource
             $vendorPrice = $product->price ?? $product->cost;
         }
 
-        if (! $get('product_uom_id')) {
+        if (! $get('product_uom_id') || ! $product->uom) {
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('product_uom_id'));
+        $uomQty = UOM::find($get('product_uom_id'))->computeQuantity(1, $product->uom, false);
 
-        return (float) ($vendorPrice / $uom->factor);
+        return (float) ($vendorPrice * $uomQty);
     }
 
     private static function getBestPackaging($productId, $quantity)
@@ -1538,7 +1780,7 @@ class QuotationResource extends Resource
         return null;
     }
 
-    private static function calculateLineTotals(Set $set, Get $get, ?string $prefix = ''): void
+    private static function calculateLineTotals($set, $get, ?string $prefix = ''): void
     {
         if (! $get($prefix.'product_id')) {
             $set($prefix.'price_unit', 0);
@@ -1595,6 +1837,55 @@ class QuotationResource extends Resource
         $set($prefix.'margin_percent', round($marginPercentage, 4));
     }
 
+    private static function calculateQuotationTotals(Get $get, $livewire): array
+    {
+        $defaultTotals = [
+            'subtotal'         => 0,
+            'totalTax'         => 0,
+            'grandTotal'       => 0,
+            'margin'           => 0,
+            'marginPercentage' => 0,
+        ];
+
+        $products = $get('products') ?? [];
+
+        if (empty($products)) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $subtotal = 0;
+        $totalTax = 0;
+        $grandTotal = 0;
+        $margin = 0;
+
+        foreach ($products as $product) {
+            if (empty($product['product_id'])) {
+                continue;
+            }
+
+            $subtotal += floatval($product['price_subtotal'] ?? 0);
+            $totalTax += floatval($product['price_tax'] ?? 0);
+            $grandTotal += floatval($product['price_total'] ?? 0);
+            $margin += floatval($product['margin'] ?? 0);
+        }
+
+        $marginPercentage = ($subtotal > 0) ? ($margin / $subtotal) * 100 : 0;
+
+        $totals = [
+            'subtotal'         => round($subtotal, 2),
+            'totalTax'         => round($totalTax, 2),
+            'grandTotal'       => round($grandTotal, 2),
+            'margin'           => round($margin, 2),
+            'marginPercentage' => round($marginPercentage, 2),
+        ];
+
+        $livewire->dispatch('itemUpdated', $totals);
+
+        return $totals;
+    }
+
     public static function calculateMargin($sellingPrice, $costPrice, $quantity, $discount = 0)
     {
         $discountedPrice = $sellingPrice - ($sellingPrice * ($discount / 100));
@@ -1603,7 +1894,7 @@ class QuotationResource extends Resource
 
         $totalMargin = $marginPerUnit * $quantity;
 
-        if ($marginPerUnit != 0) {
+        if ($marginPerUnit != 0 && $discountedPrice != 0) {
             $marginPercentage = ($marginPerUnit / $discountedPrice) * 100;
         } else {
             $marginPercentage = 0;
