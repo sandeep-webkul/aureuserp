@@ -21,19 +21,19 @@ class InvoiceStatsWidget extends BaseWidget
 
         $baseQuery = Invoice::query();
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $baseQuery->whereDate('invoice_date', '>=', $filters['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $baseQuery->whereDate('invoice_date', '<=', $filters['end_date']);
         }
 
-        if (!empty($filters['salesperson_id'])) {
+        if (! empty($filters['salesperson_id'])) {
             $baseQuery->where('invoice_user_id', $filters['salesperson_id']);
         }
 
-        if (!empty($filters['product_id'])) {
+        if (! empty($filters['product_id'])) {
             $baseQuery->whereHas('lines', function ($q) use ($filters) {
                 $q->where('display_type', 'product')
                     ->where('product_id', $filters['product_id']);
@@ -48,38 +48,36 @@ class InvoiceStatsWidget extends BaseWidget
 
         $averageInvoice = $invoiceCount > 0 ? $totalInvoiced / $invoiceCount : 0;
 
-   
         $colorForUnpaid = $unpaidAmount > 0 ? 'warning' : 'success';
         $unpaidRatio = $invoiceCount > 0 ? ($unpaidCount / $invoiceCount) : 0;
 
         $colorForUnpaidCount = match (true) {
             $unpaidRatio < 0.25 => 'success',
-            $unpaidRatio < 0.5 => 'warning',
-            default => 'danger',
+            $unpaidRatio < 0.5  => 'warning',
+            default             => 'danger',
         };
 
         $unpaidDescription = match (true) {
             $unpaidRatio < 0.25 => 'Healthy Credit',
-            $unpaidRatio < 0.5 => 'Watch List',
-            default => 'High Risk',
+            $unpaidRatio < 0.5  => 'Watch List',
+            default             => 'High Risk',
         };
-
 
         $colorForPaidCount = $paidCount > 0 ? 'success' : 'secondary';
 
         return [
-            Stat::make('Total Invoiced', money(number_format($totalInvoiced, 2)))
-                ->description('Unpaid Amount: ' . money(number_format($unpaidAmount, 2)))
+            Stat::make('Total Invoiced', money($totalInvoiced))
+                ->description('Unpaid Amount: '.money($unpaidAmount))
                 ->color($colorForUnpaid)
                 ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make('Average Invoice', money(number_format($averageInvoice, 2)))
+            Stat::make('Average Invoice', money($averageInvoice))
                 ->description("Total Invoices: {$invoiceCount}")
                 ->color('info')
                 ->icon('heroicon-o-chart-bar'),
 
             Stat::make('Paid Invoices', $paidCount)
-                ->description($paidCount > 0 ? "All good!" : "No invoices paid yet")
+                ->description($paidCount > 0 ? 'All good!' : 'No invoices paid yet')
                 ->color($colorForPaidCount)
                 ->icon('heroicon-o-check-circle'),
 

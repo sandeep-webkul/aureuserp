@@ -11,12 +11,12 @@ class RevenueOverTimeWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected  ?string $heading = 'Revenue Over Time';
-    protected  ?string $maxHeight = '300px';
+    protected ?string $heading = 'Revenue Over Time';
+
+    protected ?string $maxHeight = '300px';
 
     protected static bool $isLazy = false;
 
-    
     protected function getType(): string
     {
         return 'line';
