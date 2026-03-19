@@ -4,6 +4,7 @@ namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,8 +23,15 @@ class TopCategoriesWidget extends BaseWidget
     {
         return Category::query()
             ->withCount('products')
-            ->orderByDesc('products_count')
-            ->limit(5);
+            ->orderByDesc('products_count');
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query($this->getTableQuery())
+            ->defaultPaginationPageOption(5)
+            ->columns($this->getTableColumns());
     }
 
     /**
@@ -46,10 +54,5 @@ class TopCategoriesWidget extends BaseWidget
     protected function getHeading(): ?string
     {
         return __('sales::filament/pages/sales-dashboard.widgets.top-categories.heading');
-    }
-
-    protected function getDefaultTableRecordsPerPage(): int
-    {
-        return 5;
     }
 }
