@@ -13,7 +13,7 @@ class InvoiceStatsWidget extends BaseWidget
     use HasWidgetShield;
     use InteractsWithPageFilters;
 
-    protected static ?string $pollingInterval = '15s';
+    // protected static ?string $pollingInterval = '15s';
 
     protected function getStats(): array
     {

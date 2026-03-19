@@ -2,34 +2,48 @@
 
 namespace Webkul\Invoice\Filament\Pages;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Invoice\Filament\Widgets;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 
 class Invoices extends BaseDashboard
 {
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'invoice';
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
-
-    protected static ?string $cluster = DashboardCluster::class;
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_invoice_invoices';
+    }
 
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/pages/dashboard.navigation.title');
     }
 
-    public function filtersForm(Form $form): Form
+    public static function getNavigationGroup(): string
+    {
+        return __('projects::filament/pages/dashboard.navigation.group');
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return null;
+    }
+
+    public function filtersForm(Schema $form): Schema
     {
         return $form->schema([
             Section::make()
@@ -78,23 +92,23 @@ class Invoices extends BaseDashboard
 
                     DatePicker::make('start_date')
                         ->label('Start Date')
-                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
-                        ->default(fn (Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
+                        ->maxDate(fn(Get $get) => $get('end_date') ?: now())
+                        ->default(fn(Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
 
                     DatePicker::make('end_date')
                         ->label('End Date')
-                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
+                        ->minDate(fn(Get $get) => $get('start_date') ?: now())
                         ->maxDate(now())
-                        ->default(fn (Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
+                        ->default(fn(Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
                         ->reactive()
                         ->hidden()
                         ->native(false),
                     Select::make('product_id')
                         ->label('Product')
-                        ->options(fn () => Product::pluck('name', 'id'))
+                        ->options(fn() => Product::pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Products')
@@ -102,7 +116,7 @@ class Invoices extends BaseDashboard
 
                     Select::make('salesperson_id')
                         ->label('Salesperson')
-                        ->options(fn () => User::pluck('name', 'id'))
+                        ->options(fn() => User::pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->placeholder('All Salespersons')

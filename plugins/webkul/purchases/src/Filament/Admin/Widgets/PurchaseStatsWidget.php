@@ -13,7 +13,7 @@ class PurchaseStatsWidget extends BaseWidget
     use HasWidgetShield;
     use InteractsWithPageFilters;
 
-    protected static ?string $pollingInterval = '5s';
+    protected  ?string $pollingInterval = '5s';
 
     public function getStats(): array
     {
