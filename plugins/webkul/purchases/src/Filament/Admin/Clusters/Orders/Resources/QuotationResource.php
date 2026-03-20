@@ -2,7 +2,10 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Resources\Pages\Page;
+use Filament\Support\Icons\Heroicon;
+use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\CreateQuotation;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
@@ -11,14 +14,17 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\P
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\ManageReceipts;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Purchase\Models\Quotation;
+use Webkul\Purchase\Models\RequisitionLine;
 
 class QuotationResource extends OrderResource
 {
     protected static ?string $model = Quotation::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentText;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -56,5 +62,16 @@ class QuotationResource extends OrderResource
             'bills'    => ManageBills::route('/{record}/bills'),
             'receipts' => ManageReceipts::route('/{record}/receipts'),
         ];
+    }
+
+    protected static function getAgreementDefaultQuantity(RequisitionLine $line): float|int
+    {
+        $type = $line->requisition?->type;
+
+        if ($type == RequisitionType::BLANKET_ORDER->value) {
+            return (float) 0;
+        }
+
+        return (float) ($line->ordered_qty ?? 0);
     }
 }

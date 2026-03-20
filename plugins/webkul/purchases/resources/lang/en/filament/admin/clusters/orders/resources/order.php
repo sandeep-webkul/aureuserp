@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'global-search' => [
+        'vendor'    => 'Vendor',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -44,6 +50,18 @@ return [
                             'amount'              => 'Amount',
                         ],
 
+                        'notifications' => [
+                            'quantity-below-received' => [
+                                'title' => 'Cannot Reduce Quantity',
+                                'body'  => 'You cannot reduce the quantity below the received quantity (:qty).',
+                            ],
+                            
+                            'blanket-order-qty-limit' => [
+                                'title' => 'Quantity Exceeds Blanket Order Limit',
+                                'body'  => 'The product quantity (:product_qty) exceeds the available quantity (:available_qty) from the blanket order.',
+                            ],
+                        ],
+
                         'columns' => [
                             'product'             => 'Product',
                             'expected-arrival'    => 'Expected Arrival',
@@ -58,20 +76,25 @@ return [
                             'unit-price'          => 'Unit Price',
                             'amount'              => 'Amount',
                         ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'Cannot Delete Product',
+                                'body'  => 'Products cannot be deleted from a confirmed purchase order.',
+                            ],
+                        ],
                     ],
 
                     'section' => [
                         'title' => 'Add Section',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
 
                     'note' => [
                         'title' => 'Add Note',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
                 ],
             ],
@@ -99,6 +122,7 @@ return [
 
     'table' => [
         'columns' => [
+            'favorite'         => 'Favorite',
             'priority'         => 'Priority',
             'vendor-reference' => 'Vendor Reference',
             'reference'        => 'Reference',
@@ -112,7 +136,6 @@ return [
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
             'currency'         => 'Currency',
-            'billing-status'   => 'Billing Status',
         ],
 
         'groups' => [

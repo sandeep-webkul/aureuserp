@@ -4,8 +4,8 @@ namespace Webkul\Sale;
 
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums as AccountEnums;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\Move as AccountMove;
@@ -17,8 +17,8 @@ use Webkul\Inventory\Models\Operation as InventoryOperation;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Invoice\Enums as InvoiceEnums;
 use Webkul\Partner\Models\Partner;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
@@ -31,7 +31,6 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Settings\InvoiceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
-use Webkul\Support\Package;
 use Webkul\Support\Services\EmailService;
 
 class SaleManager
@@ -108,24 +107,22 @@ class SaleManager
 
     public function createInvoice(Order $record, array $data = [])
     {
-        DB::transaction(function () use ($record, $data) {
-            if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
-                $this->createAccountMove($record);
-            }
+        if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
+            $this->createAccountMove($record);
+        }
 
-            $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
-                ...$data,
-                'currency_id'          => $record->currency_id,
-                'company_id'           => $record->company_id,
-                'creator_id'           => Auth::id(),
-                'deduct_down_payments' => true,
-                'consolidated_billing' => true,
-            ]);
+        $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
+            ...$data,
+            'currency_id'          => $record->currency_id,
+            'company_id'           => $record->company_id,
+            'creator_id'           => Auth::id(),
+            'deduct_down_payments' => true,
+            'consolidated_billing' => true,
+        ]);
 
-            $advancedPaymentInvoice->orders()->attach($record->id);
+        $advancedPaymentInvoice->orders()->attach($record->id);
 
-            return $this->computeSaleOrder($record);
-        });
+        return $this->computeSaleOrder($record);
     }
 
     /**
@@ -157,6 +154,8 @@ class SaleManager
         $record = $this->computeInvoiceStatus($record);
 
         $record->save();
+
+        $this->syncInventoryDelivery($record);
 
         $record->refresh();
 
@@ -198,9 +197,9 @@ class SaleManager
 
         $line->technical_price_unit = $line->price_unit;
 
-        $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
+        $line->price_reduce_taxexcl = $line->product_uom_qty ? round($line->price_subtotal / $line->product_uom_qty, 4) : 0.0;
 
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // Todo:: This calculation is wrong
+        $line->price_reduce_taxinc = $line->product_uom_qty ? round($line->price_total / $line->product_uom_qty, 4) : 0.0;
 
         $line->state = $line->order->state;
 
@@ -348,10 +347,14 @@ class SaleManager
 
     public function computeOrderLineDeliveryMethod(OrderLine $line): OrderLine
     {
+        if ($line->qty_delivered_method) {
+            return $line;
+        }
+
         if ($line->is_expense) {
             $line->qty_delivered_method = 'analytic';
         } else {
-            $line->qty_delivered_method = 'stock_move';
+            $line->qty_delivered_method ??= 'stock_move';
         }
 
         return $line;
@@ -365,14 +368,14 @@ class SaleManager
             return $line;
         }
 
-        $policy = $line->product?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
+        $policy = $line->product?->invoice_policy ?? $line->product?->parent?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
 
         if (
             $line->is_downpayment
             && $line->untaxed_amount_to_invoice == 0
         ) {
             $line->invoice_status = InvoiceStatus::INVOICED;
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::ORDER->value) {
+        } elseif ($policy === InvoicePolicy::ORDER->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_delivered > $line->product_uom_qty) {
@@ -380,7 +383,7 @@ class SaleManager
             } else {
                 $line->invoice_status = InvoiceStatus::TO_INVOICE;
             }
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        } elseif ($policy === InvoicePolicy::DELIVERY->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_to_invoice != 0 || $line->qty_delivered == $line->product_uom_qty) {
@@ -391,6 +394,7 @@ class SaleManager
         } else {
             $line->invoice_status = InvoiceStatus::NO;
         }
+
         return $line;
     }
 
@@ -404,7 +408,7 @@ class SaleManager
 
         $priceSubtotal = 0;
 
-        if ($line->product->invoice_policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        if ($line->product->invoice_policy === InvoicePolicy::DELIVERY->value) {
             $uomQtyToConsider = $line->qty_delivered;
         } else {
             $uomQtyToConsider = $line->product_uom_qty;
@@ -479,7 +483,7 @@ class SaleManager
                     ]
                 );
 
-                $record->addMessage([
+                $message = $record->addMessage([
                     'from' => [
                         'company' => Auth::user()->defaultCompany->toArray(),
                     ],
@@ -487,9 +491,13 @@ class SaleManager
                     'type' => 'comment',
                 ]);
 
-                $sent[] = $partner->name;
+                $record->addAttachments(
+                    [$data['file']],
+                    ['message_id' => $message->id],
+                );
 
-            } catch (\Exception $e) {
+                $sent[] = $partner->name;
+            } catch (Exception $e) {
                 $failed[$partner->name] = 'Email service error: '.$e->getMessage();
             }
         }
@@ -622,7 +630,7 @@ class SaleManager
         $productInvoicePolicy = $orderLine->product?->invoice_policy;
         $invoiceSetting = $this->invoiceSettings->invoice_policy->value;
 
-        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoiceEnums\InvoicePolicy::ORDER->value
+        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoicePolicy::ORDER->value
             ? $orderLine->product_uom_qty
             : $orderLine->qty_to_invoice;
 
@@ -644,9 +652,291 @@ class SaleManager
         $accountMoveLine->taxes()->sync($orderLine->taxes->pluck('id'));
     }
 
-    /**
-     * Apply push rules for the operation.
-     */
+    protected function syncInventoryDelivery(Order $record): void
+    {
+        if ($record->state !== OrderState::SALE) {
+            return;
+        }
+
+        if (! Package::isPluginInstalled('inventories')) {
+            return;
+        }
+
+        $operations = $record->operations()->get();
+
+        $draftOperations = $operations->filter(function ($operation) {
+            return in_array($operation->state, [
+                InventoryEnums\OperationState::DRAFT,
+                InventoryEnums\OperationState::CONFIRMED,
+                InventoryEnums\OperationState::ASSIGNED,
+            ]);
+        });
+
+        $validatedOperations = $operations->filter(function ($operation) {
+            return $operation->state === InventoryEnums\OperationState::DONE;
+        });
+
+        foreach ($record->lines as $line) {
+            $validatedQty = $this->getValidatedDeliveryQtyForLine($line, $validatedOperations);
+
+            $pendingQty = $this->getPendingDeliveryQtyForLine($line, $draftOperations);
+
+            $totalScheduledQty = $validatedQty + $pendingQty;
+
+            $requiredQty = $line->product_qty;
+
+            $diffQty = $requiredQty - $totalScheduledQty;
+
+            if ($diffQty > 0) {
+                if ($pendingQty > 0) {
+                    $this->updateDraftDeliveryMoves($line, $draftOperations, $pendingQty + $diffQty);
+                } else {
+                    $this->createNewDeliveryForLine($record, $line, $diffQty);
+                }
+            } elseif ($diffQty < 0) {
+                $qtyToReduce = min(abs($diffQty), $pendingQty);
+
+                if ($qtyToReduce > 0) {
+                    $newPendingQty = $pendingQty - $qtyToReduce;
+
+                    $this->updateOrCancelDeliveryMoves($line, $draftOperations, $newPendingQty);
+                }
+            } elseif ($pendingQty > 0 && $pendingQty != ($requiredQty - $validatedQty)) {
+                $expectedPendingQty = max(0, $requiredQty - $validatedQty);
+
+                $this->updateOrCancelDeliveryMoves($line, $draftOperations, $expectedPendingQty);
+            }
+        }
+
+        $this->cleanupEmptyDeliveryOperations($record);
+
+        foreach ($record->operations()->get() as $operation) {
+            if (! in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])) {
+                $operation->refresh();
+
+                InventoryFacade::computeTransfer($operation);
+            }
+        }
+    }
+
+    protected function getValidatedDeliveryQtyForLine(OrderLine $line, $validatedOperations): float
+    {
+        $quantity = 0.0;
+
+        foreach ($validatedOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if ($move->sale_order_line_id === $line->id && $move->state === InventoryEnums\MoveState::DONE) {
+                    $quantity += $move->quantity;
+                }
+            }
+        }
+
+        return $quantity;
+    }
+
+    protected function getPendingDeliveryQtyForLine(OrderLine $line, $draftOperations): float
+    {
+        $quantity = 0.0;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    $quantity += $move->product_uom_qty;
+                }
+            }
+        }
+
+        return $quantity;
+    }
+
+    protected function updateDraftDeliveryMoves(OrderLine $line, $draftOperations, float $targetQty): void
+    {
+        $firstMove = null;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    if (! $firstMove) {
+                        $firstMove = $move;
+                    }
+                }
+            }
+        }
+
+        if ($firstMove) {
+            $uomQty = $line->uom->computeQuantity($targetQty, $line->product->uom, true, 'HALF-UP');
+
+            $firstMove->update([
+                'product_qty'     => $targetQty,
+                'product_uom_qty' => $uomQty,
+                'quantity'        => $uomQty,
+            ]);
+
+            $firstMove->lines()->delete();
+
+            foreach ($draftOperations as $operation) {
+                foreach ($operation->moves as $move) {
+                    if (
+                        $move->id !== $firstMove->id
+                        && $move->sale_order_line_id === $line->id
+                        && $move->state !== InventoryEnums\MoveState::CANCELED
+                    ) {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    protected function updateOrCancelDeliveryMoves(OrderLine $line, $draftOperations, float $targetQty): void
+    {
+        if ($targetQty <= 0) {
+            foreach ($draftOperations as $operation) {
+                foreach ($operation->moves as $move) {
+                    if (
+                        $move->sale_order_line_id === $line->id
+                        && $move->state !== InventoryEnums\MoveState::CANCELED
+                    ) {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+
+            return;
+        }
+
+        $firstMove = null;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    if (! $firstMove) {
+                        $firstMove = $move;
+
+                        $uomQty = $line->uom->computeQuantity($targetQty, $line->product->uom, true, 'HALF-UP');
+
+                        $firstMove->update([
+                            'product_qty'     => $targetQty,
+                            'product_uom_qty' => $uomQty,
+                            'quantity'        => $uomQty,
+                        ]);
+
+                        $firstMove->lines()->delete();
+                    } else {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    protected function createNewDeliveryForLine(Order $record, OrderLine $line, float $qty): void
+    {
+        $existingDraftOperation = $record->operations()
+            ->whereIn('state', [
+                InventoryEnums\OperationState::DRAFT,
+                InventoryEnums\OperationState::CONFIRMED,
+                InventoryEnums\OperationState::ASSIGNED,
+            ])
+            ->first();
+
+        $rule = $this->getPullRule($line);
+
+        if (! $rule) {
+            return;
+        }
+
+        $uomQty = $line->uom->computeQuantity($qty, $line->product->uom, true, 'HALF-UP');
+
+        if ($existingDraftOperation) {
+            $newMove = InventoryMove::create([
+                'operation_id'            => $existingDraftOperation->id,
+                'name'                    => $line->name,
+                'reference'               => $existingDraftOperation->name,
+                'state'                   => InventoryEnums\MoveState::DRAFT,
+                'product_id'              => $line->product_id,
+                'product_qty'             => $qty,
+                'product_uom_qty'         => $uomQty,
+                'quantity'                => $uomQty,
+                'uom_id'                  => $line->product_uom_id,
+                'origin'                  => $record->name,
+                'scheduled_at'            => now()->addDays($rule->delay),
+                'source_location_id'      => $rule->source_location_id,
+                'destination_location_id' => $rule->destination_location_id,
+                'final_location_id'       => $rule->destination_location_id,
+                'product_packaging_id'    => $line->product_packaging_id,
+                'rule_id'                 => $rule->id,
+                'company_id'              => $rule->company_id,
+                'operation_type_id'       => $rule->operation_type_id,
+                'propagate_cancel'        => $rule->propagate_cancel,
+                'warehouse_id'            => $rule->warehouse_id,
+                'procure_method'          => InventoryEnums\ProcureMethod::MAKE_TO_ORDER,
+                'sale_order_line_id'      => $line->id,
+            ]);
+
+            if ($newMove->shouldBypassReservation()) {
+                $newMove->update([
+                    'procure_method' => InventoryEnums\ProcureMethod::MAKE_TO_STOCK,
+                ]);
+            }
+        } else {
+            $newMove = $this->runPullRule($rule, $line);
+
+            if ($newMove) {
+                $newMove->update([
+                    'product_qty'     => $qty,
+                    'product_uom_qty' => $uomQty,
+                    'quantity'        => $uomQty,
+                ]);
+
+                $this->createPullOperation($record, $rule, [$newMove]);
+            }
+        }
+    }
+
+    protected function cleanupEmptyDeliveryOperations(Order $record): void
+    {
+        $operations = $record->operations()->get();
+
+        foreach ($operations as $operation) {
+            if (in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])) {
+                continue;
+            }
+
+            $activeMoves = $operation->moves()->where('state', '!=', InventoryEnums\MoveState::CANCELED)->count();
+
+            if ($activeMoves === 0) {
+                $operation->update([
+                    'state' => InventoryEnums\OperationState::CANCELED,
+                ]);
+            }
+        }
+    }
+
     public function applyPullRules(Order $record): void
     {
         if (! Package::isPluginInstalled('inventories')) {
@@ -717,6 +1007,7 @@ class SaleManager
         $newOperation = InventoryOperation::create([
             'state'                   => InventoryEnums\OperationState::DRAFT,
             'origin'                  => $record->name,
+            'partner_id'              => $record->partner_id,
             'operation_type_id'       => $rule->operation_type_id,
             'source_location_id'      => $rule->source_location_id,
             'destination_location_id' => $rule->destination_location_id,

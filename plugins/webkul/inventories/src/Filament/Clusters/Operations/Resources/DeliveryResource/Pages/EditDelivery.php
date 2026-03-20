@@ -12,11 +12,13 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditDelivery extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = DeliveryResource::class;
 
@@ -37,7 +39,7 @@ class EditDelivery extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             OperationActions\TodoAction::make(),
             OperationActions\CheckAvailabilityAction::make(),
             OperationActions\ValidateAction::make(),

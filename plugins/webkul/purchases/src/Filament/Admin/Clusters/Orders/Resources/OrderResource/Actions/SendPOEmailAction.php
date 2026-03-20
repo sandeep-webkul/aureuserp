@@ -97,10 +97,8 @@ MD;
                 $livewire->updateForm();
 
             })
-            ->color(fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray'
-            )
-            ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE
-            );
+            ->color(fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray')
+            ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE);
     }
 
     private function handleEmailResults(array $result): void

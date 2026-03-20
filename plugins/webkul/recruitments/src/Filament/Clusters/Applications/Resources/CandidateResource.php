@@ -9,7 +9,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -32,9 +31,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
-use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 use Webkul\Recruitment\Filament\Clusters\Applications;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\CreateCandidate;
@@ -54,6 +52,8 @@ class CandidateResource extends Resource
     protected static ?string $cluster = Applications::class;
 
     protected static ?int $navigationSort = 3;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getModelLabel(): string
     {
@@ -76,6 +76,16 @@ class CandidateResource extends Resource
         ];
     }
 
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.email-from') => $record?->email_from ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.phone')      => $record?->phone ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company')    => $record?->company->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree')     => $record?->degree->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -84,8 +94,6 @@ class CandidateResource extends Resource
                     ->schema([
                         Section::make(__('recruitments::filament/clusters/applications/resources/candidate.form.sections.basic-information.title'))
                             ->schema([
-                                Hidden::make('creator_id')
-                                    ->default(Auth::id()),
                                 TextInput::make('name')
                                     ->label(__('recruitments::filament/clusters/applications/resources/candidate.form.sections.basic-information.fields.full-name'))
                                     ->required()
@@ -213,9 +221,10 @@ class CandidateResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
+            ->filtersFormColumns(2)
             ->filters([
                 QueryBuilder::make()
-                    ->constraintPickerColumns(5)
+                    ->constraintPickerColumns(1)
                     ->constraints([
                         RelationshipConstraint::make('company')
                             ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.filters.company'))
@@ -250,9 +259,17 @@ class CandidateResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        TextConstraint::make('manager')
+                        RelationshipConstraint::make('manager')
                             ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.filters.manager-name'))
-                            ->icon('heroicon-o-user'),
+                            ->icon('heroicon-o-user')
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
                     ]),
             ])
             ->groups([

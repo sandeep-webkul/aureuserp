@@ -7,6 +7,12 @@ return [
         'title' => 'Quotations',
     ],
 
+    'global-search' => [
+        'customer'  => 'Customer',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'section' => [
             'general' => [
@@ -37,8 +43,8 @@ return [
                             'quantity'            => 'Quantity',
                             'uom'                 => 'UOM',
                             'lead-time'           => 'Lead Time',
-                            'qty-delivered'       => 'Quantity Delivered',
-                            'qty-invoiced'        => 'Quantity Invoiced',
+                            'qty-delivered'       => 'Delivered',
+                            'qty-invoiced'        => 'Invoiced',
                             'packaging-qty'       => 'Packaging Quantity',
                             'packaging'           => 'Packaging',
                             'unit-price'          => 'Unit Price',
@@ -68,6 +74,20 @@ return [
                             'amount'              => 'Amount',
                             'margin-percentage'   => 'Margin (%)',
                             'discount-percentage' => 'Discount (%)',
+                        ],
+
+                        'notifications' => [
+                            'quantity-below-delivered' => [
+                                'title' => 'Cannot Reduce Quantity',
+                                'body'  => 'You cannot reduce the quantity below the delivered quantity (:qty).',
+                            ],
+                        ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'Cannot Delete Product',
+                                'body'  => 'Products cannot be deleted from a confirmed sales order.',
+                            ],
                         ],
                     ],
 
@@ -101,6 +121,20 @@ return [
                                     'product-added' => [
                                         'title' => 'Product added',
                                         'body'  => 'The product has been added successfully.',
+                                    ],
+
+                                    'product-not-found' => [
+                                        'title' => 'Product Not Found',
+                                    ],
+
+                                    'product-already-exists' => [
+                                        'title' => 'Product Already Exists',
+                                        'body'  => 'This product is already in the order lines. Please update the existing line instead.',
+                                    ],
+
+                                    'missing-product-data' => [
+                                        'title' => 'Missing Product Data',
+                                        'body'  => 'Unable to process the selected product.',
                                     ],
                                 ],
                             ],
