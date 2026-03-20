@@ -8,7 +8,9 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Support\Models\Currency;
 
 class TopCustomersWidget extends BaseWidget
 {
@@ -38,7 +40,8 @@ class TopCustomersWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('total_billed')
                     ->label('Total Billed')
-                    ->money('INR'),
+                    ->money($this->getActiveCurrency(), true),
+
             ])
             ->paginated(false);
     }
@@ -50,29 +53,53 @@ class TopCustomersWidget extends BaseWidget
             ->join('partners_partners', 'accounts_account_moves.partner_id', '=', 'partners_partners.id');
 
         if (! empty($this->filters['start_date'])) {
-            $query->whereDate('accounts_account_moves.created_at', '>=', Carbon::parse($this->filters['start_date']));
+            $query->whereDate('accounts_account_moves.invoice_date', '>=', Carbon::parse($this->filters['start_date']));
         }
 
         if (! empty($this->filters['end_date'])) {
-            $query->whereDate('accounts_account_moves.created_at', '<=', Carbon::parse($this->filters['end_date']));
+            $query->whereDate('accounts_account_moves.invoice_date', '<=', Carbon::parse($this->filters['end_date']));
         }
 
         if (! empty($this->filters['salesperson_id'])) {
-            $query->where('accounts_account_moves.invoice_user_id', $this->filters['salesperson_id']);
+            $query->whereIn('accounts_account_moves.invoice_user_id', (array) $this->filters['salesperson_id']);
         }
 
         if (! empty($this->filters['product_id'])) {
             $query->whereHas('lines', function ($q) {
                 $q->where('display_type', 'product')
-                    ->where('product_id', $this->filters['product_id']);
+                    ->whereIn('product_id', (array) $this->filters['product_id']);
             });
         }
-        
-        $query->where('sub_type', 'customer');
-        
+
+        if (! empty($this->filters['category_id'])) {
+            $query->whereHas('lines.product', function ($q) {
+                $q->whereIn('category_id', (array) $this->filters['category_id']);
+            });
+        }
+
+        if (! empty($this->filters['customer_id'])) {
+            $query->whereIn('accounts_account_moves.partner_id', (array) $this->filters['customer_id']);
+        }
+
+        if (! empty($this->filters['payment_state'])) {
+            $query->whereIn('accounts_account_moves.payment_state', (array) $this->filters['payment_state']);
+        }
+
+        $query->where('accounts_account_moves.move_type', MoveType::OUT_INVOICE);
+
+        $query->where('partners_partners.customer_rank', '>', 0);
+
         return $query
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->orderByDesc('total_billed')
             ->limit(10);
+    }
+
+    /**
+     * 🔹 Get active currency for money formatting.
+     */
+    protected function getActiveCurrency(): ?string
+    {
+        return Currency::where('active', true)->value('name') ?? 'USD';
     }
 }

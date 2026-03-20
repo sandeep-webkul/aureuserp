@@ -64,6 +64,36 @@ class TopOrdersWidget extends BaseWidget
             $query->whereDate('ordered_at', '<=', Carbon::parse($this->filters['end_date']));
         }
 
+        if (! empty($this->filters['country_id'])) {
+            $query->whereHas('partner', function ($partnerQuery) {
+                $partnerQuery->whereIn('country_id', (array) $this->filters['country_id']);
+            });
+        }
+
+        if (! empty($this->filters['product_id'])) {
+            $query->whereHas('lines', function ($lineQuery) {
+                $lineQuery->whereIn('product_id', (array) $this->filters['product_id']);
+            });
+        }
+
+        if (! empty($this->filters['partner_id'])) {
+            $query->whereIn('partner_id', (array) $this->filters['partner_id']);
+        }
+
+        if (! empty($this->filters['category_id'])) {
+            $query->whereHas('lines.product', function ($productQuery) {
+                $productQuery->whereIn('category_id', (array) $this->filters['category_id']);
+            });
+        }
+
+        if (! empty($this->filters['buyer_id'])) {
+            $query->whereIn('user_id', (array) $this->filters['buyer_id']);
+        }
+
+        if (! empty($this->filters['state'])) {
+            $query->whereIn('state', (array) $this->filters['state']);
+        }
+
         return $query->orderByDesc('total_amount')->limit(10);
     }
 }

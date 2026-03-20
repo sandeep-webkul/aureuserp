@@ -11,11 +11,11 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Invoice\Models\Invoice;
 
-class TopInvoicesWidget extends BaseWidget
+class TopBillsWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Top Invoices';
+    protected static ?string $heading = 'Top Bills';
 
     protected static bool $isLazy = false;
 
@@ -30,14 +30,14 @@ class TopInvoicesWidget extends BaseWidget
             ->query($this->getFilteredQuery())
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Number'),
+                    ->label('Bill Number'),
+
+                Tables\Columns\TextColumn::make('partner.name')
+                    ->label('Vendor'),
 
                 Tables\Columns\TextColumn::make('invoice_date')
-                    ->label('Invoice Date')
+                    ->label('Bill Date')
                     ->date('M d, Y'),
-
-                Tables\Columns\TextColumn::make('invoiceUser.name')
-                    ->label('Salesperson'),
 
                 Tables\Columns\TextColumn::make('amount_total')
                     ->label('Total')
@@ -57,7 +57,7 @@ class TopInvoicesWidget extends BaseWidget
 
     protected function getFilteredQuery(): Builder
     {
-        $query = Invoice::query();
+        $query = Invoice::query()->where('move_type', MoveType::IN_INVOICE);
 
         if (! empty($this->filters['start_date'])) {
             $query->whereDate('invoice_date', '>=', $this->filters['start_date']);
@@ -72,29 +72,28 @@ class TopInvoicesWidget extends BaseWidget
         }
 
         if (! empty($this->filters['product_id'])) {
-            $query->whereHas('lines', function ($q) {
-                $q->where('display_type', 'product')
+            $query->whereHas('lines', function ($lineQuery) {
+                $lineQuery->where('display_type', 'product')
                     ->whereIn('product_id', (array) $this->filters['product_id']);
             });
         }
 
         if (! empty($this->filters['category_id'])) {
-            $query->whereHas('lines.product', function ($q) {
-                $q->whereIn('category_id', (array) $this->filters['category_id']);
+            $query->whereHas('lines.product', function ($productQuery) {
+                $productQuery->whereIn('category_id', (array) $this->filters['category_id']);
             });
         }
 
-        if (! empty($this->filters['customer_id'])) {
-            $query->whereIn('partner_id', (array) $this->filters['customer_id']);
+        if (! empty($this->filters['vendor_id'])) {
+            $query->whereIn('partner_id', (array) $this->filters['vendor_id']);
         }
 
         if (! empty($this->filters['payment_state'])) {
             $query->whereIn('payment_state', (array) $this->filters['payment_state']);
         }
 
-        $query->where('move_type', MoveType::OUT_INVOICE);
-
-        return $query->with('invoiceUser')
+        return $query
+            ->with('partner')
             ->orderByDesc('amount_total')
             ->limit(10);
     }

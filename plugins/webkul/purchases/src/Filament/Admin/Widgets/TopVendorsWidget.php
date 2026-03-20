@@ -9,6 +9,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\Purchase\Models\PurchaseOrder;
+use Webkul\Support\Models\Currency;
 
 class TopVendorsWidget extends BaseWidget
 {
@@ -38,7 +39,7 @@ class TopVendorsWidget extends BaseWidget
 
                 Tables\Columns\TextColumn::make('total_purchased')
                     ->label('Total Purchased')
-                    ->money('INR'),
+                    ->money($this->getActiveCurrency(), true),
             ])
             ->paginated(false);
     }
@@ -57,11 +58,54 @@ class TopVendorsWidget extends BaseWidget
             $query->whereDate('purchases_orders.ordered_at', '<=', Carbon::parse($this->filters['end_date']));
         }
 
-        $query->where('sub_type', 'supplier');
+        if (! empty($this->filters['country_id'])) {
+            $query->whereIn('partners_partners.country_id', (array) $this->filters['country_id']);
+        }
+
+        if (! empty($this->filters['product_id'])) {
+            $query->whereExists(function ($subQuery) {
+                $subQuery->selectRaw('1')
+                    ->from('purchases_order_lines')
+                    ->whereColumn('purchases_order_lines.order_id', 'purchases_orders.id')
+                    ->whereIn('purchases_order_lines.product_id', (array) $this->filters['product_id']);
+            });
+        }
+
+        if (! empty($this->filters['partner_id'])) {
+            $query->whereIn('partners_partners.id', (array) $this->filters['partner_id']);
+        }
+
+        if (! empty($this->filters['category_id'])) {
+            $query->whereExists(function ($subQuery) {
+                $subQuery->selectRaw('1')
+                    ->from('purchases_order_lines')
+                    ->join('products_products', 'purchases_order_lines.product_id', '=', 'products_products.id')
+                    ->whereColumn('purchases_order_lines.order_id', 'purchases_orders.id')
+                    ->whereIn('products_products.category_id', (array) $this->filters['category_id']);
+            });
+        }
+
+        if (! empty($this->filters['buyer_id'])) {
+            $query->whereIn('purchases_orders.user_id', (array) $this->filters['buyer_id']);
+        }
+
+        if (! empty($this->filters['state'])) {
+            $query->whereIn('purchases_orders.state', (array) $this->filters['state']);
+        }
+
+        $query->where('partners_partners.supplier_rank', '>', 0);
 
         return $query
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->orderByDesc('total_purchased')
             ->limit(10);
+    }
+
+    /**
+     * 🔹 Get active currency for money formatting.
+     */
+    protected function getActiveCurrency(): ?string
+    {
+        return Currency::where('active', true)->value('name') ?? 'USD';
     }
 }

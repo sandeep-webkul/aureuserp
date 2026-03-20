@@ -10,12 +10,10 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
 
-class InvoiceStatsWidget extends BaseWidget
+class BillStatsWidget extends BaseWidget
 {
     use HasWidgetShield;
     use InteractsWithPageFilters;
-
-    // protected static ?string $pollingInterval = '15s';
 
     protected function getStats(): array
     {
@@ -23,46 +21,46 @@ class InvoiceStatsWidget extends BaseWidget
         $current = $this->applyDateRange(clone $baseQuery);
         $previous = $this->applyDateRange(clone $baseQuery, previous: true);
 
-        $totalInvoiced = (float) (clone $current)->sum('amount_total');
-        $totalInvoicedPrevious = (float) (clone $previous)->sum('amount_total');
+        $totalBills = (float) (clone $current)->sum('amount_total');
+        $totalBillsPrevious = (float) (clone $previous)->sum('amount_total');
 
-        $invoiceCount = (clone $current)->count();
-        $invoiceCountPrevious = (clone $previous)->count();
+        $billCount = (clone $current)->count();
+        $billCountPrevious = (clone $previous)->count();
 
-        $paidCount = (clone $current)->where('payment_state', 'paid')->count();
-        $paidCountPrevious = (clone $previous)->where('payment_state', 'paid')->count();
+        $paidBills = (clone $current)->where('payment_state', 'paid')->count();
+        $paidBillsPrevious = (clone $previous)->where('payment_state', 'paid')->count();
 
-        $unpaidCount = (clone $current)->where('payment_state', 'not_paid')->count();
-        $unpaidCountPrevious = (clone $previous)->where('payment_state', 'not_paid')->count();
+        $unpaidBills = (clone $current)->where('payment_state', 'not_paid')->count();
+        $unpaidBillsPrevious = (clone $previous)->where('payment_state', 'not_paid')->count();
 
         return [
-            Stat::make('Total Invoiced', money($totalInvoiced))
-                ->description($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['icon'])
-                ->color($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['color'])
+            Stat::make('Total Bills Value', money($totalBills))
+                ->description($this->calculateTrend($totalBills, $totalBillsPrevious)['description'])
+                ->descriptionIcon($this->calculateTrend($totalBills, $totalBillsPrevious)['icon'])
+                ->color($this->calculateTrend($totalBills, $totalBillsPrevious)['color'])
                 ->icon('heroicon-o-currency-dollar')
-                ->chart([$totalInvoicedPrevious, $totalInvoiced]),
+                ->chart([$totalBillsPrevious, $totalBills]),
 
-            Stat::make('Invoices', number_format($invoiceCount))
-                ->description($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['icon'])
-                ->color($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['color'])
+            Stat::make('Bills', number_format($billCount))
+                ->description($this->calculateTrend($billCount, $billCountPrevious)['description'])
+                ->descriptionIcon($this->calculateTrend($billCount, $billCountPrevious)['icon'])
+                ->color($this->calculateTrend($billCount, $billCountPrevious)['color'])
                 ->icon('heroicon-o-document-text')
-                ->chart([$invoiceCountPrevious, $invoiceCount]),
+                ->chart([$billCountPrevious, $billCount]),
 
-            Stat::make('Paid Invoices', $paidCount)
-                ->description($this->calculateTrend($paidCount, $paidCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($paidCount, $paidCountPrevious)['icon'])
-                ->color($this->calculateTrend($paidCount, $paidCountPrevious)['color'])
+            Stat::make('Paid Bills', $paidBills)
+                ->description($this->calculateTrend($paidBills, $paidBillsPrevious)['description'])
+                ->descriptionIcon($this->calculateTrend($paidBills, $paidBillsPrevious)['icon'])
+                ->color($this->calculateTrend($paidBills, $paidBillsPrevious)['color'])
                 ->icon('heroicon-o-check-circle')
-                ->chart([$paidCountPrevious, $paidCount]),
+                ->chart([$paidBillsPrevious, $paidBills]),
 
-            Stat::make('Unpaid Invoices', $unpaidCount)
-                ->description($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['icon'])
-                ->color($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['color'])
+            Stat::make('Unpaid Bills', $unpaidBills)
+                ->description($this->calculateTrend($unpaidBills, $unpaidBillsPrevious)['description'])
+                ->descriptionIcon($this->calculateTrend($unpaidBills, $unpaidBillsPrevious)['icon'])
+                ->color($this->calculateTrend($unpaidBills, $unpaidBillsPrevious)['color'])
                 ->icon('heroicon-o-exclamation-circle')
-                ->chart([$unpaidCountPrevious, $unpaidCount]),
+                ->chart([$unpaidBillsPrevious, $unpaidBills]),
         ];
     }
 
@@ -71,11 +69,11 @@ class InvoiceStatsWidget extends BaseWidget
         $filters = $this->filters ?? [];
 
         return Invoice::query()
-            ->where('move_type', MoveType::OUT_INVOICE)
+            ->where('move_type', MoveType::IN_INVOICE)
             ->when(! empty($filters['salesperson_id']), fn ($query) => $query->whereIn('invoice_user_id', (array) $filters['salesperson_id']))
             ->when(! empty($filters['product_id']), fn ($query) => $query->whereHas('lines', fn ($lineQuery) => $lineQuery->where('display_type', 'product')->whereIn('product_id', (array) $filters['product_id'])))
             ->when(! empty($filters['category_id']), fn ($query) => $query->whereHas('lines.product', fn ($productQuery) => $productQuery->whereIn('category_id', (array) $filters['category_id'])))
-            ->when(! empty($filters['customer_id']), fn ($query) => $query->whereIn('partner_id', (array) $filters['customer_id']))
+            ->when(! empty($filters['vendor_id']), fn ($query) => $query->whereIn('partner_id', (array) $filters['vendor_id']))
             ->when(! empty($filters['payment_state']), fn ($query) => $query->whereIn('payment_state', (array) $filters['payment_state']));
     }
 

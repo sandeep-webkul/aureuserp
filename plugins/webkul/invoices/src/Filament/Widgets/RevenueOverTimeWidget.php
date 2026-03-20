@@ -34,29 +34,43 @@ class RevenueOverTimeWidget extends ChartWidget
             ->where('payment_state', 'paid');
 
         if (! empty($this->filters['start_date'])) {
-            $query->whereDate('created_at', '>=', $this->filters['start_date']);
+            $query->whereDate('invoice_date', '>=', $this->filters['start_date']);
         }
 
         if (! empty($this->filters['end_date'])) {
-            $query->whereDate('created_at', '<=', $this->filters['end_date']);
+            $query->whereDate('invoice_date', '<=', $this->filters['end_date']);
         }
 
         if (! empty($this->filters['salesperson_id'])) {
-            $query->where('invoice_user_id', $this->filters['salesperson_id']);
+            $query->whereIn('invoice_user_id', (array) $this->filters['salesperson_id']);
         }
 
         if (! empty($this->filters['product_id'])) {
             $query->whereHas('lines', function (Builder $q) {
                 $q->where('display_type', 'product')
-                    ->where('product_id', $this->filters['product_id']);
+                    ->whereIn('product_id', (array) $this->filters['product_id']);
             });
         }
-        
+
+        if (! empty($this->filters['category_id'])) {
+            $query->whereHas('lines.product', function (Builder $q) {
+                $q->whereIn('category_id', (array) $this->filters['category_id']);
+            });
+        }
+
+        if (! empty($this->filters['customer_id'])) {
+            $query->whereIn('partner_id', (array) $this->filters['customer_id']);
+        }
+
+        if (! empty($this->filters['payment_state'])) {
+            $query->whereIn('payment_state', (array) $this->filters['payment_state']);
+        }
+
         $query->where('move_type', MoveType::OUT_INVOICE);
 
-        $results = $query->selectRaw('DATE(created_at) as date, SUM(amount_total) as total')
-            ->groupByRaw('DATE(created_at)')
-            ->orderByRaw('DATE(created_at)')
+        $results = $query->selectRaw('DATE(invoice_date) as date, SUM(amount_total) as total')
+            ->groupByRaw('DATE(invoice_date)')
+            ->orderByRaw('DATE(invoice_date)')
             ->get();
 
         $labels = $results->pluck('date')->map(fn ($date) => date('M d', strtotime($date)))->toArray();

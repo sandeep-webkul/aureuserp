@@ -4,7 +4,6 @@ namespace Webkul\Purchase\Filament\Admin\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -13,11 +12,17 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Widgets\PurchaseStatsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\PurchaseTrendWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopOrdersWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopPurchasedProductsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopVendorsWidget;
+use Webkul\Purchase\Models\Order;
+use Webkul\Security\Models\User;
+use Webkul\Support\Models\Country;
 
 class Purchases extends BaseDashboard
 {
@@ -35,7 +40,7 @@ class Purchases extends BaseDashboard
     {
         return __('purchases::filament/admin/pages/dashboard.navigation.title');
     }
-    
+
     public static function getNavigationGroup(): string
     {
         return __('projects::filament/pages/dashboard.navigation.group');
@@ -51,82 +56,72 @@ class Purchases extends BaseDashboard
         return $form->schema([
             Section::make()
                 ->schema([
-                    Select::make('date_range')
-                        ->label('Date Range')
-                        ->options([
-                            'week'     => 'Last 7 days',
-                            'month'    => 'Last 30 days',
-                            '3_months' => 'Last 3 months',
-                            '6_months' => 'Last 6 months',
-                            'year'     => 'Last 1 year',
-                            '3_years'  => 'Last 3 years',
-                        ])
-                        ->default('month')
-                        ->reactive()
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $endDate = Carbon::now()->format('Y-m-d');
-                            switch ($state) {
-                                case 'week':
-                                    $startDate = Carbon::now()->subDays(7)->format('Y-m-d');
-                                    break;
-                                case 'month':
-                                    $startDate = Carbon::now()->subMonth()->format('Y-m-d');
-                                    break;
-                                case '3_months':
-                                    $startDate = Carbon::now()->subMonths(3)->format('Y-m-d');
-                                    break;
-                                case '6_months':
-                                    $startDate = Carbon::now()->subMonths(6)->format('Y-m-d');
-                                    break;
-                                case 'year':
-                                    $startDate = Carbon::now()->subYear()->format('Y-m-d');
-                                    break;
-                                case '3_years':
-                                    $startDate = Carbon::now()->subYears(3)->format('Y-m-d');
-                                    break;
-                                default:
-                                    $startDate = Carbon::now()->subMonth()->format('Y-m-d');
-                                    break;
-                            }
-
-                            $set('start_date', $startDate);
-                            $set('end_date', $endDate);
-                        }),
-
                     DatePicker::make('start_date')
                         ->label('Start Date')
-                        ->maxDate(fn(Get $get) => $get('end_date') ?: now())
-                        ->default(fn(Get $get) => $get('start_date') ?: now()->subMonth()->format('Y-m-d'))
-                        ->reactive()
-                        ->hidden()
+                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
+                        ->default(now()->subMonth())
                         ->native(false),
 
                     DatePicker::make('end_date')
                         ->label('End Date')
-                        ->minDate(fn(Get $get) => $get('start_date') ?: now())
+                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
                         ->maxDate(now())
-                        ->default(fn(Get $get) => $get('end_date') ?: now()->format('Y-m-d'))
-                        ->reactive()
-                        ->hidden()
+                        ->default(now())
                         ->native(false),
+
+                    Select::make('country_id')
+                        ->label('Country')
+                        ->options(fn () => Country::pluck('name', 'id')->toArray())
+                        ->multiple()
+                        ->searchable()
+                        ->placeholder('All Countries')
+                        ->live(),
+
                     Select::make('product_id')
                         ->label('Product')
-                        ->options(fn() => Product::pluck('name', 'id'))
+                        ->options(fn () => Product::pluck('name', 'id')->toArray())
+                        ->multiple()
                         ->searchable()
-                        ->preload()
                         ->placeholder('All Products')
-                        ->reactive(),
+                        ->live(),
 
                     Select::make('partner_id')
                         ->label('Vendor')
-                        ->options(fn() => Partner::where('sub_type', 'supplier')->pluck('name', 'id'))
+                        ->options(fn () => Partner::where('supplier_rank', '>', 0)->pluck('name', 'id')->toArray())
+                        ->multiple()
                         ->searchable()
-                        ->preload()
                         ->placeholder('All Vendors')
-                        ->reactive(),
+                        ->live(),
+
+                    Select::make('category_id')
+                        ->label('Category')
+                        ->options(fn () => Category::pluck('name', 'id')->toArray())
+                        ->multiple()
+                        ->searchable()
+                        ->placeholder('All Categories')
+                        ->live(),
+
+                    Select::make('buyer_id')
+                        ->label('Buyer')
+                        ->options(fn () => User::whereIn('id', Order::distinct()->pluck('user_id')->filter())
+                            ->pluck('name', 'id')
+                            ->toArray())
+                        ->multiple()
+                        ->searchable()
+                        ->placeholder('All Buyers')
+                        ->live(),
+
+                    Select::make('state')
+                        ->label('Order State')
+                        ->options(OrderState::options())
+                        ->multiple()
+                        ->searchable()
+                        ->placeholder('All States')
+                        ->live(),
 
                 ])
-                ->columns(3),
+                ->columns(4)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -134,6 +129,7 @@ class Purchases extends BaseDashboard
     {
         return [
             PurchaseStatsWidget::class,
+            PurchaseTrendWidget::class,
             TopOrdersWidget::class,
             TopVendorsWidget::class,
             TopPurchasedProductsWidget::class,
