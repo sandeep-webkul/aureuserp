@@ -605,43 +605,43 @@ class JournalEntryResource extends Resource
             ->table([
                 TableColumn::make('account_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.account'))
-                    ->width(200)
+                    ->resizable()
+                    ->wrapHeader()
                     ->markAsRequired(),
                 TableColumn::make('partner_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.partner'))
-                    ->width(160)
+                    ->resizable()
                     ->toggleable(),
                 TableColumn::make('name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.label'))
-                    ->width(160)
+                    ->resizable()
                     ->toggleable(),
                 TableColumn::make('amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.amount-currency'))
-                    ->width(160)
+                    ->resizable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('currency_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.currency'))
-                    ->width(100)
+                    ->resizable()
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('taxes')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.taxes'))
-                    ->width(150)
+                    ->resizable()
                     ->toggleable(),
                 TableColumn::make('debit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.debit'))
-                    ->width(100)
+                    ->resizable()
                     ->summarize(\Webkul\Support\Filament\Summarizers\Sum::make())
                     ->markAsRequired(),
                 TableColumn::make('credit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.credit'))
-                    ->width(100)
+                    ->resizable()
                     ->summarize(\Webkul\Support\Filament\Summarizers\Sum::make())
                     ->markAsRequired(),
                 TableColumn::make('discount_amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.discount-amount-currency'))
-                    ->width(200)
-                    ->wrapHeader()
+                    ->resizable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->schema([
@@ -653,6 +653,7 @@ class JournalEntryResource extends Resource
                     ->required()
                     ->preload()
                     ->live()
+                    ->wrapOptionLabels(false)
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -660,6 +661,7 @@ class JournalEntryResource extends Resource
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.partner'))
                     ->relationship('partner', 'name')
                     ->searchable()
+                    ->wrapOptionLabels(false)
                     ->preload()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
@@ -689,6 +691,7 @@ class JournalEntryResource extends Resource
                     ->live()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
+                    ->wrapOptionLabels(false)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::currencyUpdated($set, $get))
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Select::make('taxes')
@@ -702,6 +705,7 @@ class JournalEntryResource extends Resource
                     ->preload()
                     ->dehydrated()
                     ->live()
+                    ->wrapOptionLabels(false)
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::taxesUpdated($set, $get))
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 TextInput::make('debit')
