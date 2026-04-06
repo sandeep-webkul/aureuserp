@@ -148,6 +148,34 @@ export class ErpLocators {
     readonly salesSuccessToast: Locator;
     readonly salesValidationMessage: Locator;
 
+    /**
+     * Website Pages
+     */
+
+    readonly websitePagesHeading: Locator;
+    readonly websitePagesTable: Locator;
+    readonly websitePagesCreateButton: Locator;
+    readonly websitePagesTitleInput: Locator;
+    readonly websitePagesSlugInput: Locator;
+    readonly websitePagesContentInput: Locator;
+    readonly websitePagesEditableContent: Locator;
+    readonly websitePagesMetaTitleInput: Locator;
+    readonly websitePagesMetaKeywordsInput: Locator;
+    readonly websitePagesMetaDescriptionInput: Locator;
+    readonly websitePagesHeaderVisibleToggle: Locator;
+    readonly websitePagesFooterVisibleToggle: Locator;
+    readonly websitePagesSaveButton: Locator;
+    readonly websitePagesSearchInput: Locator;
+    readonly websitePagesRowActionsButton: Locator;
+    readonly websitePagesEditButton: Locator;
+    readonly websitePagesEditLink: Locator;
+    readonly websitePagesEditActionButton: Locator;
+    readonly websitePagesDeleteButton: Locator;
+    readonly websitePagesDeleteLink: Locator;
+    readonly websitePagesDeleteActionButton: Locator;
+    readonly websitePagesConfirmDeleteButton: Locator;
+    readonly websitePagesSuccessToast: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -296,5 +324,33 @@ export class ErpLocators {
         this.salesSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
         this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+
+        /**
+         * Website Pages
+         */
+
+        this.websitePagesHeading = page.locator("h1, h2, h3").filter({ hasText: /pages/i }).first();
+        this.websitePagesTable = page.locator("table, div.fi-ta-empty-state").first();
+        this.websitePagesCreateButton = page.locator("a,button").filter({ hasText: /new page|create page|add page|create/i }).first();
+        this.websitePagesTitleInput = page.locator('input[id="form.title"]');
+        this.websitePagesSlugInput = page.locator('input[id="form.slug"]');
+        this.websitePagesContentInput = page.locator('textarea[id="form.content"], input[id="form.content"], [id="form.content"]');
+        this.websitePagesEditableContent = page.locator('[contenteditable="true"]');
+        this.websitePagesMetaTitleInput = page.locator('input[id="form.meta_title"]');
+        this.websitePagesMetaKeywordsInput = page.locator('input[id="form.meta_keywords"], input[name="form.meta_keywords"]');
+        this.websitePagesMetaDescriptionInput = page.locator('textarea[id="form.meta_description"]');
+        this.websitePagesHeaderVisibleToggle = page.getByRole("switch", { name: /header visible|is header visible/i }).first();
+        this.websitePagesFooterVisibleToggle = page.getByRole("switch", { name: /footer visible|is footer visible/i }).first();
+        this.websitePagesSaveButton = page.getByRole("button", { name: /save|create|submit/i }).first();
+        this.websitePagesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.websitePagesRowActionsButton = page.locator("div.fi-ta-text-item").first();
+        this.websitePagesEditButton = page.getByRole("menuitem", { name: /edit/i }).first();
+        this.websitePagesEditLink = page.getByRole("link", { name: /edit/i }).first();
+        this.websitePagesEditActionButton = page.getByRole("button", { name: /edit/i }).first();
+        this.websitePagesDeleteButton = page.getByRole("menuitem", { name: /delete/i }).first();
+        this.websitePagesDeleteLink = page.getByRole("link", { name: /delete/i }).first();
+        this.websitePagesDeleteActionButton = page.getByRole("button", { name: /delete/i }).first();
+        this.websitePagesConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /delete/i }).first();
+        this.websitePagesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
     }
 }
