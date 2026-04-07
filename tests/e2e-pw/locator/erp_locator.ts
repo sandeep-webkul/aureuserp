@@ -176,6 +176,44 @@ export class ErpLocators {
     readonly websitePagesConfirmDeleteButton: Locator;
     readonly websitePagesSuccessToast: Locator;
 
+    /**
+     * Website Blog Categories
+     */
+
+    readonly blogCategoriesHeading: Locator;
+    readonly blogCategoriesTable: Locator;
+    readonly blogCategoriesCreateButton: Locator;
+    readonly deleteBlogCategoryRowButton: Locator;
+    readonly blogCategoriesNameInput: Locator;
+    readonly blogCategoriesSlugInput: Locator;
+    readonly blogCategoriesSubTitleInput: Locator;
+    readonly blogCategoriesSearchInput: Locator;
+    readonly blogCategoriesSaveButton: Locator;
+    readonly blogCategoriesConfirmDeleteButton: Locator;
+    readonly blogCategoriesSuccessToast: Locator;
+
+    /**
+     * Website Blog Posts
+     */
+
+    readonly blogPostsHeading: Locator;
+    readonly blogPostsTable: Locator;
+    readonly blogPostsCreateButton: Locator;
+    readonly blogPostsTitleInput: Locator;
+    readonly blogPostsSlugInput: Locator;
+    readonly blogPostsSubTitleInput: Locator;
+    readonly blogPostsContentInput: Locator;
+    readonly blogPostsDeleteButton: Locator;
+    readonly blogPostsEditableContent: Locator;
+    readonly blogPostsMetaTitleInput: Locator;
+    readonly blogPostsMetaKeywordsInput: Locator;
+    readonly blogPostsMetaDescriptionInput: Locator;
+    readonly blogPostsCategorySelect: Locator;
+    readonly blogPostsSearchInput: Locator;
+    readonly blogPostsSaveButton: Locator;
+    readonly blogPostsConfirmDeleteButton: Locator;
+    readonly blogPostsSuccessToast: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -352,5 +390,43 @@ export class ErpLocators {
         this.websitePagesDeleteActionButton = page.getByRole("button", { name: /delete/i }).first();
         this.websitePagesConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /delete/i }).first();
         this.websitePagesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+
+        /**
+         * Website Blog Categories
+         */
+
+        this.blogCategoriesHeading = page.locator("h1, h2, h3").filter({ hasText: /categories/i }).first();
+        this.blogCategoriesTable = page.locator("table, div.fi-ta-empty-state").first();
+        this.blogCategoriesCreateButton = page.locator("a,button").filter({ hasText: /new category|create category|add category|create/i }).first();
+        this.deleteBlogCategoryRowButton = page.locator('button.fi-ac-link-action').nth(1); 
+        this.blogCategoriesNameInput = page.getByRole("textbox", { name: /^Name/ }).first();
+        this.blogCategoriesSlugInput = page.getByRole("textbox", { name: /^Slug$/ }).first();
+        this.blogCategoriesSubTitleInput = page.getByRole("textbox", { name: /^Sub Title$/ }).first();
+        this.blogCategoriesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.blogCategoriesSaveButton = page.getByRole("button", { name: /create|save|submit/i }).last();
+        this.blogCategoriesConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /delete/i }).first();
+        this.blogCategoriesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+
+        /**
+         * Website Blog Posts
+         */
+
+        this.blogPostsHeading = page.locator("h1, h2, h3").filter({ hasText: /blog posts|posts/i }).first();
+        this.blogPostsTable = page.locator("table, div.fi-ta-empty-state").first();
+        this.blogPostsCreateButton = page.locator("a,button").filter({ hasText: /new post|create post|add post|create/i }).first();
+        this.blogPostsDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.blogPostsTitleInput = page.getByRole("textbox", { name: /^Title/ }).first();
+        this.blogPostsSlugInput = page.getByRole("textbox", { name: /^Slug$/ }).first();
+        this.blogPostsSubTitleInput = page.getByRole("textbox", { name: /^Sub Title$/ }).first();
+        this.blogPostsContentInput = page.locator('textarea[id="form.content"], input[id="form.content"], [id="form.content"]').first();
+        this.blogPostsEditableContent = page.locator('[contenteditable="true"]');
+        this.blogPostsMetaTitleInput = page.getByRole("textbox", { name: /^Meta Title$/ }).first();
+        this.blogPostsMetaKeywordsInput = page.getByRole("textbox", { name: /^Meta Keywords$/ }).first();
+        this.blogPostsMetaDescriptionInput = page.getByRole("textbox", { name: /^Meta Description$/ }).first();
+        this.blogPostsCategorySelect = page.locator("button").filter({ hasText: /^Select an option$/ }).first();
+        this.blogPostsSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.blogPostsSaveButton = page.getByRole("button", { name: /create|save|submit/i }).last();
+        this.blogPostsConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /delete/i }).first();
+        this.blogPostsSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
     }
 }
