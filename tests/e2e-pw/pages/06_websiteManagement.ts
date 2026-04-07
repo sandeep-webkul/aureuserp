@@ -68,11 +68,12 @@ export class WebsiteManagementPage {
         await this.gotoWebsitePagesPage();
         await this.searchPage(originalTitle);
         await this.openRowActions();
-        await this.clickAction(
-            this.erpLocators.websitePagesEditButton,
-            this.erpLocators.websitePagesEditLink,
-            this.erpLocators.websitePagesEditActionButton,
-        );
+        await this.erpLocators.websitePagesEditButton.click();
+        // await this.clickAction(
+        //     this.erpLocators.websitePagesEditButton,
+        //     this.erpLocators.websitePagesEditLink,
+        //     this.erpLocators.websitePagesEditActionButton,
+        // );
 
         if (updates.title) {
             await this.erpLocators.websitePagesTitleInput.fill(updates.title);
@@ -164,6 +165,56 @@ export class WebsiteManagementPage {
         const isChecked = (await toggle.getAttribute("aria-checked")) === "true";
         if (isChecked !== checked) {
             await toggle.click();
+        }
+    }
+
+    async publishPage(title: string): Promise<void> {
+        await this.gotoWebsitePagesPage();
+        await this.searchPage(title);
+        await this.openRowActions();
+        await this.clickAction(/edit/i);
+
+        const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
+        if (await publishButton.isVisible().catch(() => false)) {
+            await publishButton.click();
+            await this.expectSuccessToast();
+        }
+    }
+
+    async draftPage(title: string): Promise<void> {
+        await this.gotoWebsitePagesPage();
+        await this.searchPage(title);
+        await this.openRowActions();
+        await this.clickAction(/edit/i);
+
+        const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
+        if (await draftButton.isVisible().catch(() => false)) {
+            await draftButton.click();
+            await this.expectSuccessToast();
+        }
+    }
+
+    async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean): Promise<void> {
+        await this.page.goto(`/${slug}`);
+        await expect(this.page).toHaveURL(new RegExp(slug));
+
+        // Check if content is present
+        await expect(this.page.locator("body")).toContainText(expectedContent);
+
+        // Check header visibility
+        const header = this.page.locator("header, nav").first();
+        if (headerVisible) {
+            await expect(header).toBeVisible();
+        } else {
+            await expect(header).not.toBeVisible();
+        }
+
+        // Check footer visibility
+        const footer = this.page.locator("footer").first();
+        if (footerVisible) {
+            await expect(footer).toBeVisible();
+        } else {
+            await expect(footer).not.toBeVisible();
         }
     }
 

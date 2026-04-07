@@ -339,12 +339,12 @@ export class ErpLocators {
         this.websitePagesMetaTitleInput = page.locator('input[id="form.meta_title"]');
         this.websitePagesMetaKeywordsInput = page.locator('input[id="form.meta_keywords"], input[name="form.meta_keywords"]');
         this.websitePagesMetaDescriptionInput = page.locator('textarea[id="form.meta_description"]');
-        this.websitePagesHeaderVisibleToggle = page.getByRole("switch", { name: /header visible|is header visible/i }).first();
-        this.websitePagesFooterVisibleToggle = page.getByRole("switch", { name: /footer visible|is footer visible/i }).first();
+        this.websitePagesHeaderVisibleToggle = page.getByRole('switch', { name: 'Is Visible Header Menu' });
+        this.websitePagesFooterVisibleToggle = page.getByRole('switch', { name: 'Is Visible Footer Menu' });
         this.websitePagesSaveButton = page.getByRole("button", { name: /save|create|submit/i }).first();
         this.websitePagesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
         this.websitePagesRowActionsButton = page.locator("div.fi-ta-text-item").first();
-        this.websitePagesEditButton = page.getByRole("menuitem", { name: /edit/i }).first();
+        this.websitePagesEditButton = page.getByRole('tab', { name: 'Edit' });
         this.websitePagesEditLink = page.getByRole("link", { name: /edit/i }).first();
         this.websitePagesEditActionButton = page.getByRole("button", { name: /edit/i }).first();
         this.websitePagesDeleteButton = page.getByRole("menuitem", { name: /delete/i }).first();
