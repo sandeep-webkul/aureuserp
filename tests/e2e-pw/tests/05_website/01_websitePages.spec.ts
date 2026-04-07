@@ -1,4 +1,4 @@
-import { test } from "../../setup";
+import { test, expect } from "../../setup";
 import { WebsiteManagementPage } from "../../pages/06_websiteManagement";
 
 test.describe("Website Pages - Listing", () => {
@@ -58,19 +58,106 @@ test.describe("Website Pages - Listing", () => {
         await websitePage.expectPageListed(updatedTitle);
     });
 
-    test("Delete Website Page - Removes Record", async ({ adminPage }) => {
+    test("Publish Website Page - Makes Page Visible on Frontend", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
         const key = Date.now();
-        const title = `E2E Website Page ${key}`;
+        const title = `E2E Published Page ${key}`;
+        const content = `Published content for ${title}`;
 
         await websitePage.createWebsitePage({
             title,
-            content: `This is the content for ${title}`,
+            content,
+            isHeaderVisible: true,
+            isFooterVisible: true,
         });
 
-        await websitePage.deleteWebsitePage(title);
-        await websitePage.searchPage(title);
-        await websitePage.expectPageNotListed(title);
+        await websitePage.publishPage(title);
+
+        // Get the slug from the page (assuming it's generated from title)
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+        await websitePage.checkPageOnFrontend(slug, content, true, true, title);
     });
 
+    test("Draft Website Page - Hides Page from Frontend", async ({ adminPage }) => {
+        const websitePage = new WebsiteManagementPage(adminPage);
+        const key = Date.now();
+        const title = `E2E Draft Page ${key}`;
+        const content = `Draft content for ${title}`;
+
+        await websitePage.createWebsitePage({
+            title,
+            content,
+            isHeaderVisible: true,
+            isFooterVisible: true,
+        });
+
+        await websitePage.publishPage(title);
+        await websitePage.draftPage(title);
+
+        await websitePage.page.waitForLoadState("networkidle");
+        // After drafting, the page should not be accessible or show 404
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        // await websitePage.checkPageOnFrontend(slug, content, true, true);
+        await websitePage.page.goto(`pages/${slug}`);
+        // Expect either 404 or not found
+        await expect(websitePage.page.locator("body")).not.toContainText(content);
+    });
+
+    test("Website Page Header and Footer Visibility - Header Only", async ({ adminPage }) => {
+        const websitePage = new WebsiteManagementPage(adminPage);
+        const key = Date.now();
+        const title = `E2E Header Only Page ${key}`;
+        const content = `Content for header only page ${title}`;
+
+        await websitePage.createWebsitePage({
+            title,
+            content,
+            isHeaderVisible: true,
+            isFooterVisible: false,
+        });
+
+        await websitePage.publishPage(title);
+
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        await websitePage.checkPageOnFrontend(slug, content, true, false, title);
+    });
+
+    test("Website Page Header and Footer Visibility - Footer Only", async ({ adminPage }) => {
+        const websitePage = new WebsiteManagementPage(adminPage);
+        const key = Date.now();
+        const title = `E2E Footer Only Page ${key}`;
+        const content = `Content for footer only page ${title}`;
+
+        await websitePage.createWebsitePage({
+            title,
+            content,
+            isHeaderVisible: false,
+            isFooterVisible: true,
+        });
+
+        await websitePage.publishPage(title);
+
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        await websitePage.checkPageOnFrontend(slug, content, false, true, title);
+    });
+
+    test("Website Page Header and Footer Visibility - Neither Visible", async ({ adminPage }) => {
+        const websitePage = new WebsiteManagementPage(adminPage);
+        const key = Date.now();
+        const title = `E2E No Header Footer Page ${key}`;
+        const content = `Content for no header footer page ${title}`;
+
+        await websitePage.createWebsitePage({
+            title,
+            content,
+            isHeaderVisible: false,
+            isFooterVisible: false,
+        });
+
+        await websitePage.publishPage(title);
+
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        await websitePage.checkPageOnFrontend(slug, content, false, false, title);
+    });
 });

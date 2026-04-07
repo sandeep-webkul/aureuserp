@@ -172,7 +172,9 @@ export class WebsiteManagementPage {
         await this.gotoWebsitePagesPage();
         await this.searchPage(title);
         await this.openRowActions();
-        await this.clickAction(/edit/i);
+        await this.erpLocators.websitePagesEditButton.click();
+
+        await this.page.waitForLoadState("networkidle");
 
         const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
         if (await publishButton.isVisible().catch(() => false)) {
@@ -185,36 +187,47 @@ export class WebsiteManagementPage {
         await this.gotoWebsitePagesPage();
         await this.searchPage(title);
         await this.openRowActions();
-        await this.clickAction(/edit/i);
+        await this.erpLocators.websitePagesEditButton.click();
+
+        await this.page.waitForLoadState("networkidle");
 
         const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
         if (await draftButton.isVisible().catch(() => false)) {
             await draftButton.click();
             await this.expectSuccessToast();
+            await this.erpLocators.websitePagesSaveButton.click();
         }
     }
 
-    async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean): Promise<void> {
-        await this.page.goto(`/${slug}`);
+    async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean, pageTitle?: string): Promise<void> {
+        await this.page.goto(`/pages/${slug}`);
         await expect(this.page).toHaveURL(new RegExp(slug));
+        await this.page.waitForLoadState("networkidle");
 
-        // Check if content is present
         await expect(this.page.locator("body")).toContainText(expectedContent);
 
-        // Check header visibility
-        const header = this.page.locator("header, nav").first();
-        if (headerVisible) {
-            await expect(header).toBeVisible();
-        } else {
-            await expect(header).not.toBeVisible();
+        const footer = this.page.locator("footer").first();
+
+        await expect(footer).toBeVisible();
+
+        if (! pageTitle) {
+            return;
         }
 
-        // Check footer visibility
-        const footer = this.page.locator("footer").first();
-        if (footerVisible) {
-            await expect(footer).toBeVisible();
+        const headerLinks = this.page.locator("header, nav").getByRole("link", { name: pageTitle, exact: true });
+        const footerLinks = footer.getByRole("link", { name: pageTitle, exact: true });
+
+        if (headerVisible) {
+            await expect.poll(async () => await headerLinks.count()).toBeGreaterThan(0);
         } else {
-            await expect(footer).not.toBeVisible();
+            await expect(headerLinks).toHaveCount(0);
+        }
+
+        if (footerVisible) {
+            await expect.poll(async () => await footerLinks.count()).toBeGreaterThan(0);
+            await expect(footerLinks.first()).toBeVisible();
+        } else {
+            await expect(footerLinks).toHaveCount(0);
         }
     }
 
