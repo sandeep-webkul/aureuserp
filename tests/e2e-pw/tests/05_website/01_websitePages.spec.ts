@@ -95,13 +95,9 @@ test.describe("Website Pages - Listing", () => {
         await websitePage.publishPage(title);
         await websitePage.draftPage(title);
 
-        await websitePage.page.waitForLoadState("networkidle");
-        // After drafting, the page should not be accessible or show 404
+        // After drafting, the page should not be accessible
         const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        // await websitePage.checkPageOnFrontend(slug, content, true, true);
-        await websitePage.page.goto(`pages/${slug}`);
-        // Expect either 404 or not found
-        await expect(websitePage.page.locator("body")).not.toContainText(content);
+        await websitePage.checkPageNotAccessibleOnFrontend(slug);
     });
 
     test("Website Page Header and Footer Visibility - Header Only", async ({ adminPage }) => {

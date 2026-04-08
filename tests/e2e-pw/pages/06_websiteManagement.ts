@@ -533,7 +533,7 @@ export class WebsiteManagementPage {
     }
 
     async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean, pageTitle?: string): Promise<void> {
-        await this.page.goto(`/pages/${slug}`);
+        await this.page.goto(`/pages/${slug}`, { waitUntil: "domcontentloaded" });
         await expect(this.page).toHaveURL(new RegExp(slug));
         await this.page.waitForLoadState("networkidle");
 
@@ -561,6 +561,25 @@ export class WebsiteManagementPage {
             await expect(footerLinks.first()).toBeVisible();
         } else {
             await expect(footerLinks).toHaveCount(0);
+        }
+    }
+
+    async checkPageNotAccessibleOnFrontend(slug: string): Promise<void> {
+        try {
+            const response = await this.page.goto(`/pages/${slug}`, { waitUntil: "domcontentloaded" });
+            
+            // If we get a 404 or error status, that's expected
+            if (response && !response.ok()) {
+                return; // Page correctly not accessible
+            }
+
+            // If page loaded, verify it's a 404 page or doesn't contain expected content
+            const is404 = await this.page.locator("h1, h2").filter({ hasText: /404|not found|page not found/i }).isVisible().catch(() => false);
+            expect(is404).toBeTruthy();
+        } catch (error: unknown) {
+            // Navigation error is expected for unpublished/draft pages
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            expect(errorMessage).toContain("ERR_ABORTED");
         }
     }
 
