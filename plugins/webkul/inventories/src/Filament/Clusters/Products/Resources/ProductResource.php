@@ -17,7 +17,6 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -34,6 +33,7 @@ use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {
@@ -177,7 +177,11 @@ class ProductResource extends BaseProductResource
 
     public static function table(Table $table): Table
     {
-        return BaseProductResource::table($table);
+        $table = BaseProductResource::table($table);
+
+        return $table
+            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
     }
 
     public static function infolist(Schema $schema): Schema
@@ -266,6 +270,14 @@ class ProductResource extends BaseProductResource
                     ->visible(fn ($record): bool => (bool) $record->use_expiration_date),
             ])
             ->visible(fn ($record): bool => $record->type == ProductType::GOODS);
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $firstGroupChildComponents[] = Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.additional.title'))
+                ->schema($customInfolistEntries)
+                ->columns(2);
+        }
 
         $components[0]->childComponents($firstGroupChildComponents);
 

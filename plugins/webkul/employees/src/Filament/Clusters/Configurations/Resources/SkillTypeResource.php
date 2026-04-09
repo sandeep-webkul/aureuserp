@@ -2,6 +2,7 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -21,6 +22,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -31,6 +33,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 use Webkul\Employee\Enums\Colors;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\EditSkillType;
@@ -39,14 +42,17 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillLevelRelationManager;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillsRelationManager;
 use Webkul\Employee\Models\SkillType;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class SkillTypeResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = SkillType::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::AcademicCap;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Employee';
+    protected static string|UnitEnum|null $navigationGroup = 'Employee';
 
     protected static ?int $navigationSort = 1;
 
@@ -92,6 +98,7 @@ class SkillTypeResource extends Resource
                     Toggle::make('is_active')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.status'))
                         ->default(true),
+                    ...static::getCustomFormFields(),
                 ])->columns(2)->columnSpanFull(),
             ]);
     }
@@ -99,7 +106,7 @@ class SkillTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.id'))
                     ->searchable()
@@ -144,9 +151,9 @@ class SkillTypeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->columnToggleFormColumns(2)
-            ->filters([
+            ]))
+            ->columnManagerColumns(2)
+            ->filters(static::mergeCustomTableFilters([
                 TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.status')),
                 QueryBuilder::make()
@@ -190,7 +197,7 @@ class SkillTypeResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->filtersFormColumns(2)
             ->groups([
                 Group::make('name')
@@ -300,6 +307,7 @@ class SkillTypeResource extends Resource
                         IconEntry::make('is_active')
                             ->boolean()
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.infolist.sections.entries.status')),
+                        ...static::getCustomInfolistEntries(),
                     ])->columns(3)->columnSpanFull(),
             ]);
     }

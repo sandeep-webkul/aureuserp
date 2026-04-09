@@ -2,6 +2,7 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -21,6 +22,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -40,13 +42,16 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResou
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\ActivityPlan;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
 
 class ActivityPlanResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = ActivityPlan::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 
     protected static ?string $cluster = Configurations::class;
 
@@ -88,6 +93,7 @@ class ActivityPlanResource extends Resource
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
                             ->default(true)
                             ->inline(false),
+                        ...static::getCustomFormFields(),
                     ])->columns(2)->columnSpanFull(),
             ]);
     }
@@ -97,7 +103,7 @@ class ActivityPlanResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable(),
@@ -128,8 +134,8 @@ class ActivityPlanResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.filters.is-active')),
                 QueryBuilder::make()
@@ -182,7 +188,7 @@ class ActivityPlanResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
@@ -298,6 +304,7 @@ class ActivityPlanResource extends Resource
                         IconEntry::make('is_active')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.infolist.sections.general.entries.status'))
                             ->boolean(),
+                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columns(2)->columnSpanFull(),
             ]);
