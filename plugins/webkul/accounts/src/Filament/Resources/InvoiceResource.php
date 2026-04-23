@@ -59,6 +59,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -70,6 +71,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\Invoice;
+use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
@@ -318,7 +320,7 @@ class InvoiceResource extends Resource
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
 
-                                                    $bankAccountIds = \Webkul\Account\Models\Journal::where('type', \Webkul\Account\Enums\JournalType::BANK)
+                                                    $bankAccountIds = Journal::where('type', JournalType::BANK)
                                                         ->where('company_id', $companyId)
                                                         ->pluck('bank_account_id')
                                                         ->filter();
@@ -377,7 +379,12 @@ class InvoiceResource extends Resource
                                         TextInput::make('incoterm_location')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
                                         Select::make('preferred_payment_method_line_id')
-                                            ->relationship('paymentMethodLine', 'name')
+                                            ->relationship(
+                                                name: 'paymentMethodLine',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE)),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
@@ -1035,7 +1042,7 @@ class InvoiceResource extends Resource
                                         TextEntry::make('cashRounding.name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.entries.cash-rounding')),
-                                        TextEntry::make('paymentMethodLine.name')
+                                        TextEntry::make('paymentMethodLine.display_name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.entries.payment-method')),
                                         IconEntry::make('auto_post')

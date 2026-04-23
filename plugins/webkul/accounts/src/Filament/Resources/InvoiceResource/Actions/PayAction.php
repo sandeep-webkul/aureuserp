@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
@@ -117,6 +118,7 @@ class PayAction extends Action
                                         $query->whereIn('id', $paymentMethodLineIds);
                                     }
                                 )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
                                     $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
@@ -127,10 +129,10 @@ class PayAction extends Action
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
-                                     modifyQueryUsing: function (Builder $query, Get $get) {
+                                    modifyQueryUsing: function (Builder $query, Get $get) {
                                         $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
 
-                                        $bankAccountIds = \Webkul\Account\Models\Journal::where('type', \Webkul\Account\Enums\JournalType::BANK)
+                                        $bankAccountIds = \Webkul\Account\Models\Journal::where('type', JournalType::BANK)
                                             ->where('company_id', $companyId)
                                             ->pluck('bank_account_id')
                                             ->filter();
