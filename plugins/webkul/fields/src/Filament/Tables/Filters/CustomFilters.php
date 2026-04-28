@@ -13,6 +13,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -78,7 +79,7 @@ class CustomFilters extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->where('customizable_type', $this->getResourceClass()::getModel())
+            ->whereIn('customizable_type', $this->getCustomizableTypes())
             ->where('use_in_table', true);
 
         if (! empty($this->include)) {
@@ -203,5 +204,22 @@ class CustomFilters extends Component
         };
 
         return $filter->label($field->name);
+    }
+
+    protected function getCustomizableTypes(): array
+    {
+        $model = $this->getResourceClass()::getModel();
+
+        $types = [$model];
+
+        foreach (class_parents($model) as $parent) {
+            if ($parent === Model::class) {
+                break;
+            }
+
+            $types[] = $parent;
+        }
+
+        return $types;
     }
 }
