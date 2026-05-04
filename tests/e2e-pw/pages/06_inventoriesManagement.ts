@@ -600,7 +600,7 @@ export class InventoriesManagementPage {
     async searchList(keyword: string) {
         await this.erpLocators.inventorySearchInput.fill(keyword);
         await this.page.waitForLoadState("networkidle");
-        await this.page.waitForTimeout(800);
+        await this.page.waitForTimeout(1000);
     }
 
     async openRowActions() {
