@@ -255,6 +255,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoLocationsPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/locations");
         await expect(this.page).toHaveURL(/configurations\/locations/);
         await this.page.waitForLoadState("networkidle");
@@ -262,6 +263,7 @@ export class InventoriesManagementPage {
     }
 
     async gotoOperationTypesPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/operation-types");
         await expect(this.page).toHaveURL(/operation-types/);
         await this.page.waitForLoadState("networkidle");
@@ -269,6 +271,7 @@ export class InventoriesManagementPage {
     }
 
     async gotoRoutesPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/routes");
         await expect(this.page).toHaveURL(/configurations\/routes/);
         await this.page.waitForLoadState("networkidle");
@@ -276,6 +279,7 @@ export class InventoriesManagementPage {
     }
 
     async gotoRulesPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/rules");
         await expect(this.page).toHaveURL(/configurations\/rules/);
         await this.page.waitForLoadState("networkidle");

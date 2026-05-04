@@ -1,7 +1,7 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
 
-test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Records", () => {
+test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Records", () => {
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.ensureBaseDependentPluginsInstalled();
