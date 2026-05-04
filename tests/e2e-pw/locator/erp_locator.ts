@@ -428,7 +428,7 @@ export class ErpLocators {
         this.inventoryWarehouseEditSaveButton = page.locator('button[id="key-bindings-2"]').first();
         this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
-        this.inventoryWarehouseEditAction = page.getByRole('link', { name: 'Edit' }); 
+        this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1); 
         this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
         this.inventoryWarehouseConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
 

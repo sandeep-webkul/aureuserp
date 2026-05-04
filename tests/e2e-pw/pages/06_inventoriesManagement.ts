@@ -174,6 +174,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoWarehousesPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/warehouses");
         await expect(this.page).toHaveURL(/configurations\/warehouses/);
         await this.page.waitForLoadState("networkidle");
@@ -229,8 +230,8 @@ export class InventoriesManagementPage {
         await this.searchList(name);
         // await this.erpLocators.openWarehouseRow().click();
         // await this.openRowActions();
-        await this.page.waitForLoadState("networkidle");
-        
+        // await this.page.waitForLoadState("networkidle");
+        await this.page.waitForTimeout(800);
         await this.erpLocators.inventoryWarehouseEditAction.click();
 
         await this.selectReceptionStep(receptionStep);
