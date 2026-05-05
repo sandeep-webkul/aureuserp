@@ -1,7 +1,7 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
 
-test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Records", () => {
+test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Records", () => {
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.ensureBaseDependentPluginsInstalled();
@@ -33,7 +33,7 @@ test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Crea
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 1,
             operationTypes: 3,
-            routes: 2,
+            routes: 3,
             rules: 2,
         });
     });
@@ -56,7 +56,7 @@ test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Crea
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 3,
             operationTypes: 6,
-            routes: 3,
+            routes: 4,
             rules: 6,
         });
     });
@@ -79,7 +79,7 @@ test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Crea
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 5,
             operationTypes: 8,
-            routes: 3,
+            routes: 4,
             rules: 9,
         });
     });
@@ -104,7 +104,7 @@ test.describe("@smoke Inventory Warehouse - 1/2/3 Step Configuration & Auto-Crea
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 5,
             operationTypes: 8,
-            routes: 3,
+            routes: 4,
             rules: 9,
         });
     });

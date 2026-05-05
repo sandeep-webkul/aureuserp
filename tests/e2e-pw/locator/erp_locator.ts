@@ -205,6 +205,14 @@ export class ErpLocators {
     readonly inventoryProductEditAction: Locator;
     readonly inventoryProductDeleteAction: Locator;
     readonly inventoryProductIsStorableToggle: Locator;
+    readonly inventoryProductQuantitiesTab: Locator;
+    readonly inventoryProductMovesTab: Locator;
+    readonly inventoryProductQuantityCreateButton: Locator;
+    readonly inventoryProductQuantityOpenModal: Locator;
+    readonly inventoryProductQuantityProductSelect: Locator;
+    readonly inventoryProductQuantityLocationSelect: Locator;
+    readonly inventoryProductQuantityInput: Locator;
+    readonly inventoryProductQuantityDialogCreate: Locator;
 
     /**
      * Inventory - Operations (Receipts, Deliveries, Internals)
@@ -428,7 +436,7 @@ export class ErpLocators {
         this.inventoryWarehouseEditSaveButton = page.locator('button[id="key-bindings-2"]').first();
         this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
-        this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1); 
+        this.inventoryWarehouseEditAction = page.getByRole('link', { name: 'Edit' }); 
         this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
         this.inventoryWarehouseConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
 
@@ -450,6 +458,32 @@ export class ErpLocators {
         this.inventoryProductEditAction = page.getByRole("link", { name: /Edit/i }).first();
         this.inventoryProductDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
         this.inventoryProductIsStorableToggle = page.getByRole("switch", { name: /Track Inventory|Storable/i }).first();
+        this.inventoryProductQuantitiesTab = page.locator("a, li").filter({ hasText: /On Hand|Quantities/i }).first();
+        this.inventoryProductMovesTab = page.getByRole('link', { name: 'IN/OUT' });
+        this.inventoryProductQuantityCreateButton = page.getByRole('button', { name: 'Add Quantity' });
+        // The open Filament action-modal window (`.fi-modal-window` is only
+        // rendered when the modal is open). All on-hand quantity dialog
+        // children are scoped to it.
+        this.inventoryProductQuantityOpenModal = page.locator('.fi-modal-window:visible').first();
+        this.inventoryProductQuantityDialogCreate = page
+            .locator('.fi-modal-footer button.fi-btn, .fi-modal-window button[type="submit"]')
+            .filter({ hasText: /Create|Save|Submit/i })
+            .first();
+        this.inventoryProductQuantityProductSelect = page
+            .locator('.fi-modal-window:visible div.fi-fo-field, .fi-modal-window:visible div[data-field-wrapper]')
+            .filter({ has: page.locator('label', { hasText: /^Product$/i }) })
+            .locator('button.fi-select-input-btn')
+            .first();
+        this.inventoryProductQuantityLocationSelect = page
+            .locator('div.fi-fo-field').nth(0)
+            .filter({ has: page.locator('label', { hasText: /^Location$/i }) })
+            .locator('button.fi-select-input-btn')
+            .first();
+        this.inventoryProductQuantityInput = page
+            .locator('.fi-modal-window:visible div.fi-fo-field, .fi-modal-window:visible div[data-field-wrapper]')
+            .filter({ has: page.locator('label', { hasText: /On Hand Quantity|Quantity|On-hand/i }) })
+            .locator('input')
+            .first();
 
         /**
          * Inventory - Operations (Receipts, Deliveries, Internals)

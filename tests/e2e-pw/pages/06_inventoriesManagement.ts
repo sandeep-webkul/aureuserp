@@ -115,6 +115,7 @@ export class InventoriesManagementPage {
         await this.setToggleOn(this.erpLocators.inventoryManageWarehousesToggleEnableMultiSteps);
         await this.erpLocators.inventorySettingsSaveButton.click();
         await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToast();
     }
 
     /**
@@ -174,7 +175,6 @@ export class InventoriesManagementPage {
      */
 
     async gotoWarehousesPage() {
-        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/warehouses");
         await expect(this.page).toHaveURL(/configurations\/warehouses/);
         await this.page.waitForLoadState("networkidle");
@@ -230,8 +230,8 @@ export class InventoriesManagementPage {
         await this.searchList(name);
         // await this.erpLocators.openWarehouseRow().click();
         // await this.openRowActions();
-        // await this.page.waitForLoadState("networkidle");
-        await this.page.waitForTimeout(800);
+        await this.page.waitForLoadState("networkidle");
+        
         await this.erpLocators.inventoryWarehouseEditAction.click();
 
         await this.selectReceptionStep(receptionStep);
@@ -256,7 +256,6 @@ export class InventoriesManagementPage {
      */
 
     async gotoLocationsPage() {
-        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/locations");
         await expect(this.page).toHaveURL(/configurations\/locations/);
         await this.page.waitForLoadState("networkidle");
@@ -264,7 +263,6 @@ export class InventoriesManagementPage {
     }
 
     async gotoOperationTypesPage() {
-        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/operation-types");
         await expect(this.page).toHaveURL(/operation-types/);
         await this.page.waitForLoadState("networkidle");
@@ -272,7 +270,6 @@ export class InventoriesManagementPage {
     }
 
     async gotoRoutesPage() {
-        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/routes");
         await expect(this.page).toHaveURL(/configurations\/routes/);
         await this.page.waitForLoadState("networkidle");
@@ -280,7 +277,6 @@ export class InventoriesManagementPage {
     }
 
     async gotoRulesPage() {
-        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/rules");
         await expect(this.page).toHaveURL(/configurations\/rules/);
         await this.page.waitForLoadState("networkidle");
@@ -395,6 +391,117 @@ export class InventoriesManagementPage {
 
         await this.erpLocators.inventoryProductSaveButton.click();
         await this.expectSuccessToast();
+    }
+
+    /**
+     * Navigate to a product's record by visiting list, searching, and opening it.
+     */
+    async openProductByName(name: string) {
+        await this.gotoProductsPage();
+        await this.searchList(name);
+        const link = this.page.locator("table tbody tr a", { hasText: name }).first();
+        await expect(link).toBeVisible();
+        await link.click();
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * On-hand quantities tab on a product record.
+     */
+    async gotoProductQuantitiesTab(productName: string) {
+        await this.openProductByName(productName);
+        await this.erpLocators.inventoryProductQuantitiesTab.click();
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.page).toHaveURL(/\/quantities/);
+    }
+
+    /**
+     * In/Out movement history tab on a product record.
+     */
+    async gotoProductMovesTab(productName: string) {
+        await this.openProductByName(productName);
+        await this.erpLocators.inventoryProductMovesTab.click();
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.page).toHaveURL(/\/moves/);
+    }
+
+    /**
+     * Add an on-hand quantity for the product at a given location.
+     */
+    async addOnHandQuantity(productName: string, location: string, quantity: string) {
+        const l = this.erpLocators;
+
+        await this.gotoProductQuantitiesTab(productName);
+        await l.inventoryProductQuantityCreateButton.click();
+        await this.page.waitForLoadState("networkidle");
+
+        if (await l.inventoryProductQuantityLocationSelect.isVisible().catch(() => false)) {
+            await this.selectFromFilamentDropdown(l.inventoryProductQuantityLocationSelect, location);
+        }
+
+        await l.inventoryProductQuantityInput.fill(quantity);
+        await l.inventoryProductQuantityDialogCreate.click();
+        await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToastSoft();
+    }
+
+    /**
+     * Click a Filament select trigger, type into the search box of the
+     * resulting dropdown panel, and click the first option matching `value`.
+     * Robust against multiple panels because we scope to the visible panel
+     * that appears after we click.
+     */
+    async selectFromFilamentDropdown(trigger: Locator, value: string) {
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.click();
+
+        const panel = this.page.locator('.fi-dropdown-panel[role="listbox"]:visible').last();
+        await expect(panel).toBeVisible();
+
+        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        if (await search.isVisible().catch(() => false)) {
+            await search.fill(value);
+            await this.page.waitForTimeout(500);
+        }
+
+        const option = panel
+            .locator('[role="option"]')
+            .filter({ hasText: new RegExp(this.escapeRegExp(value), "i") })
+            .first();
+
+        await expect(option).toBeVisible();
+        await option.click();
+    }
+
+    /**
+     * Assert that the product's on-hand quantity table contains the warehouse
+     * location and the expected quantity.
+     */
+    async expectOnHandQuantityRow(productName: string, location: string, quantity: string) {
+        await this.gotoProductQuantitiesTab(productName);
+        const row = this.page.locator("table tbody tr", { hasText: location });
+        await expect(row.first()).toBeVisible();
+        await expect(row.first()).toContainText(quantity);
+    }
+
+    /**
+     * Assert that the product's moves (In/Out) tab contains a row with
+     * the given product name. Filters by an optional state if provided.
+     */
+    async expectProductMoveRowVisible(productName: string, state?: string) {
+        await this.gotoProductMovesTab(productName);
+        const row = state
+            ? this.page.locator("table tbody tr", { hasText: state })
+            : this.page.locator("table tbody tr").first();
+        await expect(row.first()).toBeVisible();
+    }
+
+    /**
+     * Count the moves rows visible on a product's In/Out tab.
+     */
+    async countProductMoveRows(productName: string): Promise<number> {
+        await this.gotoProductMovesTab(productName);
+        return this.page.locator("table tbody tr").count();
     }
 
     async deleteInventoryProduct(name: string) {
@@ -600,7 +707,7 @@ export class InventoriesManagementPage {
     async searchList(keyword: string) {
         await this.erpLocators.inventorySearchInput.fill(keyword);
         await this.page.waitForLoadState("networkidle");
-        await this.page.waitForTimeout(1000);
+        await this.page.waitForTimeout(800);
     }
 
     async openRowActions() {
