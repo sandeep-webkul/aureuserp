@@ -75,7 +75,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         });
 
         await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "30");
-        await inventoryPage.expectOnHandQuantityRow(productName, "Stock", "30");
+        await inventoryPage.expectOnHandQuantityRow(productName, "WH/Stock", "30");
     });
 
     test("New Warehouse - Add On-Hand Quantity At Its Stock Location", async ({ adminPage }) => {

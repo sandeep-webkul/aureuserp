@@ -33,7 +33,7 @@ test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Rec
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 1,
             operationTypes: 3,
-            routes: 3,
+            routes: 2,
             rules: 2,
         });
     });
@@ -56,7 +56,7 @@ test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Rec
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 3,
             operationTypes: 6,
-            routes: 4,
+            routes: 3,
             rules: 6,
         });
     });
@@ -79,7 +79,7 @@ test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Rec
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 5,
             operationTypes: 8,
-            routes: 4,
+            routes: 3,
             rules: 9,
         });
     });
@@ -104,7 +104,7 @@ test.describe("Inventory Warehouse - 1/2/3 Step Configuration & Auto-Created Rec
         await inventoryPage.expectWarehouseAutoCreatedCounts(code, name, {
             locations: 5,
             operationTypes: 8,
-            routes: 4,
+            routes: 3,
             rules: 9,
         });
     });

@@ -105,4 +105,168 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
 
         await inventoryPage.expectProductQuantityRowVisible(productName);
     });
+
+    test("Saved Receipt Draft - Appears In Receipts List", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Receipt List ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "15",
+        });
+
+        await inventoryPage.createReceipt({
+            productName,
+            demand: "7",
+        });
+
+        // Draft receipt should now be searchable on the receipts listing.
+        await inventoryPage.gotoReceiptsPage();
+        await inventoryPage.expectListContains(productName);
+    });
+
+    test("Two Sequential Receipts - Both Reflect On Product Moves Tab", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Two Receipts ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "25",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "8",
+        });
+        const movesAfterFirst = await inventoryPage.countProductMoveRows(productName);
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "12",
+        });
+        const movesAfterSecond = await inventoryPage.countProductMoveRows(productName);
+
+        if (movesAfterSecond <= movesAfterFirst) {
+            throw new Error(
+                `Expected moves count to grow after second receipt: ${movesAfterFirst} -> ${movesAfterSecond}`
+            );
+        }
+    });
+
+    test("Validated Receipt - Done State Row Visible In Product Moves Tab", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Done State ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "18",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "9",
+        });
+
+        // The validated receipt should produce a "Done" move on the product's tab.
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+    });
+
+    test("Delivery After Receipt - Outgoing Move Row Visible", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Out Move Op ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "22",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "20",
+        });
+        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
+
+        await inventoryPage.deliveryFullFlow({
+            productName,
+            demand: "6",
+        });
+        const movesAfterDelivery = await inventoryPage.countProductMoveRows(productName);
+
+        if (movesAfterDelivery <= movesAfterReceipt) {
+            throw new Error(
+                `Expected moves count to grow after delivery: ${movesAfterReceipt} -> ${movesAfterDelivery}`
+            );
+        }
+    });
+
+    test("Internal Transfer - Move Row Adds To Product Moves Tab", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Internal Moves ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "33",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "18",
+        });
+        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
+
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "4",
+        });
+        const movesAfterTransfer = await inventoryPage.countProductMoveRows(productName);
+
+        if (movesAfterTransfer <= movesAfterReceipt) {
+            throw new Error(
+                `Expected moves count to grow after internal transfer: ${movesAfterReceipt} -> ${movesAfterTransfer}`
+            );
+        }
+    });
+
+    test("Saved Delivery Draft - Appears In Deliveries List", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Delivery List ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "12",
+        });
+
+        await inventoryPage.createDelivery({
+            productName,
+            demand: "3",
+        });
+
+        await inventoryPage.gotoDeliveriesPage();
+        await inventoryPage.expectListContains(productName);
+    });
+
+    test("Saved Internal Transfer Draft - Appears In Internal Transfers List", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Internal List ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "14",
+        });
+
+        await inventoryPage.createInternalTransfer({
+            productName,
+            demand: "2",
+        });
+
+        await inventoryPage.gotoInternalTransfersPage();
+        await inventoryPage.expectListContains(productName);
+    });
 });

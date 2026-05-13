@@ -213,6 +213,10 @@ export class ErpLocators {
     readonly inventoryProductQuantityLocationSelect: Locator;
     readonly inventoryProductQuantityInput: Locator;
     readonly inventoryProductQuantityDialogCreate: Locator;
+    readonly inventoryProductQuantityTableRows: Locator;
+    readonly inventoryProductQuantityOnHandCells: Locator;
+    readonly inventoryProductQuantityOnHandInlineInputs: Locator;
+    readonly inventoryProductQuantityReservedCells: Locator;
 
     /**
      * Inventory - Operations (Receipts, Deliveries, Internals)
@@ -436,7 +440,7 @@ export class ErpLocators {
         this.inventoryWarehouseEditSaveButton = page.locator('button[id="key-bindings-2"]').first();
         this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
-        this.inventoryWarehouseEditAction = page.getByRole('link', { name: 'Edit' }); 
+        this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1);  
         this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
         this.inventoryWarehouseConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
 
@@ -475,8 +479,10 @@ export class ErpLocators {
             .locator('button.fi-select-input-btn')
             .first();
         this.inventoryProductQuantityLocationSelect = page
-            .locator('div.fi-fo-field').nth(0)
-            .filter({ has: page.locator('label', { hasText: /^Location$/i }) })
+            .locator('.fi-modal-window:visible, .fi-modal:visible, [role="dialog"]:visible')
+            .last()
+            .locator('label:has-text("Location")')
+            .locator('xpath=ancestor::div[@data-field-wrapper][1]')
             .locator('button.fi-select-input-btn')
             .first();
         this.inventoryProductQuantityInput = page
@@ -484,6 +490,15 @@ export class ErpLocators {
             .filter({ has: page.locator('label', { hasText: /On Hand Quantity|Quantity|On-hand/i }) })
             .locator('input')
             .first();
+        this.inventoryProductQuantityTableRows = page.locator("table tbody tr");
+        // Per-column cell locators for the product quantities table. The on-hand
+        // column is rendered as Filament `TextInputColumn` (editable inline input);
+        // the reserved column is a `TextColumn` (read-only text content).
+        this.inventoryProductQuantityOnHandCells = page.locator("td.fi-ta-cell-quantity");
+        this.inventoryProductQuantityOnHandInlineInputs = page.locator(
+            "td.fi-ta-cell-quantity .fi-ta-text-input input:not([type=hidden])"
+        );
+        this.inventoryProductQuantityReservedCells = page.locator("td.fi-ta-cell-reserved_quantity");
 
         /**
          * Inventory - Operations (Receipts, Deliveries, Internals)
@@ -503,7 +518,7 @@ export class ErpLocators {
         this.inventoryOperationConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
         this.inventoryOperationMarkAsTodoButton = page.getByRole("button", { name: /Mark as Todo/i }).first();
         this.inventoryOperationCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
-        this.inventoryOperationValidateButton = page.getByRole("button", { name: /^Validate$/i }).first();
+        this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' });
         this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
         this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");

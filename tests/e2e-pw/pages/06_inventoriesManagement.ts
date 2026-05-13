@@ -175,6 +175,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoWarehousesPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/warehouses");
         await expect(this.page).toHaveURL(/configurations\/warehouses/);
         await this.page.waitForLoadState("networkidle");
@@ -198,7 +199,7 @@ export class InventoriesManagementPage {
         }
 
         await this.erpLocators.inventoryWarehouseSaveButton.click();
-        // await this.expectSuccessToast();
+        await this.expectSuccessToast();
     }
 
     async selectReceptionStep(step: 1 | 2 | 3) {
@@ -230,7 +231,8 @@ export class InventoriesManagementPage {
         await this.searchList(name);
         // await this.erpLocators.openWarehouseRow().click();
         // await this.openRowActions();
-        await this.page.waitForLoadState("networkidle");
+        // await this.page.waitForLoadState("networkidle");
+        await this.page.waitForTimeout(800);
         
         await this.erpLocators.inventoryWarehouseEditAction.click();
 
@@ -256,6 +258,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoLocationsPage() {
+        await this.page.waitForLoadState("networkidle");
         await this.page.goto("/admin/inventory/configurations/locations");
         await expect(this.page).toHaveURL(/configurations\/locations/);
         await this.page.waitForLoadState("networkidle");
@@ -432,13 +435,20 @@ export class InventoriesManagementPage {
         const l = this.erpLocators;
 
         await this.gotoProductQuantitiesTab(productName);
+
         await l.inventoryProductQuantityCreateButton.click();
         await this.page.waitForLoadState("networkidle");
+        await expect(l.inventoryProductQuantityOpenModal).toBeVisible();
 
-        if (await l.inventoryProductQuantityLocationSelect.isVisible().catch(() => false)) {
+        try {
+            await l.inventoryProductQuantityLocationSelect.waitFor({ state: "visible", timeout: 200 });
             await this.selectFromFilamentDropdown(l.inventoryProductQuantityLocationSelect, location);
+            await this.page.waitForLoadState("networkidle");
+        } catch {
+            // Location field not rendered (enable_locations toggle off) — proceed without it.
         }
 
+        await expect(l.inventoryProductQuantityInput).toBeVisible();
         await l.inventoryProductQuantityInput.fill(quantity);
         await l.inventoryProductQuantityDialogCreate.click();
         await this.page.waitForLoadState("networkidle");
@@ -474,14 +484,31 @@ export class InventoriesManagementPage {
     }
 
     /**
-     * Assert that the product's on-hand quantity table contains the warehouse
-     * location and the expected quantity.
+     * Assert that the product's on-hand row at `location` shows `quantity`.
+     * On Hand is a TextInputColumn so the value lives in the input, not text.
      */
     async expectOnHandQuantityRow(productName: string, location: string, quantity: string) {
+        const l = this.erpLocators;
         await this.gotoProductQuantitiesTab(productName);
-        const row = this.page.locator("table tbody tr", { hasText: location });
-        await expect(row.first()).toBeVisible();
-        await expect(row.first()).toContainText(quantity);
+
+        const row = l.inventoryProductQuantityTableRows.filter({ hasText: location }).first();
+        const onHandInput = row.locator(l.inventoryProductQuantityOnHandInlineInputs).first();
+        // Allow trailing decimal padding (Filament formats numerics as "30.0000").
+        const escaped = quantity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        await expect(onHandInput).toHaveValue(new RegExp(`^${escaped}(\\.0+)?$`));
+    }
+
+    /**
+     * Assert that the product's on-hand row at `location` shows the expected
+     * Reserved Quantity. Reserved is a read-only TextColumn (cell text).
+     */
+    async expectReservedQuantityRow(productName: string, location: string, reserved: string) {
+        const l = this.erpLocators;
+        await this.gotoProductQuantitiesTab(productName);
+
+        const row = l.inventoryProductQuantityTableRows.filter({ hasText: location }).first();
+        const reservedCell = row.locator(l.inventoryProductQuantityReservedCells).first();
+        await expect(reservedCell).toContainText(reserved);
     }
 
     /**
