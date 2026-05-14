@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Inventory\Database\Factories\LocationFactory;
 use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -66,6 +67,11 @@ class Location extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    public function putawayRules(): HasMany
+    {
+        return $this->hasMany(PutawayRule::class, 'in_location_id');
+    }
+
     public function storageCategory(): BelongsTo
     {
         return $this->belongsTo(StorageCategory::class);
@@ -96,10 +102,95 @@ class Location extends Model
             || ($this->parent_id && $this->parent->is_stock_location);
     }
 
-    // TODO: implement this
-    public function getPutAwayStrategy(Product $product): self
-    {
-        return $this;
+    public function getPutawayStrategy(
+        Product $product,
+        float $quantity = 0,
+        ?Package $package = null,
+        ?Packaging $packaging = null,
+        ?array $additionalQty = null,
+        array $excludeMoveLineIds = []
+    ): Location {
+        $packageType = $package?->packageType ?? $packaging?->packageType;
+
+        $categoryIds = collect();
+
+        $current = Category::find($product->category_id);
+
+        while ($current) {
+            $categoryIds->push($current->id);
+            
+            $current = $current->parent_id ? $current->parent : null;
+        }
+
+        $putawayRules = $this->putawayRules
+            ->filter(fn ($rule) => (! $rule->product_id || $rule->product_id === $product->id)
+                && (! $rule->category_id || $categoryIds->contains($rule->category_id))
+                && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
+            )
+            ->sortByDesc(fn ($rule) => [
+                $rule->packageTypes->isNotEmpty() ? 1 : 0,
+                $rule->product_id ? 1 : 0,
+                $rule->category_id === $categoryIds->first() ? 1 : 0,
+                $rule->category_id ? 1 : 0,
+            ]);
+
+        $locations = $this->childInternalLocations;
+
+        $putawayLocation = null;
+
+        if ($putawayRules->isNotEmpty()) {
+            $qtyByLocation = [];
+
+            if ($locations->pluck('storage_category_id')->filter()->isNotEmpty()) {
+                if ($package && $package->package_type_id) {
+                    $qtyByLocation = MoveLine::whereNotIn('id', $excludeMoveLineIds)
+                        ->whereHas('resultPackage', fn ($query) => $query->where('package_type_id', $packageType?->id))
+                        ->whereNotIn('state', [MoveState::DRAFT, MoveState::CANCELED, MoveState::DONE])
+                        ->groupBy('destination_location_id')
+                        ->selectRaw('destination_location_id, COUNT(DISTINCT result_package_id) as count')
+                        ->pluck('count', 'destination_location_id')
+                        ->all();
+
+                    $packageQuantities = ProductQuantity::whereHas('package', fn ($query) => $query->where('package_type_id', $packageType?->id))
+                        ->whereIn('location_id', $locations->pluck('id'))
+                        ->groupBy('location_id')
+                        ->selectRaw('location_id, COUNT(DISTINCT package_id) as count')
+                        ->pluck('count', 'location_id')
+                        ->all();
+
+                    foreach ($packageQuantities as $locationId => $count) {
+                        $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $count;
+                    }
+                } else {
+                    $qtyByLocation = ProductQuantity::where('product_id', $product->id)
+                        ->whereIn('location_id', $locations->pluck('id'))
+                        ->groupBy('location_id')
+                        ->selectRaw('location_id, SUM(quantity) as total')
+                        ->pluck('total', 'location_id')
+                        ->all();
+
+                    $moveLines = MoveLine::whereNotIn('id', $excludeMoveLineIds)
+                        ->where('product_id', $product->id)
+                        ->whereIn('destination_location_id', $locations->pluck('id'))
+                        ->whereNotIn('state', [MoveState::DRAFT, MoveState::DONE, MoveState::CANCELED])
+                        ->get();
+
+                    foreach ($moveLines as $moveLine) {
+                        $currentQty = $moveLine->uom->computeQuantity($moveLine->quantity, $product->uom);
+                        $qtyByLocation[$moveLine->destination_location_id] = ($qtyByLocation[$moveLine->destination_location_id] ?? 0) + $currentQty;
+                    }
+                }
+            }
+
+            foreach ($additionalQty ?? [] as $locationId => $qty) {
+                $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $qty;
+            }
+
+            $putawayLocation = $this->getPutawayLocation($putawayRules, $product, $quantity, $package, $packaging, $qtyByLocation);
+        }
+
+        return $putawayLocation
+            ?? (($locations->isNotEmpty() && $this->type === LocationType::VIEW) ? $locations->first() : $this);
     }
 
     public function isChildOf(self $otherLocation): bool

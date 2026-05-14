@@ -398,6 +398,10 @@ class Move extends Model
                 $move->lines()->get()->each(fn ($moveLine) => $moveLine->update(['is_picked' => $move->is_picked]));
             }
 
+            if ($move->wasChanged('destination_location_id')) {
+                // TODO: apply putaway rules
+            }
+
             if ($receiptMovesToReassign->isNotEmpty()) {
                 InventoryFacade::assignMoves($receiptMovesToReassign);
             }

@@ -1165,6 +1165,86 @@ class InventoryManager
         return $moves->merge($mergedMoves)->reject(fn ($move) => $movesToDelete->contains('id', $move->id));
     }
 
+    public function applyPutawayStrategy(mixed $moveLines): void
+    {
+        $groupedByPackage = $moveLines->groupBy(fn ($moveLine) => $moveLine->result_package_id);
+
+        foreach ($groupedByPackage as $packageId => $packageMoveLines) {
+            $excludedMoveLines = $packageMoveLines->pluck('id')->all();
+
+            $package = null;
+
+            if ($packageId) {
+                $package = PackageModel::find($packageId);
+            }
+
+            if ($package?->package_type_id) {
+                $bestLocation = $packageMoveLines->first()->move->destinationLocation
+                    ->getPutawayStrategy(
+                        product: null,
+                        package: $package,
+                        excludeMoveLineIds: $excludedMoveLines,
+                        products: $packageMoveLines->pluck('product')->all()
+                    );
+
+                $packageMoveLines->each(function ($moveLine) use ($bestLocation) {
+                    $moveLine->update(['destination_location_id' => $bestLocation->id]);
+
+                    $moveLine->packageLevel?->update(['destination_location_id' => $bestLocation->id]);
+                });
+            } elseif ($package) {
+                $usedLocations = collect();
+
+                foreach ($packageMoveLines as $moveLine) {
+                    if ($usedLocations->count() > 1) {
+                        break;
+                    }
+
+                    $location = $moveLine->move->destinationLocation
+                        ->getPutawayStrategy(
+                            product: $moveLine->product,
+                            quantity: $moveLine->qty,
+                            excludeMoveLineIds: $excludedMoveLines,
+                        );
+
+                    $moveLine->update(['destination_location_id' => $location->id]);
+
+                    $excludedMoveLines = array_diff($excludedMoveLines, [$moveLine->id]);
+
+                    $usedLocations->push($location->id);
+                }
+
+                if ($usedLocations->unique()->count() > 1) {
+                    $packageMoveLines->groupBy('move_id')->each(function ($groupedMoveLines, $moveId) {
+                        $move = Move::find($moveId);
+
+                        $groupedMoveLines->each->update(['destination_location_id' => $move->destination_location_id]);
+                    });
+                } else {
+                    $packageMoveLines->each(function ($moveLine) {
+                        $moveLine->packageLevel?->update(['destination_location_id' => $moveLine->destination_location_id]);
+                    });
+                }
+            } else {
+                foreach ($packageMoveLines as $moveLine) {
+                    $location = $moveLine->move->destinationLocation
+                        ->getPutawayStrategy(
+                            product: $moveLine->product,
+                            quantity: $moveLine->qty,
+                            packaging: $moveLine->move->productPackaging,
+                            excludeMoveLineIds: $excludedMoveLines,
+                        );
+
+                    if ($location->id !== $moveLine->destination_location_id) {
+                        $moveLine->update(['destination_location_id' => $location->id]);
+                    }
+
+                    $excludedMoveLines = array_diff($excludedMoveLines, [$moveLine->id]);
+                }
+            }
+        }
+    }
+
     public function assignOperation($moves, $mergeInto = null)
     {
         if ($moves->isEmpty()) {
@@ -1657,7 +1737,7 @@ class InventoryManager
             ]);
 
             if ($move->lines->isNotEmpty()) {
-                $putAwayLocation = $move->destinationLocation->getPutAwayStrategy($move->product);
+                $putAwayLocation = $move->destinationLocation->getPutawayStrategy($move->product);
 
                 foreach ($move->lines as $moveLine) {
                     $moveLine->update([

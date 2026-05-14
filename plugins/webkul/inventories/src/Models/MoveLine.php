@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveLineFactory;
-use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -499,14 +498,5 @@ class MoveLine extends Model
             'product_id' => $this->product_id,
             'company_id' => $this->company_id,
         ];
-    }
-
-    private function calculateReservedQty($location, $qty): int
-    {
-        if ($location->type === LocationType::INTERNAL && ! $location->is_stock_location) {
-            return $qty;
-        }
-
-        return 0;
     }
 }
