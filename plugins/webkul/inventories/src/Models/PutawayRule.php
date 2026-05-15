@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
@@ -69,6 +70,11 @@ class PutawayRule extends Model implements Sortable
     public function outLocation(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'out_location_id');
+    }
+
+    public function packageTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(PackageType::class, 'inventories_putaway_rule_package_types', 'putaway_rule_id', 'package_type_id');
     }
 
     public function company(): BelongsTo

@@ -631,7 +631,7 @@ class ProductQuantity extends Model
         return $reservedQuants;
     }
 
-    public static function getQuantitiesByProductsLocations($productIds, $locationIds, array $extraDomain = []): array
+    public static function getQuantitiesByProductsLocations(mixed $productIds, mixed $locationIds, array $extraFilters = []): array
     {
         $result = [];
 
@@ -639,16 +639,52 @@ class ProductQuantity extends Model
             return $result;
         }
 
-        $domain = [
+        $filters = [
             ['product_id', 'in', $productIds->all()],
             ['location_id', 'child_of', $locationIds->all()],
         ];
 
-        if (! empty($extraDomain)) {
-            $domain = array_merge($domain, $extraDomain);
+        if (! empty($extraFilters)) {
+            $filters = array_merge($filters, $extraFilters);
         }
 
-        $neededQuants = static::where($domain)
+        $neededQuants = static::query()
+            ->where(function ($query) use ($filters) {
+                foreach ($filters as $condition) {
+                    [$column, $operator, $value] = count($condition) === 2
+                        ? [$condition[0], '=', $condition[1]]
+                        : $condition;
+
+                    if ($operator === 'in') {
+                        $query->whereIn($column, $value);
+
+                        continue;
+                    }
+
+                    if ($operator === 'child_of') {
+                        $locationParentPaths = Location::query()
+                            ->whereIn('id', $value)
+                            ->pluck('parent_path')
+                            ->filter();
+
+                        $locationIds = $locationParentPaths->isEmpty()
+                            ? collect()
+                            : Location::query()
+                                ->where(function ($locationQuery) use ($locationParentPaths) {
+                                    foreach ($locationParentPaths as $parentPath) {
+                                        $locationQuery->orWhere('parent_path', 'like', $parentPath.'%');
+                                    }
+                                })
+                                ->pluck('id');
+
+                        $query->whereIn($column, $locationIds);
+
+                        continue;
+                    }
+
+                    $query->where($column, $operator, $value);
+                }
+            })
             ->orderBy('lot_id')
             ->get()
             ->groupBy(fn ($quant) => implode('_', [

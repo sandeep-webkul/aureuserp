@@ -10,8 +10,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Inventory\Database\Factories\LocationFactory;
+use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -72,6 +74,11 @@ class Location extends Model
         return $this->hasMany(PutawayRule::class, 'in_location_id');
     }
 
+    public function quantities(): HasMany
+    {
+        return $this->hasMany(ProductQuantity::class, 'location_id');
+    }
+
     public function storageCategory(): BelongsTo
     {
         return $this->belongsTo(StorageCategory::class);
@@ -100,6 +107,13 @@ class Location extends Model
 
         return $this->warehouse->lot_stock_location_id == $this->id
             || ($this->parent_id && $this->parent->is_stock_location);
+    }
+
+    public function getInternalChildLocations()
+    {
+        return static::where('type', LocationType::INTERNAL)
+            ->whereRaw('parent_path LIKE ?', [$this->parent_path . '%'])
+            ->get();
     }
 
     public function getPutawayStrategy(
@@ -134,7 +148,7 @@ class Location extends Model
                 $rule->category_id ? 1 : 0,
             ]);
 
-        $locations = $this->childInternalLocations;
+        $locations = $this->getInternalChildLocations();
 
         $putawayLocation = null;
 
@@ -177,6 +191,7 @@ class Location extends Model
 
                     foreach ($moveLines as $moveLine) {
                         $currentQty = $moveLine->uom->computeQuantity($moveLine->quantity, $product->uom);
+
                         $qtyByLocation[$moveLine->destination_location_id] = ($qtyByLocation[$moveLine->destination_location_id] ?? 0) + $currentQty;
                     }
                 }
@@ -191,6 +206,185 @@ class Location extends Model
 
         return $putawayLocation
             ?? (($locations->isNotEmpty() && $this->type === LocationType::VIEW) ? $locations->first() : $this);
+    }
+
+    public function getPutawayLocation(
+        mixed $putawayRules,
+        Product $product,
+        float $quantity = 0,
+        ?Package $package = null,
+        ?Packaging $packaging = null,
+        array $qtyByLocation = []
+    ): ?Location {
+        $packageType = $package?->packageType ?? $packaging?->packageType;
+
+        $checkedLocations = collect();
+
+        foreach ($putawayRules as $putawayRule) {
+            $outLocation = $putawayRule->outLocation;
+
+            if ($putawayRule->sub_location === SubLocation::LAST_USED) {
+                $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
+                    ->where('product_id', $product->id)
+                    ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
+                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
+                    )
+                    ->when($putawayRule->packageTypes->isNotEmpty(), function ($query) use ($putawayRule) {
+                        $query->whereHas('resultPackage', fn ($q) => $q->whereIn('package_type_id', $putawayRule->packageTypes->pluck('id')->all()));
+                    })
+                    ->orderBy('scheduled_at', 'desc')
+                    ->first()
+                    ?->destinationLocation;
+                
+                $outLocation = $lastUsedLocation ?? $outLocation;
+            }
+
+            $childLocations = $outLocation->getInternalChildLocations();
+
+            if (! $putawayRule->storage_category_id) {
+                if ($checkedLocations->contains('id', $outLocation->id)) {
+                    continue;
+                }
+
+                if ($outLocation->canBeUsed($product, $quantity, $package, $qtyByLocation[$outLocation->id] ?? 0)) {
+                    return $outLocation;
+                }
+
+                continue;
+            }
+
+            $childLocations = $childLocations->filter(
+                fn ($location) => $location->storage_category_id === $putawayRule->storage_category_id
+            );
+
+            foreach ($childLocations as $location) {
+                if ($checkedLocations->contains('id', $location->id)) {
+                    continue;
+                }
+
+                if ($packageType) {
+                    $hasPackageType = $location->quantities->some(
+                        fn ($quantity) => $quantity->package_id && $quantity->package?->package_type_id === $packageType->id
+                    );
+
+                    if ($hasPackageType) {
+                        if ($location->canBeUsed($product, $quantity, package: $package, locationQty: $qtyByLocation[$location->id] ?? 0)) {
+                            return $location;
+                        }
+
+                        $checkedLocations->push($location);
+                    }
+                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product->uom->rounding) > 0) {
+                    if ($location->canBeUsed($product, $quantity, locationQty: $qtyByLocation[$location->id] ?? 0)) {
+                        return $location;
+                    }
+
+                    $checkedLocations->push($location);
+                }
+            }
+
+            foreach ($childLocations->filter(fn ($location) => $location->storage_category_id === $putawayRule->storage_category_id) as $location) {
+                if ($checkedLocations->contains('id', $location->id)) {
+                    continue;
+                }
+
+                if ($location->canBeUsed($product, $quantity, $package, $qtyByLocation[$location->id] ?? 0)) {
+                    return $location;
+                }
+
+                $checkedLocations->push($location);
+            }
+        }
+
+        return null;
+    }
+
+    public function canBeUsed(
+        Product $product,
+        float $quantity = 0,
+        ?Package $package = null,
+        float $locationQty = 0,
+        array $excludeMoveLineIds = []
+    ): bool
+    {
+        if (! $this->storage_category_id) {
+            return true;
+        }
+
+        $currentWeight = $this->quantities
+            ->sum(fn ($quantity) => ($quantity->quantity ?? 0) * ($quantity->product?->weight ?? 0));
+
+        $incomingWeight = MoveLine::whereNotIn('id', $excludeMoveLineIds)
+            ->where('destination_location_id', $this->id)
+            ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+            ->get()
+            ->sum(fn ($moveLine) => $moveLine->qty * ($moveLine->product?->weight ?? 0));
+
+        $forecastWeight = $currentWeight + $incomingWeight;
+
+        if ($package && $package->package_type_id) {
+            $packageWeight = MoveLine::where('result_package_id', $package->id)
+                ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+                ->get()
+                ->sum(fn ($moveLine) => $moveLine->qty * ($moveLine->product?->weight ?? 0));
+
+            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + $packageWeight) {
+                return false;
+            }
+
+            $packageCapacity = $this->storageCategory->storageCategoryCapacitiesByPackageType
+                ->first(fn ($pc) => $pc->package_type_id === $package->package_type_id);
+
+            if ($packageCapacity && $locationQty >= $packageCapacity->qty) {
+                return false;
+            }
+        } else {
+            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product->weight ?? 0) * $quantity) {
+                return false;
+            }
+
+            $productCapacity = $this->storageCategory->storageCategoryCapacitiesByProduct
+                ->first(fn ($pc) => $pc->product_id === $product->id);
+
+            if ($productCapacity && $locationQty >= $productCapacity->qty) {
+                return false;
+            }
+
+            if ($productCapacity && $quantity + $locationQty > $productCapacity->qty) {
+                return false;
+            }
+        }
+
+        $positiveQuantities = $this->quantities->filter(
+            fn ($quantity) => float_compare($quantity->quantity ?? 0, 0, precisionRounding: $quantity->product?->uom?->rounding ?? 0.01) > 0
+        );
+
+        if (
+            $this->storageCategory->allow_new_products === AllowNewProduct::EMPTY
+            && $positiveQuantities->isNotEmpty()
+        ) {
+            return false;
+        }
+
+        if ($this->storageCategory->allow_new_products === AllowNewProduct::SAME) {
+            if (
+                $positiveQuantities->isNotEmpty()
+                && $positiveQuantities->filter(fn ($quantity) => $quantity->product_id !== $product->id)->isNotEmpty()
+            ) {
+                return false;
+            }
+
+            $hasDifferentProduct = MoveLine::where('product_id', '!=', $product->id)
+                ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+                ->where('destination_location_id', $this->id)
+                ->exists();
+
+            if ($hasDifferentProduct) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function isChildOf(self $otherLocation): bool

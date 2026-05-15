@@ -579,7 +579,7 @@ class Move extends Model
         $this->setQuantityDonePrepareVals($quantity);
     }
 
-    public function setQuantityDonePrepareVals(float $qty): void
+    public function setQuantityDonePrepareVals(float $qty)
     {
         $toDelete = collect();
 
@@ -587,35 +587,35 @@ class Move extends Model
 
         $toCreate = [];
 
-        foreach ($this->lines as $ml) {
-            $mlQty = $ml->qty;
+        foreach ($this->lines as $moveLine) {
+            $moveLineQty = $moveLine->qty;
 
             if (float_is_zero($qty, precisionRounding: $this->uom->rounding)) {
-                $toDelete->push($ml->id);
+                $toDelete->push($moveLine->id);
 
                 continue;
             }
 
-            if (float_compare($mlQty, 0, precisionRounding: $ml->uom->rounding) <= 0) {
+            if (float_compare($moveLineQty, 0, precisionRounding: $moveLine->uom->rounding) <= 0) {
                 continue;
             }
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $mlQty = $ml->uom->computeQuantity($mlQty, $this->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $moveLineQty = $moveLine->uom->computeQuantity($moveLineQty, $this->uom, round: false);
             }
 
-            $takenQty = min($qty, $mlQty);
+            $takenQty = min($qty, $moveLineQty);
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $takenQty = $this->uom->computeQuantity($takenQty, $ml->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $takenQty = $this->uom->computeQuantity($takenQty, $moveLine->uom, round: false);
             }
 
-            $takenQty = float_round($takenQty, precisionRounding: $ml->uom->rounding);
+            $takenQty = float_round($takenQty, precisionRounding: $moveLine->uom->rounding);
 
-            $toUpdate[] = ['id' => $ml->id, 'qty' => $takenQty];
+            $toUpdate[] = ['id' => $moveLine->id, 'qty' => $takenQty];
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $takenQty = $ml->uom->computeQuantity($takenQty, $this->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $takenQty = $moveLine->uom->computeQuantity($takenQty, $this->uom, round: false);
             }
 
             $qty -= $takenQty;
@@ -651,9 +651,15 @@ class Move extends Model
             $moveLine->update(['qty' => $update['qty']]);
         }
 
+        $newMoveLines = collect();
+
         foreach ($toCreate as $vals) {
-            $this->lines()->create($vals);
+            $moveLine = $this->lines()->create($vals);
+
+            $newMoveLines->push($moveLine);
         }
+
+        return $newMoveLines;
     }
 
     public function computeQuantity()

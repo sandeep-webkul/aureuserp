@@ -610,6 +610,13 @@ class InventoryManager
         Move::whereIn('id', $partiallyAssignedMovesIds)->get()->each(fn ($move) => $move->update(['state' => MoveState::PARTIALLY_ASSIGNED]));
 
         Move::whereIn('id', $assignedMovesIds)->get()->each(fn ($move) => $move->update(['state' => MoveState::ASSIGNED]));
+
+        $moveLines = Move::whereIn('id', $movesToRedirect)
+            ->with('lines')
+            ->get()
+            ->flatMap(fn ($move) => $move->lines);
+
+        $this->applyPutawayStrategy($moveLines);
     }
 
     public function doneMoves($moves, $cancelBackOrder = false)
@@ -947,7 +954,7 @@ class InventoryManager
         $quantityCache = ProductQuantity::getQuantitiesByProductsLocations(
             $moveLinesTodo->pluck('product_id'),
             $moveLinesTodo->pluck('source_location_id')->merge($moveLinesTodo->pluck('destination_location_id'))->unique(),
-            extraDomain: [['lot_id', 'in', $moveLinesTodo->pluck('lot_id')->filter()->all()], ['lot_id', '=', null]],
+            extraFilters: [['lot_id', 'in', $moveLinesTodo->pluck('lot_id')->filter()->all()], ['lot_id', '=', null]],
         );
 
         foreach ($moveLinesTodo as $moveLine) {
