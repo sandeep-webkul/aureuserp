@@ -48,6 +48,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -274,7 +275,7 @@ class OrderResource extends Resource
                                             ->required()
                                             ->default(Auth::user()->default_company_id)
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
-                                        TextInput::make('reference')
+                                        TextInput::make('origin')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.source-document'))
                                             ->maxLength(255),
                                         Select::make('incoterm_id')
@@ -285,7 +286,7 @@ class OrderResource extends Resource
                                             ->createOptionForm(fn (Schema $schema) => IncotermResource::form($schema))
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.incoterm-tooltip'))
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
-                                        TextInput::make('reference')
+                                        TextInput::make('incoterm_location')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.incoterm-location'))
                                             ->maxLength(255)
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
@@ -489,6 +490,7 @@ class OrderResource extends Resource
             )
             ->filtersFormColumns(2)
             ->recordActions([
+                ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
@@ -1272,7 +1274,7 @@ class OrderResource extends Resource
 
             $set('product_uom_qty', round($productUOMQty, 2));
 
-            $uom = Uom::find($get('uom_id'));
+            $uom = UOM::find($get('uom_id'));
 
             $productQty = $uom ? $productUOMQty * $uom->factor : $productUOMQty;
 
@@ -1330,7 +1332,7 @@ class OrderResource extends Resource
     {
         $product = Product::find($get('product_id'));
 
-        $vendorPrices = $product->supplierInformation->sortByDesc('sort');
+        $vendorPrices = $product->sellers->sortByDesc('sort');
 
         if ($get('../../partner_id')) {
             $vendorPrices = $vendorPrices->where('partner_id', $get('../../partner_id'));
@@ -1587,7 +1589,7 @@ class OrderResource extends Resource
                 continue;
             }
 
-            $vendorPrices = $productModel->supplierInformation
+            $vendorPrices = $productModel->sellers
                 ->where('partner_id', $partnerId)
                 ->where('currency_id', $get('currency_id'))
                 ->where('min_qty', '<=', $product['product_qty'] ?? 1)
