@@ -631,7 +631,7 @@ class ProductQuantity extends Model
         return $reservedQuants;
     }
 
-    public static function getQuantsByProductsLocations($productIds, $locationIds, array $extraDomain = []): array
+    public static function getQuantitiesByProductsLocations($productIds, $locationIds, array $extraDomain = []): array
     {
         $result = [];
 

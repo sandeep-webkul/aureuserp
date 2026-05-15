@@ -420,7 +420,7 @@ class InventoryManager
 
         $movesMto = $movesToAssign->filter(fn ($move) => $move->moveOrigins->isNotEmpty() && ! $move->shouldBypassReservation());
 
-        $quantityCache = ProductQuantity::getQuantsByProductsLocations($movesMto->pluck('product_id'), $movesMto->pluck('source_location_id'));
+        $quantityCache = ProductQuantity::getQuantitiesByProductsLocations($movesMto->pluck('product_id'), $movesMto->pluck('source_location_id'));
 
         foreach ($movesToAssign as $move) {
             $rounding = $roundings[$move->id];
@@ -944,7 +944,7 @@ class InventoryManager
 
         $moveLineIdsToIgnore = collect();
 
-        $quantityCache = ProductQuantity::getQuantsByProductsLocations(
+        $quantityCache = ProductQuantity::getQuantitiesByProductsLocations(
             $moveLinesTodo->pluck('product_id'),
             $moveLinesTodo->pluck('source_location_id')->merge($moveLinesTodo->pluck('destination_location_id'))->unique(),
             extraDomain: [['lot_id', 'in', $moveLinesTodo->pluck('lot_id')->filter()->all()], ['lot_id', '=', null]],
