@@ -38,6 +38,7 @@ set_env DB_USERNAME "$DB_USERNAME"
 set_env DB_PASSWORD "$DB_PASSWORD"
 
 set_env APP_ENV "${APP_ENV:-production}"
+set_env APP_DEBUG "${APP_DEBUG:-false}"
 
 [ -n "$APP_URL" ]      && set_env APP_URL      "$APP_URL"
 [ -n "$APP_KEY" ]      && set_env APP_KEY      "$APP_KEY"
@@ -62,8 +63,8 @@ if ! use_internal_mysql; then
 fi
 
 log "Refreshing cached configuration..."
-php artisan optimize --no-interaction 2>/dev/null || true
-php artisan filament:optimize --no-interaction 2>/dev/null || true
+
+php artisan optimize:clear --no-interaction 2>/dev/null || true
 
 log "Starting services via Supervisor..."
 
