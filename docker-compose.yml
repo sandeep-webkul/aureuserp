@@ -1,0 +1,54 @@
+name: aureuserp
+
+services:
+  app:
+    build:
+      context: docker/production
+      dockerfile: Dockerfile
+      args:
+        APP_REF: master
+        REPO_URL: https://github.com/aureuserp/aureuserp.git
+        ADMIN_NAME: Administrator
+        ADMIN_EMAIL: admin@example.com
+        ADMIN_PASSWORD: password
+    image: aureuserp:latest
+    container_name: aureuserp
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      APP_NAME: "AureusERP"
+      APP_URL: "http://localhost"
+      APP_TIMEZONE: "UTC"
+    volumes:
+      - aureus-mysql:/var/lib/mysql
+      - aureus-storage:/var/www/aureuserp/storage
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  mysql:
+    image: mysql:8.0
+    container_name: aureuserp-mysql
+    profiles: ["external-db"]
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: aureus
+      MYSQL_USER: aureus
+      MYSQL_PASSWORD: aureus
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - aureus-external-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uaureus", "-paureus"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  aureus-mysql:
+  aureus-storage:
+  aureus-external-mysql:
