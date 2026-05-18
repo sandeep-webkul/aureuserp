@@ -783,7 +783,7 @@ class Order extends Model
             'destination_location_id' => $this->production_location_id,
             'raw_material_order_id'   => $this->id,
             'company_id'              => $this->company_id,
-            'operation_id'            => $operationId,
+            'mo_operation_id'         => $operationId,
             'procure_method'          => ProcureMethod::MAKE_TO_STOCK,
             'origin'                  => $this->getOrigin(),
             'warehouse_id'            => $this->sourceLocation->warehouse_id,
@@ -819,7 +819,7 @@ class Order extends Model
     public function linkWorkOrdersAndMoves(): void
     {
         $workOrderPerOperation = $this->workOrders
-            ->filter(fn ($wo) => $wo->operation_id)
+            ->filter(fn ($workOrder) => $workOrder->operation_id)
             ->keyBy('operation_id');
 
         $workOrderBillOfMaterials = $this->workOrders
@@ -831,7 +831,7 @@ class Order extends Model
 
         $allowWorkOrderDependencies = $this->billOfMaterial?->allow_operation_dependencies;
 
-        $workOrderOrder = fn ($wo) => [$wo->sort, $wo->id];
+        $workOrderOrder = fn ($workOrder) => [$workOrder->sort, $workOrder->id];
 
         if ($allowWorkOrderDependencies) {
             foreach ($this->workOrders->sortBy($workOrderOrder) as $workOrder) {
