@@ -1,54 +1,107 @@
-name: aureuserp
-
 services:
-  app:
+  laravel.test:
     build:
-      context: docker/production
+      context: ./vendor/laravel/sail/runtimes/8.4
       dockerfile: Dockerfile
       args:
-        APP_REF: master
-        REPO_URL: https://github.com/aureuserp/aureuserp.git
-        ADMIN_NAME: Administrator
-        ADMIN_EMAIL: admin@example.com
-        ADMIN_PASSWORD: password
-    image: aureuserp:latest
-    container_name: aureuserp
-    restart: unless-stopped
+        WWWGROUP: '${WWWGROUP}'
+
+    image: sail-8.4/app
+
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
     ports:
-      - "80:80"
+      - '${APP_PORT:-80}:80'
+      - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+
     environment:
-      APP_NAME: "AureusERP"
-      APP_URL: "http://localhost"
-      APP_TIMEZONE: "UTC"
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+      XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+      IGNITION_LOCAL_SITES_PATH: '${PWD}'
+
     volumes:
-      - aureus-mysql:/var/lib/mysql
-      - aureus-storage:/var/www/aureuserp/storage
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
+      - '.:/var/www/html'
+
+    networks:
+      - sail
+
+    depends_on:
+      - mysql
+      - redis
+      - mailpit
 
   mysql:
-    image: mysql:8.0
-    container_name: aureuserp-mysql
-    profiles: ["external-db"]
-    restart: unless-stopped
+    image: 'mysql/mysql-server:8.0'
+
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+
     environment:
-      MYSQL_DATABASE: aureus
-      MYSQL_USER: aureus
-      MYSQL_PASSWORD: aureus
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
     volumes:
-      - aureus-external-mysql:/var/lib/mysql
+      - 'sail-mysql:/var/lib/mysql'
+      - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+
+    networks:
+      - sail
+
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uaureus", "-paureus"]
-      interval: 10s
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-p${DB_PASSWORD}'
+
+      retries: 3
       timeout: 5s
-      retries: 10
+
+  redis:
+    image: 'redis:alpine'
+
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+
+    volumes:
+      - 'sail-redis:/data'
+
+    networks:
+      - sail
+
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+
+      retries: 3
+      timeout: 5s
+
+  mailpit:
+    image: 'axllent/mailpit:latest'
+
+    ports:
+      - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+      - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+
+    networks:
+      - sail
+
+networks:
+  sail:
+    driver: bridge
 
 volumes:
-  aureus-mysql:
-  aureus-storage:
-  aureus-external-mysql:
+  sail-mysql:
+    driver: local
+
+  sail-redis:
+    driver: local

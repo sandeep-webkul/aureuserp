@@ -6,6 +6,9 @@ A single-container production image for [AureusERP](https://github.com/aureuserp
 AureusERP is **fully installed at build time** — migrations, seeders, roles &
 permissions, and an admin user. One `docker run` gives you a ready-to-use ERP.
 
+> This is the production image. For local development use Laravel Sail via the
+> `docker-compose.yml` at the repository root.
+
 ## What's inside
 
 | File | Purpose |
@@ -20,9 +23,6 @@ permissions, and an admin user. One `docker run` gives you a ready-to-use ERP.
 | `php-fpm.conf` | PHP-FPM pool tuning |
 | `mysql-init.sql` | Creates the internal `aureus` database and user |
 
-A `docker-compose.yml` (app service, named volumes, optional external-DB
-profile) lives at the **repository root**.
-
 The application is installed to `/var/www/aureuserp` inside the container.
 
 ## How it works
@@ -32,12 +32,17 @@ fetches the application with `git clone` (configurable via build args), so the
 image always builds **committed** code — uncommitted local changes are not
 included. This mirrors the upstream reference layout.
 
-## Quick start (Docker Compose)
-
-From the repository root:
+## Quick start
 
 ```bash
-docker compose up -d --build
+# Build — the build context is docker/production/
+docker build -t aureuserp:latest docker/production
+
+# Run with named volumes so data persists
+docker run -d --name aureuserp -p 80:80 \
+  -v aureus-mysql:/var/lib/mysql \
+  -v aureus-storage:/var/www/aureuserp/storage \
+  aureuserp:latest
 ```
 
 - Application: <http://localhost>
@@ -46,19 +51,6 @@ docker compose up -d --build
 
 The build takes several minutes (it clones the repo, runs `composer install`,
 compiles assets, and installs the ERP). The container itself boots in seconds.
-
-## Build & run manually
-
-```bash
-# Build — context is docker/production/
-docker build -t aureuserp:latest docker/production
-
-# Run with named volumes for persistence
-docker run -d --name aureuserp -p 80:80 \
-  -v aureus-mysql:/var/lib/mysql \
-  -v aureus-storage:/var/www/aureuserp/storage \
-  aureuserp:latest
-```
 
 ## Build arguments
 
@@ -98,6 +90,15 @@ docker build -t aureuserp:latest \
 | `DB_USERNAME` | `aureus` | Database user |
 | `DB_PASSWORD` | `aureus` | Database password |
 
+```bash
+docker run -d --name aureuserp -p 80:80 \
+  -e APP_URL=https://erp.example.com \
+  -e APP_NAME="My Company ERP" \
+  -v aureus-mysql:/var/lib/mysql \
+  -v aureus-storage:/var/www/aureuserp/storage \
+  aureuserp:latest
+```
+
 ## Database modes
 
 - **Internal MySQL (default)** — when `DB_HOST` is unset, `127.0.0.1`, or
@@ -105,19 +106,16 @@ docker build -t aureuserp:latest \
   pre-installed data directory is baked into the image.
 - **External MySQL** — set `DB_HOST` to any other address. The internal MySQL
   stays off and the entrypoint waits for the external server. An external
-  database is **not pre-installed** — run the installer once against it:
+  database is **not pre-installed** — run the installer against it once
+  (`APP_ENV` is overridden so the migrations are not blocked by the production
+  guard):
 
   ```bash
-  docker compose exec app php artisan erp:install --force --no-interaction \
+  docker exec -e APP_ENV=local aureuserp \
+    php artisan erp:install --force --no-interaction \
     --admin-name=Administrator \
     --admin-email=admin@example.com \
     --admin-password=password
-  ```
-
-  The compose file ships an optional `mysql` service:
-
-  ```bash
-  docker compose --profile external-db up -d --build
   ```
 
 ## Persistence
@@ -132,16 +130,16 @@ bind mounts do not, and an empty bind mount would shadow the installed data):
 ## Upgrading
 
 The image is immutable and `opcache.validate_timestamps=0`, so code changes
-require **rebuilding the image** — push your changes, then:
+require **rebuilding the image**:
 
 ```bash
-docker compose build --no-cache && docker compose up -d
+docker build --no-cache -t aureuserp:latest docker/production
 ```
 
 When reusing the `aureus-mysql` volume, apply any new migrations:
 
 ```bash
-docker compose exec app php artisan migrate --force
+docker exec aureuserp php artisan migrate --force
 ```
 
 ## Health check
@@ -164,4 +162,4 @@ docker compose exec app php artisan migrate --force
 - Image size is roughly 1.3–1.6 GB (bundled MySQL, PHP extensions, the
   application, and dependencies).
 - `APP_DEBUG` is `false` and `display_errors` is off — keep it that way in
-  production.
+  production. Change the default admin password after the first login.
