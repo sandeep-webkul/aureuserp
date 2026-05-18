@@ -31,13 +31,14 @@ return [
             'product-information' => [
                 'title'  => 'Product Information',
                 'fields' => [
-                    'partner'        => 'Vendor',
-                    'partner-ref'    => 'Vendor Reference',
-                    'model'          => 'Model',
-                    'serial-no'      => 'Serial Number',
-                    'effective-date' => 'Effective Date',
-                    'cost'           => 'Cost',
-                    'warranty-date'  => 'Warranty Expiration Date',
+                    'partner'                     => 'Vendor',
+                    'partner-ref'                 => 'Vendor Reference',
+                    'model'                       => 'Model',
+                    'serial-no'                   => 'Serial Number',
+                    'effective-date'              => 'Effective Date',
+                    'effective-date-hint-tooltip' => 'Used as the starting point for calculating Mean Time Between Failure.',
+                    'cost'                        => 'Cost',
+                    'warranty-date'               => 'Warranty Expiration Date',
                 ],
             ],
 

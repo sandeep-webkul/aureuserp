@@ -31,13 +31,14 @@ return [
             'product-information' => [
                 'title'  => 'معلومات المنتج',
                 'fields' => [
-                    'partner'        => 'المورد',
-                    'partner-ref'    => 'مرجع المورد',
-                    'model'          => 'الطراز',
-                    'serial-no'      => 'الرقم التسلسلي',
-                    'effective-date' => 'تاريخ السريان',
-                    'cost'           => 'التكلفة',
-                    'warranty-date'  => 'تاريخ انتهاء الضمان',
+                    'partner'                     => 'المورد',
+                    'partner-ref'                 => 'مرجع المورد',
+                    'model'                       => 'الطراز',
+                    'serial-no'                   => 'الرقم التسلسلي',
+                    'effective-date'              => 'تاريخ السريان',
+                    'effective-date-hint-tooltip' => 'يُستخدم كنقطة بداية لحساب متوسط الوقت بين الأعطال.',
+                    'cost'                        => 'التكلفة',
+                    'warranty-date'               => 'تاريخ انتهاء الضمان',
                 ],
             ],
 

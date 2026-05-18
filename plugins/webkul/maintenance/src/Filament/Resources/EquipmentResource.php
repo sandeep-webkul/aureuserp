@@ -110,6 +110,7 @@ class EquipmentResource extends Resource
 
                                 DatePicker::make('effective_date')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.product-information.fields.effective-date'))
+                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('maintenance::filament/resources/equipment.form.sections.product-information.fields.effective-date-hint-tooltip'))
                                     ->native(false)
                                     ->required()
                                     ->default(now()),
