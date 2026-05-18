@@ -26,9 +26,12 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource\Pag
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource\Pages\ViewInternal;
 use Webkul\Inventory\Models\InternalTransfer;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class InternalResource extends Resource
 {
+    use HasResourcePermissionQuery;
+    
     protected static ?string $model = InternalTransfer::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
@@ -167,11 +170,5 @@ class InternalResource extends Resource
             'edit'   => EditInternal::route('/{record}/edit'),
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

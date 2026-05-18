@@ -28,12 +28,13 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -84,6 +85,11 @@ class Order extends Model
     ];
 
     protected array $context = [];
+
+    protected function getAssignmentColumn(): ?string
+    {
+        return 'assigned_user_id';
+    }
 
     public function setContext(array $context)
     {
