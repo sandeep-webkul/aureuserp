@@ -1,12 +1,5 @@
 name: Publish Docker Image
 
-# Builds the multi-architecture (amd64 + arm64) AureusERP production image and
-# publishes it to Docker Hub. Runs on a version tag push (v*) or manually.
-#
-# Required repository secrets:
-#   DOCKERHUB_USERNAME  - Docker Hub account with push access to the image
-#   DOCKERHUB_TOKEN     - Docker Hub access token
-
 on:
   push:
     tags:
@@ -38,6 +31,8 @@ jobs:
 
       - name: Resolve version and tags
         id: meta
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             APP_REF="${GITHUB_REF_NAME}"
@@ -50,10 +45,28 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
           TAGS="${IMAGE_NAME}:${VERSION}"
-          # Also tag :latest for a stable (non pre-release) version tag push.
-          if [ "${{ github.event_name }}" = "push" ] && [[ ! "${VERSION}" =~ -(alpha|beta|rc) ]]; then
-            TAGS="${TAGS},${IMAGE_NAME}:latest"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            IS_PRERELEASE="false"
+            if echo "${APP_REF}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-'; then
+              IS_PRERELEASE="true"
+            fi
+
+            DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/${DEFAULT_BRANCH}...${{ github.sha }}" \
+              --jq '.status' 2>/dev/null || echo "unknown")
+
+            ON_DEFAULT_BRANCH="false"
+            case "$COMPARE" in
+              identical|behind) ON_DEFAULT_BRANCH="true" ;;
+            esac
+
+            if [ "$IS_PRERELEASE" = "false" ] && [ "$ON_DEFAULT_BRANCH" = "true" ]; then
+              TAGS="${TAGS},${IMAGE_NAME}:latest"
+            fi
+            echo "prerelease=${IS_PRERELEASE} compare=${COMPARE} on_default=${ON_DEFAULT_BRANCH}"
           fi
+
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
           echo "Resolved ref=${APP_REF}, tags=${TAGS}"
 
