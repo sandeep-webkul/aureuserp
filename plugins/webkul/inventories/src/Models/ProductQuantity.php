@@ -279,7 +279,7 @@ class ProductQuantity extends Model
         ?Carbon $incomingDate = null,
     ): array {
         if (! $quantity && ! $reservedQuantity) {
-            throw new \Exception(__('Quantity or Reserved Quantity should be set.'));
+            throw new \Exception(__('inventories::system.product-quantity.quantity-not-set'));
         }
 
         $quants = static::gather($product, $location, lot: $lot, package: $package, strict: true);
@@ -429,7 +429,7 @@ class ProductQuantity extends Model
             'fifo'    => 'incoming_at ASC, id',
             'lifo'    => 'incoming_at DESC, id DESC',
             'closest' => null,
-            default   => throw new \RuntimeException(__('Removal strategy :strategy not implemented.', ['strategy' => $removalStrategy])),
+            default   => throw new \RuntimeException(__('inventories::system.product-quantity.removal-strategy-not-implemented', ['strategy' => $removalStrategy])),
         };
     }
 
@@ -563,7 +563,7 @@ class ProductQuantity extends Model
             $available = $quants->sum('reserved_quantity');
 
             if (float_compare(abs($quantity), $available, precisionRounding: $rounding) > 0) {
-                throw new \RuntimeException(__('It is not possible to unreserve more products of :name than you have in stock.', ['name' => $product->name]));
+                throw new \RuntimeException(__('inventories::system.product-quantity.unreserve-more-than-stock', ['name' => $product->name]));
             }
         }
 

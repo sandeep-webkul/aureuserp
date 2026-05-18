@@ -696,11 +696,11 @@ class Move extends Model
     public function split(float $qty, ?int $restrictPartnerId = null): array
     {
         if (in_array($this->state, [MoveState::DONE, MoveState::CANCELED])) {
-            throw new \Exception(__('You cannot split a stock move that has been set to \'Done\' or \'Cancel\'.'));
+            throw new \Exception(__('inventories::system.move.split-done-or-cancel'));
         }
 
         if ($this->state === MoveState::DRAFT) {
-            throw new \Exception(__('You cannot split a draft move. It needs to be confirmed first.'));
+            throw new \Exception(__('inventories::system.move.split-draft'));
         }
 
         if (float_is_zero($qty, precisionRounding: $this->product->uom->rounding)) {

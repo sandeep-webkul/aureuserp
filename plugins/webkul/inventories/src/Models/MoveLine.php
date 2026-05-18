@@ -197,7 +197,7 @@ class MoveLine extends Model
                     $newReservedQty = $moveLine->uom->computeQuantity($moveLine->qty, $moveLine->product->uom, roundingMethod: 'HALF-UP');
 
                     if (float_compare($newReservedQty, 0, precisionRounding: $moveLine->product->uom->rounding) < 0) {
-                        throw new \Exception('Reserving a negative quantity is not allowed.');
+                        throw new \Exception(__('inventories::system.move-line.negative-quantity-not-allowed'));
                     }
                 } else {
                     $newReservedQty = $moveLine->uom_qty;

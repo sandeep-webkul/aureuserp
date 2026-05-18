@@ -68,7 +68,7 @@ class InventoryManager
             ]);
 
         if ($moves->isEmpty()) {
-            throw new \Exception('Nothing to check the availability for.');
+            throw new \Exception(__('inventories::system.inventory-manager.check-availability.no-moves'));
         }
 
         $this->assignMoves($moves);
@@ -743,7 +743,7 @@ class InventoryManager
     public function cancelMoves($moves)
     {
         if ($moves->some(fn ($move) => $move->state === MoveState::DONE && ! $move->is_scraped)) {
-            throw new \Exception(__('You cannot cancel a stock move that has been set to \'Done\'. Create a return in order to reverse the moves which took place.'));
+            throw new \Exception(__('inventories::system.inventory-manager.cancel-move.already-done'));
         }
 
         $movesToCancel = $moves->filter(
@@ -811,7 +811,7 @@ class InventoryManager
             }
 
             if ($move->state === MoveState::DONE) {
-                throw new \Exception(__("You can not unreserve a stock move that has been set to 'Done'."));
+                throw new \Exception(__('inventories::system.inventory-manager.unreserve-move.already-done'));
             }
 
             return true;
@@ -862,7 +862,7 @@ class InventoryManager
             $quantity = float_round($moveLine->qty, precisionDigits: 2, roundingMethod: 'HALF-UP');
 
             if (float_compare($uomQty, $quantity, precisionDigits: 2) !== 0) {
-                throw new \Exception(__('The quantity done for the product ":product" doesn\'t respect the rounding precision defined on the unit of measure ":unit". Please change the quantity done or the rounding precision of your unit of measure.', [
+                throw new \Exception(__('inventories::system.inventory-manager.validate.quantity-rounding-mismatch', [
                     'product' => $moveLine->product->name,
                     'unit'    => $moveLine->uom->name,
                 ]));
@@ -895,7 +895,7 @@ class InventoryManager
                     $moveLineIdsTrackedWithoutLot->push($moveLine->id);
                 }
             } elseif ($qtyDoneFloatCompared < 0) {
-                throw new \Exception(__('No negative quantities allowed'));
+                throw new \Exception(__('inventories::system.inventory-manager.validate.no-negative-quantities'));
             } elseif (! $moveLine->is_inventory) {
                 $moveLineIdsToDelete->push($moveLine->id);
             }
@@ -936,7 +936,7 @@ class InventoryManager
                 ->map(fn ($name) => "- $name")
                 ->implode("\n");
 
-            throw new \Exception(__("You need to supply a Lot/Serial Number for product:\n:products", [
+            throw new \Exception(__('inventories::system.inventory-manager.validate.missing-lot-serial-number', [
                 'products' => $productNames,
             ]));
         }
@@ -1646,7 +1646,7 @@ class InventoryManager
             $rule = $this->getRule($procurement['product'], $procurement['location'], $procurement['values']);
 
             if (! $rule) {
-                $error = __('No rule has been found to replenish ":product" in ":location".\nVerify the routes configuration on the product.', [
+                $error = __('inventories::system.inventory-manager.run-procurement.no-rule-found', [
                     'product'  => $procurement['product']->name,
                     'location' => $procurement['location']->full_name,
                 ]);
@@ -1690,7 +1690,7 @@ class InventoryManager
     {
         foreach ($procurements as [$procurement, $rule]) {
             if (! $rule->source_location_id) {
-                throw new \Exception(__('No source location defined on stock rule: :name!', [
+                throw new \Exception(__('inventories::system.inventory-manager.run-procurement.no-source-location', [
                     'name' => $rule->name,
                 ]));
             }
@@ -1826,12 +1826,9 @@ class InventoryManager
                 ->first();
 
             if (! $supplier && $procurement['values']['from_order_point'] ?? null) {
-                $msg = __(
-                    'There is no matching vendor price to generate the purchase order for product %s '.
-                    '(no vendor defined, minimum quantity not reached, dates not valid, ...). '.
-                    'Go on the product form and complete the list of vendors.',
-                    $procurement['product']->name
-                );
+                $msg = __('inventories::system.inventory-manager.run-procurement.no-vendor-price', [
+                    'product' => $procurement['product']->name,
+                ]);
 
                 $errors[] = [$procurement, $msg];
             } elseif (! $supplier) {
@@ -2276,7 +2273,7 @@ class InventoryManager
 
         return [
             'state'                   => OperationState::DRAFT,
-            'origin'                  => __('Return of :operation_name', ['operation_name' => $operation->name]),
+            'origin'                  => __('inventories::system.inventory-manager.return.origin', ['operation_name' => $operation->name]),
             'operation_type_id'       => $returnType?->id ?? $operation->operation_type_id,
             'source_location_id'      => $sourceLocation->id,
             'location_destination_id' => $destinationLocation->id,
