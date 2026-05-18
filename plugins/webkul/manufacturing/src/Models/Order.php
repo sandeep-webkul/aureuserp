@@ -695,7 +695,7 @@ class Order extends Model
         $byproductProductIds = $this->billOfMaterial?->byproducts->pluck('product_id')->all() ?? [];
 
         if (in_array($this->product_id, $byproductProductIds)) {
-            throw new \Exception(__('You cannot have :product as the finished product and in the Byproducts', [
+            throw new \Exception(__('manufacturing::system.order.product-in-byproducts', [
                 'product' => $this->product->name,
             ]));
         }
@@ -931,7 +931,7 @@ class Order extends Model
         }
 
         if ($missingLotIdProducts) {
-            throw new \Exception(__('You need to supply Lot/Serial Number for products and "consume" them: %(missing_products)s', [
+            throw new \Exception(__('manufacturing::system.order.missing-lot-serial-number', [
                 'missing_products' => $missingLotIdProducts,
             ]));
         }
@@ -1012,7 +1012,7 @@ class Order extends Model
             && $this->producing_lot_id
         ) {
             if ($this->isFinishedSnAlreadyProduced($this->producingLot)) {
-                throw new \Exception(__('This serial number for product :product has already been produced', [
+                throw new \Exception(__('manufacturing::system.order.serial-number-already-produced', [
                     'product' => $this->product->name,
                 ]));
             }
@@ -1032,7 +1032,7 @@ class Order extends Model
                 }
 
                 if ($this->isFinishedSnAlreadyProduced($moveLine->lot, excludedSml: $moveLine)) {
-                    throw new \Exception(__('The serial number :number used for byproduct :product has already been produced', [
+                    throw new \Exception(__('manufacturing::system.order.byproduct-serial-number-already-produced', [
                         'number'  => $moveLine->lot->name,
                         'product' => $moveLine->product->name,
                     ]));
@@ -1063,7 +1063,7 @@ class Order extends Model
 
                 $smlSn = $moveLine->lot;
 
-                $message = __('The serial number :number used for component :component has already been consumed', [
+                $message = __('manufacturing::system.order.component-serial-number-consumed', [
                     'number'    => $smlSn->name,
                     'component' => $moveLine->product->name,
                 ]);
@@ -1295,7 +1295,7 @@ class Order extends Model
 
         $componentsAvailabilityState = 'available';
 
-        $componentsAvailability = __('Available');
+        $componentsAvailability = __('manufacturing::system.order.components-availability.available');
 
         $hasUnavailable = $this->rawMaterialMoves->some(function ($move) {
             $threshold = $move->state === MoveState::DRAFT ? 0 : $move->product_qty;
@@ -1306,7 +1306,7 @@ class Order extends Model
         if ($hasUnavailable) {
             $componentsAvailabilityState = 'unavailable';
 
-            $componentsAvailability = __('Not Available');
+            $componentsAvailability = __('manufacturing::system.order.components-availability.not-available');
 
             return [
                 $componentsAvailabilityState,
@@ -1325,7 +1325,7 @@ class Order extends Model
                     : 'expected';
             }
 
-            $componentsAvailability = __('Expected :date', [
+            $componentsAvailability = __('manufacturing::system.order.components-availability.expected', [
                 'date' => Carbon::parse($forecastDate)->format('Y-m-d'),
             ]);
         }
