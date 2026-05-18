@@ -1,11 +1,3 @@
-#!/bin/bash
-# ==========================================================================
-# build-install.sh — runs during `docker build` to fully install AureusERP.
-#
-# Starts MySQL temporarily, runs migrations + seeders + roles + the admin
-# user, then shuts MySQL down cleanly. The populated /var/lib/mysql is baked
-# into the image layer so the container boots ready to use.
-# ==========================================================================
 set -e
 
 APP_DIR="/var/www/aureuserp"
@@ -25,6 +17,7 @@ mysqld --user=mysql --datadir=/var/lib/mysql &
 MYSQL_PID=$!
 
 echo "[build-install] Waiting for MySQL to be ready..."
+
 for i in $(seq 1 60); do
     if mysqladmin --silent ping 2>/dev/null; then
         echo "[build-install] MySQL is ready."
@@ -55,7 +48,6 @@ echo "[build-install] Shutting down MySQL..."
 mysqladmin -u root shutdown
 wait "$MYSQL_PID" 2>/dev/null || true
 
-# Fix ownership after shutdown so the baked data dir belongs to mysql.
 chown -R mysql:mysql /var/lib/mysql
 
 echo "[build-install] AureusERP installation complete."

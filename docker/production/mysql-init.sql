@@ -1,9 +1,3 @@
--- ============================================================================
--- AureusERP — initial setup for the internal MySQL database.
--- Applied by the entrypoint only when the MySQL data directory is empty
--- (first boot in internal-database mode).
--- ============================================================================
-
 CREATE DATABASE IF NOT EXISTS `aureus`
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;

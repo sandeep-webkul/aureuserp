@@ -78,6 +78,7 @@ docker build -t aureuserp:latest \
 
 | Variable | Default | Description |
 |---|---|---|
+| `APP_ENV` | `production` | `production` forces all URLs to **HTTPS** (live). Use `local` to serve over plain **HTTP** (local testing). |
 | `APP_NAME` | _from .env_ | Application name |
 | `APP_URL` | `http://localhost` | Public base URL |
 | `APP_KEY` | _baked_ | Encryption key — override to pin a stable key |
@@ -96,6 +97,19 @@ docker run -d --name aureuserp -p 80:80 \
   -e APP_NAME="My Company ERP" \
   -v aureus-mysql:/var/lib/mysql \
   -v aureus-storage:/var/www/aureuserp/storage \
+  aureuserp:latest
+```
+
+### HTTP vs HTTPS
+
+AureusERP forces every generated URL to `https` when `APP_ENV=production` (the
+default — correct for a live site behind TLS). For **local testing over plain
+HTTP**, run with `APP_ENV=local` so links and redirects stay on `http`:
+
+```bash
+docker run -d --name aureuserp -p 8080:80 \
+  -e APP_ENV=local \
+  -e APP_URL=http://localhost:8080 \
   aureuserp:latest
 ```
 
