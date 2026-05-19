@@ -39,7 +39,7 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
             'headerToolbar'    => [
                 'left'   => 'prev,next today',
                 'center' => 'title',
-                'right'  => 'dayGridMonth,timeGridWeek,listWeek',
+                'right'  => 'multiMonthYear,dayGridMonth,timeGridWeek,listWeek',
             ],
             'buttonText'       => [
                 'today'        => __('maintenance::filament/widgets/maintenance-calendar-widget.config.button-text.today'),
@@ -47,12 +47,17 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
                 'timeGridWeek' => __('maintenance::filament/widgets/maintenance-calendar-widget.config.button-text.week'),
                 'listWeek'     => __('maintenance::filament/widgets/maintenance-calendar-widget.config.button-text.list'),
             ],
+            'views'            => [
+                'multiMonthYear' => [
+                    'buttonText' => __('maintenance::filament/widgets/maintenance-calendar-widget.config.button-text.year'),
+                ],
+            ],
             'height'           => 'auto',
             'aspectRatio'      => 1.8,
             'firstDay'         => 1,
             'moreLinkClick'    => 'popover',
             'eventDisplay'     => 'block',
-            'displayEventTime' => true,
+            'displayEventTime' => false,
             'selectable'       => true,
             'selectMirror'     => true,
             'unselectAuto'     => false,

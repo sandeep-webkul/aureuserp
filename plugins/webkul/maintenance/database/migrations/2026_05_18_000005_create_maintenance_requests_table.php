@@ -46,11 +46,6 @@ return new class extends Migration
                 ->constrained('maintenance_equipment_categories')
                 ->nullOnDelete();
 
-            $table->foreignId('owner_user_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
-
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained('users')

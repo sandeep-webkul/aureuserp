@@ -47,7 +47,6 @@ class MaintenanceRequest extends Model
         'equipment_id',
         'stage_id',
         'category_id',
-        'owner_user_id',
         'user_id',
         'maintenance_team_id',
         'company_id',
@@ -90,11 +89,6 @@ class MaintenanceRequest extends Model
         return $this->belongsTo(EquipmentCategory::class, 'category_id');
     }
 
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'owner_user_id');
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -132,8 +126,6 @@ class MaintenanceRequest extends Model
             $request->creator_id ??= $authUser?->id;
 
             $request->company_id ??= $authUser?->default_company_id;
-
-            $request->owner_user_id ??= $authUser?->id;
         });
 
         static::updated(function (self $request): void {

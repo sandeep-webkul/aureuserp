@@ -8,6 +8,7 @@ return [
     'config' => [
         'button-text' => [
             'today' => 'Today',
+            'year'  => 'Year',
             'month' => 'Month',
             'week'  => 'Week',
             'list'  => 'List',

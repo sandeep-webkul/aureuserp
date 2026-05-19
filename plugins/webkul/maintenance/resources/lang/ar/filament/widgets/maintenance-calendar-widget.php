@@ -8,6 +8,7 @@ return [
     'config' => [
         'button-text' => [
             'today' => 'اليوم',
+            'year'  => 'السنة',
             'month' => 'الشهر',
             'week'  => 'الأسبوع',
             'list'  => 'القائمة',

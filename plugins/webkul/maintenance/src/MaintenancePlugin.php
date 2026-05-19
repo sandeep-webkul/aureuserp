@@ -48,6 +48,7 @@ class MaintenancePlugin implements Plugin
             ->plugin(
                 FullCalendarPlugin::make()
                     ->selectable()
+                    ->setPlugins(['multiMonth'])
             );
     }
 

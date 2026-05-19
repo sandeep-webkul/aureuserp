@@ -40,7 +40,6 @@ class MaintenanceRequestFactory extends Factory
             'equipment_id'             => null,
             'stage_id'                 => null,
             'category_id'              => null,
-            'owner_user_id'            => null,
             'user_id'                  => null,
             'maintenance_team_id'      => Team::factory(),
             'company_id'               => Company::factory(),
@@ -104,13 +103,6 @@ class MaintenanceRequestFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'category_id' => EquipmentCategory::factory(),
-        ]);
-    }
-
-    public function withOwner(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'owner_user_id' => User::query()->value('id') ?? User::factory(),
         ]);
     }
 

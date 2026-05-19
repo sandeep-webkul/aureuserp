@@ -131,9 +131,13 @@ class MaintenanceRequestResource extends Resource
                                         $equipment = $state ? Equipment::query()->find($state) : null;
 
                                         $set('category_id', $equipment?->category_id);
+
                                         $set('requested_at', $equipment?->effective_date?->toDateString() ?? now()->toDateString());
+
                                         $set('maintenance_team_id', $equipment?->maintenance_team_id ?? Team::query()->value('id'));
-                                        $set('user_id', $equipment?->technician_user_id);
+
+                                        $set('user_id', $equipment?->technician_user_id ?? $equipment?->category?->technician_user_id ?? Auth::id());
+
                                         $set('company_id', $equipment?->company_id ?? Auth::user()?->default_company_id);
                                     }),
 
