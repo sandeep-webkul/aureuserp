@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('state');
             $table->string('maintenance_type')->nullable();
             $table->string('instruction_type')->nullable();
+            $table->string('instruction_pdf')->nullable();
             $table->string('instruction_google_slide')->nullable();
             $table->string('repeat_unit')->nullable();
             $table->string('repeat_type')->nullable();

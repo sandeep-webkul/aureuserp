@@ -3,6 +3,7 @@
 namespace Webkul\Maintenance\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Maintenance\Enums\MaintenanceRequestState;
 use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\EquipmentCategory;
 use Webkul\Maintenance\Models\MaintenanceRequest;
@@ -24,7 +25,7 @@ class MaintenanceRequestFactory extends Factory
             'repeat_interval'          => null,
             'name'                     => fake()->sentence(3),
             'priority'                 => (string) fake()->numberBetween(0, 3),
-            'state'                    => 'new',
+            'state'                    => MaintenanceRequestState::NORMAL,
             'maintenance_type'         => null,
             'instruction_type'         => null,
             'instruction_google_slide' => null,
@@ -73,7 +74,7 @@ class MaintenanceRequestFactory extends Factory
     public function closed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'state'     => 'done',
+            'state'     => MaintenanceRequestState::DONE,
             'closed_at' => now(),
         ]);
     }

@@ -7,13 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Traits\HasChatter;
+use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Maintenance\Database\Factories\MaintenanceRequestFactory;
+use Webkul\Maintenance\Enums\MaintenanceRequestState;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class MaintenanceRequest extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'maintenance';
 
     protected $table = 'maintenance_requests';
 
@@ -24,6 +30,7 @@ class MaintenanceRequest extends Model
         'state',
         'maintenance_type',
         'instruction_type',
+        'instruction_pdf',
         'instruction_google_slide',
         'repeat_unit',
         'repeat_type',
@@ -54,7 +61,10 @@ class MaintenanceRequest extends Model
         'duration'              => 'float',
         'recurring_maintenance' => 'boolean',
         'scheduled_at'          => 'datetime',
+        'state'                 => MaintenanceRequestState::class,
     ];
+
+    public string $recordTitleAttribute = 'name';
 
     public function getModelTitle(): string
     {
@@ -116,7 +126,7 @@ class MaintenanceRequest extends Model
             $request->creator_id ??= $authUser?->id;
             $request->company_id ??= $authUser?->default_company_id;
             $request->owner_user_id ??= $authUser?->id;
-            $request->state ??= 'new';
+            $request->state ??= MaintenanceRequestState::NORMAL;
         });
     }
 }
