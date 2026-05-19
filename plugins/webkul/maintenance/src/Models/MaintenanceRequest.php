@@ -127,6 +127,8 @@ class MaintenanceRequest extends Model
         static::creating(function (self $request): void {
             $authUser = Auth::user();
 
+            $request->stage_id ??= Stage::query()->orderBy('sort')->value('id');
+
             $request->creator_id ??= $authUser?->id;
 
             $request->company_id ??= $authUser?->default_company_id;

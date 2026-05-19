@@ -83,11 +83,6 @@ class MaintenanceRequestResource extends Resource
         return __('maintenance::models/maintenance-request.title');
     }
 
-    public static function getNavigationGroup(): string
-    {
-        return __('maintenance::filament/clusters/maintenance/resources/maintenance-request.navigation.group');
-    }
-
     public static function getNavigationLabel(): string
     {
         return __('maintenance::filament/clusters/maintenance/resources/maintenance-request.navigation.title');

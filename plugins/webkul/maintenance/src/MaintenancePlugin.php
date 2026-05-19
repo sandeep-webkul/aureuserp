@@ -4,6 +4,7 @@ namespace Webkul\Maintenance;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Webkul\FullCalendar\FullCalendarPlugin;
 use Webkul\PluginManager\Package;
 
 class MaintenancePlugin implements Plugin
@@ -43,7 +44,11 @@ class MaintenancePlugin implements Plugin
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Maintenance\\Filament\\Widgets'
                     );
-            });
+            })
+            ->plugin(
+                FullCalendarPlugin::make()
+                    ->selectable()
+            );
     }
 
     public function boot(Panel $panel): void

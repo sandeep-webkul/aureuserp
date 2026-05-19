@@ -5,6 +5,7 @@ use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\EquipmentCateg
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\TeamResource;
 use Webkul\Maintenance\Filament\Clusters\Maintenance;
+use Webkul\Maintenance\Filament\Clusters\Maintenance\Pages\Calendar;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource;
 
@@ -27,6 +28,9 @@ return [
     ],
 
     'pages' => [
+        'manage' => [
+            Calendar::class => ['view'],
+        ],
         'exclude' => [
             Configurations::class,
             Maintenance::class,
