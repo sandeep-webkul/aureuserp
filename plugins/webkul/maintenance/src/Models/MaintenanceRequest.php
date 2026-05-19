@@ -2,6 +2,7 @@
 
 namespace Webkul\Maintenance\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Maintenance\Database\Factories\MaintenanceRequestFactory;
-use Webkul\Maintenance\Enums\MaintenanceRequestState;
+use Webkul\Maintenance\Enums\MaintenanceRepeatType;
+use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
+use Webkul\Maintenance\Enums\MaintenanceRequestType;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
@@ -27,7 +30,6 @@ class MaintenanceRequest extends Model
         'repeat_interval',
         'name',
         'priority',
-        'state',
         'maintenance_type',
         'instruction_type',
         'instruction_pdf',
@@ -61,7 +63,9 @@ class MaintenanceRequest extends Model
         'duration'              => 'float',
         'recurring_maintenance' => 'boolean',
         'scheduled_at'          => 'datetime',
-        'state'                 => MaintenanceRequestState::class,
+        'maintenance_type'      => MaintenanceRequestType::class,
+        'repeat_unit'           => MaintenanceRepeatUnit::class,
+        'repeat_type'           => MaintenanceRepeatType::class,
     ];
 
     public string $recordTitleAttribute = 'name';
@@ -124,9 +128,42 @@ class MaintenanceRequest extends Model
             $authUser = Auth::user();
 
             $request->creator_id ??= $authUser?->id;
+
             $request->company_id ??= $authUser?->default_company_id;
+
             $request->owner_user_id ??= $authUser?->id;
-            $request->state ??= MaintenanceRequestState::NORMAL;
+        });
+
+        static::updated(function (self $request): void {
+            if ($request->wasChanged('stage_id') && $request->stage()->where('done', true)->exists()) {
+                if (
+                    $request->maintenance_type !== MaintenanceRequestType::PREVENTIVE
+                    || ! $request->recurring_maintenance
+                ) {
+                    return;
+                }
+
+                $scheduledAt = Carbon::parse($request->scheduled_at ?? now());
+
+                $scheduledAt->add($request->repeat_interval, $request->repeat_unit->value.'s');
+
+                if (
+                    $request->repeat_type === MaintenanceRepeatType::FOREVER
+                    || $scheduledAt->toDateString() <= Carbon::parse($request->repeat_until)->toDateString()
+                ) {
+                    $stageId = Stage::query()->orderBy('sort')->value('id');
+
+                    if (! $stageId) {
+                        return;
+                    }
+
+                    $request->replicate()->fill([
+                        'scheduled_at'  => $scheduledAt,
+                        'closed_at'     => null,
+                        'stage_id'      => $stageId,
+                    ])->save();
+                }
+            }
         });
     }
 }

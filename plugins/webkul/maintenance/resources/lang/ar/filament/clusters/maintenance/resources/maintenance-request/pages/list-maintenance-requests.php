@@ -15,8 +15,6 @@ return [
         'my-maintenances' => 'صيانتي',
         'todo'            => 'للقيام',
         'done'            => 'تم',
-        'blocked'         => 'محظورة',
-        'ready'           => 'جاهزة',
         'high-priority'   => 'أولوية عالية',
         'unscheduled'     => 'غير مجدولة',
         'active'          => 'نشطة',

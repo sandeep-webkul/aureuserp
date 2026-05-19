@@ -13,11 +13,13 @@ return [
                 'fields' => [
                     'name'                      => 'الطلب',
                     'name-placeholder'          => 'مثال: الشاشة لا تعمل',
-                    'state'                     => 'الحالة',
                     'equipment'                 => 'المعدة',
+                    'category'                  => 'الفئة',
                     'requested-at'              => 'تاريخ الطلب',
                     'requested-at-hint-tooltip' => 'التاريخ الذي تم فيه الإبلاغ عن طلب الصيانة.',
                     'maintenance-type'          => 'نوع الصيانة',
+                    'recurrent'                 => 'متكرر',
+                    'repeat-every'              => 'يتكرر كل',
                     'maintenance-type-options'  => [
                         'corrective' => 'تصحيحية',
                         'preventive' => 'وقائية',
@@ -54,7 +56,6 @@ return [
                 'fields' => [
                     'team'                      => 'الفريق',
                     'responsible'               => 'المسؤول',
-                    'category'                  => 'الفئة',
                     'scheduled-at'              => 'تاريخ الجدولة',
                     'scheduled-at-hint-tooltip' => 'تاريخ ووقت بدء أعمال الصيانة المخطط لها.',
                     'duration'                  => 'المدة',
@@ -133,8 +134,8 @@ return [
                 'title'   => 'الطلب',
                 'entries' => [
                     'name'                     => 'الطلب',
-                    'state'                    => 'الحالة',
                     'equipment'                => 'المعدة',
+                    'category'                 => 'الفئة',
                     'requested-at'             => 'تاريخ الطلب',
                     'maintenance-type'         => 'نوع الصيانة',
                     'instruction-type'         => 'نوع التعليمات',

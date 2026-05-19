@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Maintenance\Enums\MaintenanceRequestState;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
@@ -51,15 +50,6 @@ class ListMaintenanceRequests extends ListRecords
                 ->icon('heroicon-s-check-circle')
                 ->favorite()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('stage', fn (Builder $query) => $query->where('done', true))),
-
-            'blocked' => PresetView::make(__('maintenance::filament/clusters/maintenance/resources/maintenance-request/pages/list-maintenance-requests.tabs.blocked'))
-                ->icon('heroicon-s-no-symbol')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', MaintenanceRequestState::BLOCKED->value)),
-
-            'ready' => PresetView::make(__('maintenance::filament/clusters/maintenance/resources/maintenance-request/pages/list-maintenance-requests.tabs.ready'))
-                ->icon('heroicon-s-check-circle')
-                ->favorite()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', MaintenanceRequestState::DONE->value)),
 
             'high_priority' => PresetView::make(__('maintenance::filament/clusters/maintenance/resources/maintenance-request/pages/list-maintenance-requests.tabs.high-priority'))
                 ->icon('heroicon-s-star')

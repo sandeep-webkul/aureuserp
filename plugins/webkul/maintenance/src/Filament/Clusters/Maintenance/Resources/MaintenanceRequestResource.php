@@ -14,6 +14,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -21,12 +22,12 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -47,14 +48,15 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
-use Webkul\Maintenance\Enums\MaintenanceRequestState;
+use Webkul\Maintenance\Enums\MaintenanceRepeatType;
+use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
+use Webkul\Maintenance\Enums\MaintenanceRequestType;
 use Webkul\Maintenance\Filament\Clusters\Maintenance;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\CreateMaintenanceRequest;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\EditMaintenanceRequest;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\ListMaintenanceRequests;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\ViewMaintenanceRequest;
 use Webkul\Maintenance\Models\Equipment;
-use Webkul\Maintenance\Models\EquipmentCategory;
 use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\Maintenance\Models\Stage;
 use Webkul\Maintenance\Models\Team;
@@ -115,13 +117,6 @@ class MaintenanceRequestResource extends Resource
                                     ->placeholder(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.name-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
 
-                                ToggleButtons::make('state')
-                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.state'))
-                                    ->required()
-                                    ->inline()
-                                    ->options(MaintenanceRequestState::class)
-                                    ->default(MaintenanceRequestState::NORMAL),
-
                                 Select::make('equipment_id')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.equipment'))
                                     ->relationship(
@@ -147,6 +142,15 @@ class MaintenanceRequestResource extends Resource
                                         $set('company_id', $equipment?->company_id ?? Auth::user()?->default_company_id);
                                     }),
 
+                                Select::make('category_id')
+                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.category'))
+                                    ->relationship('category', 'name')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->preload()
+                                    ->disabled()
+                                    ->dehydrated(),
+
                                 DatePicker::make('requested_at')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.requested-at'))
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.requested-at-hint-tooltip'))
@@ -157,11 +161,38 @@ class MaintenanceRequestResource extends Resource
 
                                 Radio::make('maintenance_type')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.maintenance-type'))
-                                    ->options([
-                                        'corrective' => __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.maintenance-type-options.corrective'),
-                                        'preventive' => __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.maintenance-type-options.preventive'),
-                                    ])
-                                    ->default('corrective'),
+                                    ->options(MaintenanceRequestType::class)
+                                    ->default(MaintenanceRequestType::CORRECTIVE)
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                        if (! static::isPreventiveMaintenanceType($state)) {
+                                            $set('recurring_maintenance', false);
+                                        }
+                                    }),
+
+                                Checkbox::make('recurring_maintenance')
+                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.recurrent'))
+                                    ->default(false)
+                                    ->live()
+                                    ->visible(fn ($get): bool => static::isPreventiveMaintenanceType($get('maintenance_type'))),
+
+                                FusedGroup::make([
+                                    TextInput::make('repeat_interval')
+                                        ->integer()
+                                        ->required()
+                                        ->minValue(1),
+                                    Select::make('repeat_unit')
+                                        ->selectablePlaceholder(false)
+                                        ->options(MaintenanceRepeatUnit::class)
+                                        ->default(MaintenanceRepeatUnit::WEEK),
+                                    Select::make('repeat_type')
+                                        ->selectablePlaceholder(false)
+                                        ->options(MaintenanceRepeatType::class)
+                                        ->default(MaintenanceRepeatType::FOREVER),
+                                ])
+                                    ->visible(fn ($get): bool => static::isPreventiveMaintenanceType($get('maintenance_type')) && (bool) $get('recurring_maintenance'))
+                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.repeat-every'))
+                                    ->columns(3),
                             ]),
 
                         Tabs::make('request-tabs')
@@ -247,19 +278,6 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->default(Auth::id()),
-
-                                Select::make('category_id')
-                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.settings.fields.category'))
-                                    ->relationship('category', 'name')
-                                    ->native(false)
-                                    ->searchable()
-                                    ->preload()
-                                    ->disabled()
-                                    ->dehydrated()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, mixed $state): void {
-                                        $set('user_id', EquipmentCategory::query()->find($state)?->technician_user_id);
-                                    }),
 
                                 DateTimePicker::make('scheduled_at')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.settings.fields.scheduled-at'))
@@ -446,14 +464,12 @@ class MaintenanceRequestResource extends Resource
                                     ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold),
 
-                                TextEntry::make('state')
-                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.request.entries.state'))
-                                    ->badge()
-                                    ->color(fn (MaintenanceRequestState $state): string => $state->getColor())
-                                    ->formatStateUsing(fn (MaintenanceRequestState $state): string => $state->getLabel()),
-
                                 TextEntry::make('equipment.name')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.request.entries.equipment'))
+                                    ->placeholder('—'),
+
+                                TextEntry::make('category.name')
+                                    ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.request.entries.category'))
                                     ->placeholder('—'),
 
                                 TextEntry::make('requested_at')
@@ -463,7 +479,7 @@ class MaintenanceRequestResource extends Resource
 
                                 TextEntry::make('maintenance_type')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.request.entries.maintenance-type'))
-                                    ->formatStateUsing(fn (?string $state): string => $state ? __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.maintenance-type-options.'.$state) : '—')
+                                    // ->formatStateUsing(fn (?string $state): string => $state ? __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.maintenance-type-options.'.$state) : '—')
                                     ->placeholder('—'),
 
                                 ViewEntry::make('instruction_preview')
@@ -530,5 +546,11 @@ class MaintenanceRequestResource extends Resource
             ViewMaintenanceRequest::class,
             EditMaintenanceRequest::class,
         ]);
+    }
+
+    protected static function isPreventiveMaintenanceType(mixed $state): bool
+    {
+        return $state === MaintenanceRequestType::PREVENTIVE
+            || $state === MaintenanceRequestType::PREVENTIVE->value;
     }
 }

@@ -12,9 +12,12 @@ class MaintenanceServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'maintenance';
 
+    public static string $viewNamespace = 'maintenance';
+
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2026_05_18_000001_create_maintenance_equipment_categories_table',

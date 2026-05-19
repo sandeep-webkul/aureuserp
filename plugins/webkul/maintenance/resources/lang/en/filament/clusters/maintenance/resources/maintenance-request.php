@@ -13,11 +13,13 @@ return [
                 'fields' => [
                     'name'                      => 'Request',
                     'name-placeholder'          => 'e.g. Screen not working',
-                    'state'                     => 'State',
                     'equipment'                 => 'Equipment',
+                    'category'                  => 'Category',
                     'requested-at'              => 'Request Date',
                     'requested-at-hint-tooltip' => 'The date the maintenance request was reported.',
                     'maintenance-type'          => 'Maintenance Type',
+                    'recurrent'                 => 'Recurrent',
+                    'repeat-every'              => 'Repeat Every',
                     'maintenance-type-options'  => [
                         'corrective' => 'Corrective',
                         'preventive' => 'Preventive',
@@ -54,7 +56,6 @@ return [
                 'fields' => [
                     'team'                      => 'Team',
                     'responsible'               => 'Responsible',
-                    'category'                  => 'Category',
                     'scheduled-at'              => 'Scheduled Date',
                     'scheduled-at-hint-tooltip' => 'The date and time this maintenance work is planned to start.',
                     'duration'                  => 'Duration',
@@ -133,8 +134,8 @@ return [
                 'title'   => 'Request',
                 'entries' => [
                     'name'                     => 'Request',
-                    'state'                    => 'State',
                     'equipment'                => 'Equipment',
+                    'category'                 => 'Category',
                     'requested-at'             => 'Request Date',
                     'maintenance-type'         => 'Maintenance Type',
                     'instruction-type'         => 'Instruction Type',

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            ActivityTypeSeeder::class,
             StageSeeder::class,
             TeamSeeder::class,
         ]);

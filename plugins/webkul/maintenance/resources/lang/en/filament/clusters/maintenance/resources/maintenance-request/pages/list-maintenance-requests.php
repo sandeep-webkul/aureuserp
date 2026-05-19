@@ -15,8 +15,6 @@ return [
         'my-maintenances' => 'My Maintenances',
         'todo'            => 'To Do',
         'done'            => 'Done',
-        'blocked'         => 'Blocked',
-        'ready'           => 'Ready',
         'high-priority'   => 'High-priority',
         'unscheduled'     => 'Unscheduled',
         'active'          => 'Active',
