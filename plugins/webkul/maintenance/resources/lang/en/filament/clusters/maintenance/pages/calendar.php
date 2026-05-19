@@ -3,6 +3,6 @@
 return [
     'title'      => 'Maintenance Calendar',
     'navigation' => [
-        'title' => 'Calendar',
+        'title' => 'Maintenance Calendar',
     ],
 ];
