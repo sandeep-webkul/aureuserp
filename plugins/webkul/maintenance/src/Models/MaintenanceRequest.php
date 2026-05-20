@@ -16,6 +16,7 @@ use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
 use Webkul\Maintenance\Enums\MaintenanceRequestType;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
 
 class MaintenanceRequest extends Model
@@ -151,11 +152,26 @@ class MaintenanceRequest extends Model
                         return;
                     }
 
-                    $request->replicate()->fill([
+                    $nextRequest = $request->replicate()->fill([
                         'scheduled_at'  => $scheduledAt,
                         'closed_at'     => null,
                         'stage_id'      => $stageId,
-                    ])->save();
+                    ]);
+
+                    $nextRequest->save();
+
+                    $activityTypeId = ActivityType::query()
+                        ->where('plugin', self::ACTIVITY_PLAN_PLUGIN)
+                        ->where('is_active', true)
+                        ->orderBy('sort')
+                        ->value('id');
+
+                    $nextRequest->addActivity([
+                        'activity_type_id' => $activityTypeId,
+                        'assigned_to'      => $nextRequest->user_id,
+                        'date_deadline'    => Carbon::parse($nextRequest->scheduled_at ?? now()),
+                        'summary'          => $nextRequest->name,
+                    ]);
                 }
             }
         });
