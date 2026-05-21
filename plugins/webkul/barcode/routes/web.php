@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Webkul\Barcode\Livewire\Dashboard;
+use Webkul\Barcode\Livewire\Operation;
+use Webkul\Barcode\Livewire\Transfers;
+
+Route::middleware(['web', 'auth'])->get('barcode', function () {
+    return redirect()->route('barcode.dashboard');
+});
+
+Route::middleware(['web', 'auth'])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
+    Route::get('/assets/{file}', function (string $file) {
+        abort_unless(in_array($file, ['barcode.css', 'barcode.js'], true), 404);
+
+        return response()->file(__DIR__.'/../resources/dist/'.$file);
+    })->name('asset');
+
+    Route::get('/', Dashboard::class)->name('dashboard');
+    Route::get('/operations/{operationType}', Transfers::class)->name('transfers');
+    Route::get('/operations/{operationType}/transfers/{operation}', Operation::class)->name('operation');
+});
