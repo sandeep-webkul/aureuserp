@@ -2,6 +2,7 @@
     $editingMove = $editingMoveId ? $operation->moves->firstWhere('id', $editingMoveId) : null;
     $allMovesCounted = $operation->moves->isNotEmpty()
         && $operation->moves->every(fn ($move) => (float) ($countedQuantities[$move->id] ?? 0) >= (float) $move->product_uom_qty);
+    $hasAnyCounted = $operation->moves->contains(fn ($move) => (float) ($countedQuantities[$move->id] ?? 0) > 0);
 @endphp
 
 <main class="barcode-page operation-screen {{ $editingMove ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
@@ -210,7 +211,7 @@
                     <button
                         type="button"
                         class="action-button {{ $allMovesCounted ? 'primary' : '' }}"
-                        x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoves) }})"
+                        x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoves) }}, {{ $hasAnyCounted ? 'true' : 'false' }})"
                     >
                         {{ $action['label'] }}
                     </button>

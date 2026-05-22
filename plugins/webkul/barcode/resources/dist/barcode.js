@@ -19,7 +19,7 @@ document.addEventListener('alpine:init', () => {
             this.backorderMoves = [];
         },
 
-        requestValidate(label, backorderMoves) {
+        requestValidate(label, backorderMoves, hasAnyCounted) {
             this.actionMenuOpen = false;
             if (backorderMoves.length === 0) {
                 this.$wire.executeAction('validate');
@@ -27,12 +27,10 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            const anyCounted = backorderMoves.some(row => row.counted > 0);
-
             this.confirmPending = 'validate';
             this.confirmLabel = label;
             this.backorderMoves = backorderMoves;
-            this.confirmMode = anyCounted ? 'backorder' : 'simple';
+            this.confirmMode = hasAnyCounted ? 'backorder' : 'simple';
         },
 
         cancelAction() {
