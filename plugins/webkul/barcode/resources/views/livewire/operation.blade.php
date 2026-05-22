@@ -103,13 +103,9 @@
         <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
 
         <form class="scan-form" wire:submit="scan">
-            <input type="text" wire:model="barcode" placeholder="{{ __('barcode::app.operation.manual-scan') }}">
+            <input type="search" wire:model.live.debounce.250ms="barcode" placeholder="{{ __('barcode::app.operation.manual-scan') }}" autocomplete="off">
             <button type="submit">↵</button>
         </form>
-
-        <div class="search-row">
-            <input type="search" wire:model.live.debounce.250ms="moveSearch" placeholder="{{ __('barcode::app.operation.search') }}">
-        </div>
 
         @if ($notice)
             <div class="notice">{{ $notice }}</div>
@@ -179,10 +175,37 @@
 
         <footer class="action-bar">
             @foreach ($actions as $action)
-                <button type="button" class="action-button {{ $action['variant'] }}" wire:click="executeAction('{{ $action['key'] }}')">
+                <button type="button" class="action-button {{ $action['variant'] }}" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
                     {{ $action['label'] }}
                 </button>
             @endforeach
         </footer>
+
+        <div class="confirm-backdrop"
+            x-show="confirmPending"
+            x-cloak
+            x-transition:enter="confirm-backdrop-enter"
+            x-transition:enter-start="confirm-backdrop-enter-start"
+            x-transition:enter-end="confirm-backdrop-enter-end"
+            x-transition:leave="confirm-backdrop-enter"
+            x-transition:leave-start="confirm-backdrop-enter-end"
+            x-transition:leave-end="confirm-backdrop-enter-start"
+        >
+            <div class="confirm-dialog"
+                x-show="confirmPending"
+                x-transition:enter="confirm-dialog-enter"
+                x-transition:enter-start="confirm-dialog-enter-start"
+                x-transition:enter-end="confirm-dialog-enter-end"
+                x-transition:leave="confirm-dialog-enter"
+                x-transition:leave-start="confirm-dialog-enter-end"
+                x-transition:leave-end="confirm-dialog-enter-start"
+            >
+                <p>{{ __('barcode::app.actions.confirm-prompt') }} <strong x-text="confirmLabel"></strong>?</p>
+                <div class="confirm-buttons">
+                    <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.cancel') }}</button>
+                    <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.confirm') }}</button>
+                </div>
+            </div>
+        </div>
     @endif
 </main>

@@ -28,7 +28,7 @@ return [
 
     'operation' => [
         'scan'        => 'Scan a product, lot, package, packaging, or transfer',
-        'manual-scan' => 'Scan or enter barcode',
+        'manual-scan' => 'Scan or search by product, reference, barcode...',
         'search'      => 'Search product, reference, barcode...',
         'moves'       => 'Moves',
         'source'      => 'From',
@@ -54,9 +54,10 @@ return [
 
     'actions' => [
         'confirm'              => 'Confirm',
+        'confirm-prompt'       => 'Are you sure you want to',
+        'cancel'               => 'Cancel',
         'check-availability'   => 'Check Availability',
         'validate'             => 'Validate',
-        'cancel'               => 'Cancel',
         'return'               => 'Return',
         'completed'            => 'Action completed.',
         'unsupported'          => 'Unsupported barcode action.',

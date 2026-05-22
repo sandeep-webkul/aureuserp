@@ -568,6 +568,62 @@
     display: none !important;
 }
 
+.confirm-backdrop {
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.45);
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 50;
+}
+
+.confirm-backdrop-enter {
+    transition: opacity 220ms ease;
+}
+
+.confirm-backdrop-enter-start {
+    opacity: 0;
+}
+
+.confirm-backdrop-enter-end {
+    opacity: 1;
+}
+
+.confirm-dialog {
+    background: #ffffff;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    padding: 24px 16px 36px;
+    width: 100%;
+}
+
+.confirm-dialog-enter {
+    transition: transform 260ms cubic-bezier(0.34, 1.10, 0.64, 1);
+}
+
+.confirm-dialog-enter-start {
+    transform: translateY(100%);
+}
+
+.confirm-dialog-enter-end {
+    transform: translateY(0);
+}
+
+.confirm-dialog p {
+    font-size: 16px;
+    margin: 0 0 20px;
+    text-align: center;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 8px;
+}
+
 @media (max-width: 640px) {
     .operation-grid,
     .transfer-grid {

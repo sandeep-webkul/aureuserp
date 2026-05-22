@@ -20,8 +20,6 @@ class Operation extends Component
 
     public string $barcode = '';
 
-    public string $moveSearch = '';
-
     public ?array $scanResult = null;
 
     public ?string $notice = null;
@@ -192,11 +190,11 @@ class Operation extends Component
 
     protected function filteredMoves(InventoryOperation $operation)
     {
-        if ($this->moveSearch === '') {
+        if ($this->barcode === '') {
             return $operation->moves;
         }
 
-        $search = mb_strtolower($this->moveSearch);
+        $search = mb_strtolower($this->barcode);
 
         return $operation->moves->filter(function (Move $move) use ($search): bool {
             return str_contains(mb_strtolower((string) $move->name), $search)

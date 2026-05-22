@@ -5,6 +5,18 @@ document.addEventListener('alpine:init', () => {
         scanner: null,
         property,
         action,
+        confirmPending: null,
+        confirmLabel: '',
+
+        requestAction(key, label) {
+            this.confirmPending = key;
+            this.confirmLabel = label;
+        },
+
+        cancelAction() {
+            this.confirmPending = null;
+            this.confirmLabel = '';
+        },
 
         async toggle($wire) {
             if (this.active) {
