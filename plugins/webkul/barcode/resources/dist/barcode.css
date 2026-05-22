@@ -433,10 +433,22 @@
 }
 
 .move-quantity strong {
-    color: #008018;
+    color: #334155;
     font-size: 32px;
     font-weight: 500;
     line-height: 1;
+}
+
+.move-quantity--idle strong {
+    color: #334155;
+}
+
+.move-quantity--partial strong {
+    color: #b7791f;
+}
+
+.move-quantity--complete strong {
+    color: #008018;
 }
 
 .move-quantity span {

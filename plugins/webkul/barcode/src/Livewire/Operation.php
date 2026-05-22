@@ -87,8 +87,7 @@ class Operation extends Component
         $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$moveId] ?? 0) + $amount));
         $this->countedQuantities[$moveId] = $quantity;
         $this->countedMoveIds[$moveId] = true;
-
-        $this->selectedMoveId = $moveId;
+        $this->selectedMoveId = $quantity > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
     public function setMoveQuantity(int $moveId, float $quantity): void
@@ -99,8 +98,7 @@ class Operation extends Component
 
         $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, $quantity));
         $this->countedMoveIds[$moveId] = true;
-
-        $this->selectedMoveId = $moveId;
+        $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
     public function updatedCountedQuantities($value, $key): void
@@ -118,6 +116,7 @@ class Operation extends Component
         }
 
         $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, (float) $value));
+        $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
     public function editMove(int $moveId, ScanResolver $resolver): void

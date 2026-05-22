@@ -158,7 +158,7 @@
                             @if ($move->product?->barcode)
                                 <span>[{{ $move->product->barcode }}]</span>
                             @endif
-                            <div class="move-quantity">
+                            <div class="move-quantity move-quantity--{{ $countState !== '' ? str_replace('is-', '', $countState) : 'idle' }}">
                                 <strong>{{ number_format($countedQuantity, 0) }} / {{ number_format($demandQuantity, 0) }}</strong>
                                 <span>{{ $move->uom?->name }}</span>
                             </div>
