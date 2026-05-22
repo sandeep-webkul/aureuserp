@@ -72,14 +72,7 @@ class Operation extends Component
 
     public function updateMoveQuantity(int $moveId, ScanResolver $resolver): void
     {
-        $move = Move::query()->findOrFail($moveId);
-        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$moveId] ?? 0)));
-
-        $resolver->updateMoveQuantity($this->operation, $move, $quantity);
-        $this->countedQuantities[$moveId] = $quantity;
-        $this->countedMoveIds[$moveId] = true;
-        $this->notice = __('barcode::app.scan.move-updated');
-        $this->operation->refresh();
+        // intentionally left blank (logic removed for now)
     }
 
     public function adjustMoveQuantity(int $moveId, float $amount): void
@@ -131,30 +124,12 @@ class Operation extends Component
 
     public function confirmMoveEdit(ScanResolver $resolver): void
     {
-        if (! $this->editingMoveId) {
-            return;
-        }
-
-        $move = Move::query()->findOrFail($this->editingMoveId);
-        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$move->id] ?? 0)));
-        $this->countedQuantities[$move->id] = $quantity;
-        $this->countedMoveIds[$move->id] = true;
-
-        $resolver->updateMoveDetails($this->operation, $move, $quantity, $this->editingLotName);
-        $resolver->markMoveCounted($this->operation, $move->refresh());
-
-        $this->notice = __('barcode::app.scan.move-counted');
-        $this->discardMoveEdit();
-        $this->operation->refresh();
+        // intentionally left blank (logic removed for now)
     }
 
     public function markCounted(int $moveId, ScanResolver $resolver): void
     {
-        $move = Move::query()->findOrFail($moveId);
-        $resolver->markMoveCounted($this->operation, $move);
-        $this->selectedMoveId = $moveId;
-        $this->notice = __('barcode::app.scan.move-counted');
-        $this->operation->refresh();
+        // intentionally left blank (logic removed for now)
     }
 
     public function executeAction(string $action, OperationActionService $actions, ScanResolver $resolver): void
@@ -180,9 +155,10 @@ class Operation extends Component
         }
 
         return view('barcode::livewire.operation', [
-            'actions'   => $actions->availableActions($operation),
-            'operation' => $operation,
-            'moves'     => $this->filteredMoves($operation),
+            'actions'       => $actions->availableActions($operation),
+            'operation'     => $operation,
+            'moves'         => $this->filteredMoves($operation),
+            'backorderMoves' => $this->backorderMoves($operation),
         ])->layout('barcode::layouts.app', [
             'title' => $operation->name,
         ]);
@@ -204,26 +180,29 @@ class Operation extends Component
         });
     }
 
+    protected function backorderMoves(InventoryOperation $operation): array
+    {
+        $result = [];
+        foreach ($operation->moves as $move) {
+            $counted  = (float) ($this->countedQuantities[$move->id] ?? 0);
+            $required = (float) $move->product_uom_qty;
+            if ($counted < $required) {
+                $result[] = [
+                    'name'       => $move->product?->name ?? $move->name,
+                    'counted'    => $counted,
+                    'required'   => $required,
+                    'backorder'  => $required - $counted,
+                    'uom'        => $move->uom?->name ?? '',
+                ];
+            }
+        }
+        return $result;
+    }
+
     protected function applyCountedQuantities(ScanResolver $resolver): void
     {
         $this->operation->loadMissing(['moves.product', 'moves.uom', 'moves.lines.lot']);
 
-        foreach ($this->operation->moves as $move) {
-            if (! ($this->countedMoveIds[$move->id] ?? false)) {
-                continue;
-            }
-
-            $countedQuantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$move->id] ?? 0)));
-
-            if (float_compare($countedQuantity, (float) $move->product_uom_qty, precisionDigits: 2) !== 0) {
-                $resolver->updateMoveDetails($this->operation, $move, $countedQuantity);
-            }
-
-            if ($countedQuantity > 0) {
-                $resolver->markMoveCounted($this->operation, $move->refresh());
-            }
-        }
-
-        $this->operation->refresh();
+        // intentionally left blank (logic removed for now)
     }
 }

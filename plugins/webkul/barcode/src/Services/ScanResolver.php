@@ -84,60 +84,6 @@ class ScanResolver
         ];
     }
 
-    public function updateMoveQuantity(Operation $operation, Move $move, float $quantity): Move
-    {
-        abort_unless((int) $move->operation_id === (int) $operation->id, 404);
-
-        $move->quantity = max(0, $quantity);
-        $move->save();
-
-        return $move->refresh()->load(['product', 'uom']);
-    }
-
-    public function updateMoveDetails(Operation $operation, Move $move, float $quantity, ?string $lotName = null): Move
-    {
-        abort_unless((int) $move->operation_id === (int) $operation->id, 404);
-
-        $this->updateMoveQuantity($operation, $move, $quantity);
-
-        $moveLine = $move->lines()->first()
-            ?? new MoveLine([
-                'move_id'                 => $move->id,
-                'operation_id'            => $operation->id,
-                'product_id'              => $move->product_id,
-                'uom_id'                  => $move->uom_id,
-                'source_location_id'      => $move->source_location_id,
-                'destination_location_id' => $move->destination_location_id,
-                'company_id'              => $move->company_id,
-                'scheduled_at'            => $move->scheduled_at ?? now(),
-            ]);
-
-        $moveLine->qty = $quantity;
-        $moveLine->lot_name = $lotName ?: null;
-
-        if ($lotName) {
-            $lot = Lot::query()
-                ->where('product_id', $move->product_id)
-                ->where('name', $lotName)
-                ->first();
-
-            $moveLine->lot_id = $lot?->id;
-        }
-
-        $moveLine->save();
-
-        return $move->refresh()->load(['product', 'uom', 'lines.lot']);
-    }
-
-    public function markMoveCounted(Operation $operation, Move $move): Move
-    {
-        abort_unless((int) $move->operation_id === (int) $operation->id, 404);
-
-        $move->is_picked = true;
-        $move->save();
-
-        return $move->refresh()->load(['product', 'uom']);
-    }
 
     /**
      * @return array<int, array{location: string, available: float, quantity: float, uom: ?string}>

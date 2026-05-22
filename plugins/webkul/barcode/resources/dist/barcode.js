@@ -7,15 +7,36 @@ document.addEventListener('alpine:init', () => {
         action,
         confirmPending: null,
         confirmLabel: '',
+        confirmMode: null,
+        backorderMoves: [],
 
         requestAction(key, label) {
             this.confirmPending = key;
             this.confirmLabel = label;
+            this.confirmMode = 'simple';
+            this.backorderMoves = [];
+        },
+
+        requestValidate(label, backorderMoves) {
+            if (backorderMoves.length === 0) {
+                this.$wire.executeAction('validate');
+
+                return;
+            }
+
+            const anyCounted = backorderMoves.some(row => row.counted > 0);
+
+            this.confirmPending = 'validate';
+            this.confirmLabel = label;
+            this.backorderMoves = backorderMoves;
+            this.confirmMode = anyCounted ? 'backorder' : 'simple';
         },
 
         cancelAction() {
             this.confirmPending = null;
             this.confirmLabel = '';
+            this.confirmMode = null;
+            this.backorderMoves = [];
         },
 
         async toggle($wire) {

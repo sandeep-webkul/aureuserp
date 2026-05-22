@@ -175,9 +175,19 @@
 
         <footer class="action-bar">
             @foreach ($actions as $action)
-                <button type="button" class="action-button {{ $action['variant'] }}" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
-                    {{ $action['label'] }}
-                </button>
+                @if ($action['key'] === 'validate' || $action['key'] === 'done')
+                    <button
+                        type="button"
+                        class="action-button {{ $action['variant'] }}"
+                        x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoves) }})"
+                    >
+                        {{ $action['label'] }}
+                    </button>
+                @else
+                    <button type="button" class="action-button {{ $action['variant'] }}" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
+                        {{ $action['label'] }}
+                    </button>
+                @endif
             @endforeach
         </footer>
 
@@ -200,11 +210,48 @@
                 x-transition:leave-start="confirm-dialog-enter-end"
                 x-transition:leave-end="confirm-dialog-enter-start"
             >
-                <p>{{ __('barcode::app.actions.confirm-prompt') }} <strong x-text="confirmLabel"></strong>?</p>
-                <div class="confirm-buttons">
-                    <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.cancel') }}</button>
-                    <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.confirm') }}</button>
-                </div>
+                {{-- Backorder warning --}}
+                <template x-if="confirmMode === 'backorder'">
+                    <div>
+                        <h3 class="confirm-dialog-title">{{ __('barcode::app.actions.backorder-title') }}</h3>
+                        <p class="confirm-dialog-subtitle">{{ __('barcode::app.actions.backorder-prompt') }}</p>
+
+                        <table class="backorder-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('barcode::app.actions.backorder-col-product') }}</th>
+                                    <th>{{ __('barcode::app.actions.backorder-col-done-todo') }}</th>
+                                    <th>{{ __('barcode::app.actions.backorder-col-backorder') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="row in backorderMoves" :key="row.name">
+                                    <tr>
+                                        <td x-text="row.name"></td>
+                                        <td class="backorder-qty" x-text="row.counted + ' / ' + row.required + ' ' + row.uom"></td>
+                                        <td x-text="row.backorder + ' ' + row.uom"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+
+                        <div class="confirm-buttons">
+                            <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.stay-on-transfer') }}</button>
+                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.validate') }}</button>
+                        </div>
+                    </div>
+                </template>
+
+                {{-- Simple confirmation --}}
+                <template x-if="confirmMode === 'simple'">
+                    <div>
+                        <p>{{ __('barcode::app.actions.confirm-prompt') }} <strong x-text="confirmLabel"></strong>?</p>
+                        <div class="confirm-buttons">
+                            <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.cancel') }}</button>
+                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.confirm') }}</button>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     @endif
