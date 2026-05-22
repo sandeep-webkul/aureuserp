@@ -1,5 +1,7 @@
 @php
     $editingMove = $editingMoveId ? $operation->moves->firstWhere('id', $editingMoveId) : null;
+    $allMovesCounted = $operation->moves->isNotEmpty()
+        && $operation->moves->every(fn ($move) => (float) ($countedQuantities[$move->id] ?? 0) >= (float) $move->product_uom_qty);
 @endphp
 
 <main class="barcode-page operation-screen {{ $editingMove ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
@@ -19,6 +21,25 @@
                 <path fill-rule="evenodd" d="M3 4a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 9a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 14a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2h-4a1 1 0 0 1-1-1ZM3 19a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
             </svg>
         </button>
+        @unless ($editingMove)
+            <div class="topbar-menu" x-on:click.outside="closeActionMenu()">
+                <button type="button" class="icon-button topbar-menu-btn" x-on:click="toggleActionMenu()" :class="{ 'is-active': actionMenuOpen }" aria-label="Actions">
+                    ⋮
+                </button>
+
+                <div class="topbar-dropdown" x-show="actionMenuOpen" x-cloak>
+                    <div class="topbar-dropdown-list">
+                        @foreach ($actions as $action)
+                            @if ($action['key'] === 'cancel')
+                                <button type="button" class="topbar-dropdown-item danger" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
+                                    <span class="topbar-dropdown-label">{{ $action['label'] }}</span>
+                                </button>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endunless
     </header>
 
     @if ($editingMove)
@@ -175,10 +196,14 @@
 
         <footer class="action-bar">
             @foreach ($actions as $action)
+                @if ($action['key'] === 'cancel')
+                    @continue
+                @endif
+
                 @if ($action['key'] === 'validate' || $action['key'] === 'done')
                     <button
                         type="button"
-                        class="action-button {{ $action['variant'] }}"
+                        class="action-button {{ $allMovesCounted ? 'primary' : '' }}"
                         x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoves) }})"
                     >
                         {{ $action['label'] }}

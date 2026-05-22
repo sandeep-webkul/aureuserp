@@ -48,7 +48,10 @@ class Operation extends Component
             $this->notice = $this->scanResult['message'];
 
             if (isset($this->scanResult['move']['id'])) {
-                $this->selectedMoveId = (int) $this->scanResult['move']['id'];
+                $moveId = (int) $this->scanResult['move']['id'];
+
+                $this->selectedMoveId = $moveId;
+                $this->dispatch('barcode-move-located', moveId: $moveId, scannedAt: now()->getTimestampMs());
             }
         }
     }
@@ -100,6 +103,23 @@ class Operation extends Component
         $this->selectedMoveId = $moveId;
     }
 
+    public function updatedCountedQuantities($value, $key): void
+    {
+        $moveId = (int) $key;
+
+        if ($moveId <= 0) {
+            return;
+        }
+
+        $move = Move::query()->find($moveId);
+
+        if (! $move || (int) $move->operation_id !== (int) $this->operation->id) {
+            return;
+        }
+
+        $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, (float) $value));
+    }
+
     public function editMove(int $moveId, ScanResolver $resolver): void
     {
         $move = Move::query()
@@ -124,7 +144,22 @@ class Operation extends Component
 
     public function confirmMoveEdit(ScanResolver $resolver): void
     {
-        // intentionally left blank (logic removed for now)
+        if (! $this->editingMoveId) {
+            return;
+        }
+
+        $move = Move::query()->findOrFail($this->editingMoveId);
+        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$move->id] ?? 0)));
+
+        $this->countedQuantities[$move->id] = $quantity;
+        $this->countedMoveIds[$move->id] = true;
+
+        $resolver->updateMoveDetails($this->operation, $move, $quantity, $this->editingLotName);
+        $resolver->markMoveCounted($this->operation, $move->refresh());
+
+        $this->notice = __('barcode::app.scan.move-counted');
+        $this->discardMoveEdit();
+        $this->operation->refresh();
     }
 
     public function markCounted(int $moveId, ScanResolver $resolver): void
@@ -155,9 +190,9 @@ class Operation extends Component
         }
 
         return view('barcode::livewire.operation', [
-            'actions'       => $actions->availableActions($operation),
-            'operation'     => $operation,
-            'moves'         => $this->filteredMoves($operation),
+            'actions'        => $actions->availableActions($operation),
+            'operation'      => $operation,
+            'moves'          => $this->filteredMoves($operation),
             'backorderMoves' => $this->backorderMoves($operation),
         ])->layout('barcode::layouts.app', [
             'title' => $operation->name,
@@ -184,7 +219,7 @@ class Operation extends Component
     {
         $result = [];
         foreach ($operation->moves as $move) {
-            $counted  = (float) ($this->countedQuantities[$move->id] ?? 0);
+            $counted = (float) ($this->countedQuantities[$move->id] ?? 0);
             $required = (float) $move->product_uom_qty;
             if ($counted < $required) {
                 $result[] = [
@@ -196,6 +231,7 @@ class Operation extends Component
                 ];
             }
         }
+
         return $result;
     }
 

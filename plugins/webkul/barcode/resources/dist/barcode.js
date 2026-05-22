@@ -9,8 +9,10 @@ document.addEventListener('alpine:init', () => {
         confirmLabel: '',
         confirmMode: null,
         backorderMoves: [],
+        actionMenuOpen: false,
 
         requestAction(key, label) {
+            this.actionMenuOpen = false;
             this.confirmPending = key;
             this.confirmLabel = label;
             this.confirmMode = 'simple';
@@ -18,6 +20,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         requestValidate(label, backorderMoves) {
+            this.actionMenuOpen = false;
             if (backorderMoves.length === 0) {
                 this.$wire.executeAction('validate');
 
@@ -37,6 +40,15 @@ document.addEventListener('alpine:init', () => {
             this.confirmLabel = '';
             this.confirmMode = null;
             this.backorderMoves = [];
+            this.actionMenuOpen = false;
+        },
+
+        toggleActionMenu() {
+            this.actionMenuOpen = !this.actionMenuOpen;
+        },
+
+        closeActionMenu() {
+            this.actionMenuOpen = false;
         },
 
         async toggle($wire) {
