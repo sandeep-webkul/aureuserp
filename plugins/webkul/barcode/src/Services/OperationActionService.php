@@ -34,6 +34,7 @@ class OperationActionService
         $actions = [];
 
         $actions[] = ['key' => 'validate', 'label' => __('barcode::app.actions.validate'), 'variant' => 'primary'];
+        
         $actions[] = ['key' => 'cancel', 'label' => __('barcode::app.actions.cancel'), 'variant' => 'danger'];
 
         return $actions;

@@ -30,6 +30,7 @@ class OperationCatalog
             ->groupBy(fn (OperationType $operationType): string => $operationType->name.'|'.$operationType->type?->value)
             ->map(function (Collection $operationTypes) {
                 $primaryOperationType = $operationTypes->first();
+                
                 $primaryOperationType->waiting_count = $operationTypes->sum('waiting_count');
 
                 return $primaryOperationType;

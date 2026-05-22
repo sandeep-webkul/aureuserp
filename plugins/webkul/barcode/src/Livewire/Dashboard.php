@@ -24,6 +24,7 @@ class Dashboard extends Component
 
         if ($operations->isEmpty()) {
             $this->matchingOperationIds = [];
+
             $this->operationNotice = __('barcode::app.operation-search.not-found');
 
             return null;
@@ -49,6 +50,7 @@ class Dashboard extends Component
     {
         if ($this->operationBarcode === '') {
             $this->matchingOperationIds = [];
+            
             $this->operationNotice = null;
         }
     }

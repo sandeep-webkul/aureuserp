@@ -41,16 +41,19 @@ class Operation extends Component
         abort_unless((int) $operation->operation_type_id === (int) $operationType->id, 404);
 
         $this->operationType = $operationType;
+
         $this->operation = $operation;
 
         if (request()->filled('scan')) {
             $this->scanResult = app(ScanResolver::class)->resolve($this->operation, (string) request('scan'));
+
             $this->notice = $this->scanResult['message'];
 
             if (isset($this->scanResult['move']['id'])) {
                 $moveId = (int) $this->scanResult['move']['id'];
 
                 $this->selectedMoveId = $moveId;
+
                 $this->dispatch('barcode-move-located', moveId: $moveId, scannedAt: now()->getTimestampMs());
             }
         }
@@ -59,14 +62,18 @@ class Operation extends Component
     public function scan(ScanResolver $resolver): void
     {
         $this->scanResult = $resolver->resolve($this->operation, $this->barcode);
+
         $this->notice = $this->scanResult['message'];
+
         $this->barcode = '';
 
         if (isset($this->scanResult['move']['id'])) {
             $moveId = (int) $this->scanResult['move']['id'];
 
             $this->selectedMoveId = $moveId;
+
             $this->countedQuantities[$moveId] ??= 0.0;
+
             $this->dispatch('barcode-move-located', moveId: $moveId, scannedAt: now()->getTimestampMs());
         }
 
@@ -85,8 +92,11 @@ class Operation extends Component
         abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
 
         $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$moveId] ?? 0) + $amount));
+
         $this->countedQuantities[$moveId] = $quantity;
+
         $this->countedMoveIds[$moveId] = true;
+
         $this->selectedMoveId = $quantity > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
@@ -97,7 +107,9 @@ class Operation extends Component
         abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
 
         $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, $quantity));
+
         $this->countedMoveIds[$moveId] = true;
+
         $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
@@ -116,6 +128,7 @@ class Operation extends Component
         }
 
         $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, (float) $value));
+
         $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
     }
 
@@ -128,16 +141,22 @@ class Operation extends Component
         abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
 
         $this->editingMoveId = $moveId;
+
         $this->selectedMoveId = $moveId;
+
         $this->countedQuantities[$moveId] ??= 0.0;
+
         $this->editingLotName = $move->lines->first()?->lot?->name ?? $move->lines->first()?->lot_name;
+
         $this->sourceLocationOptions = $resolver->sourceLocationOptions($move);
     }
 
     public function discardMoveEdit(): void
     {
         $this->editingMoveId = null;
+
         $this->editingLotName = null;
+
         $this->sourceLocationOptions = [];
     }
 
@@ -148,22 +167,22 @@ class Operation extends Component
         }
 
         $move = Move::query()->findOrFail($this->editingMoveId);
+
         $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$move->id] ?? 0)));
 
         $this->countedQuantities[$move->id] = $quantity;
+
         $this->countedMoveIds[$move->id] = true;
 
         $resolver->updateMoveDetails($this->operation, $move, $quantity, $this->editingLotName);
+
         $resolver->markMoveCounted($this->operation, $move->refresh());
 
         $this->notice = __('barcode::app.scan.move-counted');
-        $this->discardMoveEdit();
-        $this->operation->refresh();
-    }
 
-    public function markCounted(int $moveId, ScanResolver $resolver): void
-    {
-        // intentionally left blank (logic removed for now)
+        $this->discardMoveEdit();
+        
+        $this->operation->refresh();
     }
 
     public function executeAction(string $action, OperationActionService $actions, ScanResolver $resolver): void
@@ -174,6 +193,7 @@ class Operation extends Component
             }
 
             $this->operation = $actions->execute($this->operation, $action);
+
             $this->notice = __('barcode::app.actions.completed');
         } catch (Throwable $e) {
             $this->notice = $e->getMessage();
@@ -219,7 +239,9 @@ class Operation extends Component
         $result = [];
         foreach ($operation->moves as $move) {
             $counted = (float) ($this->countedQuantities[$move->id] ?? 0);
+
             $required = (float) $move->product_uom_qty;
+
             if ($counted < $required) {
                 $result[] = [
                     'name'       => $move->product?->name ?? $move->name,

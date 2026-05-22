@@ -32,6 +32,7 @@ class Transfers extends Component
 
         if ($operations->isEmpty()) {
             $this->matchingOperationIds = [];
+            
             $this->operationNotice = __('barcode::app.operation-search.not-found');
 
             return null;
@@ -48,6 +49,7 @@ class Transfers extends Component
         }
 
         $this->matchingOperationIds = $operations->pluck('id')->all();
+
         $this->operationNotice = __('barcode::app.operation-search.multiple-found', ['count' => $operations->count()]);
 
         return null;
@@ -57,6 +59,7 @@ class Transfers extends Component
     {
         if ($this->search === '') {
             $this->matchingOperationIds = [];
+
             $this->operationNotice = null;
         }
     }

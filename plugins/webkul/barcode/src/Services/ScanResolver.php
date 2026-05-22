@@ -89,6 +89,7 @@ class ScanResolver
         abort_unless((int) $move->operation_id === (int) $operation->id, 404);
 
         $move->quantity = max(0, $quantity);
+
         $move->save();
 
         return $move->refresh()->load(['product', 'uom']);
@@ -113,6 +114,7 @@ class ScanResolver
             ]);
 
         $moveLine->qty = $quantity;
+
         $moveLine->lot_name = $lotName ?: null;
 
         if ($lotName) {
@@ -134,6 +136,7 @@ class ScanResolver
         abort_unless((int) $move->operation_id === (int) $operation->id, 404);
 
         $move->is_picked = true;
+        
         $move->save();
 
         return $move->refresh()->load(['product', 'uom']);

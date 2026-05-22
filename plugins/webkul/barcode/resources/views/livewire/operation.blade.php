@@ -11,16 +11,19 @@
         @else
             <a class="icon-button" href="{{ route('barcode.transfers', $operationType) }}" wire:navigate aria-label="{{ __('barcode::app.navigation.back') }}">‹</a>
         @endif
+
         <div>
             <div class="barcode-brand">{{ $operationType->name }}</div>
             <h1>{{ $operation->name }}</h1>
             <p>{{ $operation->partner?->name ?? $operation->origin }}</p>
         </div>
+
         <button type="button" class="icon-button barcode-topbar-btn" x-on:click="toggle($wire)" :class="{ 'is-active': active }" aria-label="{{ __('barcode::app.operation.scan') }}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M3 4a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 9a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 14a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2h-4a1 1 0 0 1-1-1ZM3 19a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
             </svg>
         </button>
+
         @unless ($editingMove)
             <div class="topbar-menu" x-on:click.outside="closeActionMenu()">
                 <button type="button" class="icon-button topbar-menu-btn" x-on:click="toggleActionMenu()" :class="{ 'is-active': actionMenuOpen }" aria-label="Actions">
@@ -54,10 +57,13 @@
             <div class="editor-product">
                 <div class="editor-product-info">
                     <strong>⌁ {{ $editingMove->product?->reference ?? $editingMove->name }}</strong>
+
                     <span>{{ $editingMove->product?->name }}</span>
+
                     @if ($editingMove->product?->barcode)
                         <span>[{{ $editingMove->product->barcode }}]</span>
                     @endif
+                    
                     <span>{{ __('barcode::app.operation.source') }}: {{ $editingMove->sourceLocation?->full_name ?? $editingMove->sourceLocation?->name }}</span>
                 </div>
 
