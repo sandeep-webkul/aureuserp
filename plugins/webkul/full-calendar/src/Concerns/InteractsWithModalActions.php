@@ -10,12 +10,7 @@ trait InteractsWithModalActions
 {
     protected array $cachedModalActions = [];
 
-    public function bootedInteractsWithModalActions(): void
-    {
-        $this->cacheModalActions();
-    }
-
-    protected function cacheModalActions(): void
+    public function cacheInteractsWithModalActions(): void
     {
         foreach ($this->modalActions() as $action) {
             if ($action instanceof ActionGroup) {

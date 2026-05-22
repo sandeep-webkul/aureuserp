@@ -8,12 +8,7 @@ trait InteractsWithHeaderActions
 {
     protected array $cachedHeaderActions = [];
 
-    public function bootedInteractsWithHeaderActions(): void
-    {
-        $this->cacheHeaderActions();
-    }
-
-    protected function cacheHeaderActions(): void
+    public function cacheInteractsWithHeaderActions(): void
     {
         $actions = $this->headerActions();
 
