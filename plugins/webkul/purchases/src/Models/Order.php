@@ -16,8 +16,9 @@ use Webkul\Chatter\Models\Message;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
-use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\ProcurementGroup;
+use Webkul\Inventory\Models\Receipt;
 use Webkul\Purchase\Database\Factories\OrderFactory;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
@@ -30,6 +31,8 @@ use Webkul\Support\Models\Currency;
 class Order extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
     protected $table = 'purchases_orders';
 
@@ -69,6 +72,8 @@ class Order extends Model
         'company_id',
         'creator_id',
         'operation_type_id',
+        'destination_address_id',
+        'procurement_group_id',
     ];
 
     protected $casts = [
@@ -161,6 +166,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function destinationAddress(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class, 'destination_address_id');
+    }
+
     public function lines(): HasMany
     {
         return $this->hasMany(OrderLine::class, 'order_id');
@@ -178,7 +188,12 @@ class Order extends Model
 
     public function operations(): BelongsToMany
     {
-        return $this->belongsToMany(Operation::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
+        return $this->belongsToMany(Receipt::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
+    }
+
+    public function procurementGroup(): BelongsTo
+    {
+        return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
     }
 
     public function addMessage(array $data): Message

@@ -6,6 +6,11 @@ return [
         'group' => 'المخزون',
     ],
 
+    'global-search' => [
+        'partner' => 'الشريك',
+        'origin'  => 'المصدر',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -27,16 +32,17 @@ return [
                 'title' => 'العمليات',
 
                 'columns' => [
-                    'product'        => 'المنتج',
-                    'final-location' => 'الموقع النهائي',
-                    'description'    => 'الوصف',
-                    'scheduled-at'   => 'موعد الجدولة',
-                    'deadline'       => 'الموعد النهائي',
-                    'packaging'      => 'التعبئة',
-                    'demand'         => 'الطلب',
-                    'quantity'       => 'الكمية',
-                    'unit'           => 'الوحدة',
-                    'picked'         => 'تم الانتقاء',
+                    'product'                    => 'المنتج',
+                    'final-location'             => 'الموقع النهائي',
+                    'description'                => 'الوصف',
+                    'scheduled-at'               => 'موعد الجدولة',
+                    'deadline'                   => 'الموعد النهائي',
+                    'packaging'                  => 'التعبئة',
+                    'demand'                     => 'الطلب',
+                    'quantity'                   => 'الكمية',
+                    'insufficient-stock-tooltip' => 'الكمية المتاحة غير كافية',
+                    'unit'                       => 'الوحدة',
+                    'picked'                     => 'تم الانتقاء',
                 ],
 
                 'fields' => [
@@ -190,5 +196,12 @@ return [
         'ready'    => 'جاهز',
         'done'     => 'منجز',
         'canceled' => 'ملغي',
+    ],
+
+    'notifications' => [
+        'uom-precision-warning' => [
+            'title' => 'تحذير بشأن دقة وحدة القياس',
+            'body'  => 'أنت تستخدم وحدة قياس أصغر من تلك المستخدمة لتخزين هذا المنتج. قد يؤدي ذلك إلى مشاكل في التقريب على الكميات المحجوزة. يُنصح باستخدام أصغر وحدة قياس لتقييم المخزون، أو تقليل دقة التقريب لوحدتك الأساسية.',
+        ],
     ],
 ];
