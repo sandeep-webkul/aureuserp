@@ -21,16 +21,12 @@ document.addEventListener('alpine:init', () => {
 
         requestValidate(label, backorderMoveLines, hasAnyCounted, shouldAskBackorder) {
             this.actionMenuOpen = false;
-            if (backorderMoveLines.length === 0 || ! shouldAskBackorder) {
-                this.$wire.executeAction('validate');
-
-                return;
-            }
-
             this.confirmPending = 'validate';
             this.confirmLabel = label;
             this.backorderMoveLines = backorderMoveLines;
-            this.confirmMode = hasAnyCounted ? 'backorder' : 'simple';
+            this.confirmMode = shouldAskBackorder && hasAnyCounted && backorderMoveLines.length > 0
+                ? 'backorder'
+                : 'simple';
         },
 
         cancelAction() {

@@ -180,6 +180,12 @@ class Operation extends Component
         try {
             $this->operation = $this->executeOperationAction($this->operation, $action, $cancelBackOrder);
             $this->notice = __('barcode::app.actions.completed');
+
+            if (in_array($action, ['validate', 'done'], true)) {
+                $this->redirectRoute('barcode.transfers', $this->operationType, navigate: true);
+
+                return;
+            }
         } catch (Throwable $e) {
             $this->notice = $e->getMessage();
         }
@@ -188,6 +194,7 @@ class Operation extends Component
     public function render(): View
     {
         $operation = $this->loadOperation($this->operation);
+        $moveLines = $this->filteredMoveLines($operation);
 
         foreach ($operation->moveLines as $moveLine) {
             $this->countedMoveLineQuantities[$moveLine->id] ??= 0.0;
@@ -196,8 +203,8 @@ class Operation extends Component
         return view('barcode::livewire.operation', [
             'actions'               => $this->availableActions($operation),
             'operation'             => $operation,
-            'moveLines'             => $this->filteredMoveLines($operation),
-            'backorderMoveLines'    => $this->backorderMoveLines($operation),
+            'moveLines'             => $moveLines,
+            'backorderMoveLines'    => $this->backorderMoveLines($moveLines),
             'shouldAskBackorder'    => $this->shouldAskBackorder($operation),
         ])->layout('barcode::layouts.app', [
             'title' => $operation->name,
@@ -206,11 +213,13 @@ class Operation extends Component
 
     protected function filteredMoveLines(InventoryOperation $operation): Collection
     {
-        $moveLines = $operation->moveLines->map(function (MoveLine $moveLine): MoveLine {
-            $moveLine->product_uom_qty = $moveLine->qty;
+        $moveLines = $operation->moveLines
+            ->filter(fn (MoveLine $moveLine): bool => (float) $moveLine->qty > 0)
+            ->map(function (MoveLine $moveLine): MoveLine {
+                $moveLine->product_uom_qty = $moveLine->qty;
 
-            return $moveLine;
-        });
+                return $moveLine;
+            });
 
         if ($this->barcode === '') {
             return $moveLines;
@@ -228,11 +237,11 @@ class Operation extends Component
         });
     }
 
-    protected function backorderMoveLines(InventoryOperation $operation): array
+    protected function backorderMoveLines(Collection $moveLines): array
     {
         $result = [];
 
-        foreach ($operation->moveLines as $moveLine) {
+        foreach ($moveLines as $moveLine) {
             $counted = (float) ($this->countedMoveLineQuantities[$moveLine->id] ?? 0);
             $required = (float) $moveLine->qty;
 

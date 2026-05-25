@@ -1,8 +1,8 @@
 @php
     $editingMoveLine = $editingMoveLineId ? $operation->moveLines->firstWhere('id', $editingMoveLineId) : null;
-    $allMoveLinesCounted = $operation->moveLines->isNotEmpty()
-        && $operation->moveLines->every(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) >= (float) $moveLine->qty);
-    $hasAnyCountedMoveLine = $operation->moveLines->contains(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) > 0);
+    $allMoveLinesCounted = $moveLines->isNotEmpty()
+        && $moveLines->every(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) >= (float) $moveLine->qty);
+    $hasAnyCountedMoveLine = $moveLines->contains(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) > 0);
 @endphp
 
 <main class="barcode-page operation-screen {{ $editingMoveLine ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
