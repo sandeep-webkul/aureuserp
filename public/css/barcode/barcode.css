@@ -99,6 +99,26 @@
     font-weight: 700;
 }
 
+.barcode-breadcrumbs {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.barcode-breadcrumbs a {
+    color: var(--barcode-primary);
+    text-decoration: none;
+}
+
+.barcode-breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.barcode-breadcrumbs span {
+    color: var(--barcode-text-muted);
+}
+
 .icon-button,
 .scan-form button,
 .editor-controls button,
@@ -151,6 +171,27 @@
     text-transform: uppercase;
 }
 
+.operation-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.operation-card-copy span,
+.operation-card-copy small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.operation-card-copy small {
+    color: var(--barcode-text-muted);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: none;
+}
+
 .operation-card strong {
     background: var(--barcode-surface-muted);
     color: var(--barcode-text);
@@ -180,6 +221,10 @@
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.transfer-empty-state {
+    padding-top: 12px;
 }
 
 .transfer-card {
@@ -464,13 +509,32 @@
 .move-editor {
     background: var(--barcode-bg);
     min-height: calc(100vh - 124px);
-    padding: 20px 12px 96px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .editor-summary-section,
 .editor-details-section,
 .editor-stock-section {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+}
+
+.editor-summary-section {
+    margin-bottom: 12px;
+    margin-top: 0;
+}
+
+.editor-details-section {
+    margin-top: 12px;
+}
+
+.editor-summary-section > .fi-section-content-ctn > .fi-section-content,
+.editor-details-section > .fi-section-content-ctn > .fi-section-content {
+    padding: 14px;
+}
+
+.editor-details-section > .fi-section-header {
+    padding: 12px 14px;
 }
 
 .editor-product {
@@ -481,8 +545,12 @@
 }
 
 .product-thumb-large {
-    height: 88px;
-    width: 88px;
+    height: 72px;
+    width: 72px;
+}
+
+.editor-form {
+    margin-bottom: 12px;
 }
 
 .editor-quantity-row {
@@ -521,7 +589,7 @@
     display: grid;
     gap: 6px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     width: 100%;
 }
 
@@ -538,7 +606,7 @@
 }
 
 .editor-fields-card {
-    margin-top: 4px;
+    margin-top: 0;
 }
 
 .editor-fields-grid {
@@ -572,7 +640,7 @@
 .stock-options {
     display: grid;
     gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 .stock-card {
@@ -826,4 +894,5 @@
     .editor-quantity-row {
         grid-template-columns: 1fr;
     }
+
 }

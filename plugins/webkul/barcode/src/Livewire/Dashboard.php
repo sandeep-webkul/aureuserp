@@ -23,6 +23,7 @@ class Dashboard extends Component
     private function operationTypes(): Collection
     {
         return OperationType::query()
+            ->with('warehouse:id,name')
             ->select('inventories_operation_types.*')
             ->selectSub(
                 Operation::query()
@@ -38,7 +39,7 @@ class Dashboard extends Component
             ->orderBy('sort')
             ->orderBy('name')
             ->get()
-            ->groupBy(fn (OperationType $operationType): string => $operationType->name.'|'.$operationType->type?->value)
+            ->groupBy(fn (OperationType $operationType): string => $operationType->name.'|'.$operationType->type?->value.'|'.$operationType->warehouse_id)
             ->map(function (Collection $operationTypes) {
                 $primaryOperationType = $operationTypes->first();
                 $primaryOperationType->waiting_count = $operationTypes->sum('waiting_count');

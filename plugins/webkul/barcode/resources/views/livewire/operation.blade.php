@@ -28,19 +28,25 @@
         @endif
 
         <div>
-            <div class="barcode-brand">{{ $operationType->name }}</div>
+            <div class="barcode-brand barcode-breadcrumbs">
+                <a href="{{ route('barcode.dashboard') }}" wire:navigate>{{ __('barcode::app.title') }}</a>
+                <span>/</span>
+                <a href="{{ route('barcode.transfers', $operationType) }}" wire:navigate>{{ $operationType->name }}</a>
+            </div>
             <h1>{{ $operation->name }}</h1>
             <p>{{ $operation->partner?->name ?? $operation->origin }}</p>
         </div>
 
-        <x-filament::icon-button
-            color="gray"
-            icon="heroicon-m-qr-code"
-            :label="__('barcode::app.operation.scan')"
-            x-on:click="toggle($wire)"
-            x-bind:class="{ 'is-active': active }"
-            class="icon-button barcode-topbar-btn"
-        />
+        @unless ($editingMoveLine)
+            <x-filament::icon-button
+                color="gray"
+                icon="heroicon-m-qr-code"
+                :label="__('barcode::app.operation.scan')"
+                x-on:click="toggle($wire)"
+                x-bind:class="{ 'is-active': active }"
+                class="icon-button barcode-topbar-btn"
+            />
+        @endunless
 
         @unless ($editingMoveLine)
             <x-filament::dropdown placement="bottom-end" width="sm">
@@ -79,7 +85,7 @@
         @endphp
 
         <section class="move-editor">
-            <x-filament::section class="editor-summary-section">
+            <x-filament::section compact class="editor-summary-section">
                 <div class="editor-product">
                     <div class="editor-product-info">
                         <strong>⌁ {{ $editingMoveLine->product?->reference ?? $editingMoveLine->reference }}</strong>
@@ -104,7 +110,7 @@
             </x-filament::section>
 
             <form class="editor-form" wire:submit="confirmMoveLineEdit">
-                <x-filament::section class="editor-details-section">
+                <x-filament::section compact class="editor-details-section">
                     <x-slot name="heading">
                         Move details
                     </x-slot>
@@ -135,7 +141,7 @@
                         </button>
                     </div>
 
-                    <x-filament::fieldset class="editor-fields-card">
+                    <x-filament::fieldset :contained="false" class="editor-fields-card">
                         <x-slot name="label">
                             Move settings
                         </x-slot>
@@ -193,7 +199,7 @@
             </form>
 
             @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
-                <x-filament::section class="editor-stock-section">
+                <x-filament::section compact class="editor-stock-section">
                     <x-slot name="heading">
                         Quantity in Stock
                     </x-slot>

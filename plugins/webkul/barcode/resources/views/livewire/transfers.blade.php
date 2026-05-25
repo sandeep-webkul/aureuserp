@@ -10,7 +10,11 @@
             class="icon-button"
         />
         <div>
-            <div class="barcode-brand">{{ __('barcode::app.title') }} / {{ __('barcode::app.dashboard.operations') }}</div>
+            <div class="barcode-brand barcode-breadcrumbs">
+                <a href="{{ route('barcode.dashboard') }}" wire:navigate>{{ __('barcode::app.title') }}</a>
+                <span>/</span>
+                <span>{{ __('barcode::app.dashboard.operations') }}</span>
+            </div>
             <h1>{{ $operationType->name }}</h1>
         </div>
         <x-filament::icon-button
@@ -28,15 +32,23 @@
     <div class="search-row">
         <form class="scan-form" wire:submit="openOperation">
             <x-filament::input.wrapper class="scan-field">
+                <x-slot name="suffix">
+                    <x-filament::icon-button
+                        color="primary"
+                        icon="heroicon-m-arrow-right"
+                        :label="__('barcode::app.operation-search.open')"
+                        type="submit"
+                        size="sm"
+                        class="scan-submit-button"
+                    />
+                </x-slot>
+
                 <x-filament::input
                     type="search"
                     wire:model.live.debounce.250ms="search"
                     :placeholder="__('barcode::app.navigation.search')"
                 />
             </x-filament::input.wrapper>
-            <x-filament::button type="submit" color="primary">
-                {{ __('barcode::app.operation-search.open') }}
-            </x-filament::button>
         </form>
     </div>
 
@@ -52,8 +64,20 @@
         </x-filament::callout>
     @endif
 
-    <section class="transfer-grid">
-        @forelse ($transfers as $transfer)
+    @if ($transfers->isEmpty())
+        <section class="transfer-empty-state">
+            <x-filament::empty-state
+                icon="heroicon-o-inbox"
+                :heading="__('barcode::app.transfers.empty')"
+            >
+                <x-slot name="description">
+                    {{ __('barcode::app.operation-search.placeholder') }}
+                </x-slot>
+            </x-filament::empty-state>
+        </section>
+    @else
+        <section class="transfer-grid">
+            @foreach ($transfers as $transfer)
             <a class="transfer-card" href="{{ route('barcode.operation', [$operationType, $transfer, 'scan' => $search]) }}" wire:navigate>
                 <div class="transfer-main">
                     <strong>{{ $transfer->name }}</strong>
@@ -64,11 +88,7 @@
                     <time>{{ $transfer->scheduled_at?->format('M d') }}</time>
                 </div>
             </a>
-        @empty
-            <div class="empty-state">
-                <x-filament::icon icon="heroicon-o-inbox" class="empty-state-icon" />
-                <div>{{ __('barcode::app.transfers.empty') }}</div>
-            </div>
-        @endforelse
-    </section>
+            @endforeach
+        </section>
+    @endif
 </main>

@@ -9,7 +9,14 @@
     <section class="operation-grid">
         @forelse ($operationTypes as $operationType)
             <a class="operation-card" href="{{ route('barcode.transfers', $operationType) }}" wire:navigate>
-                <span>{{ $operationType->name }}</span>
+                <div class="operation-card-copy">
+                    <span>{{ $operationType->name }}</span>
+
+                    @if ($operationType->warehouse?->name)
+                        <small>{{ $operationType->warehouse->name }}</small>
+                    @endif
+                </div>
+
                 <strong>{{ $operationType->waiting_count }}</strong>
             </a>
         @empty
