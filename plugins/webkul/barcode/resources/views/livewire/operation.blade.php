@@ -269,7 +269,8 @@
 
                         <div class="confirm-buttons">
                             <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.stay-on-transfer') }}</button>
-                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.validate') }}</button>
+                            <button type="button" class="action-button danger" x-on:click="$wire.executeAction(confirmPending, true); cancelAction()">No Backorder</button>
+                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending, false); cancelAction()">{{ __('barcode::app.actions.validate') }}</button>
                         </div>
                     </div>
                 </template>

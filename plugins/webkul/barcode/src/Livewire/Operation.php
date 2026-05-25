@@ -4,6 +4,7 @@ namespace Webkul\Barcode\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Livewire\Component;
 use Throwable;
@@ -174,10 +175,10 @@ class Operation extends Component
         $this->discardMoveLineEdit();
     }
 
-    public function executeAction(string $action): void
+    public function executeAction(string $action, bool $cancelBackOrder = false): void
     {
         try {
-            $this->operation = $this->executeOperationAction($this->operation, $action);
+            $this->operation = $this->executeOperationAction($this->operation, $action, $cancelBackOrder);
             $this->notice = __('barcode::app.actions.completed');
         } catch (Throwable $e) {
             $this->notice = $e->getMessage();
@@ -284,13 +285,50 @@ class Operation extends Component
         ];
     }
 
-    private function executeOperationAction(InventoryOperation $operation, string $action): InventoryOperation
+    private function executeOperationAction(InventoryOperation $operation, string $action, bool $cancelBackOrder = false): InventoryOperation
     {
         return match ($action) {
-            'validate', 'done' => Inventory::doneTransfer($operation),
+            'validate', 'done' => $this->validateOperation($operation, $cancelBackOrder),
             'cancel'           => Inventory::cancelTransfer($operation),
             default            => throw new InvalidArgumentException(__('barcode::app.actions.unsupported')),
         };
+    }
+
+    private function validateOperation(InventoryOperation $operation, bool $cancelBackOrder = false): InventoryOperation
+    {
+        return DB::transaction(function () use ($operation, $cancelBackOrder): InventoryOperation {
+            $operation = $operation->load([
+                'moveLines.product.uom',
+                'moveLines.uom',
+                'moveLines.move',
+                'moveLines.sourceLocation',
+                'moveLines.lot',
+                'moveLines.package',
+            ]);
+
+            if ($this->countedMoveLineIds !== []) {
+                $this->syncCountedMoveLineQuantitiesForValidation($operation);
+            }
+
+            return Inventory::doneTransfer($operation->fresh(), $cancelBackOrder);
+        });
+    }
+
+    private function syncCountedMoveLineQuantitiesForValidation(InventoryOperation $operation): void
+    {
+        foreach ($operation->moveLines as $moveLine) {
+            $quantityToValidate = min(
+                (float) $moveLine->qty,
+                max(0, (float) ($this->countedMoveLineQuantities[$moveLine->id] ?? 0))
+            );
+
+            if ((float) $moveLine->qty === $quantityToValidate) {
+                continue;
+            }
+
+            $moveLine->qty = $quantityToValidate;
+            $moveLine->save();
+        }
     }
 
     private function resolveScan(InventoryOperation $operation, string $barcode): array
