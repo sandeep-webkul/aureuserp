@@ -8,7 +8,7 @@ document.addEventListener('alpine:init', () => {
         confirmPending: null,
         confirmLabel: '',
         confirmMode: null,
-        backorderMoves: [],
+        backorderMoveLines: [],
         actionMenuOpen: false,
 
         requestAction(key, label) {
@@ -16,12 +16,12 @@ document.addEventListener('alpine:init', () => {
             this.confirmPending = key;
             this.confirmLabel = label;
             this.confirmMode = 'simple';
-            this.backorderMoves = [];
+            this.backorderMoveLines = [];
         },
 
-        requestValidate(label, backorderMoves, hasAnyCounted) {
+        requestValidate(label, backorderMoveLines, hasAnyCounted, shouldAskBackorder) {
             this.actionMenuOpen = false;
-            if (backorderMoves.length === 0) {
+            if (backorderMoveLines.length === 0 || ! shouldAskBackorder) {
                 this.$wire.executeAction('validate');
 
                 return;
@@ -29,7 +29,7 @@ document.addEventListener('alpine:init', () => {
 
             this.confirmPending = 'validate';
             this.confirmLabel = label;
-            this.backorderMoves = backorderMoves;
+            this.backorderMoveLines = backorderMoveLines;
             this.confirmMode = hasAnyCounted ? 'backorder' : 'simple';
         },
 
@@ -37,7 +37,7 @@ document.addEventListener('alpine:init', () => {
             this.confirmPending = null;
             this.confirmLabel = '';
             this.confirmMode = null;
-            this.backorderMoves = [];
+            this.backorderMoveLines = [];
             this.actionMenuOpen = false;
         },
 
@@ -97,26 +97,26 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 
-let lastLocatedMoveKey = null;
+let lastLocatedMoveLineKey = null;
 
-window.addEventListener('barcode-move-located', (event) => {
-    const moveKey = `${event.detail.moveId}:${event.detail.scannedAt}`;
+window.addEventListener('barcode-move-line-located', (event) => {
+    const moveLineKey = `${event.detail.moveLineId}:${event.detail.scannedAt}`;
 
-    if (moveKey === lastLocatedMoveKey) {
+    if (moveLineKey === lastLocatedMoveLineKey) {
         return;
     }
 
-    lastLocatedMoveKey = moveKey;
+    lastLocatedMoveLineKey = moveLineKey;
 
-    const move = document.getElementById(`move-${event.detail.moveId}`);
+    const moveLine = document.getElementById(`line-${event.detail.moveLineId}`);
 
-    if (! move) {
+    if (! moveLine) {
         return;
     }
 
-    move.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    moveLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    const input = move.querySelector('input[type="number"]');
+    const input = moveLine.querySelector('input[type="number"]');
 
     if (input) {
         setTimeout(() => {

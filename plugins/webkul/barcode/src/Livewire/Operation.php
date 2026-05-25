@@ -3,14 +3,15 @@
 namespace Webkul\Barcode\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Livewire\Component;
 use Throwable;
+use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
-use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\Lot;
+use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation as InventoryOperation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Package;
@@ -30,37 +31,34 @@ class Operation extends Component
 
     public ?string $notice = null;
 
-    public ?int $selectedMoveId = null;
+    public ?int $selectedMoveLineId = null;
 
-    public array $countedQuantities = [];
+    public array $countedMoveLineQuantities = [];
 
-    public array $countedMoveIds = [];
+    public array $countedMoveLineIds = [];
 
-    public ?int $editingMoveId = null;
+    public ?int $editingMoveLineId = null;
 
-    public ?string $editingLotName = null;
+    public ?string $editingMoveLineLotName = null;
 
-    public array $sourceLocationOptions = [];
+    public array $moveLineSourceLocationOptions = [];
 
     public function mount(OperationType $operationType, InventoryOperation $operation): void
     {
         abort_unless((int) $operation->operation_type_id === (int) $operationType->id, 404);
 
         $this->operationType = $operationType;
-
         $this->operation = $operation;
 
         if (request()->filled('scan')) {
             $this->scanResult = $this->resolveScan($this->operation, (string) request('scan'));
-
             $this->notice = $this->scanResult['message'];
 
-            if (isset($this->scanResult['move']['id'])) {
-                $moveId = (int) $this->scanResult['move']['id'];
+            if (isset($this->scanResult['moveLine']['id'])) {
+                $moveLineId = (int) $this->scanResult['moveLine']['id'];
 
-                $this->selectedMoveId = $moveId;
-
-                $this->dispatch('barcode-move-located', moveId: $moveId, scannedAt: now()->getTimestampMs());
+                $this->selectedMoveLineId = $moveLineId;
+                $this->dispatch('barcode-move-line-located', moveLineId: $moveLineId, scannedAt: now()->getTimestampMs());
             }
         }
     }
@@ -68,133 +66,118 @@ class Operation extends Component
     public function scan(): void
     {
         $this->scanResult = $this->resolveScan($this->operation, $this->barcode);
-
         $this->notice = $this->scanResult['message'];
-
         $this->barcode = '';
 
-        if (isset($this->scanResult['move']['id'])) {
-            $moveId = (int) $this->scanResult['move']['id'];
+        if (isset($this->scanResult['moveLine']['id'])) {
+            $moveLineId = (int) $this->scanResult['moveLine']['id'];
 
-            $this->selectedMoveId = $moveId;
-
-            $this->countedQuantities[$moveId] ??= 0.0;
-
-            $this->dispatch('barcode-move-located', moveId: $moveId, scannedAt: now()->getTimestampMs());
+            $this->selectedMoveLineId = $moveLineId;
+            $this->countedMoveLineQuantities[$moveLineId] ??= 0.0;
+            $this->dispatch('barcode-move-line-located', moveLineId: $moveLineId, scannedAt: now()->getTimestampMs());
         }
 
         $this->operation->refresh();
     }
 
-    public function updateMoveQuantity(int $moveId): void
+    public function updateMoveLineQuantity(int $moveLineId): void
     {
-        $move = Move::query()->findOrFail($moveId);
-        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$moveId] ?? 0)));
+        $moveLine = MoveLine::query()->findOrFail($moveLineId);
+        $quantity = min((float) $moveLine->qty, max(0, (float) ($this->countedMoveLineQuantities[$moveLineId] ?? 0)));
 
-        $this->countedQuantities[$moveId] = $quantity;
-        $this->countedMoveIds[$moveId] = true;
+        $this->countedMoveLineQuantities[$moveLineId] = $quantity;
+        $this->countedMoveLineIds[$moveLineId] = true;
         $this->notice = __('barcode::app.scan.move-updated');
     }
 
-    public function adjustMoveQuantity(int $moveId, float $amount): void
+    public function adjustMoveLineQuantity(int $moveLineId, float $amount): void
     {
-        $move = Move::query()->findOrFail($moveId);
+        $moveLine = MoveLine::query()->findOrFail($moveLineId);
 
-        abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
+        abort_unless((int) $moveLine->operation_id === (int) $this->operation->id, 404);
 
-        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$moveId] ?? 0) + $amount));
+        $quantity = min((float) $moveLine->qty, max(0, (float) ($this->countedMoveLineQuantities[$moveLineId] ?? 0) + $amount));
 
-        $this->countedQuantities[$moveId] = $quantity;
-
-        $this->countedMoveIds[$moveId] = true;
-
-        $this->selectedMoveId = $quantity > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
+        $this->countedMoveLineQuantities[$moveLineId] = $quantity;
+        $this->countedMoveLineIds[$moveLineId] = true;
+        $this->selectedMoveLineId = $quantity > 0 ? $moveLineId : ($this->selectedMoveLineId === $moveLineId ? null : $this->selectedMoveLineId);
     }
 
-    public function setMoveQuantity(int $moveId, float $quantity): void
+    public function setMoveLineQuantity(int $moveLineId, float $quantity): void
     {
-        $move = Move::query()->findOrFail($moveId);
+        $moveLine = MoveLine::query()->findOrFail($moveLineId);
 
-        abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
+        abort_unless((int) $moveLine->operation_id === (int) $this->operation->id, 404);
 
-        $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, $quantity));
-
-        $this->countedMoveIds[$moveId] = true;
-
-        $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
+        $this->countedMoveLineQuantities[$moveLineId] = min((float) $moveLine->qty, max(0, $quantity));
+        $this->countedMoveLineIds[$moveLineId] = true;
+        $this->selectedMoveLineId = $this->countedMoveLineQuantities[$moveLineId] > 0
+            ? $moveLineId
+            : ($this->selectedMoveLineId === $moveLineId ? null : $this->selectedMoveLineId);
     }
 
-    public function updatedCountedQuantities($value, $key): void
+    public function updatedCountedMoveLineQuantities($value, $key): void
     {
-        $moveId = (int) $key;
+        $moveLineId = (int) $key;
 
-        if ($moveId <= 0) {
+        if ($moveLineId <= 0) {
             return;
         }
 
-        $move = Move::query()->find($moveId);
+        $moveLine = MoveLine::query()->find($moveLineId);
 
-        if (! $move || (int) $move->operation_id !== (int) $this->operation->id) {
+        if (! $moveLine || (int) $moveLine->operation_id !== (int) $this->operation->id) {
             return;
         }
 
-        $this->countedQuantities[$moveId] = min((float) $move->product_uom_qty, max(0, (float) $value));
-
-        $this->selectedMoveId = $this->countedQuantities[$moveId] > 0 ? $moveId : ($this->selectedMoveId === $moveId ? null : $this->selectedMoveId);
+        $this->countedMoveLineQuantities[$moveLineId] = min((float) $moveLine->qty, max(0, (float) $value));
+        $this->selectedMoveLineId = $this->countedMoveLineQuantities[$moveLineId] > 0
+            ? $moveLineId
+            : ($this->selectedMoveLineId === $moveLineId ? null : $this->selectedMoveLineId);
     }
 
-    public function editMove(int $moveId): void
+    public function editMoveLine(int $moveLineId): void
     {
-        $move = Move::query()
-            ->with(['lines.lot', 'product', 'sourceLocation', 'uom'])
-            ->findOrFail($moveId);
+        $moveLine = MoveLine::query()
+            ->with(['lot', 'product', 'sourceLocation', 'uom'])
+            ->findOrFail($moveLineId);
 
-        abort_unless((int) $move->operation_id === (int) $this->operation->id, 404);
+        abort_unless((int) $moveLine->operation_id === (int) $this->operation->id, 404);
 
-        $this->editingMoveId = $moveId;
-
-        $this->selectedMoveId = $moveId;
-
-        $this->countedQuantities[$moveId] ??= 0.0;
-
-        $this->editingLotName = $move->lines->first()?->lot?->name ?? $move->lines->first()?->lot_name;
-
-        $this->sourceLocationOptions = $this->sourceLocationOptions($move);
+        $this->editingMoveLineId = $moveLineId;
+        $this->selectedMoveLineId = $moveLineId;
+        $this->countedMoveLineQuantities[$moveLineId] ??= 0.0;
+        $this->editingMoveLineLotName = $moveLine->lot?->name ?? $moveLine->lot_name;
+        $this->moveLineSourceLocationOptions = $this->moveLineSourceLocationOptions($moveLine);
     }
 
-    public function discardMoveEdit(): void
+    public function discardMoveLineEdit(): void
     {
-        $this->editingMoveId = null;
-
-        $this->editingLotName = null;
-
-        $this->sourceLocationOptions = [];
+        $this->editingMoveLineId = null;
+        $this->editingMoveLineLotName = null;
+        $this->moveLineSourceLocationOptions = [];
     }
 
-    public function confirmMoveEdit(): void
+    public function confirmMoveLineEdit(): void
     {
-        if (! $this->editingMoveId) {
+        if (! $this->editingMoveLineId) {
             return;
         }
 
-        $move = Move::query()->findOrFail($this->editingMoveId);
+        $moveLine = MoveLine::query()->findOrFail($this->editingMoveLineId);
+        $quantity = min((float) $moveLine->qty, max(0, (float) ($this->countedMoveLineQuantities[$moveLine->id] ?? 0)));
 
-        $quantity = min((float) $move->product_uom_qty, max(0, (float) ($this->countedQuantities[$move->id] ?? 0)));
-
-        $this->countedQuantities[$move->id] = $quantity;
-
-        $this->countedMoveIds[$move->id] = true;
-
+        $this->countedMoveLineQuantities[$moveLine->id] = $quantity;
+        $this->countedMoveLineIds[$moveLine->id] = true;
         $this->notice = __('barcode::app.scan.move-counted');
 
-        $this->discardMoveEdit();
+        $this->discardMoveLineEdit();
     }
 
     public function executeAction(string $action): void
     {
         try {
             $this->operation = $this->executeOperationAction($this->operation, $action);
-
             $this->notice = __('barcode::app.actions.completed');
         } catch (Throwable $e) {
             $this->notice = $e->getMessage();
@@ -205,56 +188,71 @@ class Operation extends Component
     {
         $operation = $this->loadOperation($this->operation);
 
-        foreach ($operation->moves as $move) {
-            $this->countedQuantities[$move->id] ??= 0.0;
+        foreach ($operation->moveLines as $moveLine) {
+            $this->countedMoveLineQuantities[$moveLine->id] ??= 0.0;
         }
 
         return view('barcode::livewire.operation', [
-            'actions'        => $this->availableActions($operation),
-            'operation'      => $operation,
-            'moves'          => $this->filteredMoves($operation),
-            'backorderMoves' => $this->backorderMoves($operation),
+            'actions'               => $this->availableActions($operation),
+            'operation'             => $operation,
+            'moveLines'             => $this->filteredMoveLines($operation),
+            'backorderMoveLines'    => $this->backorderMoveLines($operation),
+            'shouldAskBackorder'    => $this->shouldAskBackorder($operation),
         ])->layout('barcode::layouts.app', [
             'title' => $operation->name,
         ]);
     }
 
-    protected function filteredMoves(InventoryOperation $operation): Collection
+    protected function filteredMoveLines(InventoryOperation $operation): Collection
     {
+        $moveLines = $operation->moveLines->map(function (MoveLine $moveLine): MoveLine {
+            $moveLine->product_uom_qty = $moveLine->qty;
+
+            return $moveLine;
+        });
+
         if ($this->barcode === '') {
-            return $operation->moves;
+            return $moveLines;
         }
 
         $search = mb_strtolower($this->barcode);
 
-        return $operation->moves->filter(function (Move $move) use ($search): bool {
-            return str_contains(mb_strtolower((string) $move->name), $search)
-                || str_contains(mb_strtolower((string) $move->product?->name), $search)
-                || str_contains(mb_strtolower((string) $move->product?->reference), $search)
-                || str_contains(mb_strtolower((string) $move->product?->barcode), $search);
+        return $moveLines->filter(function (MoveLine $moveLine) use ($search): bool {
+            return str_contains(mb_strtolower((string) $moveLine->reference), $search)
+                || str_contains(mb_strtolower((string) $moveLine->product?->name), $search)
+                || str_contains(mb_strtolower((string) $moveLine->product?->reference), $search)
+                || str_contains(mb_strtolower((string) $moveLine->product?->barcode), $search)
+                || str_contains(mb_strtolower((string) $moveLine->lot?->name), $search)
+                || str_contains(mb_strtolower((string) $moveLine->lot_name), $search);
         });
     }
 
-    protected function backorderMoves(InventoryOperation $operation): array
+    protected function backorderMoveLines(InventoryOperation $operation): array
     {
         $result = [];
-        foreach ($operation->moves as $move) {
-            $counted = (float) ($this->countedQuantities[$move->id] ?? 0);
 
-            $required = (float) $move->product_uom_qty;
+        foreach ($operation->moveLines as $moveLine) {
+            $counted = (float) ($this->countedMoveLineQuantities[$moveLine->id] ?? 0);
+            $required = (float) $moveLine->qty;
 
             if ($counted < $required) {
                 $result[] = [
-                    'name'       => $move->product?->name ?? $move->name,
-                    'counted'    => $counted,
-                    'required'   => $required,
-                    'backorder'  => $required - $counted,
-                    'uom'        => $move->uom?->name ?? '',
+                    'id'        => $moveLine->id,
+                    'name'      => $moveLine->product?->name ?? $moveLine->reference,
+                    'counted'   => $counted,
+                    'required'  => $required,
+                    'backorder' => $required - $counted,
+                    'uom'       => $moveLine->uom?->name ?? '',
                 ];
             }
         }
 
         return $result;
+    }
+
+    protected function shouldAskBackorder(InventoryOperation $operation): bool
+    {
+        return $operation->operationType?->create_backorder === CreateBackorder::ASK;
     }
 
     private function loadOperation(InventoryOperation $operation): InventoryOperation
@@ -264,17 +262,13 @@ class Operation extends Component
             'partner',
             'sourceLocation',
             'destinationLocation',
-            'moves.product',
-            'moves.sourceLocation',
-            'moves.uom',
-            'moves.productPackaging',
-            'moves.lines.lot',
             'moveLines.sourceLocation',
             'moveLines.product',
             'moveLines.uom',
             'moveLines.lot',
             'moveLines.package',
             'moveLines.resultPackage',
+            'moveLines.move',
         ]);
     }
 
@@ -325,11 +319,11 @@ class Operation extends Component
         }
 
         if ($product = $this->findProduct($barcode)) {
-            return $this->resolveProductMove($operation, $product);
+            return $this->resolveProductMoveLine($operation, $product);
         }
 
         if ($packaging = $this->findPackaging($barcode)) {
-            return $this->resolveProductMove($operation, $packaging->product, 'packaging', [
+            return $this->resolveProductMoveLine($operation, $packaging->product, 'packaging', [
                 'id'      => $packaging->id,
                 'name'    => $packaging->name,
                 'barcode' => $packaging->barcode,
@@ -337,27 +331,40 @@ class Operation extends Component
         }
 
         if ($lot = $this->findLot($barcode)) {
-            return $this->resolveProductMove($operation, $lot->product, 'lot', [
-                'id'   => $lot->id,
-                'name' => $lot->name,
-            ]);
+            $moveLine = $operation->moveLines()
+                ->with(['product', 'uom', 'sourceLocation', 'lot'])
+                ->where('lot_id', $lot->id)
+                ->orWhere('lot_name', $lot->name)
+                ->first();
+
+            if ($moveLine) {
+                return [
+                    'matched'  => true,
+                    'type'     => 'lot',
+                    'message'  => __('barcode::app.scan.move-located'),
+                    'moveLine' => $this->moveLinePayload($moveLine),
+                    'record'   => [
+                        'id'   => $lot->id,
+                        'name' => $lot->name,
+                    ],
+                ];
+            }
         }
 
         if ($package = $this->findPackage($barcode)) {
-            $move = $operation->moves()
-                ->whereHas('lines', fn (Builder $query) => $query
-                    ->where('package_id', $package->id)
-                    ->orWhere('result_package_id', $package->id))
-                ->with(['product', 'uom'])
+            $moveLine = $operation->moveLines()
+                ->with(['product', 'uom', 'sourceLocation', 'lot'])
+                ->where('package_id', $package->id)
+                ->orWhere('result_package_id', $package->id)
                 ->first();
 
-            if ($move) {
+            if ($moveLine) {
                 return [
-                    'matched' => true,
-                    'type'    => 'package',
-                    'message' => __('barcode::app.scan.package-matched'),
-                    'move'    => $this->movePayload($move),
-                    'record'  => [
+                    'matched'  => true,
+                    'type'     => 'package',
+                    'message'  => __('barcode::app.scan.package-matched'),
+                    'moveLine' => $this->moveLinePayload($moveLine),
+                    'record'   => [
                         'id'   => $package->id,
                         'name' => $package->name,
                     ],
@@ -371,14 +378,14 @@ class Operation extends Component
         ];
     }
 
-    private function resolveProductMove(InventoryOperation $operation, Product $product, string $type = 'product', array $record = []): array
+    private function resolveProductMoveLine(InventoryOperation $operation, Product $product, string $type = 'product', array $record = []): array
     {
-        $move = $operation->moves()
-            ->with(['product', 'uom'])
+        $moveLine = $operation->moveLines()
+            ->with(['product', 'uom', 'sourceLocation', 'lot'])
             ->where('product_id', $product->id)
             ->first();
 
-        if (! $move) {
+        if (! $moveLine) {
             return [
                 'matched' => false,
                 'type'    => $type,
@@ -394,11 +401,11 @@ class Operation extends Component
         }
 
         return [
-            'matched' => true,
-            'type'    => $type,
-            'message' => __('barcode::app.scan.move-located'),
-            'move'    => $this->movePayload($move),
-            'record'  => [
+            'matched'  => true,
+            'type'     => $type,
+            'message'  => __('barcode::app.scan.move-located'),
+            'moveLine' => $this->moveLinePayload($moveLine),
+            'record'   => [
                 'id'        => $product->id,
                 'name'      => $product->name,
                 'reference' => $product->reference,
@@ -408,38 +415,38 @@ class Operation extends Component
         ];
     }
 
-    private function movePayload(Move $move): array
+    private function moveLinePayload(MoveLine $moveLine): array
     {
         return [
-            'id'          => $move->id,
-            'name'        => $move->name,
-            'product'     => $move->product?->name,
-            'reference'   => $move->product?->reference,
-            'barcode'     => $move->product?->barcode,
-            'quantity'    => (float) $move->quantity,
-            'demand'      => (float) $move->product_uom_qty,
-            'uom'         => $move->uom?->name,
-            'is_picked'   => (bool) $move->is_picked,
-            'is_complete' => $move->quantity >= $move->product_uom_qty,
+            'id'          => $moveLine->id,
+            'name'        => $moveLine->reference,
+            'product'     => $moveLine->product?->name,
+            'reference'   => $moveLine->product?->reference,
+            'barcode'     => $moveLine->product?->barcode,
+            'quantity'    => (float) $moveLine->qty,
+            'demand'      => (float) $moveLine->qty,
+            'uom'         => $moveLine->uom?->name,
+            'is_picked'   => (bool) $moveLine->is_picked,
+            'is_complete' => false,
         ];
     }
 
-    private function sourceLocationOptions(Move $move): array
+    private function moveLineSourceLocationOptions(MoveLine $moveLine): array
     {
-        $move->loadMissing(['product.uom', 'uom', 'sourceLocation']);
+        $moveLine->loadMissing(['product.uom', 'uom', 'sourceLocation']);
 
-        if (! $move->product || ! $move->sourceLocation) {
+        if (! $moveLine->product || ! $moveLine->sourceLocation) {
             return [];
         }
 
         return [[
-            'location'  => $move->sourceLocation->full_name ?? $move->sourceLocation->name,
-            'available' => ProductQuantity::getAvailableQuantity($move->product, $move->sourceLocation),
+            'location'  => $moveLine->sourceLocation->full_name ?? $moveLine->sourceLocation->name,
+            'available' => ProductQuantity::getAvailableQuantity($moveLine->product, $moveLine->sourceLocation),
             'quantity'  => ProductQuantity::query()
-                ->where('product_id', $move->product_id)
-                ->where('location_id', $move->source_location_id)
+                ->where('product_id', $moveLine->product_id)
+                ->where('location_id', $moveLine->source_location_id)
                 ->sum('quantity'),
-            'uom' => $move->uom?->name,
+            'uom' => $moveLine->uom?->name,
         ]];
     }
 

@@ -1,14 +1,14 @@
 @php
-    $editingMove = $editingMoveId ? $operation->moves->firstWhere('id', $editingMoveId) : null;
-    $allMovesCounted = $operation->moves->isNotEmpty()
-        && $operation->moves->every(fn ($move) => (float) ($countedQuantities[$move->id] ?? 0) >= (float) $move->product_uom_qty);
-    $hasAnyCounted = $operation->moves->contains(fn ($move) => (float) ($countedQuantities[$move->id] ?? 0) > 0);
+    $editingMoveLine = $editingMoveLineId ? $operation->moveLines->firstWhere('id', $editingMoveLineId) : null;
+    $allMoveLinesCounted = $operation->moveLines->isNotEmpty()
+        && $operation->moveLines->every(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) >= (float) $moveLine->qty);
+    $hasAnyCountedMoveLine = $operation->moveLines->contains(fn ($moveLine) => (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0) > 0);
 @endphp
 
-<main class="barcode-page operation-screen {{ $editingMove ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
+<main class="barcode-page operation-screen {{ $editingMoveLine ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
     <header class="barcode-topbar">
-        @if ($editingMove)
-            <button type="button" class="icon-button" wire:click="discardMoveEdit" aria-label="{{ __('barcode::app.navigation.back') }}">‹</button>
+        @if ($editingMoveLine)
+            <button type="button" class="icon-button" wire:click="discardMoveLineEdit" aria-label="{{ __('barcode::app.navigation.back') }}">‹</button>
         @else
             <a class="icon-button" href="{{ route('barcode.transfers', $operationType) }}" wire:navigate aria-label="{{ __('barcode::app.navigation.back') }}">‹</a>
         @endif
@@ -25,7 +25,7 @@
             </svg>
         </button>
 
-        @unless ($editingMove)
+        @unless ($editingMoveLine)
             <div class="topbar-menu" x-on:click.outside="closeActionMenu()">
                 <button type="button" class="icon-button topbar-menu-btn" x-on:click="toggleActionMenu()" :class="{ 'is-active': actionMenuOpen }" aria-label="Actions">
                     ⋮
@@ -46,60 +46,60 @@
         @endunless
     </header>
 
-    @if ($editingMove)
+    @if ($editingMoveLine)
         @php
-            $productImages = $editingMove->product?->images ?? [];
+            $productImages = $editingMoveLine->product?->images ?? [];
             $productImage = is_array($productImages) ? ($productImages[0] ?? null) : null;
             $productImageUrl = is_string($productImage) && $productImage !== '' ? (str_starts_with($productImage, 'http') || str_starts_with($productImage, '/') ? $productImage : asset('storage/'.$productImage)) : null;
-            $tracking = $editingMove->product?->tracking?->value;
+            $tracking = $editingMoveLine->product?->tracking?->value;
         @endphp
 
         <section class="move-editor">
             <div class="editor-product">
                 <div class="editor-product-info">
-                    <strong>⌁ {{ $editingMove->product?->reference ?? $editingMove->name }}</strong>
+                    <strong>⌁ {{ $editingMoveLine->product?->reference ?? $editingMoveLine->reference }}</strong>
 
-                    <span>{{ $editingMove->product?->name }}</span>
+                    <span>{{ $editingMoveLine->product?->name }}</span>
 
-                    @if ($editingMove->product?->barcode)
-                        <span>[{{ $editingMove->product->barcode }}]</span>
+                    @if ($editingMoveLine->product?->barcode)
+                        <span>[{{ $editingMoveLine->product->barcode }}]</span>
                     @endif
                     
-                    <span>{{ __('barcode::app.operation.source') }}: {{ $editingMove->sourceLocation?->full_name ?? $editingMove->sourceLocation?->name }}</span>
+                    <span>{{ __('barcode::app.operation.source') }}: {{ $editingMoveLine->sourceLocation?->full_name ?? $editingMoveLine->sourceLocation?->name }}</span>
                 </div>
 
                 <div class="product-thumb product-thumb-large">
                     @if ($productImageUrl)
                         <img src="{{ $productImageUrl }}" alt="">
                     @else
-                        <span>{{ mb_substr((string) $editingMove->product?->name, 0, 1) }}</span>
+                        <span>{{ mb_substr((string) $editingMoveLine->product?->name, 0, 1) }}</span>
                     @endif
                 </div>
             </div>
 
-            <form class="editor-form" wire:submit="confirmMoveEdit">
+            <form class="editor-form" wire:submit="confirmMoveLineEdit">
                 <div class="editor-quantity-row">
                     <input
                         type="number"
                         min="0"
-                        max="{{ (float) $editingMove->product_uom_qty }}"
+                        max="{{ (float) $editingMoveLine->qty }}"
                         step="0.01"
-                        wire:model="countedQuantities.{{ $editingMove->id }}"
+                        wire:model="countedMoveLineQuantities.{{ $editingMoveLine->id }}"
                     >
-                    <div class="editor-uom">{{ $editingMove->uom?->name }}</div>
+                    <div class="editor-uom">{{ $editingMoveLine->uom?->name }}</div>
                 </div>
 
                 <div class="editor-controls">
-                    <button type="button" wire:click="setMoveQuantity({{ $editingMove->id }}, 0)">0</button>
-                    <button type="button" wire:click="adjustMoveQuantity({{ $editingMove->id }}, -1)">-1</button>
-                    <button type="button" wire:click="adjustMoveQuantity({{ $editingMove->id }}, 1)">+1</button>
+                    <button type="button" wire:click="setMoveLineQuantity({{ $editingMoveLine->id }}, 0)">0</button>
+                    <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, -1)">-1</button>
+                    <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, 1)">+1</button>
                     <button type="submit" class="confirm-inline">✓</button>
                 </div>
 
                 @if ($tracking && $tracking !== 'qty')
                     <label class="lot-field">
                         <span>{{ $tracking === 'serial' ? 'Serial Number' : 'Lot Number' }}</span>
-                        <input type="text" wire:model="editingLotName">
+                        <input type="text" wire:model="editingMoveLineLotName">
                     </label>
                 @endif
             </form>
@@ -112,7 +112,7 @@
             </div>
 
             <div class="stock-options">
-                @forelse ($sourceLocationOptions as $option)
+                @forelse ($moveLineSourceLocationOptions as $option)
                     <button type="button" class="stock-card">
                         <strong>{{ $option['location'] }}</strong>
                         <span>Available: {{ number_format((float) $option['available'], 2) }} / {{ number_format((float) $option['quantity'], 2) }} {{ $option['uom'] }}</span>
@@ -124,8 +124,8 @@
         </section>
 
         <footer class="action-bar editor-action-bar">
-            <button type="button" class="action-button" wire:click="discardMoveEdit">Discard</button>
-            <button type="button" class="action-button danger" wire:click="confirmMoveEdit">Confirm</button>
+            <button type="button" class="action-button" wire:click="discardMoveLineEdit">Discard</button>
+            <button type="button" class="action-button danger" wire:click="confirmMoveLineEdit">Confirm</button>
         </footer>
     @else
         <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
@@ -142,32 +142,32 @@
         <section class="moves-list">
             <div class="section-title">{{ __('barcode::app.operation.moves') }}</div>
 
-            @forelse ($moves as $move)
+            @forelse ($moveLines as $moveLine)
                 @php
-                    $productImages = $move->product?->images ?? [];
+                    $productImages = $moveLine->product?->images ?? [];
                     $productImage = is_array($productImages) ? ($productImages[0] ?? null) : null;
                     $productImageUrl = is_string($productImage) && $productImage !== '' ? (str_starts_with($productImage, 'http') || str_starts_with($productImage, '/') ? $productImage : asset('storage/'.$productImage)) : null;
-                    $countedQuantity = (float) ($countedQuantities[$move->id] ?? 0);
-                    $demandQuantity = (float) $move->product_uom_qty;
+                    $countedQuantity = (float) ($countedMoveLineQuantities[$moveLine->id] ?? 0);
+                    $demandQuantity = (float) $moveLine->qty;
                     $countState = $countedQuantity >= $demandQuantity && $demandQuantity > 0 ? 'is-complete' : ($countedQuantity > 0 ? 'is-partial' : '');
                 @endphp
 
                 <article
-                    id="move-{{ $move->id }}"
-                    class="move-row {{ $selectedMoveId === $move->id ? 'is-selected' : '' }} {{ $countState }}"
-                    wire:key="move-{{ $move->id }}"
+                    id="line-{{ $moveLine->id }}"
+                    class="move-row {{ $selectedMoveLineId === $moveLine->id ? 'is-selected' : '' }} {{ $countState }}"
+                    wire:key="line-{{ $moveLine->id }}"
                 >
                     <div class="move-open">
                         <div class="move-main">
-                            <strong>{{ $move->product?->reference ?? $move->name }}</strong>
-                            <span>{{ $move->product?->name }}</span>
-                            <span>{{ __('barcode::app.operation.source') }}: {{ $move->sourceLocation?->full_name ?? $move->sourceLocation?->name }}</span>
-                            @if ($move->product?->barcode)
-                                <span>[{{ $move->product->barcode }}]</span>
+                            <strong>{{ $moveLine->product?->reference ?? $moveLine->reference }}</strong>
+                            <span>{{ $moveLine->product?->name }}</span>
+                            <span>{{ __('barcode::app.operation.source') }}: {{ $moveLine->sourceLocation?->full_name ?? $moveLine->sourceLocation?->name }}</span>
+                            @if ($moveLine->product?->barcode)
+                                <span>[{{ $moveLine->product->barcode }}]</span>
                             @endif
                             <div class="move-quantity move-quantity--{{ $countState !== '' ? str_replace('is-', '', $countState) : 'idle' }}">
                                 <strong>{{ number_format($countedQuantity, 0) }} / {{ number_format($demandQuantity, 0) }}</strong>
-                                <span>{{ $move->uom?->name }}</span>
+                                <span>{{ $moveLine->uom?->name }}</span>
                             </div>
                         </div>
                     </div>
@@ -178,20 +178,20 @@
                                 @if ($productImageUrl)
                                     <img src="{{ $productImageUrl }}" alt="">
                                 @else
-                                    <span>{{ mb_substr((string) $move->product?->name, 0, 1) }}</span>
+                                    <span>{{ mb_substr((string) $moveLine->product?->name, 0, 1) }}</span>
                                 @endif
                             </div>
-                            <button type="button" class="edit-button" wire:click="editMove({{ $move->id }})" aria-label="Edit {{ $move->product?->name }}">✎</button>
+                            <button type="button" class="edit-button" wire:click="editMoveLine({{ $moveLine->id }})" aria-label="Edit {{ $moveLine->product?->name }}">✎</button>
                         </div>
 
                         <div class="step-actions">
                             @if ($countedQuantity <= 0)
-                                <button type="button" class="step-button" wire:click="setMoveQuantity({{ $move->id }}, {{ $demandQuantity }})">+{{ number_format($demandQuantity, 0) }}</button>
+                                <button type="button" class="step-button" wire:click="setMoveLineQuantity({{ $moveLine->id }}, {{ $demandQuantity }})">+{{ number_format($demandQuantity, 0) }}</button>
                             @elseif ($countedQuantity >= $demandQuantity)
-                                <button type="button" class="step-button" wire:click="adjustMoveQuantity({{ $move->id }}, -1)">-1</button>
+                                <button type="button" class="step-button" wire:click="adjustMoveLineQuantity({{ $moveLine->id }}, -1)">-1</button>
                             @else
-                                <button type="button" class="step-button" wire:click="adjustMoveQuantity({{ $move->id }}, 1)">+1</button>
-                                <button type="button" class="step-button" wire:click="adjustMoveQuantity({{ $move->id }}, -1)">-1</button>
+                                <button type="button" class="step-button" wire:click="adjustMoveLineQuantity({{ $moveLine->id }}, 1)">+1</button>
+                                <button type="button" class="step-button" wire:click="adjustMoveLineQuantity({{ $moveLine->id }}, -1)">-1</button>
                             @endif
                         </div>
                     </div>
@@ -210,8 +210,8 @@
                 @if ($action['key'] === 'validate' || $action['key'] === 'done')
                     <button
                         type="button"
-                        class="action-button {{ $allMovesCounted ? 'primary' : '' }}"
-                        x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoves) }}, {{ $hasAnyCounted ? 'true' : 'false' }})"
+                        class="action-button {{ $allMoveLinesCounted ? 'primary' : '' }}"
+                        x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoveLines) }}, {{ $hasAnyCountedMoveLine ? 'true' : 'false' }}, {{ $shouldAskBackorder ? 'true' : 'false' }})"
                     >
                         {{ $action['label'] }}
                     </button>
@@ -257,7 +257,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <template x-for="row in backorderMoves" :key="row.name">
+                                <template x-for="row in backorderMoveLines" :key="row.id">
                                     <tr>
                                         <td x-text="row.name"></td>
                                         <td class="backorder-qty" x-text="row.counted + ' / ' + row.required + ' ' + row.uom"></td>
