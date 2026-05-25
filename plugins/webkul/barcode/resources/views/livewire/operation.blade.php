@@ -93,8 +93,25 @@
                     <button type="button" wire:click="setMoveLineQuantity({{ $editingMoveLine->id }}, 0)">0</button>
                     <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, -1)">-1</button>
                     <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, 1)">+1</button>
-                    <button type="submit" class="confirm-inline">✓</button>
+                    <button
+                        type="button"
+                        class="confirm-inline"
+                        wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, {{ max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0) }})"
+                    >
+                        +{{ number_format(max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0), 0) }}
+                    </button>
                 </div>
+
+                @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
+                    <label class="lot-field">
+                        <span>Pick From</span>
+                        <select wire:model.live="editingMoveLineQuantityId">
+                            @foreach ($editingMoveLineQuantityOptions as $quantityId => $quantityLabel)
+                                <option value="{{ $quantityId }}">{{ $quantityLabel }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                @endif
 
                 @if ($tracking && $tracking !== \Webkul\Inventory\Enums\ProductTracking::QTY)
                     <label class="lot-field">
@@ -102,25 +119,55 @@
                         <input type="text" wire:model="editingMoveLineLotName">
                     </label>
                 @endif
+
+                <label class="lot-field">
+                    <span>Destination Location</span>
+                    <select wire:model.live="editingMoveLineDestinationLocationId">
+                        @foreach ($editingMoveLineDestinationLocationOptions as $locationId => $locationLabel)
+                            <option value="{{ $locationId }}">{{ $locationLabel }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                @if ($editingMoveLineResultPackageOptions !== [])
+                    <label class="lot-field">
+                        <span>Destination Package</span>
+                        <select wire:model="editingMoveLineResultPackageId">
+                            <option value="">Select package</option>
+                            @foreach ($editingMoveLineResultPackageOptions as $packageId => $packageLabel)
+                                <option value="{{ $packageId }}">{{ $packageLabel }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                @endif
             </form>
 
-            <div class="stock-heading">
-                <span></span>
-                <strong>Quantity in Stock</strong>
-                <span></span>
-                <p>Select where else to pick the product from</p>
-            </div>
+            @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
+                <div class="stock-heading">
+                    <span></span>
+                    <strong>Quantity in Stock</strong>
+                    <span></span>
+                    <p>Select where else to pick the product from</p>
+                </div>
 
-            <div class="stock-options">
-                @forelse ($moveLineSourceLocationOptions as $option)
-                    <button type="button" class="stock-card">
-                        <strong>{{ $option['location'] }}</strong>
-                        <span>Available: {{ number_format((float) $option['available'], 2) }} / {{ number_format((float) $option['quantity'], 2) }} {{ $option['uom'] }}</span>
-                    </button>
-                @empty
-                    <div class="empty-state">No stock locations found.</div>
-                @endforelse
-            </div>
+                <div class="stock-options">
+                    @forelse ($moveLineSourceLocationOptions as $option)
+                        <button
+                            type="button"
+                            class="stock-card {{ (string) $editingMoveLineQuantityId === (string) $option['quantity_id'] ? 'is-active' : '' }}"
+                            wire:click="selectEditingMoveLineSourceQuantity({{ $option['quantity_id'] }})"
+                        >
+                            <strong>{{ $option['location'] }}</strong>
+                            @if ($option['lot'] || $option['package'])
+                                <span>{{ collect([$option['lot'], $option['package']])->filter()->implode(' - ') }}</span>
+                            @endif
+                            <span>Available: {{ number_format((float) $option['available'], 2) }} / {{ number_format((float) $option['quantity'], 2) }} {{ $option['uom'] }}</span>
+                        </button>
+                    @empty
+                        <div class="empty-state">No stock locations found.</div>
+                    @endforelse
+                </div>
+            @endif
         </section>
 
         <footer class="action-bar editor-action-bar">

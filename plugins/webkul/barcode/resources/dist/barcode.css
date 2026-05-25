@@ -594,13 +594,18 @@
 }
 
 .stock-card {
-    background: #d7f3f8;
+    background: #ffffff;
     border: 1px solid #c7dbe2;
     color: #111827;
     cursor: pointer;
     min-height: 70px;
     padding: 12px;
     text-align: left;
+}
+
+.stock-card.is-active {
+    background: #ecf8ee;
+    border-color: #16a34a;
 }
 
 .stock-card strong,
