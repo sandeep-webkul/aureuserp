@@ -507,7 +507,8 @@
 
 .editor-quantity-row input,
 .editor-uom,
-.lot-field input {
+.lot-field input,
+.lot-field select {
     border: 1px solid #b6c5d4;
     border-radius: 3px;
     box-sizing: border-box;
@@ -561,7 +562,8 @@
     text-transform: uppercase;
 }
 
-.lot-field input {
+.lot-field input,
+.lot-field select {
     font-size: 20px;
     width: 100%;
 }

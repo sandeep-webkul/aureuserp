@@ -10,6 +10,7 @@ use Livewire\Component;
 use Throwable;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\MoveLine;
@@ -148,7 +149,7 @@ class Operation extends Component
         $this->editingMoveLineId = $moveLineId;
         $this->selectedMoveLineId = $moveLineId;
         $this->countedMoveLineQuantities[$moveLineId] ??= 0.0;
-        $this->editingMoveLineLotName = $moveLine->lot?->name ?? $moveLine->lot_name;
+        $this->editingMoveLineLotName = $moveLine->lot_name ?? $moveLine->lot?->name;
         $this->moveLineSourceLocationOptions = $this->moveLineSourceLocationOptions($moveLine);
     }
 
@@ -170,6 +171,7 @@ class Operation extends Component
 
         $this->countedMoveLineQuantities[$moveLine->id] = $quantity;
         $this->countedMoveLineIds[$moveLine->id] = true;
+        $this->assignEditingMoveLineLot($moveLine);
         $this->notice = __('barcode::app.scan.move-counted');
 
         $this->discardMoveLineEdit();
@@ -331,13 +333,53 @@ class Operation extends Component
                 max(0, (float) ($this->countedMoveLineQuantities[$moveLine->id] ?? 0))
             );
 
-            if ((float) $moveLine->qty === $quantityToValidate) {
+            if (
+                (float) $moveLine->qty === $quantityToValidate
+            ) {
                 continue;
             }
 
             $moveLine->qty = $quantityToValidate;
             $moveLine->save();
         }
+    }
+
+    private function assignEditingMoveLineLot(MoveLine $moveLine): void
+    {
+        if (! in_array($moveLine->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
+            return;
+        }
+
+        $lotName = $this->editingMoveLineLotName ? trim($this->editingMoveLineLotName) : null;
+
+        if (! $lotName) {
+            $moveLine->lot_id = null;
+            $moveLine->lot_name = null;
+            $moveLine->save();
+
+            return;
+        }
+
+        $lot = Lot::query()
+            ->where('product_id', $moveLine->product_id)
+            ->where('name', $lotName)
+            ->where(function ($query) use ($moveLine) {
+                $query->whereNull('company_id')
+                    ->orWhere('company_id', $moveLine->company_id);
+            })
+            ->first();
+
+        if (! $lot) {
+            $lot = Lot::query()->create([
+                'name'       => $lotName,
+                'product_id' => $moveLine->product_id,
+                'company_id' => $moveLine->company_id,
+            ]);
+        }
+
+        $moveLine->lot_id = $lot->id;
+        $moveLine->lot_name = $lot->name;
+        $moveLine->save();
     }
 
     private function resolveScan(InventoryOperation $operation, string $barcode): array

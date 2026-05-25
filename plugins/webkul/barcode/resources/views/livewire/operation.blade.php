@@ -51,7 +51,7 @@
             $productImages = $editingMoveLine->product?->images ?? [];
             $productImage = is_array($productImages) ? ($productImages[0] ?? null) : null;
             $productImageUrl = is_string($productImage) && $productImage !== '' ? (str_starts_with($productImage, 'http') || str_starts_with($productImage, '/') ? $productImage : asset('storage/'.$productImage)) : null;
-            $tracking = $editingMoveLine->product?->tracking?->value;
+            $tracking = $editingMoveLine->product?->tracking;
         @endphp
 
         <section class="move-editor">
@@ -96,9 +96,9 @@
                     <button type="submit" class="confirm-inline">✓</button>
                 </div>
 
-                @if ($tracking && $tracking !== 'qty')
+                @if ($tracking && $tracking !== \Webkul\Inventory\Enums\ProductTracking::QTY)
                     <label class="lot-field">
-                        <span>{{ $tracking === 'serial' ? 'Serial Number' : 'Lot Number' }}</span>
+                        <span>Serial/Lot Number</span>
                         <input type="text" wire:model="editingMoveLineLotName">
                     </label>
                 @endif
