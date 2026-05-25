@@ -1,28 +1,55 @@
 <main class="barcode-page" x-data="barcodeScanner('search', 'openOperation')">
     <header class="barcode-topbar">
-        <a class="icon-button" href="{{ route('barcode.dashboard') }}" wire:navigate aria-label="{{ __('barcode::app.navigation.back') }}">‹</a>
+        <x-filament::icon-button
+            color="gray"
+            icon="heroicon-m-chevron-left"
+            :label="__('barcode::app.navigation.back')"
+            :href="route('barcode.dashboard')"
+            tag="a"
+            wire:navigate
+            class="icon-button"
+        />
         <div>
             <div class="barcode-brand">{{ __('barcode::app.title') }} / {{ __('barcode::app.dashboard.operations') }}</div>
             <h1>{{ $operationType->name }}</h1>
         </div>
-        <button type="button" class="icon-button barcode-topbar-btn" x-on:click="toggle($wire)" :class="{ 'is-active': active }" aria-label="{{ __('barcode::app.operation-search.placeholder') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M3 4a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 9a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 14a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2h-4a1 1 0 0 1-1-1ZM3 19a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-            </svg>
-        </button>
+        <x-filament::icon-button
+            color="gray"
+            icon="heroicon-m-qr-code"
+            :label="__('barcode::app.operation-search.placeholder')"
+            x-on:click="toggle($wire)"
+            x-bind:class="{ 'is-active': active }"
+            class="icon-button barcode-topbar-btn"
+        />
     </header>
 
     <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
 
     <div class="search-row">
         <form class="scan-form" wire:submit="openOperation">
-            <input type="search" wire:model.live.debounce.250ms="search" placeholder="{{ __('barcode::app.navigation.search') }}">
-            <button type="submit">{{ __('barcode::app.operation-search.open') }}</button>
+            <x-filament::input.wrapper class="scan-field">
+                <x-filament::input
+                    type="search"
+                    wire:model.live.debounce.250ms="search"
+                    :placeholder="__('barcode::app.navigation.search')"
+                />
+            </x-filament::input.wrapper>
+            <x-filament::button type="submit" color="primary">
+                {{ __('barcode::app.operation-search.open') }}
+            </x-filament::button>
         </form>
     </div>
 
     @if ($operationNotice)
-        <div class="notice">{{ $operationNotice }}</div>
+        <x-filament::callout icon="heroicon-o-information-circle" :color="$operationNoticeColor" class="notice">
+            <x-slot name="heading">
+                {{ __('barcode::app.operation-search.open') }}
+            </x-slot>
+
+            <x-slot name="description">
+                {{ $operationNotice }}
+            </x-slot>
+        </x-filament::callout>
     @endif
 
     <section class="transfer-grid">
@@ -38,7 +65,10 @@
                 </div>
             </a>
         @empty
-            <div class="empty-state">{{ __('barcode::app.transfers.empty') }}</div>
+            <div class="empty-state">
+                <x-filament::icon icon="heroicon-o-inbox" class="empty-state-icon" />
+                <div>{{ __('barcode::app.transfers.empty') }}</div>
+            </div>
         @endforelse
     </section>
 </main>

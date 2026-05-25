@@ -8,9 +8,23 @@
 <main class="barcode-page operation-screen {{ $editingMoveLine ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
     <header class="barcode-topbar">
         @if ($editingMoveLine)
-            <button type="button" class="icon-button" wire:click="discardMoveLineEdit" aria-label="{{ __('barcode::app.navigation.back') }}">‹</button>
+            <x-filament::icon-button
+                color="gray"
+                icon="heroicon-m-chevron-left"
+                :label="__('barcode::app.navigation.back')"
+                wire:click="discardMoveLineEdit"
+                class="icon-button"
+            />
         @else
-            <a class="icon-button" href="{{ route('barcode.transfers', $operationType) }}" wire:navigate aria-label="{{ __('barcode::app.navigation.back') }}">‹</a>
+            <x-filament::icon-button
+                color="gray"
+                icon="heroicon-m-chevron-left"
+                :label="__('barcode::app.navigation.back')"
+                :href="route('barcode.transfers', $operationType)"
+                tag="a"
+                wire:navigate
+                class="icon-button"
+            />
         @endif
 
         <div>
@@ -19,30 +33,40 @@
             <p>{{ $operation->partner?->name ?? $operation->origin }}</p>
         </div>
 
-        <button type="button" class="icon-button barcode-topbar-btn" x-on:click="toggle($wire)" :class="{ 'is-active': active }" aria-label="{{ __('barcode::app.operation.scan') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M3 4a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 9a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1ZM3 14a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2H9a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2h-4a1 1 0 0 1-1-1ZM3 19a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Zm7 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Zm5 0a1 1 0 0 1 1-1h1a1 1 0 0 1 0 2h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-            </svg>
-        </button>
+        <x-filament::icon-button
+            color="gray"
+            icon="heroicon-m-qr-code"
+            :label="__('barcode::app.operation.scan')"
+            x-on:click="toggle($wire)"
+            x-bind:class="{ 'is-active': active }"
+            class="icon-button barcode-topbar-btn"
+        />
 
         @unless ($editingMoveLine)
-            <div class="topbar-menu" x-on:click.outside="closeActionMenu()">
-                <button type="button" class="icon-button topbar-menu-btn" x-on:click="toggleActionMenu()" :class="{ 'is-active': actionMenuOpen }" aria-label="Actions">
-                    ⋮
-                </button>
+            <x-filament::dropdown placement="bottom-end" width="sm">
+                <x-slot name="trigger">
+                    <x-filament::icon-button
+                        color="gray"
+                        icon="heroicon-m-ellipsis-vertical"
+                        label="Actions"
+                        class="icon-button topbar-menu-btn"
+                    />
+                </x-slot>
 
-                <div class="topbar-dropdown" x-show="actionMenuOpen" x-cloak>
-                    <div class="topbar-dropdown-list">
-                        @foreach ($actions as $action)
-                            @if ($action['key'] === 'cancel')
-                                <button type="button" class="topbar-dropdown-item danger" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
-                                    <span class="topbar-dropdown-label">{{ $action['label'] }}</span>
-                                </button>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
+                <x-filament::dropdown.list>
+                    @foreach ($actions as $action)
+                        @if ($action['key'] === 'cancel')
+                            <x-filament::dropdown.list.item
+                                color="danger"
+                                icon="heroicon-m-x-circle"
+                                x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')"
+                            >
+                                {{ $action['label'] }}
+                            </x-filament::dropdown.list.item>
+                        @endif
+                    @endforeach
+                </x-filament::dropdown.list>
+            </x-filament::dropdown>
         @endunless
     </header>
 
@@ -55,135 +79,193 @@
         @endphp
 
         <section class="move-editor">
-            <div class="editor-product">
-                <div class="editor-product-info">
-                    <strong>⌁ {{ $editingMoveLine->product?->reference ?? $editingMoveLine->reference }}</strong>
+            <x-filament::section class="editor-summary-section">
+                <div class="editor-product">
+                    <div class="editor-product-info">
+                        <strong>⌁ {{ $editingMoveLine->product?->reference ?? $editingMoveLine->reference }}</strong>
 
-                    <span>{{ $editingMoveLine->product?->name }}</span>
+                        <span>{{ $editingMoveLine->product?->name }}</span>
 
-                    @if ($editingMoveLine->product?->barcode)
-                        <span>[{{ $editingMoveLine->product->barcode }}]</span>
-                    @endif
-                    
-                    <span>{{ __('barcode::app.operation.source') }}: {{ $editingMoveLine->sourceLocation?->full_name ?? $editingMoveLine->sourceLocation?->name }}</span>
+                        @if ($editingMoveLine->product?->barcode)
+                            <span>[{{ $editingMoveLine->product->barcode }}]</span>
+                        @endif
+
+                        <span>{{ __('barcode::app.operation.source') }}: {{ $editingMoveLine->sourceLocation?->full_name ?? $editingMoveLine->sourceLocation?->name }}</span>
+                    </div>
+
+                    <div class="product-thumb product-thumb-large">
+                        @if ($productImageUrl)
+                            <img src="{{ $productImageUrl }}" alt="">
+                        @else
+                            <span>{{ mb_substr((string) $editingMoveLine->product?->name, 0, 1) }}</span>
+                        @endif
+                    </div>
                 </div>
-
-                <div class="product-thumb product-thumb-large">
-                    @if ($productImageUrl)
-                        <img src="{{ $productImageUrl }}" alt="">
-                    @else
-                        <span>{{ mb_substr((string) $editingMoveLine->product?->name, 0, 1) }}</span>
-                    @endif
-                </div>
-            </div>
+            </x-filament::section>
 
             <form class="editor-form" wire:submit="confirmMoveLineEdit">
-                <div class="editor-quantity-row">
-                    <input
-                        type="number"
-                        min="0"
-                        max="{{ (float) $editingMoveLine->qty }}"
-                        step="0.01"
-                        wire:model="countedMoveLineQuantities.{{ $editingMoveLine->id }}"
-                    >
-                    <div class="editor-uom">{{ $editingMoveLine->uom?->name }}</div>
-                </div>
+                <x-filament::section class="editor-details-section">
+                    <x-slot name="heading">
+                        Move details
+                    </x-slot>
 
-                <div class="editor-controls">
-                    <button type="button" wire:click="setMoveLineQuantity({{ $editingMoveLine->id }}, 0)">0</button>
-                    <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, -1)">-1</button>
-                    <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, 1)">+1</button>
-                    <button
-                        type="button"
-                        class="confirm-inline"
-                        wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, {{ max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0) }})"
-                    >
-                        +{{ number_format(max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0), 0) }}
-                    </button>
-                </div>
+                    <div class="editor-quantity-row">
+                        <x-filament::input.wrapper>
+                            <x-filament::input
+                                type="number"
+                                min="0"
+                                max="{{ (float) $editingMoveLine->qty }}"
+                                step="0.01"
+                                wire:model="countedMoveLineQuantities.{{ $editingMoveLine->id }}"
+                            />
+                        </x-filament::input.wrapper>
+                        <div class="editor-uom">{{ $editingMoveLine->uom?->name }}</div>
+                    </div>
 
-                @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
-                    <label class="lot-field">
-                        <span>Pick From</span>
-                        <select wire:model.live="editingMoveLineQuantityId">
-                            @foreach ($editingMoveLineQuantityOptions as $quantityId => $quantityLabel)
-                                <option value="{{ $quantityId }}">{{ $quantityLabel }}</option>
-                            @endforeach
-                        </select>
-                    </label>
-                @endif
+                    <div class="editor-controls">
+                        <button type="button" wire:click="setMoveLineQuantity({{ $editingMoveLine->id }}, 0)">0</button>
+                        <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, -1)">-1</button>
+                        <button type="button" wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, 1)">+1</button>
+                        <button
+                            type="button"
+                            class="confirm-inline"
+                            wire:click="adjustMoveLineQuantity({{ $editingMoveLine->id }}, {{ max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0) }})"
+                        >
+                            +{{ number_format(max((float) $editingMoveLine->qty - (float) ($countedMoveLineQuantities[$editingMoveLine->id] ?? 0), 0), 0) }}
+                        </button>
+                    </div>
 
-                @if ($tracking && $tracking !== \Webkul\Inventory\Enums\ProductTracking::QTY)
-                    <label class="lot-field">
-                        <span>Serial/Lot Number</span>
-                        <input type="text" wire:model="editingMoveLineLotName">
-                    </label>
-                @endif
+                    <x-filament::fieldset class="editor-fields-card">
+                        <x-slot name="label">
+                            Move settings
+                        </x-slot>
 
-                <label class="lot-field">
-                    <span>Destination Location</span>
-                    <select wire:model.live="editingMoveLineDestinationLocationId">
-                        @foreach ($editingMoveLineDestinationLocationOptions as $locationId => $locationLabel)
-                            <option value="{{ $locationId }}">{{ $locationLabel }}</option>
-                        @endforeach
-                    </select>
-                </label>
+                        <div class="editor-fields-grid">
+                            @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
+                                <label class="lot-field">
+                                    <span>Pick From</span>
+                                    <x-filament::input.wrapper style="height:40px !important;">
+                                        <x-filament::input.select wire:model.live="editingMoveLineQuantityId">
+                                            @foreach ($editingMoveLineQuantityOptions as $quantityId => $quantityLabel)
+                                                <option value="{{ $quantityId }}">{{ $quantityLabel }}</option>
+                                            @endforeach
+                                        </x-filament::input.select>
+                                    </x-filament::input.wrapper>
+                                </label>
+                            @endif
 
-                @if ($editingMoveLineResultPackageOptions !== [])
-                    <label class="lot-field">
-                        <span>Destination Package</span>
-                        <select wire:model="editingMoveLineResultPackageId">
-                            <option value="">Select package</option>
-                            @foreach ($editingMoveLineResultPackageOptions as $packageId => $packageLabel)
-                                <option value="{{ $packageId }}">{{ $packageLabel }}</option>
-                            @endforeach
-                        </select>
-                    </label>
-                @endif
+                            @if ($tracking && $tracking !== \Webkul\Inventory\Enums\ProductTracking::QTY)
+                                <label class="lot-field">
+                                    <span>Serial/Lot Number</span>
+                                    <x-filament::input.wrapper style="height:40px !important;">
+                                        <x-filament::input type="text" wire:model="editingMoveLineLotName" />
+                                    </x-filament::input.wrapper>
+                                </label>
+                            @endif
+
+                            <label class="lot-field">
+                                <span>Destination Location</span>
+                                <x-filament::input.wrapper style="height:40px !important;">
+                                    <x-filament::input.select wire:model.live="editingMoveLineDestinationLocationId">
+                                        @foreach ($editingMoveLineDestinationLocationOptions as $locationId => $locationLabel)
+                                            <option value="{{ $locationId }}">{{ $locationLabel }}</option>
+                                        @endforeach
+                                    </x-filament::input.select>
+                                </x-filament::input.wrapper>
+                            </label>
+
+                            @if ($editingMoveLineResultPackageOptions !== [])
+                                <label class="lot-field">
+                                    <span>Destination Package</span>
+                                    <x-filament::input.wrapper style="height:40px !important;">
+                                        <x-filament::input.select wire:model="editingMoveLineResultPackageId">
+                                            <option value="">Select package</option>
+                                            @foreach ($editingMoveLineResultPackageOptions as $packageId => $packageLabel)
+                                                <option value="{{ $packageId }}">{{ $packageLabel }}</option>
+                                            @endforeach
+                                        </x-filament::input.select>
+                                    </x-filament::input.wrapper>
+                                </label>
+                            @endif
+                        </div>
+                    </x-filament::fieldset>
+                </x-filament::section>
             </form>
 
             @if ($editingMoveLine->sourceLocation?->type === \Webkul\Inventory\Enums\LocationType::INTERNAL)
-                <div class="stock-heading">
-                    <span></span>
-                    <strong>Quantity in Stock</strong>
-                    <span></span>
-                    <p>Select where else to pick the product from</p>
-                </div>
+                <x-filament::section class="editor-stock-section">
+                    <x-slot name="heading">
+                        Quantity in Stock
+                    </x-slot>
 
-                <div class="stock-options">
-                    @forelse ($moveLineSourceLocationOptions as $option)
-                        <button
-                            type="button"
-                            class="stock-card {{ (string) $editingMoveLineQuantityId === (string) $option['quantity_id'] ? 'is-active' : '' }}"
-                            wire:click="selectEditingMoveLineSourceQuantity({{ $option['quantity_id'] }})"
-                        >
-                            <strong>{{ $option['location'] }}</strong>
-                            @if ($option['lot'] || $option['package'])
-                                <span>{{ collect([$option['lot'], $option['package']])->filter()->implode(' - ') }}</span>
-                            @endif
-                            <span>Available: {{ number_format((float) $option['available'], 2) }} / {{ number_format((float) $option['quantity'], 2) }} {{ $option['uom'] }}</span>
-                        </button>
-                    @empty
-                        <div class="empty-state">No stock locations found.</div>
-                    @endforelse
-                </div>
+                    <x-slot name="description">
+                        Select where else to pick the product from
+                    </x-slot>
+
+                    <div class="stock-options">
+                        @forelse ($moveLineSourceLocationOptions as $option)
+                            <button
+                                type="button"
+                                class="stock-card {{ (string) $editingMoveLineQuantityId === (string) $option['quantity_id'] ? 'is-active' : '' }}"
+                                wire:click="selectEditingMoveLineSourceQuantity({{ $option['quantity_id'] }})"
+                            >
+                                <strong>{{ $option['location'] }}</strong>
+                                @if ($option['lot'] || $option['package'])
+                                    <span>{{ collect([$option['lot'], $option['package']])->filter()->implode(' - ') }}</span>
+                                @endif
+                                <span>Available: {{ number_format((float) $option['available'], 2) }} / {{ number_format((float) $option['quantity'], 2) }} {{ $option['uom'] }}</span>
+                            </button>
+                        @empty
+                            <div class="empty-state">No stock locations found.</div>
+                        @endforelse
+                    </div>
+                </x-filament::section>
             @endif
         </section>
 
         <footer class="action-bar editor-action-bar">
-            <button type="button" class="action-button" wire:click="discardMoveLineEdit">Discard</button>
-            <button type="button" class="action-button danger" wire:click="confirmMoveLineEdit">Confirm</button>
+            <x-filament::button color="gray" style="width:100%;display:flex;justify-content:center;" wire:click="discardMoveLineEdit">
+                Discard
+            </x-filament::button>
+            <x-filament::button color="primary" style="width:100%;display:flex;justify-content:center;" wire:click="confirmMoveLineEdit">
+                Confirm
+            </x-filament::button>
         </footer>
     @else
         <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
 
         <form class="scan-form" wire:submit="scan">
-            <input type="search" wire:model.live.debounce.250ms="barcode" placeholder="{{ __('barcode::app.operation.manual-scan') }}" autocomplete="off">
-            <button type="submit">↵</button>
+            <x-filament::input.wrapper class="scan-field">
+                <x-slot name="suffix">
+                    <x-filament::icon-button
+                        color="primary"
+                        icon="heroicon-m-arrow-right"
+                        label="Submit scan"
+                        type="submit"
+                        size="sm"
+                        class="scan-submit-button"
+                    />
+                </x-slot>
+
+                <x-filament::input
+                    type="search"
+                    wire:model.live.debounce.250ms="barcode"
+                    :placeholder="__('barcode::app.operation.manual-scan')"
+                    autocomplete="off"
+                />
+            </x-filament::input.wrapper>
         </form>
 
         @if ($notice)
-            <div class="notice">{{ $notice }}</div>
+            <x-filament::callout icon="heroicon-o-information-circle" color="info" class="notice">
+                <x-slot name="heading">
+                    {{ __('barcode::app.title') }}
+                </x-slot>
+
+                <x-slot name="description">
+                    {{ $notice }}
+                </x-slot>
+            </x-filament::callout>
         @endif
 
         <section class="moves-list">
@@ -228,7 +310,14 @@
                                     <span>{{ mb_substr((string) $moveLine->product?->name, 0, 1) }}</span>
                                 @endif
                             </div>
-                            <button type="button" class="edit-button" wire:click="editMoveLine({{ $moveLine->id }})" aria-label="Edit {{ $moveLine->product?->name }}">✎</button>
+                            <button
+                                type="button"
+                                class="edit-button"
+                                wire:click="editMoveLine({{ $moveLine->id }})"
+                                aria-label="{{ 'Edit ' . ($moveLine->product?->name ?? 'move line') }}"
+                            >
+                                <x-filament::icon icon="heroicon-m-pencil-square" />
+                            </button>
                         </div>
 
                         <div class="step-actions">
@@ -244,7 +333,10 @@
                     </div>
                 </article>
             @empty
-                <div class="empty-state">{{ __('barcode::app.operation.empty-moves') }}</div>
+                <div class="empty-state">
+                    <x-filament::icon icon="heroicon-o-inbox" class="empty-state-icon" />
+                    <div>{{ __('barcode::app.operation.empty-moves') }}</div>
+                </div>
             @endforelse
         </section>
 
@@ -314,10 +406,16 @@
                             </tbody>
                         </table>
 
-                        <div class="confirm-buttons">
-                            <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.stay-on-transfer') }}</button>
-                            <button type="button" class="action-button danger" x-on:click="$wire.executeAction(confirmPending, true); cancelAction()">No Backorder</button>
-                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending, false); cancelAction()">{{ __('barcode::app.actions.validate') }}</button>
+                        <div class="confirm-buttons confirm-buttons--triple" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;">
+                            <x-filament::button color="gray" style="width:100%;display:flex;justify-content:center;" x-on:click="cancelAction()">
+                                {{ __('barcode::app.actions.stay-on-transfer') }}
+                            </x-filament::button>
+                            <x-filament::button color="danger" style="width:100%;display:flex;justify-content:center;" x-on:click="$wire.executeAction(confirmPending, true); cancelAction()">
+                                No Backorder
+                            </x-filament::button>
+                            <x-filament::button color="primary" style="width:100%;display:flex;justify-content:center;" x-on:click="$wire.executeAction(confirmPending, false); cancelAction()">
+                                {{ __('barcode::app.actions.validate') }}
+                            </x-filament::button>
                         </div>
                     </div>
                 </template>
@@ -326,9 +424,13 @@
                 <template x-if="confirmMode === 'simple'">
                     <div>
                         <p>{{ __('barcode::app.actions.confirm-prompt') }} <strong x-text="confirmLabel"></strong>?</p>
-                        <div class="confirm-buttons">
-                            <button type="button" class="action-button" x-on:click="cancelAction()">{{ __('barcode::app.actions.cancel') }}</button>
-                            <button type="button" class="action-button primary" x-on:click="$wire.executeAction(confirmPending); cancelAction()">{{ __('barcode::app.actions.confirm') }}</button>
+                        <div class="confirm-buttons confirm-buttons--pair" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;">
+                            <x-filament::button color="gray" style="width:100%;display:flex;justify-content:center;" x-on:click="cancelAction()">
+                                {{ __('barcode::app.actions.cancel') }}
+                            </x-filament::button>
+                            <x-filament::button color="primary" style="width:100%;display:flex;justify-content:center;" x-on:click="$wire.executeAction(confirmPending); cancelAction()">
+                                {{ __('barcode::app.actions.confirm') }}
+                            </x-filament::button>
                         </div>
                     </div>
                 </template>

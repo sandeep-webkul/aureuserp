@@ -23,6 +23,8 @@ class Transfers extends Component
 
     public ?string $operationNotice = null;
 
+    public string $operationNoticeColor = 'info';
+
     public array $matchingOperationIds = [];
 
     public function mount(OperationType $operationType): void
@@ -33,6 +35,7 @@ class Transfers extends Component
     public function openOperation()
     {
         $this->operationNotice = null;
+        $this->operationNoticeColor = 'info';
 
         $operations = $this->findMatchingOperations($this->search);
 
@@ -40,6 +43,7 @@ class Transfers extends Component
             $this->matchingOperationIds = [];
 
             $this->operationNotice = __('barcode::app.operation-search.not-found');
+            $this->operationNoticeColor = 'warning';
 
             return null;
         }
@@ -57,6 +61,7 @@ class Transfers extends Component
         $this->matchingOperationIds = $operations->pluck('id')->all();
 
         $this->operationNotice = __('barcode::app.operation-search.multiple-found', ['count' => $operations->count()]);
+        $this->operationNoticeColor = 'info';
 
         return null;
     }
@@ -67,6 +72,7 @@ class Transfers extends Component
             $this->matchingOperationIds = [];
 
             $this->operationNotice = null;
+            $this->operationNoticeColor = 'info';
         }
     }
 
