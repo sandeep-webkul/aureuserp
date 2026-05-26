@@ -13,6 +13,18 @@
 
         <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
 
+        <div class="scanner-notice" x-show="scannerError" x-cloak>
+            <x-filament::callout icon="heroicon-o-exclamation-triangle" color="warning">
+                <x-slot name="heading">
+                    Camera unavailable
+                </x-slot>
+
+                <x-slot name="description">
+                    <span x-text="scannerError"></span>
+                </x-slot>
+            </x-filament::callout>
+        </div>
+
     <div class="search-row">
         <form class="scan-form" wire:submit="openOperation">
             <x-filament::input.wrapper class="scan-field">

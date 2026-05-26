@@ -431,19 +431,8 @@
     max-width: 420px;
 }
 
-.barcode-reader-error {
-    align-items: center;
-    background: var(--barcode-warning-soft);
-    border: 1px solid color-mix(in srgb, var(--barcode-warning) 28%, var(--barcode-border));
-    border-radius: 8px;
-    color: var(--barcode-warning);
-    display: flex;
-    font-size: 14px;
-    font-weight: 700;
-    justify-content: center;
-    min-height: 180px;
-    padding: 16px;
-    text-align: center;
+.scanner-notice {
+    margin: 12px 0 8px;
 }
 
 .scan-form {

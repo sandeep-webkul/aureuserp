@@ -3,6 +3,7 @@ document.addEventListener('alpine:init', () => {
         active: false,
         processing: false,
         scanner: null,
+        scannerError: '',
         property,
         action,
         confirmPending: null,
@@ -46,13 +47,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         renderScannerError(message) {
-            const reader = document.getElementById('barcode-reader');
-
-            if (! reader) {
-                return;
-            }
-
-            reader.innerHTML = `<div class="barcode-reader-error">${message}</div>`;
+            this.scannerError = message;
         },
 
         async toggle($wire) {
@@ -67,6 +62,7 @@ document.addEventListener('alpine:init', () => {
 
         async start($wire) {
             this.active = true;
+            this.scannerError = '';
 
             if (! window.Html5Qrcode) {
                 this.renderScannerError('Scanner library failed to load.');
