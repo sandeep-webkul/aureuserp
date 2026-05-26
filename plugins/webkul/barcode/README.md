@@ -205,30 +205,7 @@ use Webkul\Barcode\Support\NativeApp;
 
 This keeps camera permission text and the app start path aligned with the plugin.
 
-### 5. HTTPS forcing in `app/Providers/AppServiceProvider.php`
-
-If the host app forces `https` for every production request, Jump can break because it proxies the app through local HTTP.
-
-Required host-app adjustment:
-
-```php
-public function boot(): void
-{
-    $isJumpRuntime = filled(getenv('JUMP_BRIDGE_PORT'));
-
-    if (app()->environment('production') && ! $isJumpRuntime) {
-        URL::forceScheme('https');
-    }
-}
-```
-
-Without this, app/webview startup can fail with:
-
-- black screen
-- login page without CSS
-- broken redirects inside Jump
-
-### 6. iOS webview camera permission patch
+### 5. iOS webview camera permission patch
 
 The host app currently needs a manual NativePHP iOS template change so `html5-qrcode` can access the camera inside the app shell.
 
@@ -244,7 +221,7 @@ Required behavior:
 
 This is a vendor patch. If `nativephp/mobile` is updated, or the iOS template is regenerated, re-apply it.
 
-### 7. Android camera permission verification
+### 6. Android camera permission verification
 
 The plugin declares Android camera requirements in:
 
@@ -261,7 +238,7 @@ You should verify that the final Android build actually merges those into:
 
 If your build process does not merge plugin manifest entries, add them manually in the host app manifest.
 
-### 8. Bootstrap providers
+### 7. Bootstrap providers
 
 The host app must load the barcode service provider.
 
@@ -291,6 +268,26 @@ If the consuming app relies only on Composer package discovery and plugin compos
 - `src/Http/Responses/LoginResponse.php`
 - `routes/web.php`
 - `nativephp.json`
+
+## Notes about HTTPS forcing
+
+The host app may still keep its normal production HTTPS forcing in:
+
+- `app/Providers/AppServiceProvider.php`
+
+For this repository, that code remains:
+
+```php
+if (app()->environment('production')) {
+    URL::forceScheme('https');
+}
+```
+
+The barcode plugin handles the Jump exception internally in:
+
+- `src/BarcodeServiceProvider.php`
+
+When Jump is detected (`JUMP_BRIDGE_PORT`), the plugin overrides the scheme back to `http` for barcode app requests so the webview can load routes and assets correctly.
 
 ## Post-install checklist
 

@@ -6,6 +6,7 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
@@ -40,6 +41,12 @@ class BarcodeServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $isJumpRuntime = filled(getenv('JUMP_BRIDGE_PORT'));
+
+        if (app()->environment('production') && $isJumpRuntime) {
+            URL::forceScheme('http');
+        }
+
         Livewire::component('barcode-dashboard', Dashboard::class);
         Livewire::component('barcode-transfers', Transfers::class);
         Livewire::component('barcode-operation', Operation::class);
