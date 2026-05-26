@@ -75,7 +75,7 @@ class NativeApp
 
     public static function startUrl(): string
     {
-        return '/barcode';
+        return '/admin/barcode';
     }
 
     /**
