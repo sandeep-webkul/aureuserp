@@ -24,7 +24,6 @@ class BarcodeServiceProvider extends PackageServiceProvider
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
-            ->isCore()
             ->hasViews()
             ->hasTranslations()
             ->hasRoute('web')

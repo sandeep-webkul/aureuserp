@@ -6,75 +6,33 @@
 @endphp
 
 <main class="barcode-page operation-screen {{ $editingMoveLine ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
-    <header class="barcode-topbar">
-        @if ($editingMoveLine)
-            <x-filament::icon-button
-                color="gray"
-                icon="heroicon-m-chevron-left"
-                :label="__('barcode::app.navigation.back')"
-                wire:click="discardMoveLineEdit"
-                class="icon-button"
-            />
-        @else
-            <x-filament::icon-button
-                color="gray"
-                icon="heroicon-m-chevron-left"
-                :label="__('barcode::app.navigation.back')"
-                :href="route('barcode.transfers', $operationType)"
-                tag="a"
-                wire:navigate
-                class="icon-button"
-            />
-        @endif
-
-        <div>
-            <div class="barcode-brand barcode-breadcrumbs">
-                <a href="{{ route('barcode.dashboard') }}" wire:navigate>{{ __('barcode::app.title') }}</a>
-                <span>/</span>
-                <a href="{{ route('barcode.transfers', $operationType) }}" wire:navigate>{{ $operationType->name }}</a>
-            </div>
-            <h1>{{ $operation->name }}</h1>
-            <p>{{ $operation->partner?->name ?? $operation->origin }}</p>
-        </div>
-
-        @unless ($editingMoveLine)
-            <x-filament::icon-button
-                color="gray"
-                icon="heroicon-m-qr-code"
-                :label="__('barcode::app.operation.scan')"
-                x-on:click="toggle($wire)"
-                x-bind:class="{ 'is-active': active }"
-                class="icon-button barcode-topbar-btn"
-            />
-        @endunless
-
-        @unless ($editingMoveLine)
-            <x-filament::dropdown placement="bottom-end" width="sm">
-                <x-slot name="trigger">
-                    <x-filament::icon-button
-                        color="gray"
-                        icon="heroicon-m-ellipsis-vertical"
-                        label="Actions"
-                        class="icon-button topbar-menu-btn"
-                    />
-                </x-slot>
-
-                <x-filament::dropdown.list>
-                    @foreach ($actions as $action)
-                        @if ($action['key'] === 'cancel')
-                            <x-filament::dropdown.list.item
-                                color="danger"
-                                icon="heroicon-m-x-circle"
-                                x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')"
-                            >
-                                {{ $action['label'] }}
-                            </x-filament::dropdown.list.item>
-                        @endif
-                    @endforeach
-                </x-filament::dropdown.list>
-            </x-filament::dropdown>
-        @endunless
-    </header>
+    @if ($editingMoveLine)
+        @include('barcode::components.header.web', [
+            'title' => $operation->name,
+            'subtitle' => $operation->partner?->name ?? $operation->origin,
+            'breadcrumbs' => [
+                ['label' => __('barcode::app.title'), 'href' => route('barcode.dashboard')],
+                ['label' => $operationType->name, 'href' => route('barcode.transfers', $operationType)],
+            ],
+            'showCancel' => true,
+        ])
+    @elseif (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
+        @include('barcode::components.header.native', [
+            'title' => $operation->name,
+            'subtitle' => $operationType->name,
+        ])
+    @else
+        @include('barcode::components.header.web', [
+            'title' => $operation->name,
+            'subtitle' => $operation->partner?->name ?? $operation->origin,
+            'breadcrumbs' => [
+                ['label' => __('barcode::app.title'), 'href' => route('barcode.dashboard')],
+                ['label' => $operationType->name, 'href' => route('barcode.transfers', $operationType)],
+            ],
+            'showCancel' => $editingMoveLine ? true : null,
+            'showBarcode' => $editingMoveLine ? null : true,
+        ])
+    @endif
 
     @if ($editingMoveLine)
         @php
@@ -348,16 +306,16 @@
 
         <footer class="action-bar">
             @foreach ($actions as $action)
-                @if ($action['key'] === 'cancel')
-                    @continue
-                @endif
-
                 @if ($action['key'] === 'validate' || $action['key'] === 'done')
                     <button
                         type="button"
                         class="action-button {{ $allMoveLinesCounted ? 'primary' : '' }}"
                         x-on:click="requestValidate('{{ addslashes($action['label']) }}', {{ Js::from($backorderMoveLines) }}, {{ $hasAnyCountedMoveLine ? 'true' : 'false' }}, {{ $shouldAskBackorder ? 'true' : 'false' }})"
                     >
+                        {{ $action['label'] }}
+                    </button>
+                @elseif ($action['key'] === 'cancel')
+                    <button type="button" class="action-button danger" x-on:click="requestAction('{{ $action['key'] }}', '{{ addslashes($action['label']) }}')">
                         {{ $action['label'] }}
                     </button>
                 @else

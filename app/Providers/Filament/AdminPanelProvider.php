@@ -54,6 +54,9 @@ class AdminPanelProvider extends PanelProvider
                 'profile' => Action::make('profile')
                     ->label(fn () => Auth::user()?->name)
                     ->url(fn (): string => Profile::getUrl()),
+                'barcode' => Action::make('barcode')
+                    ->label('Barcode')
+                    ->url('/admin/barcode'),
             ])
             ->navigationGroups([
                 NavigationGroup::make()

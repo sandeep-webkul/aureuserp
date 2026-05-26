@@ -16,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        if (app()->environment('production')) {
+        $isJumpRuntime = filled(getenv('JUMP_BRIDGE_PORT'));
+
+        if (app()->environment('production') && ! $isJumpRuntime) {
             URL::forceScheme('https');
         }
     }

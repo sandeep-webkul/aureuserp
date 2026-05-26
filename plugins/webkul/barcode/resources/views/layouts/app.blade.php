@@ -7,6 +7,10 @@
         'dark' => filament()->hasDarkMode() && filament()->hasDarkModeForced(),
     ])
 >
+    @php
+        $nativeBridgeEnabled = \Webkul\Barcode\Support\NativeApp::usesNativeNavigation();
+        $nativeRuntimeEnabled = \Webkul\Barcode\Support\NativeApp::bridgeEnabled();
+    @endphp
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,11 +54,88 @@
 
         @livewireStyles
     </head>
-    <body class="fi-body fi-panel-admin barcode-app">
-        {{ $slot }}
+    <body class="fi-body fi-panel-admin barcode-app" x-data="{ sidebarOpen: false }">
+        @if ($nativeBridgeEnabled)
+            @include('barcode::components.sidebar.native')
+        @endif
+
+        <div class="barcode-shell">
+            @unless ($nativeBridgeEnabled)
+                <div
+                    class="barcode-sidebar-overlay"
+                    x-show="sidebarOpen"
+                    x-transition.opacity
+                    x-on:click="sidebarOpen = false"
+                    x-cloak
+                ></div>
+
+                <aside
+                    class="barcode-sidebar-mobile"
+                    x-show="sidebarOpen"
+                    x-transition:enter="barcode-sidebar-slide-enter"
+                    x-transition:enter-start="barcode-sidebar-slide-enter-start"
+                    x-transition:enter-end="barcode-sidebar-slide-enter-end"
+                    x-transition:leave="barcode-sidebar-slide-leave"
+                    x-transition:leave-start="barcode-sidebar-slide-leave-start"
+                    x-transition:leave-end="barcode-sidebar-slide-leave-end"
+                    x-on:keydown.escape.window="sidebarOpen = false"
+                    x-cloak
+                >
+                    @include('barcode::components.sidebar.web')
+                </aside>
+            @endunless
+
+            <div class="barcode-content">
+                {{ $slot }}
+            </div>
+        </div>
 
         @livewireScripts
         @filamentScripts(withCore: true)
-        <script src="https://unpkg.com/html5-qrcode" defer></script>
+        <script src="{{ route('barcode.asset', ['file' => 'html5-qrcode.min.js']) }}" defer></script>
+        <script>
+            window.BarcodeNative = {
+                enabled: @js($nativeRuntimeEnabled),
+
+                async call(method, params = {}) {
+                    if (! this.enabled) {
+                        return null;
+                    }
+
+                    try {
+                        const response = await fetch('/_native/api/call', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                            },
+                            body: JSON.stringify({ method, params }),
+                        });
+
+                        if (! response.ok) {
+                            return null;
+                        }
+
+                        const payload = await response.json();
+
+                        return payload.status === 'success' ? payload.data : null;
+                    } catch (error) {
+                        return null;
+                    }
+                },
+
+                async vibrate() {
+                    return this.call('Device.Vibrate');
+                },
+
+                async toast(message, duration = 'short') {
+                    if (! message) {
+                        return null;
+                    }
+
+                    return this.call('Dialog.Toast', { message, duration });
+                },
+            };
+        </script>
     </body>
 </html>

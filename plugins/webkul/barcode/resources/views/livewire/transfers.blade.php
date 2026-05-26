@@ -1,33 +1,28 @@
-<main class="barcode-page" x-data="barcodeScanner('search', 'openOperation')">
-    <header class="barcode-topbar">
-        <x-filament::icon-button
-            color="gray"
-            icon="heroicon-m-chevron-left"
-            :label="__('barcode::app.navigation.back')"
-            :href="route('barcode.dashboard')"
-            tag="a"
-            wire:navigate
-            class="icon-button"
-        />
-        <div>
-            <div class="barcode-brand barcode-breadcrumbs">
-                <a href="{{ route('barcode.dashboard') }}" wire:navigate>{{ __('barcode::app.title') }}</a>
-                <span>/</span>
-                <span>{{ __('barcode::app.dashboard.operations') }}</span>
-            </div>
-            <h1>{{ $operationType->name }}</h1>
-        </div>
-        <x-filament::icon-button
-            color="gray"
-            icon="heroicon-m-qr-code"
-            :label="__('barcode::app.operation-search.placeholder')"
-            x-on:click="toggle($wire)"
-            x-bind:class="{ 'is-active': active }"
-            class="icon-button barcode-topbar-btn"
-        />
-    </header>
+<div>
+    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
+        @include('barcode::components.header.native', [
+            'title' => $operationType->name,
+            'subtitle' => __('barcode::app.dashboard.operations'),
+        ])
+    @endif
 
-    <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
+    <main class="barcode-page" x-data="barcodeScanner('search', 'openOperation')">
+    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
+        <div class="native-page-actions">
+            @include('barcode::components.header.transfer-actions')
+        </div>
+    @else
+        @include('barcode::components.header.web', [
+            'title' => $operationType->name,
+            'breadcrumbs' => [
+                ['label' => __('barcode::app.title'), 'href' => route('barcode.dashboard')],
+                ['label' => __('barcode::app.dashboard.operations')],
+            ],
+            'actionView' => 'barcode::components.header.transfer-actions',
+        ])
+    @endif
+
+        <div id="barcode-reader" class="barcode-reader" x-show="active" x-cloak></div>
 
     <div class="search-row">
         <form class="scan-form" wire:submit="openOperation">
@@ -64,31 +59,32 @@
         </x-filament::callout>
     @endif
 
-    @if ($transfers->isEmpty())
-        <section class="transfer-empty-state">
-            <x-filament::empty-state
-                icon="heroicon-o-inbox"
-                :heading="__('barcode::app.transfers.empty')"
-            >
-                <x-slot name="description">
-                    {{ __('barcode::app.operation-search.placeholder') }}
-                </x-slot>
-            </x-filament::empty-state>
-        </section>
-    @else
-        <section class="transfer-grid">
-            @foreach ($transfers as $transfer)
-            <a class="transfer-card" href="{{ route('barcode.operation', [$operationType, $transfer, 'scan' => $search]) }}" wire:navigate>
-                <div class="transfer-main">
-                    <strong>{{ $transfer->name }}</strong>
-                    <span class="transfer-partner">{{ $transfer->partner?->name ?? $transfer->origin }}</span>
-                </div>
-                <div class="transfer-meta">
-                    <span class="state-badge">{{ $transfer->state?->value }}</span>
-                    <time>{{ $transfer->scheduled_at?->format('M d') }}</time>
-                </div>
-            </a>
-            @endforeach
-        </section>
-    @endif
-</main>
+        @if ($transfers->isEmpty())
+            <section class="transfer-empty-state">
+                <x-filament::empty-state
+                    icon="heroicon-o-inbox"
+                    :heading="__('barcode::app.transfers.empty')"
+                >
+                    <x-slot name="description">
+                        {{ __('barcode::app.operation-search.placeholder') }}
+                    </x-slot>
+                </x-filament::empty-state>
+            </section>
+        @else
+            <section class="transfer-grid">
+                @foreach ($transfers as $transfer)
+                <a class="transfer-card" href="{{ route('barcode.operation', [$operationType, $transfer, 'scan' => $search]) }}" wire:navigate>
+                    <div class="transfer-main">
+                        <strong>{{ $transfer->name }}</strong>
+                        <span class="transfer-partner">{{ $transfer->partner?->name ?? $transfer->origin }}</span>
+                    </div>
+                    <div class="transfer-meta">
+                        <span class="state-badge">{{ $transfer->state?->value }}</span>
+                        <time>{{ $transfer->scheduled_at?->format('M d') }}</time>
+                    </div>
+                </a>
+                @endforeach
+            </section>
+        @endif
+    </main>
+</div>

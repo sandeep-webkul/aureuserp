@@ -69,6 +69,7 @@ class Operation extends Component
         if (request()->filled('scan')) {
             $this->scanResult = $this->resolveScan($this->operation, (string) request('scan'));
             $this->notice = $this->scanResult['message'];
+            $this->dispatchNativeFeedback($this->notice, (bool) ($this->scanResult['matched'] ?? false));
 
             if (isset($this->scanResult['moveLine']['id'])) {
                 $moveLineId = (int) $this->scanResult['moveLine']['id'];
@@ -83,6 +84,7 @@ class Operation extends Component
     {
         $this->scanResult = $this->resolveScan($this->operation, $this->barcode);
         $this->notice = $this->scanResult['message'];
+        $this->dispatchNativeFeedback($this->notice, (bool) ($this->scanResult['matched'] ?? false));
         $this->barcode = '';
 
         if (isset($this->scanResult['moveLine']['id'])) {
@@ -204,6 +206,7 @@ class Operation extends Component
         $this->applyEditingMoveLineSelections($moveLine);
         $this->assignEditingMoveLineLot($moveLine);
         $this->notice = __('barcode::app.scan.move-counted');
+        $this->dispatchNativeFeedback($this->notice, true);
 
         $this->discardMoveLineEdit();
     }
@@ -213,6 +216,7 @@ class Operation extends Component
         try {
             $this->operation = $this->executeOperationAction($this->operation, $action, $cancelBackOrder);
             $this->notice = __('barcode::app.actions.completed');
+            $this->dispatchNativeFeedback($this->notice, true);
 
             if (in_array($action, ['validate', 'done'], true)) {
                 $this->redirectRoute('barcode.transfers', $this->operationType, navigate: true);
@@ -221,6 +225,7 @@ class Operation extends Component
             }
         } catch (Throwable $e) {
             $this->notice = $e->getMessage();
+            $this->dispatchNativeFeedback($this->notice, false, 'long');
         }
     }
 
@@ -761,5 +766,14 @@ class Operation extends Component
         return Package::query()
             ->where('name', $barcode)
             ->first();
+    }
+
+    private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void
+    {
+        if (! $message) {
+            return;
+        }
+
+        $this->dispatch('barcode-native-feedback', message: $message, vibrate: $vibrate, duration: $duration);
     }
 }

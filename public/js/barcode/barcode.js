@@ -45,6 +45,16 @@ document.addEventListener('alpine:init', () => {
             this.actionMenuOpen = false;
         },
 
+        renderScannerError(message) {
+            const reader = document.getElementById('barcode-reader');
+
+            if (! reader) {
+                return;
+            }
+
+            reader.innerHTML = `<div class="barcode-reader-error">${message}</div>`;
+        },
+
         async toggle($wire) {
             if (this.active) {
                 await this.stop();
@@ -59,26 +69,35 @@ document.addEventListener('alpine:init', () => {
             this.active = true;
 
             if (! window.Html5Qrcode) {
+                this.renderScannerError('Scanner library failed to load.');
+
                 return;
             }
 
             this.scanner = new Html5Qrcode('barcode-reader');
 
-            await this.scanner.start(
-                { facingMode: 'environment' },
-                { fps: 10, qrbox: { width: 260, height: 180 } },
-                async (decodedText) => {
-                    if (this.processing) {
-                        return;
-                    }
+            try {
+                await this.scanner.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 260, height: 180 } },
+                    async (decodedText) => {
+                        if (this.processing) {
+                            return;
+                        }
 
-                    this.processing = true;
-                    await this.stop();
-                    $wire.set(this.property, decodedText);
-                    await $wire[this.action]();
-                    this.processing = false;
-                },
-            );
+                        this.processing = true;
+                        await this.stop();
+                        $wire.set(this.property, decodedText);
+                        await $wire[this.action]();
+                        this.processing = false;
+                    },
+                );
+            } catch (error) {
+                console.error('Barcode scanner failed to start.', error);
+                this.scanner = null;
+                this.renderScannerError('Unable to access the camera. Check camera permission and try again.');
+                window.BarcodeNative?.toast?.('Unable to access the camera.', 'short');
+            }
         },
 
         async stop() {
@@ -89,11 +108,29 @@ document.addEventListener('alpine:init', () => {
                 this.scanner.clear();
                 this.scanner = null;
             }
+
+            const reader = document.getElementById('barcode-reader');
+
+            if (reader) {
+                reader.innerHTML = '';
+            }
         },
     }));
 });
 
 let lastLocatedMoveLineKey = null;
+
+window.addEventListener('barcode-native-feedback', (event) => {
+    const detail = event.detail ?? {};
+
+    if (detail.vibrate) {
+        window.BarcodeNative?.vibrate?.();
+    }
+
+    if (detail.message) {
+        window.BarcodeNative?.toast?.(detail.message, detail.duration ?? 'short');
+    }
+});
 
 window.addEventListener('barcode-move-line-located', (event) => {
     const moveLineKey = `${event.detail.moveLineId}:${event.detail.scannedAt}`;

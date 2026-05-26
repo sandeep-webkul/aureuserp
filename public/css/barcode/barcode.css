@@ -23,6 +23,125 @@
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.barcode-shell {
+    min-height: 100vh;
+}
+
+.barcode-sidebar-overlay {
+    background: rgba(15, 23, 42, 0.45);
+    inset: 0;
+    position: fixed;
+    z-index: 39;
+}
+
+.barcode-sidebar-mobile {
+    left: 0;
+    max-width: 320px;
+    position: fixed;
+    top: 0;
+    width: calc(100vw - 40px);
+    z-index: 40;
+}
+
+.barcode-sidebar-slide-enter,
+.barcode-sidebar-slide-leave {
+    transition: transform 180ms ease;
+}
+
+.barcode-sidebar-slide-enter-start,
+.barcode-sidebar-slide-leave-end {
+    transform: translateX(-100%);
+}
+
+.barcode-sidebar-slide-enter-end,
+.barcode-sidebar-slide-leave-start {
+    transform: translateX(0);
+}
+
+.barcode-sidebar {
+    background: var(--barcode-surface);
+    border-inline-end: 1px solid var(--barcode-border);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 16px 12px;
+}
+
+.barcode-sidebar__header {
+    border-bottom: 1px solid var(--barcode-border);
+    margin-bottom: 12px;
+    padding: 4px 8px 12px;
+}
+
+.barcode-sidebar__eyebrow {
+    color: var(--barcode-primary);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.barcode-sidebar__title {
+    display: block;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.barcode-sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.barcode-sidebar__item {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--barcode-text);
+    display: grid;
+    gap: 4px 10px;
+    grid-template-columns: 20px minmax(0, 1fr);
+    min-height: 48px;
+    padding: 10px 12px;
+    text-align: left;
+    text-decoration: none;
+    width: 100%;
+}
+
+.barcode-sidebar__item span,
+.barcode-sidebar__item small {
+    grid-column: 2;
+}
+
+.barcode-sidebar__item small {
+    color: var(--barcode-text-soft);
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.barcode-sidebar__item.is-active {
+    background: var(--barcode-primary-soft);
+    border-color: color-mix(in srgb, var(--barcode-primary) 18%, var(--barcode-border));
+    color: var(--barcode-primary);
+}
+
+.barcode-sidebar__item.is-disabled {
+    color: var(--barcode-text-muted);
+    opacity: 0.72;
+}
+
+.barcode-sidebar__icon {
+    grid-row: 1 / span 2;
+    height: 18px;
+    width: 18px;
+}
+
+.barcode-content {
+    flex: 1;
+    min-width: 0;
+}
+
 .barcode-page {
     min-height: 100vh;
     padding: 8px;
@@ -42,6 +161,17 @@
     position: sticky;
     top: 0;
     z-index: 10;
+}
+
+.barcode-topbar-menu {
+    margin-right: -2px;
+}
+
+.barcode-topbar-actions {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
 }
 
 .barcode-topbar-icon {
@@ -79,6 +209,12 @@
 .barcode-topbar-btn.is-active {
     background: var(--barcode-primary-soft);
     color: var(--barcode-primary);
+}
+
+.native-page-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
 }
 
 .barcode-topbar h1 {
@@ -293,6 +429,21 @@
 .barcode-reader {
     margin: 12px auto 0;
     max-width: 420px;
+}
+
+.barcode-reader-error {
+    align-items: center;
+    background: var(--barcode-warning-soft);
+    border: 1px solid color-mix(in srgb, var(--barcode-warning) 28%, var(--barcode-border));
+    border-radius: 8px;
+    color: var(--barcode-warning);
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 180px;
+    padding: 16px;
+    text-align: center;
 }
 
 .scan-form {
@@ -895,4 +1046,27 @@
         grid-template-columns: 1fr;
     }
 
+}
+
+@media (min-width: 1024px) {
+    .barcode-page {
+        padding-inline: 12px;
+    }
+}
+
+.barcode-sidebar__item {
+    appearance: none;
+}
+
+.barcode-sidebar__item.is-disabled {
+    cursor: default;
+}
+
+.barcode-sidebar__item:hover:not(.is-disabled) {
+    border-color: var(--barcode-border);
+    background: color-mix(in srgb, var(--barcode-surface) 92%, var(--barcode-primary-soft));
+}
+
+.barcode-sidebar__item.is-active:hover {
+    border-color: color-mix(in srgb, var(--barcode-primary) 18%, var(--barcode-border));
 }
