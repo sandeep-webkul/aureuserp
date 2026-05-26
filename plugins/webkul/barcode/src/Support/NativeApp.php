@@ -56,6 +56,23 @@ class NativeApp
         };
     }
 
+    public static function shouldShowScanAction(): bool
+    {
+        return in_array(request()?->route()?->getName(), [
+            'barcode.transfers',
+            'barcode.operation',
+        ], true);
+    }
+
+    public static function scanActionUrl(): ?string
+    {
+        if (! self::shouldShowScanAction()) {
+            return null;
+        }
+
+        return request()?->getRequestUri().'#scan-barcode';
+    }
+
     public static function startUrl(): string
     {
         return '/barcode';

@@ -62,6 +62,8 @@
                 @include('barcode::components.header.native', [
                     'title' => \Webkul\Barcode\Support\NativeApp::headerTitle(),
                     'subtitle' => \Webkul\Barcode\Support\NativeApp::headerSubtitle(),
+                    'showBarcode' => \Webkul\Barcode\Support\NativeApp::shouldShowScanAction(),
+                    'barcodeUrl' => \Webkul\Barcode\Support\NativeApp::scanActionUrl(),
                 ])
             @endif
         @endif

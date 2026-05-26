@@ -1,6 +1,8 @@
 @props([
     'title',
     'subtitle' => null,
+    'showBarcode' => false,
+    'barcodeUrl' => null,
 ])
 
 @if (filled($subtitle))
@@ -15,6 +17,14 @@
             icon="home"
             url="barcode"
         />
+        @if ($showBarcode && filled($barcodeUrl))
+            <native:top-bar-action
+                id="scan"
+                label="Scan"
+                icon="qr-code"
+                url="{{ $barcodeUrl }}"
+            />
+        @endif
     </native:top-bar>
 @else
     <native:top-bar
@@ -27,5 +37,13 @@
             icon="home"
             url="barcode"
         />
+        @if ($showBarcode && filled($barcodeUrl))
+            <native:top-bar-action
+                id="scan"
+                label="Scan"
+                icon="qr-code"
+                url="{{ $barcodeUrl }}"
+            />
+        @endif
     </native:top-bar>
 @endif

@@ -12,6 +12,20 @@ document.addEventListener('alpine:init', () => {
         backorderMoveLines: [],
         actionMenuOpen: false,
 
+        init() {
+            this.handleNativeScanRequest = async () => {
+                this.scannerError = '';
+
+                if (this.active || this.processing) {
+                    return;
+                }
+
+                await this.start(this.$wire);
+            };
+
+            window.addEventListener('barcode-native-scan-request', this.handleNativeScanRequest);
+        },
+
         requestAction(key, label) {
             this.actionMenuOpen = false;
             this.confirmPending = key;
@@ -113,6 +127,20 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+const dispatchNativeScanRequestFromHash = () => {
+    if (window.location.hash !== '#scan-barcode') {
+        return;
+    }
+
+    const hashlessUrl = `${window.location.pathname}${window.location.search}`;
+
+    window.dispatchEvent(new CustomEvent('barcode-native-scan-request'));
+    window.history.replaceState({}, document.title, hashlessUrl);
+};
+
+window.addEventListener('hashchange', dispatchNativeScanRequestFromHash);
+window.addEventListener('load', dispatchNativeScanRequestFromHash);
 
 let lastLocatedMoveLineKey = null;
 
