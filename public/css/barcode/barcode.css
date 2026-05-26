@@ -632,7 +632,42 @@
     flex-direction: row;
     gap: 6px;
     justify-content: flex-end;
+    margin-bottom: 8px;
     margin-right: 16px;
+}
+
+.step-actions > * + * {
+    margin-left: 6px;
+}
+
+.adjustment-screen .step-actions {
+    display: grid;
+    gap: 8px;
+    grid-auto-columns: 42px;
+    grid-auto-flow: column;
+    justify-content: end;
+    margin-right: 0;
+    width: 92px;
+}
+
+.adjustment-screen .step-actions > * + * {
+    margin-left: 0;
+}
+
+.adjustment-screen .move-controls {
+    min-width: 100px;
+    padding-right: 8px;
+}
+
+.adjustment-screen .move-tools {
+    margin-right: 0;
+    width: 92px;
+}
+
+.adjustment-screen .step-actions .fi-icon-btn,
+.adjustment-screen .step-actions .step-button {
+    height: 42px;
+    width: 42px;
 }
 
 .step-button {
@@ -775,6 +810,54 @@
 .lot-field .fi-input-wrp {
     font-size: 16px;
     width: 100%;
+}
+
+.adjustment-filter-copy {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.adjustment-clear-button {
+    background: transparent;
+    border: 0;
+    color: var(--barcode-primary);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    margin-left: auto;
+    padding: 0;
+}
+
+.adjustment-info-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 1fr;
+    margin-top: 12px;
+}
+
+.adjustment-info-card {
+    background: var(--barcode-surface-muted);
+    border: 1px solid var(--barcode-border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+}
+
+.adjustment-info-card span {
+    color: var(--barcode-text-muted);
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.adjustment-info-card strong {
+    display: block;
+    font-size: 14px;
 }
 
 .stock-options {
@@ -1004,6 +1087,17 @@
 
     .step-actions {
         margin-right: 8px;
+    }
+
+    .adjustment-screen .move-tools,
+    .adjustment-screen .step-actions {
+        margin-right: 0;
+        width: 92px;
+    }
+
+    .adjustment-screen .move-controls {
+        min-width: 100px;
+        padding-right: 8px;
     }
 
     .move-open {

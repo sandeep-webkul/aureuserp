@@ -45,9 +45,9 @@ class Navigation
                 'label'       => 'Inventory Adjustments',
                 'icon'        => 'heroicon-m-clipboard-document-list',
                 'native_icon' => 'inventory_2',
-                'href'        => null,
-                'active'      => false,
-                'disabled'    => true,
+                'href'        => route('barcode.adjustments'),
+                'active'      => str_starts_with($currentRoute, 'barcode.adjustments'),
+                'disabled'    => false,
             ],
         ];
     }

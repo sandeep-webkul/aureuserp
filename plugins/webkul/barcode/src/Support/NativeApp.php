@@ -37,10 +37,11 @@ class NativeApp
         $routeName = request()?->route()?->getName();
 
         return match ($routeName) {
-            'barcode.dashboard' => __('barcode::app.title'),
-            'barcode.transfers' => request()?->route('operationType')?->name,
-            'barcode.operation' => request()?->route('operation')?->name,
-            default             => null,
+            'barcode.dashboard'   => __('barcode::app.title'),
+            'barcode.adjustments' => __('barcode::app.adjustments.title'),
+            'barcode.transfers'   => request()?->route('operationType')?->name,
+            'barcode.operation'   => request()?->route('operation')?->name,
+            default               => null,
         };
     }
 
@@ -49,16 +50,18 @@ class NativeApp
         $routeName = request()?->route()?->getName();
 
         return match ($routeName) {
-            'barcode.dashboard' => __('barcode::app.dashboard.operations'),
-            'barcode.transfers' => __('barcode::app.dashboard.operations'),
-            'barcode.operation' => request()?->route('operationType')?->name,
-            default             => null,
+            'barcode.dashboard'   => __('barcode::app.dashboard.operations'),
+            'barcode.adjustments' => __('barcode::app.adjustments.subtitle'),
+            'barcode.transfers'   => __('barcode::app.dashboard.operations'),
+            'barcode.operation'   => request()?->route('operationType')?->name,
+            default               => null,
         };
     }
 
     public static function shouldShowScanAction(): bool
     {
         return in_array(request()?->route()?->getName(), [
+            'barcode.adjustments',
             'barcode.transfers',
             'barcode.operation',
         ], true);

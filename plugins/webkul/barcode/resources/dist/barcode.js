@@ -142,7 +142,9 @@ const dispatchNativeScanRequestFromHash = () => {
 window.addEventListener('hashchange', dispatchNativeScanRequestFromHash);
 window.addEventListener('load', dispatchNativeScanRequestFromHash);
 
-let lastLocatedMoveLineKey = null;
+window.BarcodeUiState = window.BarcodeUiState || {
+    lastLocatedRecordKey: null,
+};
 
 window.addEventListener('barcode-native-feedback', (event) => {
     const detail = event.detail ?? {};
@@ -156,16 +158,16 @@ window.addEventListener('barcode-native-feedback', (event) => {
     }
 });
 
-window.addEventListener('barcode-move-line-located', (event) => {
-    const moveLineKey = `${event.detail.moveLineId}:${event.detail.scannedAt}`;
+window.addEventListener('barcode-record-located', (event) => {
+    const recordKey = `${event.detail.targetId}:${event.detail.locatedAt}`;
 
-    if (moveLineKey === lastLocatedMoveLineKey) {
+    if (recordKey === window.BarcodeUiState.lastLocatedRecordKey) {
         return;
     }
 
-    lastLocatedMoveLineKey = moveLineKey;
+    window.BarcodeUiState.lastLocatedRecordKey = recordKey;
 
-    const moveLine = document.getElementById(`line-${event.detail.moveLineId}`);
+    const moveLine = document.getElementById(event.detail.targetId);
 
     if (! moveLine) {
         return;
@@ -181,4 +183,13 @@ window.addEventListener('barcode-move-line-located', (event) => {
             input.select();
         }, 250);
     }
+});
+
+window.addEventListener('barcode-move-line-located', (event) => {
+    window.dispatchEvent(new CustomEvent('barcode-record-located', {
+        detail: {
+            targetId: `line-${event.detail.moveLineId}`,
+            locatedAt: event.detail.scannedAt,
+        },
+    }));
 });

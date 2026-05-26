@@ -3,6 +3,7 @@
 use Filament\Http\Middleware\SetUpPanel;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Http\Middleware\Authenticate;
+use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Auth\Login;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
@@ -29,6 +30,7 @@ Route::middleware(['web', SetUpPanel::class.':admin'])->prefix('admin/barcode')-
 
     Route::middleware([Authenticate::class])->group(function (): void {
         Route::get('/', Dashboard::class)->name('dashboard');
+        Route::get('/inventory-adjustments', Adjustments::class)->name('adjustments');
         Route::get('/operations/{operationType}', Transfers::class)->name('transfers');
         Route::get('/operations/{operationType}/transfers/{operation}', Operation::class)->name('operation');
     });

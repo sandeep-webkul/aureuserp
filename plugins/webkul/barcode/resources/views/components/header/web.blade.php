@@ -4,6 +4,7 @@
     'breadcrumbs' => [],
     'showBarcode' => null,
     'showCancel' => null,
+    'cancelAction' => 'discardMoveLineEdit',
 ])
 
 <header class="barcode-topbar">
@@ -58,7 +59,7 @@
                 color="gray"
                 icon="heroicon-m-x-mark"
                 :label="__('barcode::app.navigation.back')"
-                wire:click="discardMoveLineEdit"
+                wire:click="{{ $cancelAction }}"
                 class="icon-button"
             />
         </div>
