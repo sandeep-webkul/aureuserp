@@ -1,88 +1,54 @@
 # Barcode Plugin
 
-Barcode is a mobile-first operations app for AureusERP. It currently covers inventory operations and is structured so the same shell can later include manufacturing orders and inventory adjustments.
+Barcode is a mobile-first AureusERP plugin for inventory operation workflows. It supports:
 
-This plugin is distributed by copy/paste into the host application's `plugins` directory. Because of that, a few app-level changes must still be applied manually outside the plugin.
-
-## What this plugin includes
-
-- Barcode dashboard at `/admin/barcode`
-- Operation type listing
-- Transfer listing
-- Operation detail and count flow
-- Web scanner integration using bundled `html5-qrcode`
-- NativePHP-aware layout, sidebar, and header behavior
-- Dedicated barcode login at `/admin/barcode/login`
+- barcode dashboard at `/admin/barcode`
+- dedicated barcode login at `/admin/barcode/login`
+- operation type listing
+- transfer listing
+- operation counting flow
+- web scanner using bundled `html5-qrcode`
+- web, iOS, and Android app shells
 
 ## Prerequisites
 
-The host app must already have:
-
-- `inventories` plugin installed
-- `manufacturing` plugin installed
-- Filament admin panel configured
-
-If you want to package the app for iOS / Android, the host app must also have:
-
-- `nativephp/mobile`
+- `inventories` plugin
+- `manufacturing` plugin
+- Filament admin panel
+- `nativephp/mobile` only if you are packaging the mobile app
 
 ## Installation
 
 ### 1. Copy the plugin
 
-Copy this folder into the host application:
+Copy this directory into the host app:
 
 ```text
 plugins/webkul/barcode
 ```
 
-### 2. Make sure plugin composer files are merged
-
-This plugin depends on the root project loading plugin `composer.json` files through Composer Merge Plugin. The host app should already have this in the root `composer.json`:
-
-```json
-"extra": {
-    "merge-plugin": {
-        "include": [
-            "plugins/*/*/composer.json"
-        ]
-    }
-}
-```
-
-### 3. Refresh Composer autoload and package discovery
-
-Run:
+### 2. Refresh autoload and package discovery
 
 ```bash
 composer dump-autoload
 php artisan package:discover --ansi
 ```
 
-### 4. Install the plugin
-
-Run:
+### 3. Install the plugin
 
 ```bash
 php artisan barcode:install --no-interaction
 ```
 
-This install command installs plugin dependencies declared by the barcode package:
-
-- `inventories`
-- `manufacturing`
-
-### 5. Publish / rebuild Filament assets
-
-Run:
+### 4. Rebuild Filament assets
 
 ```bash
 php artisan filament:assets --no-interaction
 ```
 
-### 6. Verify the routes
+## Routes
 
-After installation, these routes should exist:
+Expected routes:
 
 - `/barcode`
 - `/admin/barcode/login`
@@ -90,62 +56,27 @@ After installation, these routes should exist:
 - `/admin/barcode/operations/{operationType}`
 - `/admin/barcode/operations/{operationType}/transfers/{operation}`
 
-## Web login flow
+## Scanner
 
-The plugin defines its own login entrypoint:
+This plugin does not use the paid NativePHP scanner.
 
-- `/admin/barcode/login`
+It uses bundled `html5-qrcode`, served locally from:
 
-Unauthenticated access to `/admin/barcode` should redirect there, not to the generic Filament admin login page.
+- `plugins/webkul/barcode/resources/dist/html5-qrcode.min.js`
 
-After login, the user is redirected to:
+## Required host-app changes outside the plugin
 
-- `/admin/barcode`
-
-This behavior is implemented inside the plugin by:
-
-- `src/Livewire/Auth/Login.php`
-- `src/Http/Middleware/Authenticate.php`
-- `src/Http/Responses/LoginResponse.php`
-- `routes/web.php`
-
-## Scanner notes
-
-The scanner stays open-source. This plugin does **not** use the paid NativePHP scanner API.
-
-It uses:
-
-- bundled `html5-qrcode`
-- served locally from `plugins/webkul/barcode/resources/dist/html5-qrcode.min.js`
-
-That is important for app builds, because relying on a CDN inside the webview is not stable enough.
-
-## NativePHP support
-
-The plugin supports:
-
-- web browser
-- iPhone / iPad app shell
-- Android app shell
-
-The plugin itself contains:
-
-- `nativephp.json`
-- NativePHP-aware navigation/header decisions in `src/Support/NativeApp.php`
-
-However, the host app still needs a few manual changes outside the plugin.
-
-## Manual host app changes outside the plugin
-
-These changes are required because a distributable plugin cannot safely rewrite root app files.
+This plugin is distributed by copy/paste. Because of that, a few app-level changes still need to exist outside the plugin.
 
 ### 1. Root route bootstrap in `routes/web.php`
 
-Jump / NativePHP may open `/` first, not `/admin/barcode`. Because of that, the host app root route must forward native requests into the barcode app.
+Jump / NativePHP may open `/` first. Without a native-aware root route, the app falls back to `/admin/login` instead of `/admin/barcode/login`.
 
-Required host-app logic:
+Keep this in the host app:
 
 ```php
+<?php
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Support\NativeApp;
@@ -161,40 +92,22 @@ Route::get('/', function () {
 
     return redirect()->route('filament.admin.auth.login');
 });
+
+Route::redirect('/login', '/admin/login')
+    ->name('login');
 ```
 
-This change belongs in the host app:
+### 2. NativePHP start URL
 
-- `routes/web.php`
-
-### 2. Login alias in `routes/web.php`
-
-Keep a normal web login alias for the browser/admin panel:
-
-```php
-Route::redirect('/login', '/admin/login')->name('login');
-```
-
-### 3. NativePHP start URL in `.env`
-
-The host app must point NativePHP to the barcode route:
+In `.env` and `.env.example`:
 
 ```dotenv
 NATIVEPHP_START_URL=/admin/barcode
 ```
 
-Also keep these values in `.env.example`:
+### 3. NativePHP config
 
-```dotenv
-NATIVEPHP_APP_ID=com.example.aureuserp.barcode
-NATIVEPHP_APP_VERSION=DEBUG
-NATIVEPHP_APP_VERSION_CODE=1
-NATIVEPHP_START_URL=/admin/barcode
-```
-
-### 4. NativePHP config in `config/nativephp.php`
-
-The host app should delegate barcode-specific values to the plugin:
+In `config/nativephp.php`:
 
 ```php
 use Webkul\Barcode\Support\NativeApp;
@@ -203,23 +116,27 @@ use Webkul\Barcode\Support\NativeApp;
 'permissions' => NativeApp::iosPermissions(),
 ```
 
-This keeps camera permission text and the app start path aligned with the plugin.
+### 4. Provider registration
 
-### 5. iOS webview camera permission patch
+The host app must load:
 
-The host app currently needs a manual NativePHP iOS template change so `html5-qrcode` can access the camera inside the app shell.
+- `Webkul\Barcode\BarcodeServiceProvider`
 
-Patched file:
+For this repository, that is done in:
+
+- `bootstrap/providers.php`
+
+### 5. iOS camera permission patch
+
+If you are building the real iOS app shell with `html5-qrcode`, the NativePHP iOS template needs the media-capture permission patch in:
 
 - `vendor/nativephp/mobile/resources/xcode/NativePHP/ContentView.swift`
 
 Required behavior:
 
-- `Coordinator` must implement `WKUIDelegate`
-- `webView(_:requestMediaCapturePermissionFor:initiatedByFrame:type:decisionHandler:)` must grant permission
-- the created `WKWebView` must set `uiDelegate`
-
-This is a vendor patch. If `nativephp/mobile` is updated, or the iOS template is regenerated, re-apply it.
+- `Coordinator` implements `WKUIDelegate`
+- `requestMediaCapturePermissionFor(...)` grants permission
+- created `WKWebView` sets `uiDelegate`
 
 ### 6. Android camera permission verification
 
@@ -227,84 +144,18 @@ The plugin declares Android camera requirements in:
 
 - `plugins/webkul/barcode/nativephp.json`
 
-That manifest includes:
+Verify the final Android build includes:
 
 - `android.permission.CAMERA`
 - `android.hardware.camera.any`
 
-You should verify that the final Android build actually merges those into:
+## Notes
 
-- `nativephp/android/app/src/main/AndroidManifest.xml`
-
-If your build process does not merge plugin manifest entries, add them manually in the host app manifest.
-
-### 7. Bootstrap providers
-
-The host app must load the barcode service provider.
-
-For this repository, that currently exists in:
-
-- `bootstrap/providers.php`
-
-```php
-use Webkul\Barcode\BarcodeServiceProvider;
-
-return [
-    // ...
-    BarcodeServiceProvider::class,
-];
-```
-
-If the consuming app relies only on Composer package discovery and plugin composer merge, keep that path consistent. If it uses explicit provider registration, add the barcode provider manually.
-
-### 8. NativePHP plugin discovery note
-
-This plugin is currently distributed by copy/paste into `plugins/webkul/barcode`.
-
-That means it is **not** installed as a normal Composer package under `vendor/`, so NativePHP's plugin discovery does not see it through `vendor/composer/installed.json`.
-
-Because of that:
-
-- `app/Providers/NativeServiceProvider.php` does **not** need a `Webkul\Barcode\BarcodeServiceProvider::class` entry for this distribution model
-- the barcode app relies on host-app NativePHP configuration and runtime integration instead of automatic NativePHP plugin discovery
-
-If this plugin is later distributed as a real Composer-installed `nativephp-plugin`, then registering it in `NativeServiceProvider::plugins()` will become relevant again.
-
-## Files inside the plugin that drive this setup
-
-- `src/BarcodeServiceProvider.php`
-- `src/BarcodePlugin.php`
-- `src/Support/NativeApp.php`
-- `src/Support/Navigation.php`
-- `src/Livewire/Auth/Login.php`
-- `src/Http/Middleware/Authenticate.php`
-- `src/Http/Responses/LoginResponse.php`
-- `routes/web.php`
-- `nativephp.json`
-
-## Notes about HTTPS forcing
-
-The host app may still keep its normal production HTTPS forcing in:
-
-- `app/Providers/AppServiceProvider.php`
-
-For this repository, that code remains:
-
-```php
-if (app()->environment('production')) {
-    URL::forceScheme('https');
-}
-```
-
-The barcode plugin handles the Jump exception internally in:
-
-- `src/BarcodeServiceProvider.php`
-
-When Jump is detected (`JUMP_BRIDGE_PORT`), the plugin overrides the scheme back to `http` for barcode app requests so the webview can load routes and assets correctly.
+- Production HTTPS forcing can stay in `app/Providers/AppServiceProvider.php`.
+- The barcode plugin handles the Jump exception internally in `src/BarcodeServiceProvider.php` by forcing `http` when Jump is detected.
+- `app/Providers/NativeServiceProvider.php` does not need a barcode entry for the current copy/paste distribution model.
 
 ## Post-install checklist
-
-Use this checklist after copying the plugin:
 
 1. `composer dump-autoload`
 2. `php artisan package:discover --ansi`
@@ -312,18 +163,4 @@ Use this checklist after copying the plugin:
 4. `php artisan filament:assets --no-interaction`
 5. verify `/admin/barcode/login`
 6. verify `/admin/barcode`
-7. verify `/barcode` redirects correctly
-8. if testing NativePHP / Jump, fully restart the runtime after changing:
-   - `NATIVEPHP_START_URL`
-   - `routes/web.php`
-   - `config/nativephp.php`
-
-## Notes for future modules
-
-The current navigation already reserves space for:
-
-- Inventory Operations
-- Manufacturing Orders
-- Inventory Adjustments
-
-Only inventory operations are active right now. The sidebar/header shell is already structured so those additional modules can be added without replacing the navigation system again.
+7. verify native app opens barcode login, not `/admin/login`
