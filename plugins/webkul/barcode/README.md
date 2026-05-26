@@ -257,6 +257,19 @@ return [
 
 If the consuming app relies only on Composer package discovery and plugin composer merge, keep that path consistent. If it uses explicit provider registration, add the barcode provider manually.
 
+### 8. NativePHP plugin discovery note
+
+This plugin is currently distributed by copy/paste into `plugins/webkul/barcode`.
+
+That means it is **not** installed as a normal Composer package under `vendor/`, so NativePHP's plugin discovery does not see it through `vendor/composer/installed.json`.
+
+Because of that:
+
+- `app/Providers/NativeServiceProvider.php` does **not** need a `Webkul\Barcode\BarcodeServiceProvider::class` entry for this distribution model
+- the barcode app relies on host-app NativePHP configuration and runtime integration instead of automatic NativePHP plugin discovery
+
+If this plugin is later distributed as a real Composer-installed `nativephp-plugin`, then registering it in `NativeServiceProvider::plugins()` will become relevant again.
+
 ## Files inside the plugin that drive this setup
 
 - `src/BarcodeServiceProvider.php`

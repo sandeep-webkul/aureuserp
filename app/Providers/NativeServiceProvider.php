@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Webkul\Barcode\BarcodeServiceProvider as BarcodePluginServiceProvider;
 
 class NativeServiceProvider extends ServiceProvider
 {
@@ -16,8 +15,6 @@ class NativeServiceProvider extends ServiceProvider
      */
     public function plugins(): array
     {
-        return [
-            BarcodePluginServiceProvider::class,
-        ];
+        return [];
     }
 }

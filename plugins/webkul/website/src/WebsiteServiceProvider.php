@@ -49,16 +49,6 @@ class WebsiteServiceProvider extends PackageServiceProvider
 
         if (! Package::isPluginInstalled(self::$name)) {
             Route::get('/', function () {
-                $isNativeRuntime = (bool) config('nativephp-internal.running') || filled(getenv('JUMP_BRIDGE_PORT'));
-
-                if ($isNativeRuntime) {
-                    if (auth()->check()) {
-                        return redirect()->route('barcode.dashboard');
-                    }
-
-                    return redirect()->route('filament.admin.auth.login');
-                }
-
                 return redirect()->route('filament.admin.auth.login');
             });
         }
