@@ -20,8 +20,10 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Manufacturing\ManufacturingPlugin;
+use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
 
 class AdminPanelProvider extends PanelProvider
@@ -49,9 +51,9 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth(Width::Full)
             ->databaseNotifications()
             ->userMenuItems([
-                'barcode' => Action::make('barcode')
-                    ->label('Barcode')
-                    ->url('/admin/barcode'),
+                'profile' => Action::make('profile')
+                    ->label(fn () => Auth::user()?->name)
+                    ->url(fn (): string => Profile::getUrl()),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
