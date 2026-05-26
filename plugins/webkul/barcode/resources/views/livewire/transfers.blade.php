@@ -1,24 +1,13 @@
 <div>
-    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
-        @include('barcode::components.header.native', [
-            'title' => $operationType->name,
-            'subtitle' => __('barcode::app.dashboard.operations'),
-        ])
-    @endif
-
     <main class="barcode-page" x-data="barcodeScanner('search', 'openOperation')">
-    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
-        <div class="native-page-actions">
-            @include('barcode::components.header.transfer-actions')
-        </div>
-    @else
+    @if (! \Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
         @include('barcode::components.header.web', [
             'title' => $operationType->name,
             'breadcrumbs' => [
                 ['label' => __('barcode::app.title'), 'href' => route('barcode.dashboard')],
                 ['label' => __('barcode::app.dashboard.operations')],
             ],
-            'actionView' => 'barcode::components.header.transfer-actions',
+            'showBarcode' => true,
         ])
     @endif
 

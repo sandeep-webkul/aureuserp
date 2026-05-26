@@ -57,6 +57,13 @@
     <body class="fi-body fi-panel-admin barcode-app" x-data="{ sidebarOpen: false }">
         @if ($nativeBridgeEnabled)
             @include('barcode::components.sidebar.native')
+
+            @if (filled(\Webkul\Barcode\Support\NativeApp::headerTitle()))
+                @include('barcode::components.header.native', [
+                    'title' => \Webkul\Barcode\Support\NativeApp::headerTitle(),
+                    'subtitle' => \Webkul\Barcode\Support\NativeApp::headerSubtitle(),
+                ])
+            @endif
         @endif
 
         <div class="barcode-shell">

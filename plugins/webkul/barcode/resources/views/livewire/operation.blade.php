@@ -6,12 +6,7 @@
 @endphp
 
 <main class="barcode-page operation-screen {{ $editingMoveLine ? 'is-editing-move' : '' }}" x-data="barcodeScanner('barcode', 'scan')">
-    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
-        @include('barcode::components.header.native', [
-            'title' => $operation->name,
-            'subtitle' => $operationType->name,
-        ])
-    @else
+    @if (! \Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
         @include('barcode::components.header.web', [
             'title' => $operation->name,
             'subtitle' => $operation->partner?->name ?? $operation->origin,

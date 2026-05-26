@@ -32,6 +32,30 @@ class NativeApp
         return self::requestIsNative();
     }
 
+    public static function headerTitle(): ?string
+    {
+        $routeName = request()?->route()?->getName();
+
+        return match ($routeName) {
+            'barcode.dashboard' => __('barcode::app.title'),
+            'barcode.transfers' => request()?->route('operationType')?->name,
+            'barcode.operation' => request()?->route('operation')?->name,
+            default             => null,
+        };
+    }
+
+    public static function headerSubtitle(): ?string
+    {
+        $routeName = request()?->route()?->getName();
+
+        return match ($routeName) {
+            'barcode.dashboard' => __('barcode::app.dashboard.operations'),
+            'barcode.transfers' => __('barcode::app.dashboard.operations'),
+            'barcode.operation' => request()?->route('operationType')?->name,
+            default             => null,
+        };
+    }
+
     public static function startUrl(): string
     {
         return '/barcode';

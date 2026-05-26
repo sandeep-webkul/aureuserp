@@ -1,11 +1,4 @@
 <div>
-    @if (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
-        @include('barcode::components.header.native', [
-            'title' => __('barcode::app.title'),
-            'subtitle' => __('barcode::app.dashboard.operations'),
-        ])
-    @endif
-
     <main class="barcode-page">
         @unless (\Webkul\Barcode\Support\NativeApp::usesNativeNavigation())
             @include('barcode::components.header.web', [
