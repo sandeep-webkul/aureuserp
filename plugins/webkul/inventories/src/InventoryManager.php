@@ -1221,7 +1221,7 @@ class InventoryManager
         $backOrderMovesValues = collect();
 
         foreach ($moves as $move) {
-            if (float_compare($move->quantity, $move->product_uom_qty, precisionDigits: 2) < 0) {
+            if (float_compare($move->quantity, $move->product_uom_qty, precisionRounding: 2) < 0) {
                 $qtySplit = $move->uom->computeQuantity(
                     $move->product_uom_qty - $move->quantity,
                     $move->product->uom,
