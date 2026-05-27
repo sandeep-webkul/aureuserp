@@ -29,3 +29,6 @@ opencode.json
 /playwright-report
 /test-results
 /nativephp
+
+# Credential files (keystores, private keys, etc.)
+/credentials/
