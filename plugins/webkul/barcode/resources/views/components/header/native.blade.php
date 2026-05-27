@@ -15,7 +15,7 @@
             id="home"
             label="Home"
             icon="home"
-            url="barcode"
+            url="{{ \Webkul\Barcode\Support\NativeApp::navigationUrl('barcode.dashboard') }}"
         />
         @if ($showBarcode && filled($barcodeUrl))
             <native:top-bar-action
@@ -35,7 +35,7 @@
             id="home"
             label="Home"
             icon="home"
-            url="barcode"
+            url="{{ \Webkul\Barcode\Support\NativeApp::navigationUrl('barcode.dashboard') }}"
         />
         @if ($showBarcode && filled($barcodeUrl))
             <native:top-bar-action

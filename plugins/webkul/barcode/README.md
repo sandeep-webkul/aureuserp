@@ -9,6 +9,7 @@ Barcode is a mobile-first AureusERP plugin for inventory operation workflows. It
 - operation counting flow
 - web scanner using bundled `html5-qrcode`
 - web, iOS, and Android app shells
+- optional server-backed NativePHP mobile shell against the hosted barcode URL
 
 ## Prerequisites
 
@@ -44,6 +45,18 @@ php artisan barcode:install --no-interaction
 
 ```bash
 php artisan filament:assets --no-interaction
+```
+
+### 5. Patch NativePHP mobile files when needed
+
+```bash
+php artisan barcode:patch-native
+```
+
+Force-copy plugin-owned stubs if you need a full reset:
+
+```bash
+php artisan barcode:patch-native --force
 ```
 
 ## Routes
@@ -102,8 +115,10 @@ Route::redirect('/login', '/admin/login')
 In `.env` and `.env.example`:
 
 ```dotenv
-NATIVEPHP_START_URL=/admin/barcode
+NATIVEPHP_START_URL=https://your-domain.tld/admin/barcode?nativephp=1
 ```
+
+Use a full hosted barcode URL if the mobile app must talk to the central web server. Use a relative path only if you intentionally want the embedded NativePHP runtime.
 
 ### 3. NativePHP config
 
@@ -126,17 +141,26 @@ For this repository, that is done in:
 
 - `bootstrap/providers.php`
 
-### 5. iOS camera permission patch
+### 5. NativePHP mobile patching
 
-If you are building the real iOS app shell with `html5-qrcode`, the NativePHP iOS template needs the media-capture permission patch in:
+If `nativephp/mobile` is installed, run:
 
-- `vendor/nativephp/mobile/resources/xcode/NativePHP/ContentView.swift`
+```bash
+php artisan barcode:patch-native
+```
 
-Required behavior:
+This patches the NativePHP mobile templates/projects for:
 
-- `Coordinator` implements `WKUIDelegate`
-- `requestMediaCapturePermissionFor(...)` grants permission
-- created `WKWebView` sets `uiDelegate`
+- hosted remote start URL support
+- iOS media-capture permission for `html5-qrcode`
+- Android camera permission / WebView permission handling
+- hosted native header / sidebar payload handling
+
+Run it again after `native:install`, after regenerating `nativephp/`, or after updating `nativephp/mobile`.
+
+`--force` replaces the supported Android/iOS files with the stubs shipped in:
+
+- `plugins/webkul/barcode/stubs/nativephp`
 
 ### 6. Android camera permission verification
 
@@ -160,7 +184,8 @@ Verify the final Android build includes:
 1. `composer dump-autoload`
 2. `php artisan package:discover --ansi`
 3. `php artisan barcode:install --no-interaction`
-4. `php artisan filament:assets --no-interaction`
-5. verify `/admin/barcode/login`
-6. verify `/admin/barcode`
-7. verify native app opens barcode login, not `/admin/login`
+4. `php artisan barcode:patch-native` if you are building the mobile app
+5. `php artisan filament:assets --no-interaction`
+6. verify `/admin/barcode/login`
+7. verify `/admin/barcode`
+8. verify native app opens barcode login, not `/admin/login`

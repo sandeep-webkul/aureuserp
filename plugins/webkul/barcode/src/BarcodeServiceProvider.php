@@ -8,6 +8,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
+use Webkul\Barcode\Console\Commands\PatchNativeCommand;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
@@ -30,6 +31,9 @@ class BarcodeServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasRoute('web')
+            ->hasCommands([
+                PatchNativeCommand::class,
+            ])
             ->hasDependencies([
                 'inventories',
                 'manufacturing',
@@ -46,7 +50,7 @@ class BarcodeServiceProvider extends PackageServiceProvider
         $isJumpRuntime = filled(getenv('JUMP_BRIDGE_PORT'));
 
         if (app()->environment('production') && $isJumpRuntime) {
-            URL::forceScheme('http');
+            // URL::forceScheme('http');
         }
 
         Livewire::component('barcode-dashboard', Dashboard::class);

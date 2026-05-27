@@ -1,0 +1,815 @@
+<?php
+
+namespace Webkul\Barcode\Support;
+
+use Illuminate\Filesystem\Filesystem;
+
+class NativePhpMobilePatcher
+{
+    public function __construct(private Filesystem $files) {}
+
+    public function apply(bool $force = false): void
+    {
+        if ($force) {
+            $this->copyStubFiles();
+
+            return;
+        }
+
+        $this->patchAndroidManifest();
+
+        foreach ($this->androidRoots() as $root) {
+            $this->patchAndroidLaravelEnvironment($root);
+            $this->patchAndroidMainActivity($root);
+            $this->patchAndroidWebViewManager($root);
+            $this->patchAndroidNativeTopBar($root);
+            $this->patchAndroidNativeSideNav($root);
+        }
+
+        foreach ($this->iosRoots() as $root) {
+            $this->patchIosNativePhpApp($root);
+            $this->patchIosContentView($root);
+            $this->patchIosNativeSideNav($root);
+        }
+    }
+
+    private function copyStubFiles(): void
+    {
+        foreach ($this->stubTargets() as $stubRelativePath => $targets) {
+            $stubPath = $this->stubPath($stubRelativePath);
+
+            if (! $this->files->exists($stubPath)) {
+                continue;
+            }
+
+            foreach ($targets as $targetPath) {
+                $this->ensureDirectoryExists(dirname($targetPath));
+                $this->files->copy($stubPath, $targetPath);
+            }
+        }
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    private function stubTargets(): array
+    {
+        return [
+            'android/app/src/main/AndroidManifest.xml' => [
+                base_path('nativephp/android/app/src/main/AndroidManifest.xml'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/AndroidManifest.xml'),
+            ],
+            'android/app/src/main/java/com/nativephp/mobile/bridge/LaravelEnvironment.kt' => [
+                base_path('nativephp/android/app/src/main/java/com/nativephp/mobile/bridge/LaravelEnvironment.kt'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile/bridge/LaravelEnvironment.kt'),
+            ],
+            'android/app/src/main/java/com/nativephp/mobile/network/WebViewManager.kt' => [
+                base_path('nativephp/android/app/src/main/java/com/nativephp/mobile/network/WebViewManager.kt'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile/network/WebViewManager.kt'),
+            ],
+            'android/app/src/main/java/com/nativephp/mobile/ui/MainActivity.kt' => [
+                base_path('nativephp/android/app/src/main/java/com/nativephp/mobile/ui/MainActivity.kt'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile/ui/MainActivity.kt'),
+            ],
+            'android/app/src/main/java/com/nativephp/mobile/ui/NativeSideNav.kt' => [
+                base_path('nativephp/android/app/src/main/java/com/nativephp/mobile/ui/NativeSideNav.kt'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile/ui/NativeSideNav.kt'),
+            ],
+            'android/app/src/main/java/com/nativephp/mobile/ui/NativeTopBar.kt' => [
+                base_path('nativephp/android/app/src/main/java/com/nativephp/mobile/ui/NativeTopBar.kt'),
+                base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile/ui/NativeTopBar.kt'),
+            ],
+            'ios/NativePHP/ContentView.swift' => [
+                base_path('nativephp/ios/NativePHP/ContentView.swift'),
+                base_path('vendor/nativephp/mobile/resources/xcode/NativePHP/ContentView.swift'),
+            ],
+            'ios/NativePHP/NativePHPApp.swift' => [
+                base_path('nativephp/ios/NativePHP/NativePHPApp.swift'),
+                base_path('vendor/nativephp/mobile/resources/xcode/NativePHP/NativePHPApp.swift'),
+            ],
+            'ios/NativePHP/NativeUI/NativeSideNav.swift' => [
+                base_path('nativephp/ios/NativePHP/NativeUI/NativeSideNav.swift'),
+                base_path('vendor/nativephp/mobile/resources/xcode/NativePHP/NativeUI/NativeSideNav.swift'),
+            ],
+        ];
+    }
+
+    private function stubPath(string $relativePath): string
+    {
+        return dirname(__DIR__, 2).'/stubs/nativephp/'.$relativePath;
+    }
+
+    private function ensureDirectoryExists(string $path): void
+    {
+        if ($this->files->isDirectory($path)) {
+            return;
+        }
+
+        $this->files->makeDirectory($path, 0755, true);
+    }
+
+    private function patchAndroidManifest(): void
+    {
+        foreach (array_filter([
+            base_path('nativephp/android/app/src/main/AndroidManifest.xml'),
+            base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/AndroidManifest.xml'),
+        ], fn (string $path): bool => $this->files->exists($path)) as $path) {
+            $contents = $this->files->get($path);
+
+            if (! str_contains($contents, 'android.permission.CAMERA')) {
+                $contents = str_replace(
+                    "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n",
+                    "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n\n    <uses-feature\n        android:name=\"android.hardware.camera.any\"\n        android:required=\"false\" />\n",
+                    $contents,
+                );
+            }
+
+            $this->files->put($path, $contents);
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function androidRoots(): array
+    {
+        return array_values(array_filter([
+            base_path('nativephp/android/app/src/main/java/com/nativephp/mobile'),
+            base_path('vendor/nativephp/mobile/resources/androidstudio/app/src/main/java/com/nativephp/mobile'),
+        ], fn (string $root): bool => $this->files->isDirectory($root)));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function iosRoots(): array
+    {
+        return array_values(array_filter([
+            base_path('nativephp/ios/NativePHP'),
+            base_path('vendor/nativephp/mobile/resources/xcode/NativePHP'),
+        ], fn (string $root): bool => $this->files->isDirectory($root)));
+    }
+
+    private function patchAndroidLaravelEnvironment(string $root): void
+    {
+        $path = $root.'/bridge/LaravelEnvironment.kt';
+
+        $contents = $this->files->get($path);
+
+        $contents = str_replace(
+            <<<'KOTLIN'
+                    if (value.isNotEmpty()) {
+                        // Ensure path starts with /
+                        if (!value.startsWith("/")) {
+                            value = "/$value"
+                        }
+                        Log.d(TAG, "⚙️ Found start URL in .env: $value")
+                        return value
+                    }
+KOTLIN,
+            <<<'KOTLIN'
+                    if (value.isNotEmpty()) {
+                        if (!isAbsoluteUrl(value) && !value.startsWith("/")) {
+                            value = "/$value"
+                        }
+                        Log.d(TAG, "⚙️ Found start URL in .env: $value")
+                        return value
+                    }
+KOTLIN,
+            $contents,
+        );
+
+        if (! str_contains($contents, 'fun getHostedRemoteHost(context: Context): String?')) {
+            $contents = str_replace(
+                <<<'KOTLIN'
+        fun getStartURL(context: Context): String {
+KOTLIN,
+                <<<'KOTLIN'
+        private fun isAbsoluteUrl(value: String): Boolean {
+            return value.startsWith("http://") || value.startsWith("https://")
+        }
+
+        fun getHostedRemoteHost(context: Context): String? {
+            return try {
+                val startUrl = getStartURL(context)
+
+                if (!isAbsoluteUrl(startUrl)) {
+                    return null
+                }
+
+                URL(startUrl).host
+            } catch (e: Exception) {
+                Log.e(TAG, "⚠️ Error parsing hosted remote URL", e)
+                null
+            }
+        }
+
+        fun getStartURL(context: Context): String {
+KOTLIN,
+                $contents,
+            );
+        }
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchAndroidMainActivity(string $root): void
+    {
+        $path = $root.'/ui/MainActivity.kt';
+
+        $contents = $this->files->get($path);
+
+        $contents = str_replace(
+            <<<'KOTLIN'
+            val target = pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            val fullUrl = "http://127.0.0.1$target"
+            Log.d("DeepLink", "🚀 Loading final URL after WebView setup: $fullUrl")
+            webView.loadUrl(fullUrl)
+KOTLIN,
+            <<<'KOTLIN'
+            val target = pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            val fullUrl = if (target.startsWith("http://") || target.startsWith("https://")) {
+                target
+            } else {
+                "http://127.0.0.1$target"
+            }
+            Log.d("DeepLink", "🚀 Loading final URL after WebView setup: $fullUrl")
+            webView.loadUrl(fullUrl)
+KOTLIN,
+            $contents,
+        );
+
+        if (! str_contains($contents, '4001 -> {')) {
+            $contents = str_replace(
+                "        when (requestCode) {\n",
+                "        when (requestCode) {\n            4001 -> {\n                if (::webViewManager.isInitialized) {\n                    webViewManager.onRequestPermissionsResult(requestCode, permissions, grantResults)\n                }\n            }\n",
+                $contents,
+            );
+        }
+
+        $contents = str_replace(
+            <<<'KOTLIN'
+        val path = extractPath(url)
+        Log.d("Navigation", "🚀 Navigating with Inertia check: $path")
+
+        // Escape the path for JavaScript string (use double quotes to avoid issues with /)
+        val escapedPath = path.replace("\\", "\\\\").replace("\"", "\\\"")
+
+        val jsCode = """
+            (function() {
+                var path = "$escapedPath";
+                console.log('[NativePHP] Navigation requested:', path);
+
+                // Check if Inertia router is available
+                if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
+                    console.log('[NativePHP] Using Inertia router.visit():', path);
+                    window.router.visit(path);
+                } else {
+                    console.log('[NativePHP] Inertia not available, using location.href');
+                    window.location.href = path;
+                }
+            })();
+        """.trimIndent()
+KOTLIN,
+            <<<'KOTLIN'
+        val isAbsoluteUrl = url.startsWith("http://") || url.startsWith("https://")
+        val navigationTarget = if (isAbsoluteUrl) url else extractPath(url)
+        Log.d("Navigation", "🚀 Navigating with Inertia check: $navigationTarget")
+
+        val escapedTarget = navigationTarget
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+
+        val jsCode = if (isAbsoluteUrl) {
+            """
+            (function() {
+                var target = "$escapedTarget";
+                console.log('[NativePHP] Absolute navigation requested:', target);
+                window.location.href = target;
+            })();
+            """.trimIndent()
+        } else {
+            """
+            (function() {
+                var path = "$escapedTarget";
+                console.log('[NativePHP] Navigation requested:', path);
+
+                // Check if Inertia router is available
+                if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
+                    console.log('[NativePHP] Using Inertia router.visit():', path);
+                    window.router.visit(path);
+                } else {
+                    console.log('[NativePHP] Inertia not available, using location.href');
+                    window.location.href = path;
+                }
+            })();
+            """.trimIndent()
+        }
+KOTLIN,
+            $contents,
+        );
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchAndroidWebViewManager(string $root): void
+    {
+        $path = $root.'/network/WebViewManager.kt';
+
+        $contents = $this->files->get($path);
+
+        if (! str_contains($contents, 'import com.nativephp.mobile.bridge.LaravelEnvironment')) {
+            $contents = str_replace(
+                "import com.acsbendi.requestinspectorwebview.RequestInspectorWebViewClient\n",
+                "import com.acsbendi.requestinspectorwebview.RequestInspectorWebViewClient\nimport com.nativephp.mobile.bridge.LaravelEnvironment\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'import org.json.JSONArray')) {
+            $contents = str_replace(
+                "import org.json.JSONObject\n",
+                "import org.json.JSONObject\nimport org.json.JSONArray\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'import android.Manifest')) {
+            $contents = str_replace(
+                "package com.nativephp.mobile.network\n\n",
+                "package com.nativephp.mobile.network\n\nimport android.Manifest\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'import android.content.pm.PackageManager')) {
+            $contents = str_replace(
+                "import android.content.Intent\n",
+                "import android.content.Intent\nimport android.content.pm.PackageManager\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'import androidx.core.app.ActivityCompat')) {
+            $contents = str_replace(
+                "import android.app.Activity\n",
+                "import android.app.Activity\nimport androidx.core.app.ActivityCompat\nimport androidx.core.content.ContextCompat\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'private fun isHostedRemoteUrl(url: String, context: Context): Boolean')) {
+            $contents = str_replace(
+                <<<'KOTLIN'
+class WebViewManager(
+    private val context: Context,
+    private val webView: WebView,
+    private val phpBridge: PHPBridge
+) {
+KOTLIN,
+                <<<'KOTLIN'
+class WebViewManager(
+    private val context: Context,
+    private val webView: WebView,
+    private val phpBridge: PHPBridge
+) {
+    private fun isHostedRemoteUrl(url: String, context: Context): Boolean {
+        val remoteHost = LaravelEnvironment.getHostedRemoteHost(context) ?: return false
+        val uri = Uri.parse(url)
+
+        return uri.scheme in listOf("http", "https")
+            && uri.host?.equals(remoteHost, ignoreCase = true) == true
+    }
+
+KOTLIN,
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'private val cameraPermissionRequestCode = 4001')) {
+            $contents = str_replace(
+                "    private val TAG = \"PHPMonitor\"\n",
+                "    private val TAG = \"PHPMonitor\"\n    private val cameraPermissionRequestCode = 4001\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'private var pendingMediaPermissionRequest: PermissionRequest? = null')) {
+            $contents = str_replace(
+                "    private var customViewCallback: WebChromeClient.CustomViewCallback? = null\n",
+                "    private var customViewCallback: WebChromeClient.CustomViewCallback? = null\n    private var pendingMediaPermissionRequest: PermissionRequest? = null\n",
+                $contents,
+            );
+        }
+
+        $contents = str_replace(
+            <<<'KOTLIN'
+                if ((url.startsWith("http://") || url.startsWith("https://")) &&
+                    !url.contains("127.0.0.1") &&
+                    !url.contains("localhost") &&
+                    request.isForMainFrame
+                ) {
+                    // This is a navigation request to an external site - open in browser
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    view.context.startActivity(intent)
+                    return true
+                }
+KOTLIN,
+            <<<'KOTLIN'
+                if ((url.startsWith("http://") || url.startsWith("https://")) &&
+                    !url.contains("127.0.0.1") &&
+                    !url.contains("localhost") &&
+                    request.isForMainFrame
+                ) {
+                    if (isHostedRemoteUrl(url, view.context)) {
+                        return false
+                    }
+
+                    // This is a navigation request to an external site - open in browser
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    view.context.startActivity(intent)
+                    return true
+                }
+KOTLIN,
+            $contents,
+        );
+
+        if (! str_contains($contents, 'override fun onPermissionRequest(request: PermissionRequest)')) {
+            $contents = str_replace(
+                "                return true\n            }\n",
+                "                return true\n            }\n\n            override fun onPermissionRequest(request: PermissionRequest) {\n                val activity = context as? Activity\n\n                if (activity == null) {\n                    request.deny()\n                    return\n                }\n\n                val requiresVideoCapture = request.resources.contains(PermissionRequest.RESOURCE_VIDEO_CAPTURE)\n\n                if (!requiresVideoCapture) {\n                    request.grant(request.resources)\n                    return\n                }\n\n                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {\n                    request.grant(request.resources)\n                    return\n                }\n\n                pendingMediaPermissionRequest = request\n                ActivityCompat.requestPermissions(\n                    activity,\n                    arrayOf(Manifest.permission.CAMERA),\n                    cameraPermissionRequestCode\n                )\n            }\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'private fun hydrateHostedNativeUi(view: WebView)')) {
+            $contents = str_replace(
+                <<<'KOTLIN'
+                // Inject JavaScript to capture form submissions and AJAX requests
+                injectJavaScript(view)
+            }
+KOTLIN,
+                <<<'KOTLIN'
+                hydrateHostedNativeUi(view)
+
+                // Inject JavaScript to capture form submissions and AJAX requests
+                injectJavaScript(view)
+            }
+
+            private fun hydrateHostedNativeUi(view: WebView) {
+                view.evaluateJavascript(
+                    """
+                    (() => {
+                        const nativeUiNode = document.getElementById('barcode-native-ui');
+
+                        return nativeUiNode ? nativeUiNode.textContent : null;
+                    })();
+                    """.trimIndent()
+                ) { result ->
+                    val nativeUiJson = decodeJavascriptString(result)
+
+                    if (nativeUiJson.isNullOrBlank()) {
+                        Log.d(TAG, "ℹ️ No hosted native UI payload found in DOM")
+                        NativeUIState.clearAll()
+                        return@evaluateJavascript
+                    }
+
+                    Log.d(TAG, "✅ Hosted native UI payload found in DOM")
+                    NativeUIState.updateFromJson(nativeUiJson)
+                }
+            }
+
+            private fun decodeJavascriptString(result: String?): String? {
+                if (result == null || result == "null") {
+                    return null
+                }
+
+                return try {
+                    JSONArray("[$result]").getString(0)
+                } catch (_: Exception) {
+                    null
+                }
+            }
+KOTLIN,
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'CookieManager.getInstance().flush()')) {
+            $contents = str_replace(
+                "                Log.d(TAG, \"✅ Page finished loading: \$url\")\n",
+                "                Log.d(TAG, \"✅ Page finished loading: \$url\")\n\n                CookieManager.getInstance().flush()\n",
+                $contents,
+            );
+        }
+
+        if (! str_contains($contents, 'fun onRequestPermissionsResult(')) {
+            $contents = str_replace(
+                "\n    private fun injectJavaScript(view: WebView) {\n",
+                "\n    fun onRequestPermissionsResult(\n        requestCode: Int,\n        permissions: Array<out String>,\n        grantResults: IntArray\n    ) {\n        if (requestCode != cameraPermissionRequestCode) {\n            return\n        }\n\n        val request = pendingMediaPermissionRequest ?: return\n        pendingMediaPermissionRequest = null\n\n        val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED\n\n        if (granted) {\n            request.grant(request.resources)\n        } else {\n            request.deny()\n        }\n    }\n\n    private fun injectJavaScript(view: WebView) {\n",
+                $contents,
+            );
+        }
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchAndroidNativeTopBar(string $root): void
+    {
+        $path = $root.'/ui/NativeTopBar.kt';
+
+        if (! $this->files->exists($path)) {
+            return;
+        }
+
+        $contents = $this->files->get($path);
+
+        if (! str_contains($contents, 'private fun hostedRemoteHost(context: android.content.Context): String?')) {
+            $contents = str_replace(
+                <<<'KOTLIN'
+/**
+ * Check if a URL is external (not a relative path or localhost)
+ */
+private fun isExternalUrl(url: String): Boolean {
+    return (url.startsWith("http://") || url.startsWith("https://"))
+            && !url.contains("127.0.0.1")
+            && !url.contains("localhost")
+}
+KOTLIN,
+                <<<'KOTLIN'
+private fun hostedRemoteHost(context: android.content.Context): String? {
+    return LaravelEnvironment.getHostedRemoteHost(context)
+}
+
+/**
+ * Check if a URL is external (not a relative path or localhost)
+ */
+private fun isExternalUrl(url: String, context: android.content.Context): Boolean {
+    if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+        return false
+    }
+
+    if (url.contains("127.0.0.1") || url.contains("localhost")) {
+        return false
+    }
+
+    val host = Uri.parse(url).host ?: return true
+    val remoteHost = hostedRemoteHost(context) ?: return true
+
+    return !host.equals(remoteHost, ignoreCase = true)
+}
+KOTLIN,
+                $contents,
+            );
+        }
+
+        $contents = str_replace('if (isExternalUrl(url)) {', 'if (isExternalUrl(url, context)) {', $contents);
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchAndroidNativeSideNav(string $root): void
+    {
+        $path = $root.'/ui/NativeSideNav.kt';
+
+        if (! $this->files->exists($path)) {
+            return;
+        }
+
+        $contents = $this->files->get($path);
+
+        if (! str_contains($contents, 'private fun hostedRemoteHost(context: android.content.Context): String?')) {
+            $contents = str_replace(
+                <<<'KOTLIN'
+/**
+ * Check if a URL is external (not a relative path or localhost)
+ */
+private fun isExternalUrl(url: String): Boolean {
+    return (url.startsWith("http://") || url.startsWith("https://"))
+            && !url.contains("127.0.0.1")
+            && !url.contains("localhost")
+}
+KOTLIN,
+                <<<'KOTLIN'
+private fun hostedRemoteHost(context: android.content.Context): String? {
+    return LaravelEnvironment.getHostedRemoteHost(context)
+}
+
+/**
+ * Check if a URL is external (not a relative path or localhost)
+ */
+private fun isExternalUrl(url: String, context: android.content.Context): Boolean {
+    if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+        return false
+    }
+
+    if (url.contains("127.0.0.1") || url.contains("localhost")) {
+        return false
+    }
+
+    val host = Uri.parse(url).host ?: return true
+    val remoteHost = hostedRemoteHost(context) ?: return true
+
+    return !host.equals(remoteHost, ignoreCase = true)
+}
+KOTLIN,
+                $contents,
+            );
+        }
+
+        $contents = str_replace('val shouldOpenExternal = item.openInBrowser == true || isExternalUrl(item.url)', 'val shouldOpenExternal = item.openInBrowser == true || isExternalUrl(item.url, context)', $contents);
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchIosNativePhpApp(string $root): void
+    {
+        $path = $root.'/NativePHPApp.swift';
+
+        $contents = $this->files->get($path);
+
+        $contents = str_replace(
+            <<<'SWIFT'
+            if !value.isEmpty {
+                // Ensure path starts with /
+                if !value.hasPrefix("/") {
+                    value = "/" + value
+                }
+                DebugLogger.shared.log("⚙️ Found start URL in .env: \(value)")
+                return value
+SWIFT,
+            <<<'SWIFT'
+            if !value.isEmpty {
+                if !isAbsoluteUrl(value) && !value.hasPrefix("/") {
+                    value = "/" + value
+                }
+                DebugLogger.shared.log("⚙️ Found start URL in .env: \(value)")
+                return value
+SWIFT,
+            $contents,
+        );
+
+        if (! str_contains($contents, 'static func getHostedRemoteHost() -> String?')) {
+            $contents = str_replace(
+                <<<'SWIFT'
+    /// Read the NATIVEPHP_START_URL from the .env file
+    static func getStartURL() -> String {
+SWIFT,
+                <<<'SWIFT'
+    static func isAbsoluteUrl(_ value: String) -> Bool {
+        value.hasPrefix("http://") || value.hasPrefix("https://")
+    }
+
+    static func getHostedRemoteHost() -> String? {
+        let startUrl = getStartURL()
+
+        guard isAbsoluteUrl(startUrl),
+              let url = URL(string: startUrl) else {
+            return nil
+        }
+
+        return url.host
+    }
+
+    /// Read the NATIVEPHP_START_URL from the .env file
+    static func getStartURL() -> String {
+SWIFT,
+                $contents,
+            );
+        }
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchIosContentView(string $root): void
+    {
+        $path = $root.'/ContentView.swift';
+
+        $contents = $this->files->get($path);
+
+        $contents = str_replace(
+            <<<'SWIFT'
+    private func isExternalUrl(_ url: String) -> Bool {
+        return (url.hasPrefix("http://") || url.hasPrefix("https://"))
+            && !url.contains("127.0.0.1")
+            && !url.contains("localhost")
+    }
+SWIFT,
+            <<<'SWIFT'
+    private func isExternalUrl(_ url: String) -> Bool {
+        guard (url.hasPrefix("http://") || url.hasPrefix("https://")) else {
+            return false
+        }
+
+        if url.contains("127.0.0.1") || url.contains("localhost") {
+            return false
+        }
+
+        guard let host = URL(string: url)?.host,
+              let remoteHost = NativePHPApp.getHostedRemoteHost() else {
+            return true
+        }
+
+        return host.caseInsensitiveCompare(remoteHost) != .orderedSame
+    }
+SWIFT,
+            $contents,
+        );
+
+        $contents = str_replace(
+            <<<'SWIFT'
+                let startPath = NativePHPApp.getStartURL()
+                let startPage = URL(string: "php://127.0.0.1\(startPath)")
+                webView.load(URLRequest(url: startPage ?? fallbackURL))
+SWIFT,
+            <<<'SWIFT'
+                let startPath = NativePHPApp.getStartURL()
+
+                if NativePHPApp.isAbsoluteUrl(startPath),
+                   let startPage = URL(string: startPath) {
+                    webView.load(URLRequest(url: startPage))
+                } else {
+                    let startPage = URL(string: "php://127.0.0.1\(startPath)")
+                    webView.load(URLRequest(url: startPage ?? fallbackURL))
+                }
+SWIFT,
+            $contents,
+        );
+
+        $contents = str_replace(
+            <<<'SWIFT'
+            if ["http", "https", "tel", "mailto", "sms", "facetime", "facetime-audio"].contains(scheme) {
+                UIApplication.shared.open(url)
+                decisionHandler(.cancel)
+            } else {
+                decisionHandler(.allow)
+            }
+SWIFT,
+            <<<'SWIFT'
+            if ["tel", "mailto", "sms", "facetime", "facetime-audio"].contains(scheme) {
+                UIApplication.shared.open(url)
+                decisionHandler(.cancel)
+                return
+            }
+
+            if ["http", "https"].contains(scheme) {
+                if let remoteHost = NativePHPApp.getHostedRemoteHost(),
+                   url.host?.caseInsensitiveCompare(remoteHost) == .orderedSame {
+                    decisionHandler(.allow)
+                    return
+                }
+
+                UIApplication.shared.open(url)
+                decisionHandler(.cancel)
+            } else {
+                decisionHandler(.allow)
+            }
+SWIFT,
+            $contents,
+        );
+
+        $this->files->put($path, $contents);
+    }
+
+    private function patchIosNativeSideNav(string $root): void
+    {
+        $path = $root.'/NativeUI/NativeSideNav.swift';
+
+        if (! $this->files->exists($path)) {
+            return;
+        }
+
+        $contents = $this->files->get($path);
+
+        $contents = str_replace(
+            <<<'SWIFT'
+    private func isExternalUrl(_ url: String) -> Bool {
+        return (url.hasPrefix("http://") || url.hasPrefix("https://"))
+            && !url.contains("127.0.0.1")
+            && !url.contains("localhost")
+    }
+SWIFT,
+            <<<'SWIFT'
+    private func isExternalUrl(_ url: String) -> Bool {
+        guard (url.hasPrefix("http://") || url.hasPrefix("https://")) else {
+            return false
+        }
+
+        if url.contains("127.0.0.1") || url.contains("localhost") {
+            return false
+        }
+
+        guard let host = URL(string: url)?.host,
+              let remoteHost = NativePHPApp.getHostedRemoteHost() else {
+            return true
+        }
+
+        return host.caseInsensitiveCompare(remoteHost) != .orderedSame
+    }
+SWIFT,
+            $contents,
+        );
+
+        $this->files->put($path, $contents);
+    }
+}

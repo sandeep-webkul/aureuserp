@@ -4,6 +4,26 @@ namespace Webkul\Barcode\Support;
 
 class NativeApp
 {
+    public const REMOTE_SHELL_FLAG = 'barcode_native_shell';
+
+    public static function startUrl(): string
+    {
+        return '/admin/barcode?nativephp=1';
+    }
+
+    public static function navigationUrl(string $route, array $parameters = []): string
+    {
+        if (self::usesHostedRemoteShell()) {
+            return route($route, $parameters);
+        }
+
+        if (self::requestIsNative()) {
+            return route($route, $parameters, false);
+        }
+
+        return route($route, $parameters);
+    }
+
     public static function requestIsJump(): bool
     {
         $jumpHttpPort = (int) (getenv('JUMP_HTTP_PORT') ?: 3000);
@@ -19,6 +39,8 @@ class NativeApp
     public static function requestIsNative(): bool
     {
         return request()?->server('NATIVEPHP_RUNNING') === 'true'
+            || request()?->boolean('nativephp') === true
+            || request()?->cookie(self::REMOTE_SHELL_FLAG) === '1'
             || self::requestIsJump();
     }
 
@@ -73,12 +95,18 @@ class NativeApp
             return null;
         }
 
+        if (self::usesHostedRemoteShell()) {
+            return request()?->fullUrl().'#scan-barcode';
+        }
+
         return request()?->getRequestUri().'#scan-barcode';
     }
 
-    public static function startUrl(): string
+    public static function usesHostedRemoteShell(): bool
     {
-        return '/admin/barcode';
+        $startUrl = (string) config('nativephp.start_url', '');
+
+        return str_starts_with($startUrl, 'http://') || str_starts_with($startUrl, 'https://');
     }
 
     /**

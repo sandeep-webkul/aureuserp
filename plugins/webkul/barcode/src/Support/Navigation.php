@@ -25,7 +25,7 @@ class Navigation
                 'label'       => 'Inventory Operations',
                 'icon'        => 'heroicon-m-arrows-right-left',
                 'native_icon' => 'swap_horiz',
-                'href'        => route('barcode.dashboard'),
+                'href'        => NativeApp::navigationUrl('barcode.dashboard'),
                 'active'      => str_starts_with($currentRoute, 'barcode.dashboard')
                     || str_starts_with($currentRoute, 'barcode.transfers')
                     || str_starts_with($currentRoute, 'barcode.operation'),
@@ -45,7 +45,7 @@ class Navigation
                 'label'       => 'Inventory Adjustments',
                 'icon'        => 'heroicon-m-clipboard-document-list',
                 'native_icon' => 'inventory_2',
-                'href'        => route('barcode.adjustments'),
+                'href'        => NativeApp::navigationUrl('barcode.adjustments'),
                 'active'      => str_starts_with($currentRoute, 'barcode.adjustments'),
                 'disabled'    => false,
             ],

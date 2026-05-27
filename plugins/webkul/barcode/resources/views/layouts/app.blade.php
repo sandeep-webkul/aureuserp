@@ -54,7 +54,16 @@
 
         @livewireStyles
     </head>
-    <body class="fi-body fi-panel-admin barcode-app" x-data="{ sidebarOpen: false }">
+    <body
+        @class([
+            'fi-body',
+            'fi-panel-admin',
+            'barcode-app',
+            'barcode-app--native' => $nativeBridgeEnabled,
+        ])
+        style="{{ $nativeBridgeEnabled ? '--barcode-footer-offset: 96px;' : '' }}"
+        x-data="{ sidebarOpen: false }"
+    >
         @if ($nativeBridgeEnabled)
             @include('barcode::components.sidebar.native')
 
@@ -66,6 +75,8 @@
                     'barcodeUrl' => \Webkul\Barcode\Support\NativeApp::scanActionUrl(),
                 ])
             @endif
+
+            <script id="barcode-native-ui" type="application/json">@json(\Native\Mobile\Edge\Edge::all())</script>
         @endif
 
         <div class="barcode-shell">

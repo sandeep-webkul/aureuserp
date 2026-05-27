@@ -3,13 +3,15 @@
 use Filament\Http\Middleware\SetUpPanel;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Http\Middleware\Authenticate;
+use Webkul\Barcode\Http\Middleware\PersistNativeShell;
+use Webkul\Barcode\Http\Middleware\RenderHostedNativeUi;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Auth\Login;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
 use Webkul\Barcode\Livewire\Transfers;
 
-Route::middleware(['web'])->group(function (): void {
+Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class])->group(function (): void {
     Route::get('barcode', function () {
         if (auth()->check()) {
             return redirect()->route('barcode.dashboard');
@@ -19,7 +21,7 @@ Route::middleware(['web'])->group(function (): void {
     });
 });
 
-Route::middleware(['web', SetUpPanel::class.':admin'])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
+Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class, SetUpPanel::class.':admin'])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
     Route::get('/assets/{file}', function (string $file) {
         abort_unless(in_array($file, ['barcode.css', 'barcode.js', 'html5-qrcode.min.js'], true), 404);
 
