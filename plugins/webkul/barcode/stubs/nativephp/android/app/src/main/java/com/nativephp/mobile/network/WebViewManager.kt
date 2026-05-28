@@ -239,6 +239,16 @@ class WebViewManager(
                     request.isForMainFrame
                 ) {
                     if (isHostedRemoteUrl(url, view.context)) {
+                        if (url.startsWith("http://") && LaravelEnvironment.shouldForceHttpsHostedRemote(view.context)) {
+                            val correctedUrl = LaravelEnvironment.normalizeHostedRemoteUrl(view.context, url)
+
+                            if (correctedUrl != url) {
+                                Log.d(TAG, "🔒 Upgrading hosted remote navigation to HTTPS: $correctedUrl")
+                                view.loadUrl(correctedUrl)
+                                return true
+                            }
+                        }
+
                         return false
                     }
 

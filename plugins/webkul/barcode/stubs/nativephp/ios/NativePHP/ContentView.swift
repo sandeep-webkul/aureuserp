@@ -386,7 +386,9 @@ struct WebView: UIViewRepresentable {
 
         @objc func redirectToURL(_ notification: Notification) {
             if let urlString = notification.userInfo?["url"] as? String {
-                if let url = URL(string: urlString) {
+                let normalizedUrlString = NativePHPApp.normalizeHostedRemoteUrl(urlString)
+
+                if let url = URL(string: normalizedUrlString) {
                     // Stop any current loading before starting new request
                     if self.webView?.isLoading == true {
                         self.webView?.stopLoading()

@@ -143,7 +143,10 @@ class MainActivity : FragmentActivity(), WebViewProvider {
             }
 
             // NOW load the URL after WebView is fully configured
-            val target = pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            val target = LaravelEnvironment.normalizeHostedRemoteUrl(
+                this,
+                pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            )
             val fullUrl = if (target.startsWith("http://") || target.startsWith("https://")) {
                 target
             } else {

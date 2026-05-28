@@ -172,6 +172,7 @@ KOTLIN,
                         if (!isAbsoluteUrl(value) && !value.startsWith("/")) {
                             value = "/$value"
                         }
+                        value = normalizeHostedRemoteUrl(context, value)
                         Log.d(TAG, "⚙️ Found start URL in .env: $value")
                         return value
                     }
@@ -204,6 +205,55 @@ KOTLIN,
             }
         }
 
+        fun getAppEnvironment(context: Context): String {
+            val appStorageDir = context.getDir("storage", Context.MODE_PRIVATE)
+            val laravelDir = File(appStorageDir, "laravel")
+            val envFile = File(laravelDir, ".env")
+
+            if (!envFile.exists()) {
+                return ""
+            }
+
+            return try {
+                val envContent = envFile.readText()
+                val pattern = Regex("""APP_ENV\s*=\s*([^\r\n]+)""")
+                val match = pattern.find(envContent)
+
+                match?.groupValues?.get(1)
+                    ?.trim()
+                    ?.trim('"', '\'')
+                    ?.lowercase()
+                    ?: ""
+            } catch (e: Exception) {
+                Log.e(TAG, "⚠️ Error reading APP_ENV from .env file", e)
+                ""
+            }
+        }
+
+        fun shouldForceHttpsHostedRemote(context: Context): Boolean {
+            return getAppEnvironment(context) == "production"
+        }
+
+        fun normalizeHostedRemoteUrl(context: Context, value: String): String {
+            if (!isAbsoluteUrl(value) || !shouldForceHttpsHostedRemote(context)) {
+                return value
+            }
+
+            return try {
+                val remoteHost = getHostedRemoteHost(context) ?: return value
+                val url = URL(value)
+
+                if (url.protocol.equals("http", ignoreCase = true) && url.host.equals(remoteHost, ignoreCase = true)) {
+                    value.replaceFirst("http://", "https://")
+                } else {
+                    value
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "⚠️ Error normalizing hosted remote URL", e)
+                value
+            }
+        }
+
         fun getStartURL(context: Context): String {
 KOTLIN,
                 $contents,
@@ -227,7 +277,10 @@ KOTLIN,
             webView.loadUrl(fullUrl)
 KOTLIN,
             <<<'KOTLIN'
-            val target = pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            val target = LaravelEnvironment.normalizeHostedRemoteUrl(
+                this,
+                pendingDeepLink ?: LaravelEnvironment.getStartURL(this)
+            )
             val fullUrl = if (target.startsWith("http://") || target.startsWith("https://")) {
                 target
             } else {
@@ -422,6 +475,16 @@ KOTLIN,
                     request.isForMainFrame
                 ) {
                     if (isHostedRemoteUrl(url, view.context)) {
+                        if (url.startsWith("http://") && LaravelEnvironment.shouldForceHttpsHostedRemote(view.context)) {
+                            val correctedUrl = LaravelEnvironment.normalizeHostedRemoteUrl(view.context, url)
+
+                            if (correctedUrl != url) {
+                                Log.d(TAG, "🔒 Upgrading hosted remote navigation to HTTPS: $correctedUrl")
+                                view.loadUrl(correctedUrl)
+                                return true
+                            }
+                        }
+
                         return false
                     }
 
@@ -643,6 +706,7 @@ SWIFT,
                 if !isAbsoluteUrl(value) && !value.hasPrefix("/") {
                     value = "/" + value
                 }
+                value = normalizeHostedRemoteUrl(value)
                 DebugLogger.shared.log("⚙️ Found start URL in .env: \(value)")
                 return value
 SWIFT,
@@ -669,6 +733,48 @@ SWIFT,
         }
 
         return url.host
+    }
+
+    static func getAppEnvironment() -> String {
+        let appPath = AppUpdateManager.shared.getAppPath()
+        let envPath = URL(fileURLWithPath: appPath).appendingPathComponent(".env")
+
+        guard FileManager.default.fileExists(atPath: envPath.path),
+              let envContent = try? String(contentsOf: envPath, encoding: .utf8) else {
+            return ""
+        }
+
+        let pattern = #"APP_ENV\s*=\s*([^\r\n]+)"#
+
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: envContent, range: NSRange(envContent.startIndex..., in: envContent)),
+              let valueRange = Range(match.range(at: 1), in: envContent) else {
+            return ""
+        }
+
+        return String(envContent[valueRange])
+            .trimmingCharacters(in: .whitespaces)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+            .lowercased()
+    }
+
+    static func shouldForceHttpsHostedRemote() -> Bool {
+        getAppEnvironment() == "production"
+    }
+
+    static func normalizeHostedRemoteUrl(_ value: String) -> String {
+        guard isAbsoluteUrl(value),
+              shouldForceHttpsHostedRemote(),
+              let remoteHost = getHostedRemoteHost(),
+              var components = URLComponents(string: value),
+              components.host?.caseInsensitiveCompare(remoteHost) == .orderedSame,
+              components.scheme?.lowercased() == "http" else {
+            return value
+        }
+
+        components.scheme = "https"
+
+        return components.url?.absoluteString ?? value
     }
 
     /// Read the NATIVEPHP_START_URL from the .env file
@@ -764,6 +870,20 @@ SWIFT,
             } else {
                 decisionHandler(.allow)
             }
+SWIFT,
+            $contents,
+        );
+
+        $contents = str_replace(
+            <<<'SWIFT'
+            if let urlString = notification.userInfo?["url"] as? String {
+                if let url = URL(string: urlString) {
+SWIFT,
+            <<<'SWIFT'
+            if let urlString = notification.userInfo?["url"] as? String {
+                let normalizedUrlString = NativePHPApp.normalizeHostedRemoteUrl(urlString)
+
+                if let url = URL(string: normalizedUrlString) {
 SWIFT,
             $contents,
         );

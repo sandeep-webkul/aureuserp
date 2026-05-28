@@ -206,6 +206,48 @@ struct NativePHPApp: App {
         return url.host
     }
 
+    static func getAppEnvironment() -> String {
+        let appPath = AppUpdateManager.shared.getAppPath()
+        let envPath = URL(fileURLWithPath: appPath).appendingPathComponent(".env")
+
+        guard FileManager.default.fileExists(atPath: envPath.path),
+              let envContent = try? String(contentsOf: envPath, encoding: .utf8) else {
+            return ""
+        }
+
+        let pattern = #"APP_ENV\s*=\s*([^\r\n]+)"#
+
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: envContent, range: NSRange(envContent.startIndex..., in: envContent)),
+              let valueRange = Range(match.range(at: 1), in: envContent) else {
+            return ""
+        }
+
+        return String(envContent[valueRange])
+            .trimmingCharacters(in: .whitespaces)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+            .lowercased()
+    }
+
+    static func shouldForceHttpsHostedRemote() -> Bool {
+        getAppEnvironment() == "production"
+    }
+
+    static func normalizeHostedRemoteUrl(_ value: String) -> String {
+        guard isAbsoluteUrl(value),
+              shouldForceHttpsHostedRemote(),
+              let remoteHost = getHostedRemoteHost(),
+              var components = URLComponents(string: value),
+              components.host?.caseInsensitiveCompare(remoteHost) == .orderedSame,
+              components.scheme?.lowercased() == "http" else {
+            return value
+        }
+
+        components.scheme = "https"
+
+        return components.url?.absoluteString ?? value
+    }
+
     /// Read the NATIVEPHP_START_URL from the .env file
     static func getStartURL() -> String {
         let appPath = AppUpdateManager.shared.getAppPath()
@@ -230,6 +272,7 @@ struct NativePHPApp: App {
                 if !isAbsoluteUrl(value) && !value.hasPrefix("/") {
                     value = "/" + value
                 }
+                value = normalizeHostedRemoteUrl(value)
                 DebugLogger.shared.log("⚙️ Found start URL in .env: \(value)")
                 return value
             }

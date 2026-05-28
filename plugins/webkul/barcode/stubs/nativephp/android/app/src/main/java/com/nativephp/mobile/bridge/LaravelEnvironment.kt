@@ -134,6 +134,55 @@ class LaravelEnvironment(private val context: Context) {
             }
         }
 
+        fun getAppEnvironment(context: Context): String {
+            val appStorageDir = context.getDir("storage", Context.MODE_PRIVATE)
+            val laravelDir = File(appStorageDir, "laravel")
+            val envFile = File(laravelDir, ".env")
+
+            if (!envFile.exists()) {
+                return ""
+            }
+
+            return try {
+                val envContent = envFile.readText()
+                val pattern = Regex("""APP_ENV\s*=\s*([^\r\n]+)""")
+                val match = pattern.find(envContent)
+
+                match?.groupValues?.get(1)
+                    ?.trim()
+                    ?.trim('"', '\'')
+                    ?.lowercase()
+                    ?: ""
+            } catch (e: Exception) {
+                Log.e(TAG, "⚠️ Error reading APP_ENV from .env file", e)
+                ""
+            }
+        }
+
+        fun shouldForceHttpsHostedRemote(context: Context): Boolean {
+            return getAppEnvironment(context) == "production"
+        }
+
+        fun normalizeHostedRemoteUrl(context: Context, value: String): String {
+            if (!isAbsoluteUrl(value) || !shouldForceHttpsHostedRemote(context)) {
+                return value
+            }
+
+            return try {
+                val remoteHost = getHostedRemoteHost(context) ?: return value
+                val url = URL(value)
+
+                if (url.protocol.equals("http", ignoreCase = true) && url.host.equals(remoteHost, ignoreCase = true)) {
+                    value.replaceFirst("http://", "https://")
+                } else {
+                    value
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "⚠️ Error normalizing hosted remote URL", e)
+                value
+            }
+        }
+
         /**
          * Read NATIVEPHP_START_URL from the extracted .env file
          */
@@ -161,6 +210,7 @@ class LaravelEnvironment(private val context: Context) {
                         if (!isAbsoluteUrl(value) && !value.startsWith("/")) {
                             value = "/$value"
                         }
+                        value = normalizeHostedRemoteUrl(context, value)
                         Log.d(TAG, "⚙️ Found start URL in .env: $value")
                         return value
                     }
