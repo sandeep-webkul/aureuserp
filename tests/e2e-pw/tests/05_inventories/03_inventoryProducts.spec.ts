@@ -129,31 +129,42 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
     test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
+        const warehouseName = `WH Out ${key}`;
+        const warehouseCode = `WO${key}`.slice(-5);
         const productName = `E2E Out Move ${key}`;
+
+        // Use a fresh 1-step warehouse so the receipt's incoming move and the
+        // delivery's outgoing move both transition to "Done" in a single step,
+        // independent of any multi-step state left by earlier tests.
+        await inventoryPage.createWarehouse({
+            name: warehouseName,
+            code: warehouseCode,
+            receptionStep: 1,
+            deliveryStep: 1,
+        });
 
         await inventoryPage.createInventoryProduct({
             name: productName,
             price: "40",
         });
 
-        // Receipt -> stock available, then Delivery -> outgoing row.
         await inventoryPage.receiptFullFlow({
             productName,
             demand: "10",
+            operationType: warehouseName,
         });
-        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
 
         await inventoryPage.deliveryFullFlow({
             productName,
             demand: "4",
+            operationType: warehouseName,
         });
-        const movesAfterDelivery = await inventoryPage.countProductMoveRows(productName);
 
-        // The delivery should have added at least one new move row.
-        if (movesAfterDelivery <= movesAfterReceipt) {
-            throw new Error(
-                `Expected moves count to grow after delivery: ${movesAfterReceipt} -> ${movesAfterDelivery}`
-            );
-        }
+        // After receipt (10) and delivery (4) against the 1-step warehouse, the
+        // product's stock location should hold 6 on hand, and the In/Out tab
+        // should list both validated moves as "Done".
+        await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "6");
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+        await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 });

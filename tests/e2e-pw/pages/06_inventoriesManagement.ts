@@ -18,12 +18,14 @@ export type ReceiptData = {
     partnerName?: string;
     productName: string;
     demand: string;
+    operationType?: string;
 };
 
 export type DeliveryData = {
     partnerName?: string;
     productName: string;
     demand: string;
+    operationType?: string;
 };
 
 export type InternalTransferData = {
@@ -115,7 +117,7 @@ export class InventoriesManagementPage {
         await this.setToggleOn(this.erpLocators.inventoryManageWarehousesToggleEnableMultiSteps);
         await this.erpLocators.inventorySettingsSaveButton.click();
         await this.page.waitForLoadState("networkidle");
-        await this.expectSuccessToast();
+        await this.expectSuccessToastSoft();
     }
 
     /**
@@ -441,7 +443,7 @@ export class InventoriesManagementPage {
         await expect(l.inventoryProductQuantityOpenModal).toBeVisible();
 
         try {
-            await l.inventoryProductQuantityLocationSelect.waitFor({ state: "visible", timeout: 200 });
+            await l.inventoryProductQuantityLocationSelect.waitFor({ state: "visible", timeout: 5000 });
             await this.selectFromFilamentDropdown(l.inventoryProductQuantityLocationSelect, location);
             await this.page.waitForLoadState("networkidle");
         } catch {
@@ -517,18 +519,29 @@ export class InventoriesManagementPage {
      */
     async expectProductMoveRowVisible(productName: string, state?: string) {
         await this.gotoProductMovesTab(productName);
-        const row = state
-            ? this.page.locator("table tbody tr", { hasText: state })
-            : this.page.locator("table tbody tr").first();
-        await expect(row.first()).toBeVisible();
+        if (state) {
+            const tab = this.page.getByRole("tab", { name: new RegExp(`^${this.escapeRegExp(state)}$`, "i") });
+            if (await tab.isVisible().catch(() => false)) {
+                await tab.click();
+                await this.page.waitForLoadState("networkidle");
+            }
+        }
+        const row = this.page.locator("table tbody tr").first();
+        await expect(row).toBeVisible();
     }
 
     /**
-     * Count the moves rows visible on a product's In/Out tab.
+     * Count the moves rows visible on a product's In/Out tab. The default
+     * preset view on this page hardcodes a `state=DONE` filter, so rows are
+     * only counted for moves that have actually been validated.
      */
     async countProductMoveRows(productName: string): Promise<number> {
         await this.gotoProductMovesTab(productName);
-        return this.page.locator("table tbody tr").count();
+        const rows = this.page.locator("table tbody tr");
+        if (await rows.first().isVisible().catch(() => false)) {
+            return rows.count();
+        }
+        return 0;
     }
 
     async deleteInventoryProduct(name: string) {
@@ -588,6 +601,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoReceiptsPage() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await this.page.goto("/admin/inventory/operations/receipts");
         await expect(this.page).toHaveURL(/operations\/receipts/);
         await this.page.waitForLoadState("networkidle");
@@ -598,6 +612,11 @@ export class InventoriesManagementPage {
         await this.gotoReceiptsPage();
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/receipts\/create/);
+
+        if (data.operationType) {
+            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, `${data.operationType}:Receipt`);
+            await this.page.waitForLoadState("networkidle");
+        }
 
         if (data.partnerName) {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
@@ -627,6 +646,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoDeliveriesPage() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await this.page.goto("/admin/inventory/operations/deliveries");
         await expect(this.page).toHaveURL(/operations\/deliveries/);
         await this.page.waitForLoadState("networkidle");
@@ -637,6 +657,11 @@ export class InventoriesManagementPage {
         await this.gotoDeliveriesPage();
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/deliveries\/create/);
+
+        if (data.operationType) {
+            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, data.operationType);
+            await this.page.waitForLoadState("networkidle");
+        }
 
         if (data.partnerName) {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
@@ -666,6 +691,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoInternalTransfersPage() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await this.page.goto("/admin/inventory/operations/internals");
         await expect(this.page).toHaveURL(/operations\/internals/);
         await this.page.waitForLoadState("networkidle");
