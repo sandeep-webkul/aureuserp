@@ -196,7 +196,7 @@ struct NativePHPApp: App {
     }
 
     static func getHostedRemoteHost() -> String? {
-        let startUrl = getStartURL()
+        let startUrl = getRawStartURL()
 
         guard isAbsoluteUrl(startUrl),
               let url = URL(string: startUrl) else {
@@ -204,6 +204,32 @@ struct NativePHPApp: App {
         }
 
         return url.host
+    }
+
+    /// Read raw NATIVEPHP_START_URL from .env without normalization.
+    /// Avoids circular dependency: getStartURL -> normalizeHostedRemoteUrl -> getHostedRemoteHost -> getStartURL
+    private static func getRawStartURL() -> String {
+        let appPath = AppUpdateManager.shared.getAppPath()
+        let envPath = URL(fileURLWithPath: appPath).appendingPathComponent(".env")
+
+        guard FileManager.default.fileExists(atPath: envPath.path),
+              let envContent = try? String(contentsOf: envPath, encoding: .utf8) else {
+            return "/"
+        }
+
+        let pattern = #"NATIVEPHP_START_URL\s*=\s*([^\r\n]+)"#
+
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: envContent, range: NSRange(envContent.startIndex..., in: envContent)),
+              let valueRange = Range(match.range(at: 1), in: envContent) else {
+            return "/"
+        }
+
+        let value = String(envContent[valueRange])
+            .trimmingCharacters(in: .whitespaces)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+
+        return value.isEmpty ? "/" : value
     }
 
     static func getAppEnvironment() -> String {

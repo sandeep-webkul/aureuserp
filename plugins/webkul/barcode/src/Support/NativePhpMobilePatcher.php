@@ -192,7 +192,7 @@ KOTLIN,
 
         fun getHostedRemoteHost(context: Context): String? {
             return try {
-                val startUrl = getStartURL(context)
+                val startUrl = getRawStartURL(context)
 
                 if (!isAbsoluteUrl(startUrl)) {
                     return null
@@ -202,6 +202,23 @@ KOTLIN,
             } catch (e: Exception) {
                 Log.e(TAG, "⚠️ Error parsing hosted remote URL", e)
                 null
+            }
+        }
+
+        private fun getRawStartURL(context: Context): String {
+            val appStorageDir = context.getDir("storage", Context.MODE_PRIVATE)
+            val envFile = File(File(appStorageDir, "laravel"), ".env")
+
+            if (!envFile.exists()) return "/"
+
+            return try {
+                val envContent = envFile.readText()
+                val match = Regex("""NATIVEPHP_START_URL\s*=\s*([^\r\n]+)""").find(envContent)
+                val value = match?.groupValues?.get(1)?.trim()?.trim('"', '\'') ?: ""
+
+                if (value.isEmpty()) "/" else value
+            } catch (e: Exception) {
+                "/"
             }
         }
 
@@ -333,31 +350,99 @@ KOTLIN,
             .replace("\\", "\\\\")
             .replace("\"", "\\\"")
 
-        val jsCode = if (isAbsoluteUrl) {
-            """
+        val jsCode = """
             (function() {
                 var target = "$escapedTarget";
-                console.log('[NativePHP] Absolute navigation requested:', target);
-                window.location.href = target;
-            })();
-            """.trimIndent()
-        } else {
-            """
-            (function() {
-                var path = "$escapedTarget";
-                console.log('[NativePHP] Navigation requested:', path);
+                var hashIdx = target.indexOf('#');
+                if (hashIdx >= 0) {
+                    var targetBase = target.substring(0, hashIdx);
+                    var hash = target.substring(hashIdx);
+                    var currentBase = window.location.href.split('#')[0];
+                    var currentPath = window.location.pathname + window.location.search;
+                    if (!targetBase || targetBase === currentBase || targetBase === currentPath) {
+                        console.log('[NativePHP] Hash-only navigation:', hash);
+                        if (window.location.hash === hash) {
+                            history.replaceState(null, '', currentPath);
+                        }
+                        window.location.hash = hash;
+                        return;
+                    }
+                }
 
-                // Check if Inertia router is available
                 if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
-                    console.log('[NativePHP] Using Inertia router.visit():', path);
-                    window.router.visit(path);
+                    console.log('[NativePHP] Using Inertia router.visit():', target);
+                    window.router.visit(target);
                 } else {
-                    console.log('[NativePHP] Inertia not available, using location.href');
-                    window.location.href = path;
+                    console.log('[NativePHP] Using location.href:', target);
+                    window.location.href = target;
                 }
             })();
-            """.trimIndent()
+        """.trimIndent()
+KOTLIN,
+            $contents,
+        );
+
+        // Patch extractPath to preserve URL fragments (e.g. #scan-barcode)
+        $contents = str_replace(
+            <<<'KOTLIN'
+                // Parse as full URL and extract path + query
+                val parsedUrl = URL(url)
+                // URL.getPath() returns empty string for root, not null - handle both cases
+                val path = if (parsedUrl.path.isNullOrEmpty()) "/" else parsedUrl.path
+                val query = parsedUrl.query
+                val result = if (query != null) "$path?$query" else path
+KOTLIN,
+            <<<'KOTLIN'
+                // Parse as full URL and extract path + query + fragment
+                val parsedUrl = URL(url)
+                // URL.getPath() returns empty string for root, not null - handle both cases
+                val path = if (parsedUrl.path.isNullOrEmpty()) "/" else parsedUrl.path
+                val query = parsedUrl.query
+                val fragment = parsedUrl.ref
+                val result = buildString {
+                    append(path)
+                    if (query != null) append("?$query")
+                    if (fragment != null) append("#$fragment")
+                }
+KOTLIN,
+            $contents,
+        );
+
+        // Add updateNativeUI bridge method for Livewire SPA navigation
+        if (! str_contains($contents, 'fun updateNativeUI(')) {
+            $contents = str_replace(
+                "        @android.webkit.JavascriptInterface\n        fun openDrawer() {",
+                "        @android.webkit.JavascriptInterface\n        fun updateNativeUI(json: String) {\n            Log.d(\"AndroidBridge\", \"📱 updateNativeUI called from JavaScript\")\n            runOnUiThread {\n                if (json.isBlank()) {\n                    NativeUIState.clearAll()\n                } else {\n                    NativeUIState.updateFromJson(json)\n                }\n            }\n        }\n\n        @android.webkit.JavascriptInterface\n        fun openDrawer() {",
+                $contents,
+            );
         }
+
+        // Remove requestLayout() from WebView update block — it runs on every
+        // Compose recomposition and kills scroll performance
+        $contents = str_replace(
+            <<<'KOTLIN'
+                            update = { view ->
+                                // Force layout recalculation when Compose size changes
+                                // This ensures viewport units (100vh, 100vw) work correctly
+                                view.requestLayout()
+                            }
+KOTLIN,
+            '',
+            $contents,
+        );
+
+        // Enable hardware acceleration and disable overscroll for smooth scrolling
+        $contents = str_replace(
+            <<<'KOTLIN'
+            settings.mediaPlaybackRequiresUserGesture = false
+        }
+KOTLIN,
+            <<<'KOTLIN'
+            settings.mediaPlaybackRequiresUserGesture = false
+        }
+
+        webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+        webView.overScrollMode = android.view.View.OVER_SCROLL_NEVER
 KOTLIN,
             $contents,
         );
@@ -725,7 +810,7 @@ SWIFT,
     }
 
     static func getHostedRemoteHost() -> String? {
-        let startUrl = getStartURL()
+        let startUrl = getRawStartURL()
 
         guard isAbsoluteUrl(startUrl),
               let url = URL(string: startUrl) else {
@@ -733,6 +818,30 @@ SWIFT,
         }
 
         return url.host
+    }
+
+    private static func getRawStartURL() -> String {
+        let appPath = AppUpdateManager.shared.getAppPath()
+        let envPath = URL(fileURLWithPath: appPath).appendingPathComponent(".env")
+
+        guard FileManager.default.fileExists(atPath: envPath.path),
+              let envContent = try? String(contentsOf: envPath, encoding: .utf8) else {
+            return "/"
+        }
+
+        let pattern = #"NATIVEPHP_START_URL\s*=\s*([^\r\n]+)"#
+
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: envContent, range: NSRange(envContent.startIndex..., in: envContent)),
+              let valueRange = Range(match.range(at: 1), in: envContent) else {
+            return "/"
+        }
+
+        let value = String(envContent[valueRange])
+            .trimmingCharacters(in: .whitespaces)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+
+        return value.isEmpty ? "/" : value
     }
 
     static func getAppEnvironment() -> String {
@@ -884,6 +993,87 @@ SWIFT,
                 let normalizedUrlString = NativePHPApp.normalizeHostedRemoteUrl(urlString)
 
                 if let url = URL(string: normalizedUrlString) {
+SWIFT,
+            $contents,
+        );
+
+        // Patch extractPath to preserve URL fragments (e.g. #scan-barcode)
+        $contents = str_replace(
+            <<<'SWIFT'
+            // Parse as full URL and extract path + query
+            if let parsedUrl = URL(string: url) {
+                let path = parsedUrl.path.isEmpty ? "/" : parsedUrl.path
+                let query = parsedUrl.query
+                let result = query != nil ? "\(path)?\(query!)" : path
+
+                return result
+            }
+SWIFT,
+            <<<'SWIFT'
+            // Parse as full URL and extract path + query + fragment
+            if let parsedUrl = URL(string: url) {
+                let path = parsedUrl.path.isEmpty ? "/" : parsedUrl.path
+                let query = parsedUrl.query
+                let fragment = parsedUrl.fragment
+                var result = query != nil ? "\(path)?\(query!)" : path
+                if let fragment = fragment {
+                    result += "#\(fragment)"
+                }
+
+                return result
+            }
+SWIFT,
+            $contents,
+        );
+
+        // Patch navigateWithInertia to handle hash-only navigation
+        $contents = str_replace(
+            <<<'SWIFT'
+            let js = """
+            (function() {
+                var path = "\(escapedPath)";
+                console.log('[NativePHP] Navigation requested:', path);
+
+                // Check if Inertia router is available
+                if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
+                    console.log('[NativePHP] Using Inertia router.visit():', path);
+                    window.router.visit(path);
+                } else {
+                    console.log('[NativePHP] Inertia not available, using location.href');
+                    window.location.href = path;
+                }
+            })();
+            """
+SWIFT,
+            <<<'SWIFT'
+            let js = """
+            (function() {
+                var target = "\(escapedPath)";
+                var hashIdx = target.indexOf('#');
+                if (hashIdx >= 0) {
+                    var targetBase = target.substring(0, hashIdx);
+                    var hash = target.substring(hashIdx);
+                    var currentBase = window.location.href.split('#')[0];
+                    var currentPath = window.location.pathname + window.location.search;
+                    if (!targetBase || targetBase === currentBase || targetBase === currentPath) {
+                        console.log('[NativePHP] Hash-only navigation:', hash);
+                        if (window.location.hash === hash) {
+                            history.replaceState(null, '', currentPath);
+                        }
+                        window.location.hash = hash;
+                        return;
+                    }
+                }
+
+                if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
+                    console.log('[NativePHP] Using Inertia router.visit():', target);
+                    window.router.visit(target);
+                } else {
+                    console.log('[NativePHP] Using location.href:', target);
+                    window.location.href = target;
+                }
+            })();
+            """
 SWIFT,
             $contents,
         );

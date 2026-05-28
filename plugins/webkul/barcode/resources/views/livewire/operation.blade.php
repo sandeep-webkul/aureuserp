@@ -221,7 +221,7 @@
 
                 <x-filament::input
                     type="search"
-                    wire:model.live.debounce.250ms="barcode"
+                    wire:model="barcode"
                     :placeholder="__('barcode::app.operation.manual-scan')"
                     autocomplete="off"
                 />

@@ -147,6 +147,19 @@
                     return this.call('Dialog.Toast', { message, duration });
                 },
             };
+
+            document.addEventListener('livewire:navigated', function () {
+                var el = document.getElementById('barcode-native-ui');
+                var json = el ? el.textContent : '';
+
+                if (window.AndroidBridge && typeof window.AndroidBridge.updateNativeUI === 'function') {
+                    window.AndroidBridge.updateNativeUI(json || '');
+                }
+
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeUI) {
+                    window.webkit.messageHandlers.nativeUI.postMessage(json || '');
+                }
+            });
         </script>
     </body>
 </html>

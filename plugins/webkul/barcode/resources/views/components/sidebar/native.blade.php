@@ -2,7 +2,7 @@
     $items = \Webkul\Barcode\Support\Navigation::items();
 @endphp
 
-<native:side-nav gestures-enabled="true">
+<native:side-nav>
     <native:side-nav-header
         title="{{ __('barcode::app.title') }}"
         subtitle="Navigation"

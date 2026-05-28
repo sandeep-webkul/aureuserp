@@ -15,6 +15,7 @@ import com.nativephp.mobile.bridge.PHPQueueWorker
 import com.nativephp.mobile.bridge.LaravelEnvironment
 import com.nativephp.mobile.bridge.registerBridgeFunctions
 import com.nativephp.mobile.network.WebViewManager
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.addCallback
@@ -111,6 +112,9 @@ class MainActivity : FragmentActivity(), WebViewProvider {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            isScrollbarFadingEnabled = true
+            overScrollMode = View.OVER_SCROLL_NEVER
             settings.mediaPlaybackRequiresUserGesture = false
         }
 
@@ -775,12 +779,17 @@ class MainActivity : FragmentActivity(), WebViewProvider {
 
         return try {
             if (url.startsWith("http://") || url.startsWith("https://")) {
-                // Parse as full URL and extract path + query
+                // Parse as full URL and extract path + query + fragment
                 val parsedUrl = URL(url)
                 // URL.getPath() returns empty string for root, not null - handle both cases
                 val path = if (parsedUrl.path.isNullOrEmpty()) "/" else parsedUrl.path
                 val query = parsedUrl.query
-                val result = if (query != null) "$path?$query" else path
+                val fragment = parsedUrl.ref
+                val result = buildString {
+                    append(path)
+                    if (query != null) append("?$query")
+                    if (fragment != null) append("#$fragment")
+                }
                 Log.d("Navigation", "✅ Extracted path from full URL: $result")
                 result
             } else if (url.startsWith("/")) {
@@ -808,24 +817,39 @@ class MainActivity : FragmentActivity(), WebViewProvider {
      * navigation while maintaining compatibility with non-Inertia apps.
      */
     private fun navigateWithInertia(url: String) {
-        val path = extractPath(url)
-        Log.d("Navigation", "🚀 Navigating with Inertia check: $path")
+        val isAbsoluteUrl = url.startsWith("http://") || url.startsWith("https://")
+        val navigationTarget = if (isAbsoluteUrl) url else extractPath(url)
+        Log.d("Navigation", "🚀 Navigating with Inertia check: $navigationTarget")
 
-        // Escape the path for JavaScript string (use double quotes to avoid issues with /)
-        val escapedPath = path.replace("\\", "\\\\").replace("\"", "\\\"")
+        val escapedTarget = navigationTarget
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
 
         val jsCode = """
             (function() {
-                var path = "$escapedPath";
-                console.log('[NativePHP] Navigation requested:', path);
+                var target = "$escapedTarget";
+                var hashIdx = target.indexOf('#');
+                if (hashIdx >= 0) {
+                    var targetBase = target.substring(0, hashIdx);
+                    var hash = target.substring(hashIdx);
+                    var currentBase = window.location.href.split('#')[0];
+                    var currentPath = window.location.pathname + window.location.search;
+                    if (!targetBase || targetBase === currentBase || targetBase === currentPath) {
+                        console.log('[NativePHP] Hash-only navigation:', hash);
+                        if (window.location.hash === hash) {
+                            history.replaceState(null, '', currentPath);
+                        }
+                        window.location.hash = hash;
+                        return;
+                    }
+                }
 
-                // Check if Inertia router is available
                 if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
-                    console.log('[NativePHP] Using Inertia router.visit():', path);
-                    window.router.visit(path);
+                    console.log('[NativePHP] Using Inertia router.visit():', target);
+                    window.router.visit(target);
                 } else {
-                    console.log('[NativePHP] Inertia not available, using location.href');
-                    window.location.href = path;
+                    console.log('[NativePHP] Using location.href:', target);
+                    window.location.href = target;
                 }
             })();
         """.trimIndent()
@@ -899,12 +923,7 @@ class MainActivity : FragmentActivity(), WebViewProvider {
                                 .fillMaxSize()
                                 .padding(paddingValues)
                                 .consumeWindowInsets(paddingValues)
-                                .windowInsetsPadding(WindowInsets.ime),
-                            update = { view ->
-                                // Force layout recalculation when Compose size changes
-                                // This ensures viewport units (100vh, 100vw) work correctly
-                                view.requestLayout()
-                            }
+                                .windowInsetsPadding(WindowInsets.ime)
                         )
                     }
                 }
@@ -1028,6 +1047,18 @@ class MainActivity : FragmentActivity(), WebViewProvider {
     }
 
     inner class AndroidBridge {
+        @android.webkit.JavascriptInterface
+        fun updateNativeUI(json: String) {
+            Log.d("AndroidBridge", "📱 updateNativeUI called from JavaScript")
+            runOnUiThread {
+                if (json.isBlank()) {
+                    NativeUIState.clearAll()
+                } else {
+                    NativeUIState.updateFromJson(json)
+                }
+            }
+        }
+
         @android.webkit.JavascriptInterface
         fun openDrawer() {
             Log.d("AndroidBridge", "🖱️ openDrawer() called from JavaScript")

@@ -89,9 +89,11 @@ class Operation extends Component
 
         if (isset($this->scanResult['moveLine']['id'])) {
             $moveLineId = (int) $this->scanResult['moveLine']['id'];
+            $demandQuantity = (float) ($this->scanResult['moveLine']['demand'] ?? 0);
 
             $this->selectedMoveLineId = $moveLineId;
-            $this->countedMoveLineQuantities[$moveLineId] ??= 0.0;
+            $this->countedMoveLineQuantities[$moveLineId] = $demandQuantity;
+            $this->countedMoveLineIds[$moveLineId] = true;
             $this->dispatch('barcode-move-line-located', moveLineId: $moveLineId, scannedAt: now()->getTimestampMs());
         }
 
@@ -362,19 +364,15 @@ class Operation extends Component
 
     private function loadOperation(InventoryOperation $operation): InventoryOperation
     {
-        return $operation->load([
+        return $operation->loadMissing([
             'operationType',
             'partner',
             'sourceLocation',
             'destinationLocation',
             'moveLines.sourceLocation',
-            'moveLines.destinationLocation',
             'moveLines.product',
             'moveLines.uom',
             'moveLines.lot',
-            'moveLines.package',
-            'moveLines.resultPackage',
-            'moveLines.move',
         ]);
     }
 

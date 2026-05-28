@@ -71,18 +71,26 @@ struct ContentView: View {
             if let parsedUrl = URL(string: url) {
                 let path = parsedUrl.path.isEmpty ? "/" : parsedUrl.path
                 let query = parsedUrl.query
-                let result = query != nil ? "\(path)?\(query!)" : path
+                let fragment = parsedUrl.fragment
+                var result = query != nil ? "\(path)?\(query!)" : path
+                if let fragment = fragment {
+                    result += "#\(fragment)"
+                }
 
                 return result
             }
         }
 
         if url.hasPrefix("http://") || url.hasPrefix("https://") {
-            // Parse as full URL and extract path + query
+            // Parse as full URL and extract path + query + fragment
             if let parsedUrl = URL(string: url) {
                 let path = parsedUrl.path.isEmpty ? "/" : parsedUrl.path
                 let query = parsedUrl.query
-                let result = query != nil ? "\(path)?\(query!)" : path
+                let fragment = parsedUrl.fragment
+                var result = query != nil ? "\(path)?\(query!)" : path
+                if let fragment = fragment {
+                    result += "#\(fragment)"
+                }
 
                 return result
             }
@@ -411,16 +419,29 @@ struct WebView: UIViewRepresentable {
 
             let js = """
             (function() {
-                var path = "\(escapedPath)";
-                console.log('[NativePHP] Navigation requested:', path);
+                var target = "\(escapedPath)";
+                var hashIdx = target.indexOf('#');
+                if (hashIdx >= 0) {
+                    var targetBase = target.substring(0, hashIdx);
+                    var hash = target.substring(hashIdx);
+                    var currentBase = window.location.href.split('#')[0];
+                    var currentPath = window.location.pathname + window.location.search;
+                    if (!targetBase || targetBase === currentBase || targetBase === currentPath) {
+                        console.log('[NativePHP] Hash-only navigation:', hash);
+                        if (window.location.hash === hash) {
+                            history.replaceState(null, '', currentPath);
+                        }
+                        window.location.hash = hash;
+                        return;
+                    }
+                }
 
-                // Check if Inertia router is available
                 if (typeof window.router !== 'undefined' && typeof window.router.visit === 'function') {
-                    console.log('[NativePHP] Using Inertia router.visit():', path);
-                    window.router.visit(path);
+                    console.log('[NativePHP] Using Inertia router.visit():', target);
+                    window.router.visit(target);
                 } else {
-                    console.log('[NativePHP] Inertia not available, using location.href');
-                    window.location.href = path;
+                    console.log('[NativePHP] Using location.href:', target);
+                    window.location.href = target;
                 }
             })();
             """
@@ -595,6 +616,9 @@ struct WebView: UIViewRepresentable {
     func addNativeHelper(webView: WKWebView) {
         let contentController = webView.configuration.userContentController
 
+        // Register native UI update handler for Livewire SPA navigation
+        contentController.add(NativeUIHandler(), name: "nativeUI")
+
         // Inject safe area CSS FIRST at document start to prevent layout jump
         let safeAreaCSS = """
         (function() {
@@ -658,6 +682,20 @@ struct WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {
         // No manual insets needed - safeAreaInset handles topbar automatically
         // Bottom nav uses its own safeAreaInset in WebViewLayoutContainer
+    }
+}
+
+class NativeUIHandler: NSObject, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let json = message.body as? String else { return }
+
+        DispatchQueue.main.async {
+            if json.isEmpty {
+                NativeUIState.shared.clearAll()
+            } else {
+                NativeUIState.shared.updateFromJson(json)
+            }
+        }
     }
 }
 

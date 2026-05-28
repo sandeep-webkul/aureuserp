@@ -121,7 +121,7 @@ class LaravelEnvironment(private val context: Context) {
 
         fun getHostedRemoteHost(context: Context): String? {
             return try {
-                val startUrl = getStartURL(context)
+                val startUrl = getRawStartURL(context)
 
                 if (!isAbsoluteUrl(startUrl)) {
                     return null
@@ -131,6 +131,27 @@ class LaravelEnvironment(private val context: Context) {
             } catch (e: Exception) {
                 Log.e(TAG, "⚠️ Error parsing hosted remote URL", e)
                 null
+            }
+        }
+
+        /**
+         * Read raw NATIVEPHP_START_URL from .env without normalization.
+         * Used by getHostedRemoteHost to avoid circular dependency with normalizeHostedRemoteUrl.
+         */
+        private fun getRawStartURL(context: Context): String {
+            val appStorageDir = context.getDir("storage", Context.MODE_PRIVATE)
+            val envFile = File(File(appStorageDir, "laravel"), ".env")
+
+            if (!envFile.exists()) return "/"
+
+            return try {
+                val envContent = envFile.readText()
+                val match = Regex("""NATIVEPHP_START_URL\s*=\s*([^\r\n]+)""").find(envContent)
+                val value = match?.groupValues?.get(1)?.trim()?.trim('"', '\'') ?: ""
+
+                if (value.isEmpty()) "/" else value
+            } catch (e: Exception) {
+                "/"
             }
         }
 
