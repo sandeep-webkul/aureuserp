@@ -3,8 +3,8 @@
 use Filament\Http\Middleware\SetUpPanel;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Http\Middleware\Authenticate;
-use Webkul\Barcode\Http\Middleware\PersistNativeShell;
-use Webkul\Barcode\Http\Middleware\RenderHostedNativeUi;
+use Webkul\NativephpRemote\Http\Middleware\PersistNativeShell;
+use Webkul\NativephpRemote\Http\Middleware\RenderHostedNativeUi;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Auth\Login;
 use Webkul\Barcode\Livewire\Dashboard;

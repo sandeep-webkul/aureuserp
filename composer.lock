@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d74ad679d88ada5c57c71c5cdc804507",
+    "content-hash": "65a1cf15f4f2bb05634f548f357ffb34",
     "packages": [
+        {
+            "name": "aureuserp/nativephp-remote",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aureuserp/nativephp-remote.git",
+                "reference": "398e13f6c59c1eb38e91c0082cc970c3dc6bc037"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aureuserp/nativephp-remote/zipball/398e13f6c59c1eb38e91c0082cc970c3dc6bc037",
+                "reference": "398e13f6c59c1eb38e91c0082cc970c3dc6bc037",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.2"
+            },
+            "suggest": {
+                "nativephp/mobile": "Required for Edge UI components and native bridge functions"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Webkul\\NativephpRemote\\NativephpRemoteServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webkul\\NativephpRemote\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Webkul",
+                    "email": "support@webkul.com"
+                }
+            ],
+            "description": "NativePHP hosted remote mode support — connect NativePHP mobile apps to a centralized web server",
+            "support": {
+                "issues": "https://github.com/aureuserp/nativephp-remote/issues",
+                "source": "https://github.com/aureuserp/nativephp-remote/tree/v0.1.0"
+            },
+            "time": "2026-05-28T14:18:53+00:00"
+        },
         {
             "name": "bacon/bacon-qr-code",
             "version": "v3.1.1",

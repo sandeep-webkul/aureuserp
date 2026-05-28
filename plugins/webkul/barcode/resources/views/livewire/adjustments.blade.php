@@ -97,7 +97,7 @@
             </form>
         </section>
 
-        <footer class="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+        <footer class="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]" style="padding-bottom: calc(0.5rem + var(--inset-bottom, 0px))">
             <x-filament::button color="gray" class="w-full justify-center" wire:click="discardQuantityEdit">
                 {{ __('barcode::app.operation.discard') }}
             </x-filament::button>

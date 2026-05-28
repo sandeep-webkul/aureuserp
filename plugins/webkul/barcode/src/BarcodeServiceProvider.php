@@ -7,7 +7,6 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
-use Webkul\Barcode\Console\Commands\PatchNativeCommand;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
@@ -30,9 +29,6 @@ class BarcodeServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasRoute('web')
-            ->hasCommands([
-                PatchNativeCommand::class,
-            ])
             ->hasDependencies([
                 'inventories',
                 'manufacturing',

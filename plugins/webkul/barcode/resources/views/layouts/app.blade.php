@@ -9,7 +9,6 @@
 >
     @php
         $nativeBridgeEnabled = \Webkul\Barcode\Support\NativeApp::usesNativeNavigation();
-        $nativeRuntimeEnabled = \Webkul\Barcode\Support\NativeApp::bridgeEnabled();
     @endphp
     <head>
         <meta charset="utf-8">
@@ -104,62 +103,6 @@
         @livewireScripts
         @filamentScripts(withCore: true)
         <script src="{{ route('barcode.asset', ['file' => 'html5-qrcode.min.js']) }}" defer></script>
-        <script>
-            window.BarcodeNative = {
-                enabled: @js($nativeRuntimeEnabled),
-
-                async call(method, params = {}) {
-                    if (! this.enabled) {
-                        return null;
-                    }
-
-                    try {
-                        const response = await fetch('/_native/api/call', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                            },
-                            body: JSON.stringify({ method, params }),
-                        });
-
-                        if (! response.ok) {
-                            return null;
-                        }
-
-                        const payload = await response.json();
-
-                        return payload.status === 'success' ? payload.data : null;
-                    } catch (error) {
-                        return null;
-                    }
-                },
-
-                async vibrate() {
-                    return this.call('Device.Vibrate');
-                },
-
-                async toast(message, duration = 'short') {
-                    if (! message) {
-                        return null;
-                    }
-
-                    return this.call('Dialog.Toast', { message, duration });
-                },
-            };
-
-            document.addEventListener('livewire:navigated', function () {
-                var el = document.getElementById('barcode-native-ui');
-                var json = el ? el.textContent : '';
-
-                if (window.AndroidBridge && typeof window.AndroidBridge.updateNativeUI === 'function') {
-                    window.AndroidBridge.updateNativeUI(json || '');
-                }
-
-                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeUI) {
-                    window.webkit.messageHandlers.nativeUI.postMessage(json || '');
-                }
-            });
-        </script>
+        <x-nativephp-remote::bridge-scripts />
     </body>
 </html>

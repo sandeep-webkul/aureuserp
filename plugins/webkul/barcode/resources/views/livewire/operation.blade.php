@@ -183,7 +183,7 @@
             <div class="h-12" aria-hidden="true"></div>
         </section>
 
-        <footer class="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+        <footer class="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]" style="padding-bottom: calc(0.5rem + var(--inset-bottom, 0px))">
             <x-filament::button color="gray" class="w-full justify-center" wire:click="discardMoveLineEdit">
                 {{ __('barcode::app.operation.discard') }}
             </x-filament::button>
@@ -322,7 +322,7 @@
             @endforelse
         </section>
 
-        <footer class="fixed inset-x-0 bottom-0 z-20 grid auto-cols-fr grid-flow-col gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+        <footer class="fixed inset-x-0 bottom-0 z-20 grid auto-cols-fr grid-flow-col gap-2 border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]" style="padding-bottom: calc(0.5rem + var(--inset-bottom, 0px))">
             @foreach ($actions as $action)
                 @if ($action['key'] === 'validate' || $action['key'] === 'done')
                     <x-filament::button
