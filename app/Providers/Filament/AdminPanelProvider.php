@@ -5,23 +5,24 @@ namespace App\Providers\Filament;
 use App\Http\Middleware\SetLocale;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Actions\Action;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
-use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Webkul\Manufacturing\ManufacturingPlugin;
 use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
 
@@ -51,54 +52,58 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn() => Auth::user()?->name)
-                    ->url(fn(): string => Profile::getUrl()),
+                    ->label(fn () => Auth::user()?->name)
+                    ->url(fn (): string => Profile::getUrl()),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.dashboard'))
+                    ->label(fn (): string => __('admin.navigation.dashboard'))
                     ->icon('icon-dashboard'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.contact'))
+                    ->label(fn (): string => __('admin.navigation.contact'))
                     ->icon('icon-contacts'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.sale'))
+                    ->label(fn (): string => __('admin.navigation.sale'))
                     ->icon('icon-sales'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.purchase'))
+                    ->label(fn (): string => __('admin.navigation.purchase'))
                     ->icon('icon-purchases'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.invoice'))
-                    ->icon('icon-invoices'),
+                    ->label(fn (): string => __('admin.navigation.manufacturing'))
+                    ->icon('icon-manufacturing'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.accounting'))
-                    ->icon('icon-accounting'),
-                NavigationGroup::make()
-                    ->label(__('admin.navigation.inventory'))
+                    ->label(fn (): string => __('admin.navigation.inventory'))
                     ->icon('icon-inventories'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.project'))
+                    ->label(fn (): string => __('admin.navigation.invoice'))
+                    ->icon('icon-invoices'),
+                NavigationGroup::make()
+                    ->label(fn (): string => __('admin.navigation.accounting'))
+                    ->icon('icon-accounting'),
+                NavigationGroup::make()
+                    ->label(fn (): string => __('admin.navigation.project'))
                     ->icon('icon-projects'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.employee'))
+                    ->label(fn (): string => __('admin.navigation.employee'))
                     ->icon('icon-employees'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.time-off'))
+                    ->label(fn (): string => __('admin.navigation.time-off'))
                     ->icon('icon-time-offs'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.recruitment'))
+                    ->label(fn (): string => __('admin.navigation.recruitment'))
                     ->icon('icon-recruitments'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.website'))
+                    ->label(fn (): string => __('admin.navigation.website'))
                     ->icon('icon-website'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.plugin'))
+                    ->label(fn (): string => __('admin.navigation.plugin'))
                     ->icon('icon-plugin'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.setting'))
+                    ->label(fn (): string => __('admin.navigation.setting'))
                     ->icon('icon-settings'),
             ])
             ->plugins([
+                ManufacturingPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,
@@ -125,7 +130,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
+                PreventRequestForgery::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,

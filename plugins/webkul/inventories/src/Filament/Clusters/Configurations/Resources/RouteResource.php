@@ -19,7 +19,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -353,23 +352,6 @@ class RouteResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
-    }
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $route = request()->route()?->getName() ?? session('current_route');
-
-        if ($route && $route != 'livewire.update') {
-            session(['current_route' => $route]);
-        } else {
-            $route = session('current_route');
-        }
-
-        if ($route === self::getRouteBaseName().'.index') {
-            return SubNavigationPosition::Start;
-        }
-
-        return SubNavigationPosition::Top;
     }
 
     public static function getRecordSubNavigation(Page $page): array

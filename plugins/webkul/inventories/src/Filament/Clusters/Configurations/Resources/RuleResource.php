@@ -13,7 +13,6 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -144,10 +143,9 @@ class RuleResource extends Resource
 
                                         Group::make()
                                             ->schema([
-                                                Placeholder::make('placeholder')
+                                                TextEntry::make('placeholder')
                                                     ->hiddenLabel()
-                                                    ->content(new HtmlString('When products are needed in Destination Location, </br>Operation Type are created from Source Location to fulfill the need.'))
-                                                    ->content(function (Get $get): HtmlString {
+                                                    ->getStateUsing(function (Get $get): HtmlString {
                                                         $operation = OperationType::find($get('operation_type_id'));
 
                                                         $pullMessage = __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action-information.pull', [
@@ -166,15 +164,20 @@ class RuleResource extends Resource
                                                             'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.destination-location'),
                                                         ]);
 
+                                                        $manufactureMessage = __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action-information.manufacture', [
+                                                            'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.destination-location'),
+                                                        ]);
+
                                                         $action = ($get('action') instanceof RuleAction)
                                                             ? $get('action')
                                                             : RuleAction::tryFrom($get('action') ?? RuleAction::PULL->value);
 
                                                         return match ($action) {
-                                                            RuleAction::PULL      => new HtmlString($pullMessage),
-                                                            RuleAction::PUSH      => new HtmlString($pushMessage),
-                                                            RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
-                                                            default               => new HtmlString($buyMessage),
+                                                            RuleAction::PULL        => new HtmlString($pullMessage),
+                                                            RuleAction::PUSH        => new HtmlString($pushMessage),
+                                                            RuleAction::PULL_PUSH   => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                                            RuleAction::BUY         => new HtmlString($buyMessage),
+                                                            RuleAction::MANUFACTURE => new HtmlString($manufactureMessage),
                                                         };
                                                     }),
                                             ]),

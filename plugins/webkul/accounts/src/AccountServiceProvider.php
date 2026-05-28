@@ -3,6 +3,8 @@
 namespace Webkul\Account;
 
 use Filament\Panel;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -89,6 +91,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_02_16_063000_alter_partners_partners_table',
                 '2026_02_25_044931_alter_accounts_full_reconciles_table',
                 '2026_03_03_120000_alter_accounts_journals_bank_account_foreign_key',
+                '2026_04_17_000001_add_parent_id_to_accounts_accounts_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -112,9 +115,16 @@ class AccountServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        include __DIR__.'/helpers.php';
-
         Livewire::component('invoice-summary', InvoiceSummary::class);
+
+        $this->registerCustomCss();
+    }
+
+    public function registerCustomCss(): void
+    {
+        FilamentAsset::register([
+            Css::make('accounts', __DIR__.'/../resources/dist/accounts.css'),
+        ], 'accounts');
     }
 
     public function packageRegistered(): void
