@@ -102,7 +102,6 @@
 
         @livewireScripts
         @filamentScripts(withCore: true)
-        <script src="{{ route('barcode.asset', ['file' => 'html5-qrcode.min.js']) }}" defer></script>
         <x-nativephp-remote::bridge-scripts />
     </body>
 </html>

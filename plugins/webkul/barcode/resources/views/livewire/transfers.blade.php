@@ -11,7 +11,7 @@
             ])
         @endunless
 
-        <div id="barcode-reader" class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs" x-show="active" x-cloak></div>
+        <div id="barcode-reader" class="fixed inset-x-2 top-2 z-40 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg" x-show="active" x-cloak></div>
 
         <div class="mb-3" x-show="scannerError" x-cloak>
             <x-filament::callout icon="heroicon-o-exclamation-triangle" color="warning">

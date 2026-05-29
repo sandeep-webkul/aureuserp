@@ -22,12 +22,6 @@ Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class
 });
 
 Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class, SetUpPanel::class.':admin'])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
-    Route::get('/assets/{file}', function (string $file) {
-        abort_unless(in_array($file, ['barcode.css', 'barcode.js', 'html5-qrcode.min.js'], true), 404);
-
-        return response()->file(__DIR__.'/../resources/dist/'.$file);
-    })->name('asset');
-
     Route::get('/login', Login::class)->name('login');
 
     Route::middleware([Authenticate::class])->group(function (): void {

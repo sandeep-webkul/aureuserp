@@ -175,6 +175,28 @@
     }
 
     if (! window.BarcodeGlobal.dispatchNativeScanRequestFromHash) {
+        window.BarcodeGlobal.forceScrollTop = () => {
+            const html = document.documentElement;
+            const body = document.body;
+            const prevHtmlBehavior = html.style.scrollBehavior;
+            const prevBodyBehavior = body.style.scrollBehavior;
+
+            html.style.scrollBehavior = 'auto';
+            body.style.scrollBehavior = 'auto';
+
+            (document.scrollingElement || html).scrollTop = 0;
+            html.scrollTop = 0;
+            body.scrollTop = 0;
+            window.scrollTo(0, 0);
+
+            document.querySelectorAll('main, [data-scroll-root]').forEach((el) => {
+                el.scrollTop = 0;
+            });
+
+            html.style.scrollBehavior = prevHtmlBehavior;
+            body.style.scrollBehavior = prevBodyBehavior;
+        };
+
         window.BarcodeGlobal.dispatchNativeScanRequestFromHash = () => {
             if (window.location.hash !== '#scan-barcode') {
                 return;
@@ -182,8 +204,16 @@
 
             const hashlessUrl = `${window.location.pathname}${window.location.search}`;
 
+            window.BarcodeUiState.lastLocatedRecordKey = null;
+
+            window.BarcodeGlobal.forceScrollTop();
+
             window.dispatchEvent(new CustomEvent('barcode-native-scan-request'));
             window.history.replaceState({}, document.title, hashlessUrl);
+
+            requestAnimationFrame(window.BarcodeGlobal.forceScrollTop);
+            setTimeout(window.BarcodeGlobal.forceScrollTop, 50);
+            setTimeout(window.BarcodeGlobal.forceScrollTop, 200);
         };
 
         window.addEventListener('hashchange', window.BarcodeGlobal.dispatchNativeScanRequestFromHash);

@@ -6,6 +6,7 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Vite;
 use Livewire\Livewire;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;
@@ -48,8 +49,9 @@ class BarcodeServiceProvider extends PackageServiceProvider
         Livewire::component('barcode-operation', Operation::class);
 
         FilamentAsset::register(assets: [
-            Css::make('barcode', __DIR__.'/../resources/dist/barcode.css'),
-            Js::make('barcode', __DIR__.'/../resources/dist/barcode.js'),
+            Css::make('barcode', Vite::asset('plugins/webkul/barcode/resources/dist/barcode.css')),
+            Js::make('barcode', Vite::asset('plugins/webkul/barcode/resources/dist/barcode.js')),
+            Js::make('html5-qrcode', __DIR__.'/../resources/dist/html5-qrcode.min.js'),
         ], package: 'barcode');
     }
 

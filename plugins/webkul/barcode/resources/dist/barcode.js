@@ -93,8 +93,13 @@
                     this.scannerError = '';
                     this.processing = false;
 
+                    window.BarcodeUiState.lastLocatedRecordKey = null;
+                    window.BarcodeGlobal?.forceScrollTop?.();
+
                     await this.$nextTick();
                     await new Promise((resolve) => window.requestAnimationFrame(resolve));
+
+                    window.BarcodeGlobal?.forceScrollTop?.();
 
                     if (! window.Html5Qrcode) {
                         this.active = false;
@@ -175,6 +180,37 @@
     }
 
     if (! window.BarcodeGlobal.dispatchNativeScanRequestFromHash) {
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+
+        window.BarcodeGlobal.forceScrollTop = () => {
+            const active = document.activeElement;
+            if (active && typeof active.blur === 'function' && active !== document.body) {
+                active.blur();
+            }
+
+            const html = document.documentElement;
+            const body = document.body;
+            const prevHtmlBehavior = html.style.scrollBehavior;
+            const prevBodyBehavior = body.style.scrollBehavior;
+
+            html.style.scrollBehavior = 'auto';
+            body.style.scrollBehavior = 'auto';
+
+            (document.scrollingElement || html).scrollTop = 0;
+            html.scrollTop = 0;
+            body.scrollTop = 0;
+            window.scrollTo(0, 0);
+
+            document.querySelectorAll('main').forEach((el) => {
+                el.scrollTop = 0;
+            });
+
+            html.style.scrollBehavior = prevHtmlBehavior;
+            body.style.scrollBehavior = prevBodyBehavior;
+        };
+
         window.BarcodeGlobal.dispatchNativeScanRequestFromHash = () => {
             if (window.location.hash !== '#scan-barcode') {
                 return;
@@ -182,8 +218,8 @@
 
             const hashlessUrl = `${window.location.pathname}${window.location.search}`;
 
-            window.dispatchEvent(new CustomEvent('barcode-native-scan-request'));
             window.history.replaceState({}, document.title, hashlessUrl);
+            window.dispatchEvent(new CustomEvent('barcode-native-scan-request'));
         };
 
         window.addEventListener('hashchange', window.BarcodeGlobal.dispatchNativeScanRequestFromHash);
