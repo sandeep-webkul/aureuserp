@@ -142,8 +142,8 @@ class Rule extends Model implements Sortable
                     && $rule->delay
                 ) {
                     $delayDescription[] = [
-                        __('Delay on :name', ['name' => $rule->name]),
-                        __('+ :days day(s)', ['days' => $rule->delay]),
+                        __('inventories::system.rule.delay-on', ['name' => $rule->name]),
+                        __('inventories::system.rule.days', ['days' => $rule->delay]),
                     ];
                 }
             }
@@ -151,8 +151,8 @@ class Rule extends Model implements Sortable
 
         if ($globalVisibilityDays) {
             $delayDescription[] = [
-                __('Time Horizon'),
-                __('+ :days day(s)', ['days' => $globalVisibilityDays]),
+                __('inventories::system.rule.time-horizon'),
+                __('inventories::system.rule.days', ['days' => $globalVisibilityDays]),
             ];
         }
 
