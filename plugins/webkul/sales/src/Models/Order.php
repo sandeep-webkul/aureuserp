@@ -263,6 +263,8 @@ class Order extends Model
 
         static::saving(function ($order) {
             $order->updateName();
+
+            $order->lines->each->update(['state' => $order->state]);
         });
 
         static::created(function ($order) {
