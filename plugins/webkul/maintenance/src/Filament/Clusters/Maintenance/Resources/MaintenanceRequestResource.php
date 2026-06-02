@@ -242,6 +242,7 @@ class MaintenanceRequestResource extends Resource
                                             ->columnSpanFull(),
 
                                         View::make('maintenance::filament.clusters.maintenance.resources.maintenance-request.instruction-preview')
+                                            ->visible(fn (?Model $record): bool => filled($record?->getKey()))
                                             ->columnSpanFull(),
                                     ]),
                             ])

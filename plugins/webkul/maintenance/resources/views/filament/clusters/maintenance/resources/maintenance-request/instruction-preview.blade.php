@@ -4,16 +4,27 @@
 
     $record = $getRecord();
 
-    $instructionType = $record?->instruction_type;
-    $instructionPdf = $record?->instruction_pdf;
-    $instructionGoogleSlide = $record?->instruction_google_slide;
-    $instructionText = $record?->instruction_text;
+    $hasPersistedRecord = $record instanceof MaintenanceRequest && $record->exists;
+
+    $instructionType = $hasPersistedRecord ? $record->instruction_type : null;
+    $instructionPdf = $hasPersistedRecord ? $record->instruction_pdf : null;
+    $instructionGoogleSlide = $hasPersistedRecord ? $record->instruction_google_slide : null;
+    $instructionText = $hasPersistedRecord ? $record->instruction_text : null;
+
+    $hasUnsavedInstructionChanges = false;
 
     if (isset($get)) {
-        $instructionType = $get('instruction_type') ?: $instructionType;
-        $instructionPdf = $get('instruction_pdf') ?: $instructionPdf;
-        $instructionGoogleSlide = $get('instruction_google_slide') ?: $instructionGoogleSlide;
-        $instructionText = $get('instruction_text') ?: $instructionText;
+        $currentInstructionPdf = $get('instruction_pdf');
+
+        if (is_array($currentInstructionPdf)) {
+            $currentInstructionPdf = reset($currentInstructionPdf) ?: null;
+        }
+
+        $hasUnsavedInstructionChanges = ! $hasPersistedRecord
+            || $get('instruction_type') !== $instructionType
+            || $currentInstructionPdf !== $instructionPdf
+            || $get('instruction_google_slide') !== $instructionGoogleSlide
+            || $get('instruction_text') !== $instructionText;
     }
 
     if (is_array($instructionPdf)) {
@@ -31,8 +42,16 @@
     $instructionTypeLabel = filled($instructionType)
         ? __('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.tabs.instructions.fields.instruction-type-options.'.str_replace('_', '-', $instructionType))
         : '—';
+
+    $hasPreviewContent = match ($instructionType) {
+        'pdf' => filled($instructionPdf),
+        'google_slide' => filled($instructionGoogleSlide),
+        'text' => filled($instructionText),
+        default => false,
+    };
 @endphp
 
+@if ($hasPersistedRecord && $hasPreviewContent && ! $hasUnsavedInstructionChanges)
 <div class="space-y-4">
     <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3">
@@ -107,3 +126,4 @@
         </div>
     </div>
 </div>
+@endif

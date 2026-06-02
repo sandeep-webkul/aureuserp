@@ -44,7 +44,8 @@ return [
 
     'form' => [
         'fields' => [
-            'subject' => 'الموضوع',
+            'subject'      => 'الموضوع',
+            'scheduled-at' => 'مجدول في',
         ],
     ],
 

@@ -44,7 +44,8 @@ return [
 
     'form' => [
         'fields' => [
-            'subject' => 'Subject',
+            'subject'      => 'Subject',
+            'scheduled-at' => 'Scheduled At',
         ],
     ],
 

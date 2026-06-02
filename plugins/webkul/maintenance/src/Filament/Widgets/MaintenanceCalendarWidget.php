@@ -4,6 +4,7 @@ namespace Webkul\Maintenance\Filament\Widgets;
 
 use Carbon\Carbon;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -15,6 +16,7 @@ use Filament\Support\Enums\FontWeight;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Webkul\FullCalendar\Filament\Actions\CreateAction;
 use Webkul\FullCalendar\Filament\Actions\ViewAction;
 use Webkul\FullCalendar\Filament\Widgets\FullCalendarWidget;
 use Webkul\Maintenance\Enums\MaintenanceRequestType;
@@ -26,6 +28,8 @@ use Webkul\Maintenance\Models\Team;
 class MaintenanceCalendarWidget extends FullCalendarWidget
 {
     public Model|string|null $model = MaintenanceRequest::class;
+
+    public ?string $slotScheduledAt = null;
 
     public function getHeading(): string|Htmlable|null
     {
@@ -67,17 +71,22 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
     protected function headerActions(): array
     {
         return [
-            Action::make('newRequest')
+            CreateAction::make('create')
                 ->icon('heroicon-o-plus-circle')
                 ->modalIcon('heroicon-o-calendar-days')
                 ->label(__('maintenance::filament/widgets/maintenance-calendar-widget.header-actions.create.label'))
                 ->modalHeading(__('maintenance::filament/widgets/maintenance-calendar-widget.header-actions.create.modal-heading'))
                 ->color('success')
-                ->schema($this->getFormSchema())
                 ->action(fn (array $data) => $this->createMaintenanceRequest($data))
                 ->mountUsing(function (Schema $schema, array $arguments): void {
+                    $scheduledAt = $arguments['scheduled_at'] ?? $arguments['start'] ?? null;
+
+                    $this->slotScheduledAt = $scheduledAt
+                        ? Carbon::parse($scheduledAt)->toDateTimeString()
+                        : null;
+
                     $schema->fill([
-                        'scheduled_at' => $arguments['scheduled_at'] ?? $arguments['start'] ?? now(),
+                        'scheduled_at' => $this->slotScheduledAt ?? now(),
                     ]);
                 }),
         ];
@@ -113,7 +122,14 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
                 ->autofocus()
                 ->columnSpanFull(),
 
-            Hidden::make('scheduled_at'),
+            $this->slotScheduledAt
+                ? Hidden::make('scheduled_at')
+                : DateTimePicker::make('scheduled_at')
+                    ->label(__('maintenance::filament/widgets/maintenance-calendar-widget.form.fields.scheduled-at'))
+                    ->required()
+                    ->seconds(false)
+                    ->native(false)
+                    ->default(now()),
         ];
     }
 
@@ -199,8 +215,10 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
 
     public function onDateSelect(string $start, ?string $end, bool $allDay, ?array $view, ?array $resource): void
     {
-        $this->mountAction('newRequest', [
-            'scheduled_at' => Carbon::parse($start)->toDateTimeString(),
+        $this->slotScheduledAt = Carbon::parse($start)->toDateTimeString();
+
+        $this->mountAction('create', [
+            'scheduled_at' => $this->slotScheduledAt,
         ]);
     }
 
@@ -235,6 +253,8 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
             ->title(__('maintenance::filament/widgets/maintenance-calendar-widget.header-actions.create.notification.success.title'))
             ->body(__('maintenance::filament/widgets/maintenance-calendar-widget.header-actions.create.notification.success.body'))
             ->send();
+
+        $this->slotScheduledAt = null;
 
         $this->refreshRecords();
     }
