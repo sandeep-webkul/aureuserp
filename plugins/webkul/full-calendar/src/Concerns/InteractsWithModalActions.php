@@ -10,8 +10,22 @@ trait InteractsWithModalActions
 {
     protected array $cachedModalActions = [];
 
-    public function cacheInteractsWithModalActions(): void
+    public function bootInteractsWithModalActions(): void
     {
+        $this->cacheModalActions();
+    }
+
+    public function bootedInteractsWithModalActions(): void
+    {
+        $this->cacheModalActions();
+    }
+
+    protected function cacheModalActions(): void
+    {
+        if ($this->cachedModalActions) {
+            return;
+        }
+
         foreach ($this->modalActions() as $action) {
             if ($action instanceof ActionGroup) {
                 $action->livewire($this);

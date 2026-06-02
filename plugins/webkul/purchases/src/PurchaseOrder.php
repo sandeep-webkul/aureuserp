@@ -501,6 +501,8 @@ class PurchaseOrder
                 $values = $this->prepareInventoryOperation($order);
 
                 $operation = Receipt::create($values);
+
+                $order->operations()->attach($operation->id);
             }
 
             $moves = $this->createInventoryMoves(collect([$line]), $operation);
@@ -541,6 +543,8 @@ class PurchaseOrder
             $values = $this->prepareInventoryOperation($record);
 
             $operation = Receipt::create($values);
+
+            $record->operations()->attach($operation->id);
 
             $operations = collect([$operation]);
         } else {

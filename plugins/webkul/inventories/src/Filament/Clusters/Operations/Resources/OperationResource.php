@@ -287,6 +287,7 @@ class OperationResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
+            ->defaultSort('id', 'desc')
             ->columns([
                 IconColumn::make('is_favorite')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.favorite'))
