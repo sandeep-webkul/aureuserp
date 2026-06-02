@@ -28,6 +28,8 @@ class Partner extends Authenticatable implements FilamentUser
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, Notifiable, SoftDeletes;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'partners';
+
     protected $table = 'partners_partners';
 
     protected $fillable = [

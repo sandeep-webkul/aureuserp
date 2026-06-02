@@ -52,6 +52,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -584,6 +585,7 @@ class QuotationResource extends Resource
                     ->collapsible(),
             ])
             ->recordActions([
+                ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
@@ -1294,6 +1296,15 @@ class QuotationResource extends Resource
                 $action->requiresConfirmation();
 
                 $action->before(function (Action $action, $livewire) {
+                    $arguments = $action->getArguments();
+
+                    if (
+                        ! empty($arguments['item'] ?? '') &&
+                        ! str_starts_with($arguments['item'] ?? '', 'record-')
+                    ) {
+                        return;
+                    }
+
                     if ($livewire->getRecord()?->state === OrderState::SALE) {
                         Notification::make()
                             ->danger()
@@ -1800,7 +1811,7 @@ class QuotationResource extends Resource
     {
         $product = Product::withTrashed()->find($get('product_id'));
 
-        $vendorPrices = $product->supplierInformation->sortByDesc('sort');
+        $vendorPrices = $product->sellers->sortByDesc('sort');
 
         if ($get('../../partner_id')) {
             $vendorPrices = $vendorPrices->where('partner_id', $get('../../partner_id'));

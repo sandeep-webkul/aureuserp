@@ -57,6 +57,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Employee\Enums\DistanceUnit;
 use Webkul\Employee\Enums\Gender;
 use Webkul\Employee\Enums\MaritalStatus;
@@ -1283,6 +1284,7 @@ class EmployeeResource extends Resource
             ->defaultSort('name')
             ->persistSortInSession()
             ->recordActions([
+                ActivityTableAction::make(),
                 ViewAction::make()
                     ->outlined(),
                 EditAction::make()

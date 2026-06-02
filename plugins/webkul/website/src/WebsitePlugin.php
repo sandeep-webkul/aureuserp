@@ -4,12 +4,12 @@ namespace Webkul\Website;
 
 use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
+use Filament\Facades\Filament;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
-use Filament\Facades\Filament;
 use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
@@ -193,14 +193,14 @@ class WebsitePlugin implements Plugin
      */
     protected function getTranslatedPageTitle(Page $page): string
     {
-        $translationKey = 'website::filament/app.page_titles.' . $page->slug;
+        $translationKey = 'website::filament/app.page_titles.'.$page->slug;
         $translated = __($translationKey);
-        
+
         // If translation key is returned (no translation found), use database title
         if ($translated === $translationKey) {
             return $page->title;
         }
-        
+
         return $translated;
     }
 
@@ -231,7 +231,7 @@ class WebsitePlugin implements Plugin
             $socialLinks->push(
                 NavigationItem::make('Facebook')
                     ->label(fn () => __('website::filament/app.navigation.social.facebook'))
-                    ->url('https://faceboox.com/'.$contactSettings->facebook)
+                    ->url('https://facebook.com/'.$contactSettings->facebook)
                     ->icon(fn (): string => '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>')
             );
         }
