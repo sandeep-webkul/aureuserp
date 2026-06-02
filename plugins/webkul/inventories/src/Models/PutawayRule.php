@@ -49,7 +49,7 @@ class PutawayRule extends Model implements Sortable
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function category(): BelongsTo
@@ -64,12 +64,12 @@ class PutawayRule extends Model implements Sortable
 
     public function inLocation(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'in_location_id');
+        return $this->belongsTo(Location::class, 'in_location_id')->withTrashed();
     }
 
     public function outLocation(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'out_location_id');
+        return $this->belongsTo(Location::class, 'out_location_id')->withTrashed();
     }
 
     public function packageTypes(): BelongsToMany

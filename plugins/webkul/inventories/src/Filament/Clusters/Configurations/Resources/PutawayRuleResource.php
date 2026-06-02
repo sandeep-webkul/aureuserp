@@ -20,6 +20,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -80,12 +81,21 @@ class PutawayRuleResource extends Resource
                     }),
                 Select::make('in_location_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.in-location'))
-                    ->options(fn (Get $get): array => Location::query()
-                        ->where(fn ($q) => $q->where('company_id', $get('company_id'))->orWhereNull('company_id'))
-                        ->whereHas('children')
-                        ->orderBy('full_name')
-                        ->pluck('full_name', 'id')
-                        ->all())
+                    ->relationship(
+                        'inLocation',
+                        'full_name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()
+                            ->where(fn ($q) => $q->where('company_id', $get('company_id'))->orWhereNull('company_id'))
+                            ->whereHas('children')
+                            ->orderBy('full_name')
+                    )
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($label) {
+                        return str_contains($label, ' (Deleted)');
+                    })
+                    ->preload()
                     ->searchable()
                     ->required()
                     ->live()
@@ -112,11 +122,28 @@ class PutawayRuleResource extends Resource
                             ->pluck('full_name', 'id')
                             ->all();
                     })
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($label) {
+                        return str_contains($label, ' (Deleted)');
+                    })
                     ->searchable()
                     ->required(),
                 Select::make('product_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.product'))
                     ->relationship('product', 'name')
+                    ->relationship(
+                        'product',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()
+                    )
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($label) {
+                        return str_contains($label, ' (Deleted)');
+                    })
                     ->searchable()
                     ->preload()
                     ->placeholder(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.product-placeholder'))
