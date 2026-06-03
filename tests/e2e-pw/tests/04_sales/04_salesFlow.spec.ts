@@ -1,5 +1,5 @@
 import { test } from "../../setup";
-import { SalesFlowPage } from "../../pages/05_salesFlow";
+import { SalesFlowPage } from "../../pages/04_salesFlow";
 
 test.describe("Sales Order Flow E2E", () => {
     test.beforeEach(async ({ adminPage }) => {

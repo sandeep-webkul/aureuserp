@@ -263,6 +263,8 @@ class Order extends Model
 
         static::saving(function ($order) {
             $order->updateName();
+
+            $order->lines->each->update(['state' => $order->state]);
         });
 
         static::created(function ($order) {
@@ -276,7 +278,7 @@ class Order extends Model
             return;
         }
 
-        $this->warehouse_id = Warehouse::where('company_id', $this->company_id)->first()?->id;
+        $this->warehouse_id ??= Warehouse::where('company_id', $this->company_id)->first()?->id;
     }
 
     protected static function newFactory(): OrderFactory

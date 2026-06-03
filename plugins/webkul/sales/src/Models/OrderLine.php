@@ -216,7 +216,7 @@ class OrderLine extends Model implements Sortable
             ->orderBy('route_sort')
             ->orderBy('sort')
             ->get()
-            ->sortBy(fn ($rule) => (! $rule->location_src_id || $rule->sourceLocation->warehouse_id === $this->order->warehouse_id) ? 0 : 1);
+            ->sortBy(fn ($rule) => (! $rule->source_location_id || $rule->sourceLocation->warehouse_id === $this->order->warehouse_id) ? 0 : 1);
 
         if ($rules->isNotEmpty()) {
             $this->warehouse_id = $rules->first()->sourceLocation->warehouse_id;

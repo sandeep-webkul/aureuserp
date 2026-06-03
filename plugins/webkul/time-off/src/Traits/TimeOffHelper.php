@@ -219,7 +219,7 @@ trait TimeOffHelper
 
     private function handleLeaveOverlap(array &$data, ?int $excludeRecordId = null, ?Action $action = null): void
     {
-        $employee = Employee::find($data['employee_id']);
+        $employee = Employee::find($data['employee_id'] ?? null);
 
         if (! $employee) {
             Notification::make()
@@ -261,7 +261,7 @@ trait TimeOffHelper
 
     private function handleLeaveAllocation(array &$data, ?Action $action = null): void
     {
-        $employee = Employee::find($data['employee_id']);
+        $employee = Employee::find($data['employee_id'] ?? null);
 
         if (! $employee) {
             return;

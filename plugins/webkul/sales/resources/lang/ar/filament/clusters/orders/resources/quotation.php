@@ -159,6 +159,7 @@ return [
                     'shipping' => [
                         'title'  => 'الشحن',
                         'fields' => [
+                            'warehouse'       => 'المستودع',
                             'commitment-date' => 'تاريخ التسليم',
                         ],
                     ],

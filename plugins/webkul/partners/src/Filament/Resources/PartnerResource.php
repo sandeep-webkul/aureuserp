@@ -173,7 +173,8 @@ class PartnerResource extends Resource
                                 TextInput::make('job_title')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.job-title'))
                                     ->placeholder('e.g. CEO')
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->visible(fn (Get $get): bool => in_array($get('account_type'), [AccountType::INDIVIDUAL, AccountType::INDIVIDUAL->value], true)),
                                 TextInput::make('phone')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.phone'))
                                     ->tel()
@@ -205,7 +206,8 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->unique('partners_titles'),
-                                    ]),
+                                    ])
+                                    ->visible(fn (Get $get): bool => in_array($get('account_type'), [AccountType::INDIVIDUAL, AccountType::INDIVIDUAL->value], true)),
                                 Select::make('tags')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.tags'))
                                     ->relationship(name: 'tags', titleAttribute: 'name')
@@ -655,7 +657,8 @@ class PartnerResource extends Resource
 
                                 TextEntry::make('job_title')
                                     ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.job-title'))
-                                    ->placeholder('—'),
+                                    ->placeholder('—')
+                                    ->visible(fn ($record): bool => in_array($record->account_type, [AccountType::INDIVIDUAL, AccountType::INDIVIDUAL->value], true)),
 
                                 TextEntry::make('phone')
                                     ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.phone'))
@@ -679,7 +682,8 @@ class PartnerResource extends Resource
 
                                 TextEntry::make('title.name')
                                     ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.title'))
-                                    ->placeholder('—'),
+                                    ->placeholder('—')
+                                    ->visible(fn ($record): bool => in_array($record->account_type, [AccountType::INDIVIDUAL, AccountType::INDIVIDUAL->value], true)),
 
                                 TextEntry::make('tags.name')
                                     ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.tags'))

@@ -65,10 +65,13 @@ class SaleManager
         $record->update([
             'state'          => OrderState::SALE,
             'invoice_status' => InvoiceStatus::TO_INVOICE,
-            'locked'         => $this->quotationAndOrderSettings->enable_lock_confirm_sales,
         ]);
 
         $this->applyInventoryRules($record->lines);
+
+        $record->update([
+            'locked' => $this->quotationAndOrderSettings->enable_lock_confirm_sales,
+        ]);
 
         $record = $this->computeSaleOrder($record);
 
@@ -780,6 +783,6 @@ class SaleManager
             return;
         }
 
-        $record->operations->each(fn ($operation) => InventoryFacade::cancelOperation($operation));
+        $record->operations->each(fn ($operation) => InventoryFacade::cancelTransfer($operation));
     }
 }
