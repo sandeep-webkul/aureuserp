@@ -278,7 +278,7 @@ class Order extends Model
             return;
         }
 
-        $this->warehouse_id = Warehouse::where('company_id', $this->company_id)->first()?->id;
+        $this->warehouse_id ??= Warehouse::where('company_id', $this->company_id)->first()?->id;
     }
 
     protected static function newFactory(): OrderFactory
