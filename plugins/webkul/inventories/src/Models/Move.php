@@ -761,7 +761,7 @@ class Move extends Model
             'procure_method'          => $this->procure_method,
             'price_unit'              => $this->price_unit,
             'deadline'                => $this->deadline,
-            'rule_id'                 => null,
+            // 'rule_id'                 => null,
             'origin_returned_move_id' => $this->origin_returned_move_id,
             'move_origin_ids'         => $this->moveOrigins->pluck('id')->all(),
             'move_destination_ids'    => $this->moveDestinations
