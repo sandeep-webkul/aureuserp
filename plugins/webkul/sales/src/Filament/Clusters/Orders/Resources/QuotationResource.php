@@ -54,6 +54,7 @@ use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Inventory\Models\Warehouse;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Settings\ProductSettings;
@@ -257,7 +258,18 @@ class QuotationResource extends Resource
                                     ->schema([
                                         Select::make('warehouse_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.shipping.fields.warehouse'))
-                                            ->relationship('warehouse', 'name')
+                                            ->relationship(
+                                                'warehouse',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(
+                                                    'company_id',
+                                                    $get('company_id') ?? Auth::user()->default_company_id,
+                                                )->orderBy('id'),
+                                            )
+                                            ->default(fn (Get $get): ?int => Warehouse::where(
+                                                'company_id',
+                                                $get('company_id') ?? Auth::user()->default_company_id,
+                                            )->orderBy('id')->value('id'))
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::SALE, OrderState::CANCEL])),
@@ -301,15 +313,13 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set, Get $get) {
-                                                $company = $get('company_id') ? Company::find($get('company_id')) : null;
+                                            ->afterStateUpdated(function (Set $set, ?int $state): void {
+                                                $companyId = $state ?? Auth::user()->default_company_id;
 
-                                                if ($company) {
-                                                    $set('currency_id', $company->currency_id);
-                                                }
+                                                $set('currency_id', Company::find($state)?->currency_id);
+                                                $set('warehouse_id', Warehouse::where('company_id', $companyId)->orderBy('id')->value('id'));
                                             })
                                             ->reactive()
-                                            ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
                                             ->default(Auth::user()->default_company_id),
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
