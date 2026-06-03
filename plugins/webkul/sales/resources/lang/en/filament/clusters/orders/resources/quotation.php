@@ -159,6 +159,7 @@ return [
                     'shipping' => [
                         'title'  => 'Shipping',
                         'fields' => [
+                            'warehouse'       => 'Warehouse',
                             'commitment-date' => 'Delivery Date',
                         ],
                     ],
