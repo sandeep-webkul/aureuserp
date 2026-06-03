@@ -810,17 +810,6 @@ class BillsOfMaterialResource extends Resource
                         $set('uom_id', $product->uom_id);
                         $set('company_id', $get('../../company_id'));
                     }),
-                Select::make('operation_id')
-                    ->relationship('operation', 'name')
-                    ->native(false)
-                    ->searchable()
-                    ->preload()
-                    ->wrapOptionLabels(false)
-                    ->createOptionForm(fn (Schema $schema): Schema => OperationResource::form($schema))
-                    ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge)),
-                Checkbox::make('is_manual_consumption')
-                    ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.columns.highlight-consumption'))
-                    ->default(false),
                 TextInput::make('quantity')
                     ->numeric()
                     ->minValue(0.0001)
@@ -859,6 +848,17 @@ class BillsOfMaterialResource extends Resource
                     ->searchable()
                     ->preload()
                     ->multiple(),
+                Select::make('operation_id')
+                    ->relationship('operation', 'name')
+                    ->native(false)
+                    ->searchable()
+                    ->preload()
+                    ->wrapOptionLabels(false)
+                    ->createOptionForm(fn (Schema $schema): Schema => OperationResource::form($schema))
+                    ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge)),
+                Checkbox::make('is_manual_consumption')
+                    ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.columns.highlight-consumption'))
+                    ->default(false),
             ]);
     }
 

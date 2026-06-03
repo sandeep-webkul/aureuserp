@@ -120,14 +120,14 @@ class LocationResource extends Resource
                                     ->options(LocationType::class)
                                     ->selectablePlaceholder(false)
                                     ->required()
-                                    ->default(LocationType::INTERNAL->value)
+                                    ->default(LocationType::INTERNAL)
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                        if (! $get('type') === in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value])) {
+                                        if (! $get('type') === in_array($get('type'), [LocationType::INTERNAL, LocationType::INVENTORY])) {
                                             $set('is_scrap', false);
                                         }
 
-                                        if ($get('type') !== LocationType::INTERNAL->value) {
+                                        if ($get('type') !== LocationType::INTERNAL) {
                                             $set('storage_category_id', null);
 
                                             $set('is_replenish', false);
@@ -145,13 +145,13 @@ class LocationResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema): Schema => StorageCategoryResource::form($schema))
-                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value)
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL)
                                     ->hiddenOn(ManageLocations::class),
                                 Toggle::make('is_scrap')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap-hint-tooltip'))
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL, LocationType::INVENTORY]))
                                     ->live(),
 
                                 Toggle::make('is_dock')
@@ -163,7 +163,7 @@ class LocationResource extends Resource
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish-hint-tooltip'))
-                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value),
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL),
 
                                 Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.cyclic-counting'))
                                     ->schema([
@@ -180,7 +180,7 @@ class LocationResource extends Resource
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.next-expected-hint-tooltip'))
                                             ->state(fn ($record) => $record?->next_inventory_date?->toFormattedDateString() ?? '—'),
                                     ])
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::TRANSIT->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL, LocationType::TRANSIT]))
                                     ->columns(1),
                             ]),
                     ])
