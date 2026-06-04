@@ -152,7 +152,17 @@ class ProductResource extends Resource
                                     ->label(__('products::filament/resources/product.form.sections.settings.fields.type'))
                                     ->options(ProductType::class)
                                     ->default(ProductType::GOODS->value)
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, ProductType|string|null $state): void {
+                                        $defaultUomId = static::getDefaultUomIdByProductType($state);
+
+                                        if (! $defaultUomId) {
+                                            return;
+                                        }
+
+                                        $set('uom_id', $defaultUomId);
+                                        $set('uom_po_id', $defaultUomId);
+                                    }),
                                 TextInput::make('reference')
                                     ->label(__('products::filament/resources/product.form.sections.settings.fields.reference'))
                                     ->maxLength(255),
@@ -197,7 +207,7 @@ class ProductResource extends Resource
                                         ->native(false)
                                         ->required()
                                         ->options(UOM::pluck('name', 'id'))
-                                        ->default(UOM::first()?->id)
+                                        ->default(fn (Get $get): ?int => static::getDefaultUomIdByProductType($get('type')))
                                         ->searchable()
                                         ->live()
                                         ->afterStateUpdated(fn (Set $set, ?string $state) => $set('uom_po_id', $state)),
@@ -215,7 +225,7 @@ class ProductResource extends Resource
                                         ->native(false)
                                         ->required()
                                         ->options(UOM::pluck('name', 'id'))
-                                        ->default(UOM::first()?->id)
+                                        ->default(fn (Get $get): ?int => static::getDefaultUomIdByProductType($get('type')))
                                         ->searchable()
                                         ->live()
                                         ->afterStateUpdated(fn (Set $set, ?string $state) => $set('uom_id', $state)),
@@ -232,6 +242,33 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['uom', 'uomPO']);
+    }
+
+    private static function getDefaultUomIdByProductType(ProductType|string|null $type): ?int
+    {
+        if (is_string($type)) {
+            $type = ProductType::tryFrom($type);
+        }
+
+        if ($type === ProductType::SERVICE) {
+            $hoursUomId = UOM::query()
+                ->whereHas('category', fn (Builder $query) => $query->where('name', 'Working Time'))
+                ->whereRaw('LOWER(name) = ?', ['hours'])
+                ->orderBy('id')
+                ->value('id');
+
+            if ($hoursUomId) {
+                return $hoursUomId;
+            }
+        }
+
+        $categoryName = $type === ProductType::SERVICE ? 'Working Time' : 'Unit';
+
+        return UOM::query()
+            ->whereHas('category', fn (Builder $query) => $query->where('name', $categoryName))
+            ->orderBy('id')
+            ->value('id')
+            ?? UOM::query()->orderBy('id')->value('id');
     }
 
     public static function table(Table $table): Table
