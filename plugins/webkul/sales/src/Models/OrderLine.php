@@ -196,7 +196,7 @@ class OrderLine extends Model implements Sortable
 
         static::created(function ($orderLine) {
             if ($orderLine->order->state === OrderState::SALE) {
-                SaleOrderFacade::applyInventoryRules($orderLine);
+                SaleOrderFacade::applyInventoryRules(collect([$orderLine]));
             }
         });
 
@@ -206,9 +206,9 @@ class OrderLine extends Model implements Sortable
                 && $orderLine->state === OrderState::SALE
                 && ! $orderLine->is_expense
             ) {
-                $previousProductUomQty = $orderLine->getOriginal('product_uom_qty');
+                $previousProductUomQty = [$orderLine->id => $orderLine->getOriginal('product_uom_qty')];
 
-                SaleOrderFacade::applyInventoryRules($orderLine, previousProductUOMQty: $previousProductUomQty);
+                SaleOrderFacade::applyInventoryRules(collect([$orderLine]), previousProductUOMQty: $previousProductUomQty);
             }
         });
     }
