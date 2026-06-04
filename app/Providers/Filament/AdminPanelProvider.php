@@ -57,52 +57,56 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.dashboard'))
+                    ->label(fn (): string => __('admin.navigation.dashboard'))
                     ->icon('icon-dashboard'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.contact'))
+                    ->label(fn (): string => __('admin.navigation.contact'))
                     ->icon('icon-contacts'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.sale'))
+                    ->label(fn (): string => __('admin.navigation.sale'))
                     ->icon('icon-sales'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.purchase'))
+                    ->label(fn (): string => __('admin.navigation.purchase'))
                     ->icon('icon-purchases'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.manufacturing'))
+                    ->label(fn (): string => __('admin.navigation.maintenance'))
+                    ->icon('icon-maintenance'),
+                NavigationGroup::make()
+                    ->label(fn (): string => __('admin.navigation.manufacturing'))
                     ->icon('icon-manufacturing'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.inventory'))
+                    ->label(fn (): string => __('admin.navigation.inventory'))
                     ->icon('icon-inventories'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.invoice'))
+                    ->label(fn (): string => __('admin.navigation.invoice'))
                     ->icon('icon-invoices'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.accounting'))
+                    ->label(fn (): string => __('admin.navigation.accounting'))
                     ->icon('icon-accounting'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.project'))
+                    ->label(fn (): string => __('admin.navigation.project'))
                     ->icon('icon-projects'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.employee'))
+                    ->label(fn (): string => __('admin.navigation.employee'))
                     ->icon('icon-employees'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.time-off'))
+                    ->label(fn (): string => __('admin.navigation.time-off'))
                     ->icon('icon-time-offs'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.recruitment'))
+                    ->label(fn (): string => __('admin.navigation.recruitment'))
                     ->icon('icon-recruitments'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.website'))
+                    ->label(fn (): string => __('admin.navigation.website'))
                     ->icon('icon-website'),
                 NavigationGroup::make()
                     ->label('Barcode')
                     ->icon('icon-barcode'),
                 NavigationGroup::make()
                     ->label(__('admin.navigation.plugin'))
+                    ->label(fn (): string => __('admin.navigation.plugin'))
                     ->icon('icon-plugin'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.setting'))
+                    ->label(fn (): string => __('admin.navigation.setting'))
                     ->icon('icon-settings'),
             ])
             ->plugins([
