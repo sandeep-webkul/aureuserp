@@ -119,6 +119,11 @@ class Operation extends Model
         return $this->belongsTo(self::class, 'return_id');
     }
 
+    public function returns(): HasMany
+    {
+        return $this->hasMany(self::class, 'return_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -202,6 +207,39 @@ class Operation extends Model
     public function saleOrder(): BelongsTo
     {
         return $this->belongsTo(SaleOrder::class, 'sale_order_id');
+    }
+
+    public function nextTransfersQuery()
+    {
+        $returnIds = $this->returns()->pluck('id');
+
+        $nextTransferIds = $this->moves()
+            ->with(['moveDestinations:id,operation_id'])
+            ->get()
+            ->flatMap(fn (Move $move) => $move->moveDestinations->pluck('operation_id'))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $query = self::query()
+            ->whereIn('id', $nextTransferIds)
+            ->distinct();
+
+        if ($returnIds->isNotEmpty()) {
+            $query->whereNotIn('id', $returnIds);
+        }
+
+        return $query;
+    }
+
+    public function nextTransfers()
+    {
+        return $this->nextTransfersQuery()->get();
+    }
+
+    public function getShowNextOperationsAttribute(): bool
+    {
+        return $this->nextTransfersQuery()->exists();
     }
 
     protected static function newFactory(): OperationFactory

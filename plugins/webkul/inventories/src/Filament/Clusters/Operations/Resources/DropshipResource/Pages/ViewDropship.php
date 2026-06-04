@@ -64,6 +64,7 @@ class ViewDropship extends ViewRecord
                         ->title(__('inventories::filament/clusters/operations/resources/dropship/pages/view-dropship.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/dropship/pages/view-dropship.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 

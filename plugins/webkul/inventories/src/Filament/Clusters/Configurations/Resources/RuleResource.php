@@ -186,7 +186,7 @@ class RuleResource extends Resource
 
                                                         $action = ($get('action') instanceof RuleAction)
                                                             ? $get('action')
-                                                            : RuleAction::tryFrom($get('action') ?? RuleAction::PULL);
+                                                            : RuleAction::tryFrom($get('action')?->value ?? RuleAction::PULL->value);
 
                                                         return match ($action) {
                                                             RuleAction::PULL        => new HtmlString($pullMessage),
