@@ -165,6 +165,7 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required()
+                                            ->createOptionForm(fn (Schema $schema) => CustomerResource::form($schema))
                                             ->live()
                                             ->afterStateUpdated(function (Set $set, $state) {
                                                 $partner = $state ? Partner::find($state) : null;
