@@ -32,6 +32,7 @@ use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Rule;
 use Webkul\PluginManager\Package;
+use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseOrderEnums;
 use Webkul\Purchase\Models\OrderLine as PurchaseOrderLine;
 use Webkul\Purchase\Models\PurchaseOrder;
@@ -1639,6 +1640,13 @@ class InventoryManager
         $procurementErrors = [];
 
         foreach ($procurements as $procurement) {
+            if (
+                $procurement['product']->type !== ProductType::GOODS
+                || float_is_zero($procurement['product_qty'], precisionRounding: $procurement['product_uom']->rounding)
+            ) {
+                continue;
+            }
+
             $procurement['values']['company'] = $procurement['values']['company'] ?? $procurement['location']->company;
             $procurement['values']['priority'] = $procurement['values']['priority'] ?? '0';
             $procurement['values']['planned'] = $procurement['values']['planned'] ?? now();
