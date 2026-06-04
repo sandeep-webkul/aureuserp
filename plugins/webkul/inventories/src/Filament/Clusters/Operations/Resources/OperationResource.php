@@ -831,16 +831,6 @@ class OperationResource extends Resource
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
-                    ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
-                TextInput::make('quantity')
-                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.quantity'))
-                    ->numeric()
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->default(0)
-                    ->required()
-                    ->visible(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT)
-                    ->disabled(fn (?Move $record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
                     ->suffix(function (?Move $record, Get $get): mixed {
                         if (
                             ! $get('product_id')
@@ -864,6 +854,16 @@ class OperationResource extends Resource
                                 ], escape: false),
                         );
                     })
+                    ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
+                TextInput::make('quantity')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.quantity'))
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->default(0)
+                    ->required()
+                    ->visible(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT)
+                    ->disabled(fn (?Move $record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
                     ->suffixAction(fn (Move $record) => static::getMoveLinesAction($record)),
                 Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
