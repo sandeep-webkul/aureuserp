@@ -1199,10 +1199,8 @@ class QuotationResource extends Resource
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
-                    ->disableOptionWhen(function ($label, $value, $state, $component) use ($record) {
+                    ->disableOptionWhen(function ($label, $value, $state, $component) {
                         $isDeleted = str_contains($label, ' (Deleted)');
-
-                        $isOrderLocked = $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]);
 
                         $isDuplicate = false;
 
@@ -1221,7 +1219,7 @@ class QuotationResource extends Resource
                                 ->contains($value);
                         }
 
-                        return $isDeleted || $isOrderLocked || $isDuplicate;
+                        return $isDeleted || $isDuplicate;
                     })
 
                     ->searchable()
@@ -1230,7 +1228,7 @@ class QuotationResource extends Resource
                     ->dehydrated(true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
                     ->required()
-                    ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                     ->selectablePlaceholder(false),
                 TextInput::make('product_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.quantity'))
