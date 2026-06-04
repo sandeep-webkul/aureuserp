@@ -76,6 +76,7 @@ class EditDropship extends EditRecord
                         ->title(__('inventories::filament/clusters/operations/resources/dropship/pages/edit-dropship.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/dropship/pages/edit-dropship.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 

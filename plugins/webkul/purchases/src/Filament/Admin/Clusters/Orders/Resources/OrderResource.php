@@ -812,6 +812,15 @@ class OrderResource extends Resource
                 $action->requiresConfirmation();
 
                 $action->before(function (Action $action, $livewire) {
+                    $arguments = $action->getArguments();
+
+                    if (
+                        ! empty($arguments['item'] ?? '') &&
+                        ! str_starts_with($arguments['item'] ?? '', 'record-')
+                    ) {
+                        return;
+                    }
+
                     if ($livewire->getRecord()?->state === OrderState::PURCHASE) {
                         Notification::make()
                             ->danger()
@@ -1046,7 +1055,7 @@ class OrderResource extends Resource
                         static::afterUOMUpdated($set, $get);
                     })
                     ->visible(static::getProductSettings()->enable_uom)
-                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
 
                 TextInput::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging-qty'))

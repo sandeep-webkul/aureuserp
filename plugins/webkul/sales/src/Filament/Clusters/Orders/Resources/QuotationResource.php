@@ -36,6 +36,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
+use Filament\Support\View\Components\InputComponent\WrapperComponent\IconComponent;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -49,12 +50,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema as DBSchema;
+use Illuminate\View\ComponentAttributeBag;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
@@ -1253,6 +1256,68 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
+                    ->suffix(function ($record, Get $get): mixed {
+                        if (! Package::isPluginInstalled('inventories')) {
+                            return null;
+                        }
+
+                        $productId = $get('product_id');
+
+                        if (! $productId) {
+                            return null;
+                        }
+
+                        $requestedQty = (float) ($get('product_qty') ?? 0);
+
+                        if (
+                            $requestedQty <= 0
+                            || (float) ($get('qty_delivered') ?? 0) > 0
+                        ) {
+                            return null;
+                        }
+
+                        $inventoryProduct = InventoryProduct::query()->withTrashed()->find($productId);
+
+                        if (! $inventoryProduct) {
+                            return null;
+                        }
+
+                        $context = [];
+
+                        $warehouseId = $get('../../warehouse_id');
+
+                        if (filled($warehouseId)) {
+                            $context['warehouse_id'] = (int) $warehouseId;
+                        }
+
+                        $companyId = $get('../../company_id') ?? Auth::user()?->default_company_id;
+
+                        if (filled($companyId)) {
+                            $context['company_ids'] = [(int) $companyId];
+                        }
+
+                        if ($context !== []) {
+                            $inventoryProduct->setContext($context);
+                        }
+
+                        $freeQty = (float) $inventoryProduct->free_qty;
+
+                        if ($requestedQty <= $freeQty) {
+                            return null;
+                        }
+
+                        return \Filament\Support\generate_icon_html(
+                            'heroicon-o-exclamation-triangle',
+                            null,
+                            (new ComponentAttributeBag)
+                                ->color(IconComponent::class, 'danger')
+                                ->class(['fi-text-color-600'])
+                                ->merge([
+                                    'style'         => 'color: var(--text)',
+                                    'x-tooltip.raw' => __('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.insufficient-stock-tooltip'),
+                                ], escape: false),
+                        );
+                    })
                     ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
                         $qtyDelivered = $record?->qty_delivered ?? 0;
 
@@ -1278,7 +1343,7 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->disabled(fn ($record): bool => $record?->order->locked || in_array($record?->order->state, [OrderState::CANCEL]) || $record?->qty_delivered_method == QtyDeliveredMethod::STOCK_MOVE)
+                    ->disabled(fn (Get $get, $record): bool => (! filled($get('id')) && in_array($get('../../state'), [OrderState::SALE->value, OrderState::SALE])) || $record?->order->locked || in_array($record?->order->state, [OrderState::CANCEL]) || $record?->qty_delivered_method == QtyDeliveredMethod::STOCK_MOVE)
                     ->visible(fn (): bool => in_array($record?->state, [OrderState::SALE])),
                 TextInput::make('qty_invoiced')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.qty-invoiced'))
@@ -1308,7 +1373,7 @@ class QuotationResource extends Resource
                     ->selectablePlaceholder(false)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
-                    ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL])),
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && ($record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))),
                 TextInput::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.lead-time'))
                     ->numeric()
