@@ -164,10 +164,6 @@ class SaleManager
 
         $record->refresh();
 
-        $lines = $record->lines->filter(fn ($line) => $line->state === OrderState::SALE);
-
-        $this->applyInventoryRules($lines);
-
         return $record;
     }
 

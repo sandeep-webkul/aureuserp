@@ -25,6 +25,7 @@ use Webkul\Product\Models\Product;
 use Webkul\Sale\Database\Factories\OrderLineFactory;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Enums\QtyDeliveredMethod;
+use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -191,6 +192,24 @@ class OrderLine extends Model implements Sortable
 
         static::saving(function ($orderLine) {
             $orderLine->computeWarehouseId();
+        });
+
+        static::created(function ($orderLine) {
+            if ($orderLine->order->state === OrderState::SALE) {
+                SaleOrderFacade::applyInventoryRules($orderLine);
+            }
+        });
+
+        static::updated(function ($orderLine) {
+            if (
+                $orderLine->wasChanged('product_uom_qty')
+                && $orderLine->state === OrderState::SALE
+                && ! $orderLine->is_expense
+            ) {
+                $previousProductUomQty = $orderLine->getOriginal('product_uom_qty');
+
+                SaleOrderFacade::applyInventoryRules($orderLine, previousProductUOMQty: $previousProductUomQty);
+            }
         });
     }
 
