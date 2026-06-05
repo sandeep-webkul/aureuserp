@@ -142,6 +142,11 @@ class Order extends Model
         return $this->belongsToMany(Move::class, 'sales_order_invoices', 'order_id', 'move_id');
     }
 
+    public function invoices(): BelongsToMany
+    {
+        return $this->belongsToMany(Invoice::class, 'sales_order_invoices', 'order_id', 'move_id');
+    }
+
     public function partnerInvoice()
     {
         return $this->belongsTo(Partner::class, 'partner_invoice_id');

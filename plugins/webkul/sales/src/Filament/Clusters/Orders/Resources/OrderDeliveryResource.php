@@ -12,6 +12,8 @@ class OrderDeliveryResource extends DeliveryResource
 {
     protected static ?string $parentResource = OrderResource::class;
 
+    protected static ?string $slug = 'deliveries';
+
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return OrderResource::asParent()
