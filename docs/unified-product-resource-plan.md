@@ -163,6 +163,28 @@ plugin contribute in `packageBooted` + register relation-page subclasses per res
 - Optional: convert sales/invoice `responsible`-filter rejects to a per-resource hook; clean the
   purchases no-op form override.
 
+## PartnerResource unification (in progress)
+Reuses the same support-package registry (`scope = 'partner'`).
+- **Phase 1 (done):** base `Webkul\Partner\...\PartnerResource` split into
+  `PartnerResource/Schemas/PartnerForm`, `Schemas/PartnerInfolist`, `Tables/PartnersTable`, with a
+  `Support/PartnerSchemaRegistry extends AbstractSchemaRegistry`. Slots: form/infolist
+  `general.after`, `sales.fields` (inside Sales fieldset), `salesPurchase.append` (inside the
+  Sales/Purchase tab), `tabs.append` (whole tabs); table `columns/filters.append/filters.reject/
+  actions/bulkActions/groups`; `actions header`. Base `Partner` model uses `HasContributedAttributes`.
+- **Phase 2 (done):** accounts migrated — its invoicing/sales/fiscal tabs + fields moved to
+  `accounts/.../PartnerResource/Schemas/AccountPartnerSchema` and registered in `AccountServiceProvider::
+  contributePartnerSchema()` (install-guarded); account form/infolist overrides stripped. Account
+  fillable + 7 `property*` relations contributed to base `Partner`. Verified: `Contact\Partner`
+  (extends base, not accounts) now inherits the account fillable/relations → the invoicing & sales
+  tabs render and save on the Contacts/Website partner screens (the main gap), and on every
+  customer/vendor screen across invoices/accounting/sales/purchases.
+
+**Remaining (Phase 3 — sub-nav/actions, approach B):** propagate relation tabs uniformly — Bank
+Accounts (accounts-installed) onto Contacts/Website; Bills + Purchases (purchase-only, relations on
+`Purchase\Partner`) onto the other partner screens if desired — via thin per-resource page subclasses
++ `Partner::resolveRelationUsing` for `accountMoves`/`orders`, exactly like the product Moves/Quantities/
+Vendors propagation. Header actions are already shared (defined only on base partner pages).
+
 ## Test matrix
 Create/edit/list a product with combos: products-only; +inventories; +sales; all installed.
 Verify: all fields present & saved to `products_products`; relation pages visible only when their plugin
