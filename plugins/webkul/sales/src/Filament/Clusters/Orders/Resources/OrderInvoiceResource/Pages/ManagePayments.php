@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages;
 
-use Webkul\Sale\Filament\Clusters\Orders\Resources\InvoiceResource\Pages\ManagePayments as BaseManagePayments;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource\Pages\ManagePayments as BaseManagePayments;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource;
 
 class ManagePayments extends BaseManagePayments

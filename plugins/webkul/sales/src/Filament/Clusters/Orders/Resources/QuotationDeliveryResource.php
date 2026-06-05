@@ -7,15 +7,17 @@ use Filament\Resources\Pages\Page;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource as BaseDeliveryResource;
 use Webkul\Inventory\Models\Delivery;
 use Webkul\Sale\Filament\Clusters\Orders;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource\Pages\EditDelivery;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource\Pages\ManageMoves;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource\Pages\ViewDelivery;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource\Pages\EditDelivery;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource\Pages\ManageMoves;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource\Pages\ViewDelivery;
 
-class DeliveryResource extends BaseDeliveryResource
+class QuotationDeliveryResource extends BaseDeliveryResource
 {
     protected static ?string $model = Delivery::class;
 
     protected static ?string $parentResource = QuotationResource::class;
+
+    protected static ?string $slug = 'deliveries';
 
     protected static ?string $recordTitleAttribute = 'name';
 

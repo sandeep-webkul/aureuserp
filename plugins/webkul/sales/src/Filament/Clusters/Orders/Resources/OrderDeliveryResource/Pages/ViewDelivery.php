@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages;
 
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource\Pages\ViewDelivery as BaseViewDelivery;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource\Pages\ViewDelivery as BaseViewDelivery;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource;
 
 class ViewDelivery extends BaseViewDelivery

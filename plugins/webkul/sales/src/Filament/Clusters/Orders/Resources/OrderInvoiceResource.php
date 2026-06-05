@@ -8,7 +8,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\Ed
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\ManagePayments;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\ViewInvoice;
 
-class OrderInvoiceResource extends InvoiceResource
+class OrderInvoiceResource extends QuotationInvoiceResource
 {
     protected static ?string $slug = 'invoices';
 

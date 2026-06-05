@@ -6,16 +6,18 @@ use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Sale\Filament\Clusters\Orders;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\InvoiceResource\Pages\EditInvoice;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\InvoiceResource\Pages\ManagePayments;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\InvoiceResource\Pages\ViewInvoice;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource\Pages\EditInvoice;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource\Pages\ManagePayments;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource\Pages\ViewInvoice;
 use Webkul\Sale\Models\Invoice;
 
-class InvoiceResource extends BaseInvoiceResource
+class QuotationInvoiceResource extends BaseInvoiceResource
 {
     protected static ?string $model = Invoice::class;
 
     protected static ?string $parentResource = QuotationResource::class;
+
+    protected static ?string $slug = 'invoices';
 
     protected static ?string $recordTitleAttribute = 'name';
 

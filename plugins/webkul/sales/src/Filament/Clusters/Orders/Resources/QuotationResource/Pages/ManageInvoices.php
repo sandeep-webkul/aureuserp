@@ -4,7 +4,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages
 
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Livewire\Livewire;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\InvoiceResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -16,7 +16,7 @@ class ManageInvoices extends ManageRelatedRecords
 
     protected static string $relationship = 'invoices';
 
-    protected static ?string $relatedResource = InvoiceResource::class;
+    protected static ?string $relatedResource = QuotationInvoiceResource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 

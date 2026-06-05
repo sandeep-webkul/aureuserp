@@ -5,7 +5,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Livewire\Livewire;
 use Webkul\PluginManager\Package;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -17,7 +17,7 @@ class ManageDeliveries extends ManageRelatedRecords
 
     protected static string $relationship = 'deliveries';
 
-    protected static ?string $relatedResource = DeliveryResource::class;
+    protected static ?string $relatedResource = QuotationDeliveryResource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 

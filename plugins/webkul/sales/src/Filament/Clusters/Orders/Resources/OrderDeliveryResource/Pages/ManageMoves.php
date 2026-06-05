@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages;
 
-use Webkul\Sale\Filament\Clusters\Orders\Resources\DeliveryResource\Pages\ManageMoves as BaseManageMoves;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource\Pages\ManageMoves as BaseManageMoves;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource;
 
 class ManageMoves extends BaseManageMoves

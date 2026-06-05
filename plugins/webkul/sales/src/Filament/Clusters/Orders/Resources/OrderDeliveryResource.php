@@ -8,7 +8,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\E
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\ManageMoves;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\ViewDelivery;
 
-class OrderDeliveryResource extends DeliveryResource
+class OrderDeliveryResource extends QuotationDeliveryResource
 {
     protected static ?string $parentResource = OrderResource::class;
 
