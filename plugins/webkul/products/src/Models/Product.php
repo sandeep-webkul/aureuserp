@@ -15,14 +15,14 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Product\Models\Concerns\HasProductAttributes;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class Product extends Model implements Sortable
 {
-    use HasChatter, HasFactory, HasLogActivity, HasProductAttributes, SoftDeletes, SortableTrait;
+    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 

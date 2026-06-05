@@ -138,6 +138,22 @@ the base View/Edit pages fold in.
 - Verified: header slot resolves `UpdateQuantityAction`; sales product routes include moves/quantities.
 - Same pattern repeats for purchases (Vendors) / manufacturing (BoM) when wanted.
 
+### Reusable contribution system (support package)
+The registry was generalized so any resource (Product, Partner, …) can reuse it:
+- `Webkul\Support\Filament\Contributions\SchemaRegistry` — generic store keyed by a `scope` string
+  (form/infolist/table/actions slots + eager-loads), priority-sorted slot resolution.
+- `Webkul\Support\Filament\Contributions\AbstractSchemaRegistry` — scope-bound facade; subclass it and
+  implement `scope()` to get a terse typed API (`form()/infolist()/table()/actions()/render*()/has*Slot()`).
+- `Webkul\Support\Models\Concerns\HasContributedAttributes` — reusable model trait (`contributeFillable`
+  / `contributeCasts`, merged via `initialize*`); each using-class gets isolated storage.
+- `ProductSchemaRegistry` is now just `extends AbstractSchemaRegistry { scope() => 'product' }` — all
+  existing call sites unchanged. Base `Product` uses the support trait.
+
+**To unify a new resource (e.g. PartnerResource):** create a `PartnerSchemaRegistry extends
+AbstractSchemaRegistry` (scope `'partner'`), split its base resource into `Schemas/PartnerForm` etc.
+that fold registry slots, use `HasContributedAttributes` on the base Partner model, and have each
+plugin contribute in `packageBooted` + register relation-page subclasses per resource (approach B).
+
 ### Deferred / TODO
 - **Custom fields** (`HasCustomFields` "Additional" section) was previously appended only on the
   inventory product form. The inventory resource no longer overrides the form, so that section is
