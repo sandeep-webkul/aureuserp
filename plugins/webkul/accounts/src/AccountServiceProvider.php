@@ -128,12 +128,12 @@ class AccountServiceProvider extends PackageServiceProvider
         $this->contributeProductSchema();
     }
 
-    /**
-     * Contribute account fields, casts and relations to the shared Product
-     * resource so they appear on every plugin's product screen.
-     */
     protected function contributeProductSchema(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
         ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
         ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());

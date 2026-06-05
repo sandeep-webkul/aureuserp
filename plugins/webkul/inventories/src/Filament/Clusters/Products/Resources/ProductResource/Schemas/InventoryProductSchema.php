@@ -17,10 +17,6 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Product\Enums\ProductType;
 
-/**
- * Inventory-owned Product schema fragments, contributed to the shared
- * ProductResource form/infolist via the `left.inventory` slot.
- */
 class InventoryProductSchema
 {
     public static function formSection(): Section

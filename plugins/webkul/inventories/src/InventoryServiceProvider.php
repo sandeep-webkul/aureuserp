@@ -140,15 +140,18 @@ class InventoryServiceProvider extends PackageServiceProvider
         $this->contributeProductSchema();
     }
 
-    /**
-     * Contribute inventory fields, casts and relations to the shared Product
-     * resource so they appear on every plugin's product screen.
-     */
     protected function contributeProductSchema(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         ProductSchemaRegistry::form('left.inventory', fn () => InventoryProductSchema::formSection());
+
         ProductSchemaRegistry::infolist('left.inventory', fn () => InventoryProductSchema::infolistSection());
+
         ProductSchemaRegistry::actions('header', fn () => UpdateQuantityAction::make());
+
         ProductSchemaRegistry::eagerLoad(['routes', 'responsible']);
 
         Product::contributeFillable([
@@ -186,15 +189,18 @@ class InventoryServiceProvider extends PackageServiceProvider
 
         Product::resolveRelationUsing('moveLines', fn (Product $product) => $product->is_configurable
             ? $product->hasMany(MoveLine::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
-            : $product->hasMany(MoveLine::class));
+            : $product->hasMany(MoveLine::class)
+        );
 
         Product::resolveRelationUsing('moves', fn (Product $product) => $product->is_configurable
             ? $product->hasMany(Move::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
-            : $product->hasMany(Move::class));
+            : $product->hasMany(Move::class)
+        );
 
         Product::resolveRelationUsing('quantities', fn (Product $product) => $product->is_configurable
             ? $product->hasMany(ProductQuantity::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
-            : $product->hasMany(ProductQuantity::class));
+            : $product->hasMany(ProductQuantity::class)
+        );
     }
 
     public function packageRegistered(): void

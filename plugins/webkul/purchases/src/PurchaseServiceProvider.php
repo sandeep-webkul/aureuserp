@@ -80,6 +80,15 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
         // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
 
+        $this->contributeProductSchema();
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         Product::resolveRelationUsing('sellers', fn (Product $product) => $product->is_configurable
             ? $product->hasMany(ProductSupplier::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
             : $product->hasMany(ProductSupplier::class));
