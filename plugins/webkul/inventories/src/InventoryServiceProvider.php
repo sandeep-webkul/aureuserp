@@ -6,11 +6,17 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
+use Webkul\Inventory\Models\Route;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Product;
+use Webkul\Security\Models\User;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {
@@ -127,7 +133,51 @@ class InventoryServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        //
+        $this->contributeProductSchema();
+    }
+
+    /**
+     * Contribute inventory fields, casts and relations to the shared Product
+     * resource so they appear on every plugin's product screen.
+     */
+    protected function contributeProductSchema(): void
+    {
+        ProductSchemaRegistry::form('left.inventory', fn () => InventoryProductSchema::formSection());
+        ProductSchemaRegistry::infolist('left.inventory', fn () => InventoryProductSchema::infolistSection());
+        ProductSchemaRegistry::eagerLoad(['routes', 'responsible']);
+
+        Product::contributeFillable([
+            'sale_delay',
+            'tracking',
+            'description_picking',
+            'description_pickingout',
+            'description_pickingin',
+            'is_storable',
+            'expiration_time',
+            'use_time',
+            'removal_time',
+            'alert_time',
+            'use_expiration_date',
+            'responsible_id',
+        ]);
+
+        Product::contributeCasts([
+            'tracking'            => ProductTracking::class,
+            'use_expiration_date' => 'boolean',
+            'is_storable'         => 'boolean',
+        ]);
+
+        Product::resolveRelationUsing('routes', fn (Product $product) => $product->belongsToMany(
+            Route::class,
+            'inventories_product_routes',
+            'product_id',
+            'route_id',
+        ));
+
+        Product::resolveRelationUsing('responsible', fn (Product $product) => $product->belongsTo(
+            User::class,
+            'responsible_id',
+        ));
     }
 
     public function packageRegistered(): void

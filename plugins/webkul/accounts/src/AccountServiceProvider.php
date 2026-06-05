@@ -7,13 +7,19 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
+use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSchema;
 use Webkul\Account\Livewire\InvoiceSummary;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Tax;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Product;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -118,6 +124,73 @@ class AccountServiceProvider extends PackageServiceProvider
         Livewire::component('invoice-summary', InvoiceSummary::class);
 
         $this->registerCustomCss();
+
+        $this->contributeProductSchema();
+    }
+
+    /**
+     * Contribute account fields, casts and relations to the shared Product
+     * resource so they appear on every plugin's product screen.
+     */
+    protected function contributeProductSchema(): void
+    {
+        ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
+        ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
+        ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());
+        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes']);
+
+        Product::contributeFillable([
+            'property_account_income_id',
+            'property_account_expense_id',
+            'image',
+            'service_type',
+            'sale_line_warn',
+            'expense_policy',
+            'invoice_policy',
+            'sale_line_warn_msg',
+            'sales_ok',
+            'purchase_ok',
+        ]);
+
+        Product::resolveRelationUsing('productTaxes', fn (Product $product) => $product->belongsToMany(
+            Tax::class,
+            'accounts_product_taxes',
+            'product_id',
+            'tax_id',
+        ));
+
+        Product::resolveRelationUsing('supplierTaxes', fn (Product $product) => $product->belongsToMany(
+            Tax::class,
+            'accounts_product_supplier_taxes',
+            'product_id',
+            'tax_id',
+        ));
+
+        Product::resolveRelationUsing('propertyAccountIncome', fn (Product $product) => $product->belongsTo(
+            Account::class,
+            'property_account_income_id',
+        )
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]));
+
+        Product::resolveRelationUsing('propertyAccountExpense', fn (Product $product) => $product->belongsTo(
+            Account::class,
+            'property_account_expense_id',
+        )
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]));
     }
 
     public function registerCustomCss(): void
