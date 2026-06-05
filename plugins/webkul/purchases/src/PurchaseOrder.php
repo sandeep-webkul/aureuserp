@@ -580,7 +580,7 @@ class PurchaseOrder
         $url = PurchaseOrderResource::getUrl('view', ['record' => $record]);
 
         $operation->addMessage([
-            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$record->name}</a>.",
+            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm\">{$record->name}</a>.",
             'type' => 'comment',
         ]);
     }

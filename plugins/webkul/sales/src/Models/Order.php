@@ -16,6 +16,7 @@ use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
+use Webkul\Inventory\Models\Delivery;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProcurementGroup;
 use Webkul\Inventory\Models\Warehouse;
@@ -141,6 +142,11 @@ class Order extends Model
         return $this->belongsToMany(Move::class, 'sales_order_invoices', 'order_id', 'move_id');
     }
 
+    public function invoices(): BelongsToMany
+    {
+        return $this->belongsToMany(Invoice::class, 'sales_order_invoices', 'order_id', 'move_id');
+    }
+
     public function partnerInvoice()
     {
         return $this->belongsTo(Partner::class, 'partner_invoice_id');
@@ -224,6 +230,11 @@ class Order extends Model
     public function operations(): HasMany
     {
         return $this->hasMany(Operation::class, 'sale_order_id');
+    }
+
+    public function deliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class, 'sale_order_id');
     }
 
     public function updateName()
