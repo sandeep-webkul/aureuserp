@@ -34,6 +34,9 @@ class ProductSchemaRegistry
     /** @var array<string, array<int, array{0:int,1:Closure}>> */
     protected static array $table = [];
 
+    /** @var array<string, array<int, array{0:int,1:Closure}>> */
+    protected static array $actions = [];
+
     /** @var array<int, string> */
     protected static array $eagerLoad = [];
 
@@ -50,6 +53,11 @@ class ProductSchemaRegistry
     public static function table(string $slot, Closure $factory, int $priority = 0): void
     {
         static::$table[$slot][] = [$priority, $factory];
+    }
+
+    public static function actions(string $slot, Closure $factory, int $priority = 0): void
+    {
+        static::$actions[$slot][] = [$priority, $factory];
     }
 
     /**
@@ -100,6 +108,14 @@ class ProductSchemaRegistry
     public static function renderTable(string $slot, mixed ...$args): array
     {
         return static::resolve(static::$table[$slot] ?? [], $args);
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function renderActions(string $slot, mixed ...$args): array
+    {
+        return static::resolve(static::$actions[$slot] ?? [], $args);
     }
 
     /**

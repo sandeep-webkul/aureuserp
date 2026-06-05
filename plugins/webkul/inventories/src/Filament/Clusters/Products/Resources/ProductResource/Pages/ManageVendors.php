@@ -3,9 +3,9 @@
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages;
 
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Product\Filament\Resources\ProductResource\Pages\ViewProduct as BaseViewProduct;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors as BaseManageVendors;
 
-class ViewProduct extends BaseViewProduct
+class ManageVendors extends BaseManageVendors
 {
     protected static string $resource = ProductResource::class;
 }

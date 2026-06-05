@@ -11,8 +11,10 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Inventory\Models\Product;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
@@ -38,19 +40,26 @@ class ProductResource extends BaseProductResource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
+        $items = [
             ViewProduct::class,
             EditProduct::class,
             ManageAttributes::class,
             ManageVariants::class,
-            ManageQuantities::class,
-            ManageMoves::class,
-        ]);
+        ];
+
+        if (Package::isPluginInstalled('purchases')) {
+            $items[] = ManageVendors::class;
+        }
+
+        $items[] = ManageQuantities::class;
+        $items[] = ManageMoves::class;
+
+        return $page->generateNavigationItems($items);
     }
 
     public static function getPages(): array
     {
-        return [
+        $pages = [
             'index'      => ListProducts::route('/'),
             'create'     => CreateProduct::route('/create'),
             'view'       => ViewProduct::route('/{record}'),
@@ -60,5 +69,11 @@ class ProductResource extends BaseProductResource
             'moves'      => ManageMoves::route('/{record}/moves'),
             'quantities' => ManageQuantities::route('/{record}/quantities'),
         ];
+
+        if (Package::isPluginInstalled('purchases')) {
+            $pages['vendors'] = ManageVendors::route('/{record}/vendors');
+        }
+
+        return $pages;
     }
 }

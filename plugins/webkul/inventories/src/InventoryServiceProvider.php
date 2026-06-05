@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
+use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\MoveLine;
+use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -144,6 +148,7 @@ class InventoryServiceProvider extends PackageServiceProvider
     {
         ProductSchemaRegistry::form('left.inventory', fn () => InventoryProductSchema::formSection());
         ProductSchemaRegistry::infolist('left.inventory', fn () => InventoryProductSchema::infolistSection());
+        ProductSchemaRegistry::actions('header', fn () => UpdateQuantityAction::make());
         ProductSchemaRegistry::eagerLoad(['routes', 'responsible']);
 
         Product::contributeFillable([
@@ -178,6 +183,18 @@ class InventoryServiceProvider extends PackageServiceProvider
             User::class,
             'responsible_id',
         ));
+
+        Product::resolveRelationUsing('moveLines', fn (Product $product) => $product->is_configurable
+            ? $product->hasMany(MoveLine::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
+            : $product->hasMany(MoveLine::class));
+
+        Product::resolveRelationUsing('moves', fn (Product $product) => $product->is_configurable
+            ? $product->hasMany(Move::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
+            : $product->hasMany(Move::class));
+
+        Product::resolveRelationUsing('quantities', fn (Product $product) => $product->is_configurable
+            ? $product->hasMany(ProductQuantity::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
+            : $product->hasMany(ProductQuantity::class));
     }
 
     public function packageRegistered(): void

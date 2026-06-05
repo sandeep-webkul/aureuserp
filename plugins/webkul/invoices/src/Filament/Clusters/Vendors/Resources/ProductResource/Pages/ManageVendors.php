@@ -2,10 +2,10 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages;
 
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves as BaseManageMoves;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors as BaseManageVendors;
 
-class ManageMoves extends BaseManageMoves
+class ManageVendors extends BaseManageVendors
 {
     protected static string $resource = ProductResource::class;
 }

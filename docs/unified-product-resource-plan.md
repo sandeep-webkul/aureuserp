@@ -122,6 +122,22 @@ Done + verified (lint, boot, tinker):
 Verified: `Sale\Product`, `Inventory\Product`, `Purchase\Product` all inherit the inventory + account
 fillable/casts/relations → every product screen renders & saves both field sets.
 
+### Sub-navigation + header actions (approach B — per-resource pages)
+Filament binds relation pages to one resource, so sub-nav/pages can't be shared like static schema.
+Chosen: each product resource registers the union of pages as its own thin subclasses, guarded by
+`Package::isPluginInstalled`. Header actions unified via a registry `actions('header', ...)` slot that
+the base View/Edit pages fold in.
+- Registry gained `actions()` / `renderActions()`.
+- Base `ViewProduct`/`EditProduct` prepend `ProductSchemaRegistry::renderActions('header', $this)`.
+- Inventories registers `UpdateQuantityAction` to `header`; its own View/Edit header-action overrides
+  removed (inventory `EditProduct::beforeSave` kept). `moveLines`/`moves`/`quantities` relations
+  resolved on base `Product`.
+- Sales `ProductResource` now exposes `ManageQuantities` + `ManageMoves` (thin subclasses of the
+  inventory pages, `$resource` rebound) in `getPages()` + `getRecordSubNavigation()`, guarded by
+  inventories install. Attributes/Variants already shared (base relations).
+- Verified: header slot resolves `UpdateQuantityAction`; sales product routes include moves/quantities.
+- Same pattern repeats for purchases (Vendors) / manufacturing (BoM) when wanted.
+
 ### Deferred / TODO
 - **Custom fields** (`HasCustomFields` "Additional" section) was previously appended only on the
   inventory product form. The inventory resource no longer overrides the form, so that section is
