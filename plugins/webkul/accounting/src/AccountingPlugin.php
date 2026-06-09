@@ -5,7 +5,7 @@ namespace Webkul\Accounting;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts;
+use Webkul\Accounting\Filament\Pages\Settings\ManageProducts;
 use Webkul\PluginManager\Package;
 
 class AccountingPlugin implements Plugin

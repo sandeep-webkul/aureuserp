@@ -6,7 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\PluginManager\Package;
-use Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts;
+use Webkul\Purchase\Filament\Admin\Pages\Settings\ManageProducts;
 
 class PurchasePlugin implements Plugin
 {

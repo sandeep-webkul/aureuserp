@@ -5,7 +5,7 @@ namespace Webkul\Manufacturing;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Manufacturing\Filament\Clusters\Settings\Pages\ManageOperations;
+use Webkul\Manufacturing\Filament\Pages\Settings\ManageOperations;
 use Webkul\PluginManager\Package;
 
 class ManufacturingPlugin implements Plugin

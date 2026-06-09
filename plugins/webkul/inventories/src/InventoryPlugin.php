@@ -5,7 +5,7 @@ namespace Webkul\Inventory;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations;
+use Webkul\Inventory\Filament\Pages\Settings\ManageOperations;
 use Webkul\PluginManager\Package;
 
 class InventoryPlugin implements Plugin

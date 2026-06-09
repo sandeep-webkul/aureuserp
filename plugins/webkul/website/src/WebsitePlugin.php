@@ -10,7 +10,7 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
-use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
+use Webkul\Website\Filament\Admin\Pages\Settings\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;

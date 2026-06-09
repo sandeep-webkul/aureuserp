@@ -5,7 +5,7 @@ namespace Webkul\Invoice;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Invoice\Filament\Clusters\Settings\Pages\Products;
+use Webkul\Invoice\Filament\Pages\Settings\Products;
 use Webkul\PluginManager\Package;
 
 class InvoicePlugin implements Plugin

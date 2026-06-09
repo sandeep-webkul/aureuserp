@@ -6,7 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\PluginManager\Package;
-use Webkul\Project\Filament\Clusters\Settings\Pages\ManageTasks;
+use Webkul\Project\Filament\Pages\Settings\ManageTasks;
 
 class ProjectPlugin implements Plugin
 {
