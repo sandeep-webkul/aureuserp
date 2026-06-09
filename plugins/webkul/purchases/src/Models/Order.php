@@ -196,11 +196,6 @@ class Order extends Model
         return $this->belongsToMany(Receipt::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
     }
 
-    public function receipts(): BelongsToMany
-    {
-        return $this->belongsToMany(Receipt::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
-    }
-
     public function procurementGroup(): BelongsTo
     {
         return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');

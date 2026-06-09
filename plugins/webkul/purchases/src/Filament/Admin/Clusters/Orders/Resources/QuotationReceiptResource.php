@@ -2,8 +2,13 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
+use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Table;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource as BaseReceiptResource;
 use Webkul\Inventory\Models\Receipt;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
@@ -28,8 +33,21 @@ class QuotationReceiptResource extends BaseReceiptResource
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return QuotationResource::asParent()
-            ->relationship('receipts')
+            ->relationship('operations')
             ->inverseRelationship('purchaseOrders');
+    }
+
+    public static function table(Table $table): Table
+    {
+        return OperationResource::table($table)
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->url(fn ($record): string => static::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true)),
+                    EditAction::make()
+                        ->url(fn ($record): string => static::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true)),
+                ]),
+            ]);
     }
 
     public static function getRecordSubNavigation(Page $page): array

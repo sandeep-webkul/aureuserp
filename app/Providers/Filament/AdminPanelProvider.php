@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->favicon(asset('images/favicon.ico'))
             ->brandLogo(asset('images/logo.svg'))
@@ -104,6 +105,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(fn (): string => __('admin.navigation.setting'))
                     ->icon('icon-settings'),
+                NavigationGroup::make()
+                    ->label(fn (): string => __('admin.navigation.help'))
+                    ->icon('icon-help'),
             ])
             ->plugins([
                 ManufacturingPlugin::make(),

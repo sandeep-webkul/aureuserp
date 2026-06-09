@@ -141,6 +141,14 @@ Visit `http://localhost:8000` and log in with your admin credentials!
 
 ---
 
+## ☁️ AureusERP Cloud Hosting
+
+[AureusERP Cloud Hosting](https://aureuserp.com/cloud-hosting/) is a fully managed hosting solution where our team sets up, secures, and configures your AureusERP on reliable infrastructure.
+
+Get a ready-to-use ERP on your own domain, without manual installation or infrastructure complexity, and focus on growing your business while we handle the technology.
+
+---
+
 ## 🧩 Plugin System
 
 AureusERP features a powerful modular plugin system that allows you to customize your ERP installation based on your business needs. Choose only the modules you need to keep your system lean and efficient.

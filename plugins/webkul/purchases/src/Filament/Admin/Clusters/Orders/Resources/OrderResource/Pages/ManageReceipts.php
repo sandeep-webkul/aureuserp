@@ -15,7 +15,7 @@ class ManageReceipts extends ManageRelatedRecords
 
     protected static string $resource = OrderResource::class;
 
-    protected static string $relationship = 'receipts';
+    protected static string $relationship = 'operations';
 
     protected static ?string $relatedResource = QuotationReceiptResource::class;
 
@@ -42,6 +42,6 @@ class ManageReceipts extends ManageRelatedRecords
 
     public static function getNavigationBadge($parameters = []): ?string
     {
-        return Livewire::current()->getRecord()->receipts()->count();
+        return Livewire::current()->getRecord()->operations()->count();
     }
 }
