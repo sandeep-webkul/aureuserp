@@ -1267,6 +1267,10 @@ class QuotationResource extends Resource
                             return null;
                         }
 
+                        if (! $inventoryProduct->is_storable) {
+                            return null;
+                        }
+
                         $context = [];
 
                         $warehouseId = $get('../../warehouse_id');
