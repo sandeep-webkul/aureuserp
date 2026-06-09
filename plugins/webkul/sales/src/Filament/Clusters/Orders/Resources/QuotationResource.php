@@ -1329,21 +1329,16 @@ class QuotationResource extends Resource
                                 ], escape: false),
                         );
                     })
-                    ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
-                        $qtyDelivered = $record?->qty_delivered ?? 0;
+                    ->rule(function (Get $get): \Closure {
+                        return function (string $attribute, $value, \Closure $fail) use ($get): void {
+                            $qtyDelivered = (float) ($get('qty_delivered') ?? 0);
 
-                        if ($qtyDelivered > 0 && floatval($state) < $qtyDelivered) {
-                            $set('product_qty', $qtyDelivered);
-
-                            Notification::make()
-                                ->danger()
-                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.notifications.quantity-below-delivered.title'))
-                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.notifications.quantity-below-delivered.body', ['qty' => $qtyDelivered]))
-                                ->send();
-
-                            return;
-                        }
-
+                            if ($qtyDelivered > 0 && (float) $value < $qtyDelivered) {
+                                $fail(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.notifications.quantity-below-delivered.body', ['qty' => $qtyDelivered]));
+                            }
+                        };
+                    })
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
                     ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
