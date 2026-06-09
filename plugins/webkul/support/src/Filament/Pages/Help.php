@@ -79,21 +79,21 @@ class Help extends Page
                 'title'       => __('support::filament/pages/help.services.cloud.title'),
                 'description' => __('support::filament/pages/help.services.cloud.description'),
                 'url'         => 'https://aureuserp.com/cloud-hosting',
-                'link_label'  => 'aureuserp.com/cloud-hosting',
+                'button'      => __('support::filament/pages/help.services.cloud.button'),
             ],
             [
                 'icon'        => 'heroicon-o-lifebuoy',
                 'title'       => __('support::filament/pages/help.services.support.title'),
                 'description' => __('support::filament/pages/help.services.support.description'),
-                'url'         => 'https://aureuserp.com/contacts',
-                'link_label'  => 'aureuserp.com/contacts',
+                'url'         => 'https://aureuserp.com/erp-support-maintenance-services',
+                'button'      => __('support::filament/pages/help.services.support.button'),
             ],
             [
                 'icon'        => 'heroicon-o-key',
                 'title'       => __('support::filament/pages/help.services.paid.title'),
                 'description' => __('support::filament/pages/help.services.paid.description'),
-                'url'         => 'https://aureuserp.com/contacts',
-                'link_label'  => 'aureuserp.com/contacts',
+                'url'         => 'https://aureuserp.com/custom-erp-development',
+                'button'      => __('support::filament/pages/help.services.paid.button'),
             ],
         ];
     }
@@ -106,21 +106,21 @@ class Help extends Page
                 'title'       => __('support::filament/pages/help.resources.extensions.title'),
                 'description' => __('support::filament/pages/help.resources.extensions.description'),
                 'url'         => 'https://store.webkul.com/catalogsearch/result/?cat=All+Categories&q=AureusERP',
-                'link_label'  => 'aureuserp.com/extensions',
+                'button'      => __('support::filament/pages/help.resources.extensions.button'),
             ],
             [
                 'icon'        => 'heroicon-o-document-text',
                 'title'       => __('support::filament/pages/help.resources.docs.title'),
                 'description' => __('support::filament/pages/help.resources.docs.description'),
                 'url'         => 'https://devdocs.aureuserp.com',
-                'link_label'  => 'devdocs.aureuserp.com',
+                'button'      => __('support::filament/pages/help.resources.docs.button'),
             ],
             [
                 'icon'        => 'heroicon-o-book-open',
                 'title'       => __('support::filament/pages/help.resources.guide.title'),
                 'description' => __('support::filament/pages/help.resources.guide.description'),
                 'url'         => 'https://docs.aureuserp.com',
-                'link_label'  => 'docs.aureuserp.com',
+                'button'      => __('support::filament/pages/help.resources.guide.button'),
             ],
         ];
     }
