@@ -15,7 +15,7 @@ class ManageDeliveries extends ManageRelatedRecords
 
     protected static string $resource = QuotationResource::class;
 
-    protected static string $relationship = 'deliveries';
+    protected static string $relationship = 'operations';
 
     protected static ?string $relatedResource = QuotationDeliveryResource::class;
 
@@ -39,6 +39,6 @@ class ManageDeliveries extends ManageRelatedRecords
 
     public static function getNavigationBadge($parameters = []): ?string
     {
-        return Livewire::current()->getRecord()->deliveries()->count();
+        return Livewire::current()->getRecord()->operations()->count();
     }
 }

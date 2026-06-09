@@ -61,7 +61,7 @@ class OrderResource extends QuotationResource
             'view'       => ViewOrder::route('/{record}'),
             'edit'       => EditOrder::route('/{record}/edit'),
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
-            'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
+            'operations' => ManageDeliveries::route('/{record}/deliveries'),
         ];
     }
 
