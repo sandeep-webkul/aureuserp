@@ -5,22 +5,6 @@ namespace Webkul\Support\Filament\Concerns;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationItem;
 
-/**
- * Turns a clustered SettingsPage into a "mirror" page that lives in the plugin's
- * own navigation context instead of the global Settings cluster.
- *
- * A mirror page should:
- *   - extend its clustered counterpart (to inherit the form, settings class,
- *     labels, icon and permission),
- *   - set `protected static ?string $cluster = null;`,
- *   - set a unique `$slug` (so it gets its own, non-cluster route),
- *   - set `protected static bool $shouldRegisterNavigation = false;`
- *     (the plugin exposes a single "Settings" item; siblings appear via the
- *     sub-navigation built below).
- *
- * The sub-navigation lists every mirror page sharing the same navigation group,
- * so navigating between a plugin's settings pages keeps the plugin sidebar.
- */
 trait HasSettingsMirror
 {
     public static function getCluster(): ?string
