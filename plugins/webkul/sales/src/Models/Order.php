@@ -22,6 +22,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Database\Factories\OrderFactory;
 use Webkul\Sale\Enums\InvoiceStatus;
+use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
@@ -81,14 +82,15 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'state'          => OrderState::class,
-        'invoice_status' => InvoiceStatus::class,
-        'amount_tax'     => 'decimal:4',
-        'amount_total'   => 'decimal:4',
-        'amount_untaxed' => 'decimal:4',
-        'validity_date'  => 'date',
-        'date_order'     => 'date',
-        'signed_on'      => 'date',
+        'state'           => OrderState::class,
+        'invoice_status'  => InvoiceStatus::class,
+        'delivery_status' => OrderDeliveryStatus::class,
+        'amount_tax'      => 'decimal:4',
+        'amount_total'    => 'decimal:4',
+        'amount_untaxed'  => 'decimal:4',
+        'validity_date'   => 'date',
+        'date_order'      => 'date',
+        'signed_on'       => 'date',
     ];
 
     public function getLogAttributeLabels(): array

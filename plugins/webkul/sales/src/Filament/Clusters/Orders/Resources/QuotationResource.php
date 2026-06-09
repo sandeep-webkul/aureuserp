@@ -418,6 +418,12 @@ class QuotationResource extends Resource
                     ->badge()
                     ->toggleable()
                     ->sortable(),
+                TextColumn::make('delivery_status')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.delivery-status'))
+                    ->placeholder('-')
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
                 TextColumn::make('invoice_status')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.invoice-status'))
                     ->placeholder('-')
@@ -727,7 +733,7 @@ class QuotationResource extends Resource
                                     ->live()
                                     ->columnManager()
                                     ->columnManagerColumns(2)
-                                    ->table([
+                                    ->table(fn ($record) => [
                                         InfolistTableColumn::make('name')
                                             ->width(250)
                                             ->toggleable()
@@ -736,10 +742,21 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
                                             ->width(100)
                                             ->toggleable(),
+                                        InfolistTableColumn::make('qty_delivered')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.qty-delivered'))
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->visible(in_array($record?->state, [OrderState::SALE])),
+                                        InfolistTableColumn::make('qty_invoiced')
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.qty-invoiced'))
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->visible(in_array($record?->state, [OrderState::SALE])),
                                         InfolistTableColumn::make('uom')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
                                             ->width(100)
-                                            ->toggleable(),
+                                            ->toggleable()
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                                         InfolistTableColumn::make('customer_lead')
                                             ->width(100)
                                             ->toggleable(isToggledHiddenByDefault: true)
@@ -747,7 +764,8 @@ class QuotationResource extends Resource
                                         InfolistTableColumn::make('product_packaging_qty')
                                             ->toggleable(isToggledHiddenByDefault: true)
                                             ->width(150)
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty')),
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty'))
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
                                         InfolistTableColumn::make('productPackaging')
                                             ->toggleable(isToggledHiddenByDefault: true)
                                             ->width(150)
@@ -755,10 +773,6 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging')),
                                         InfolistTableColumn::make('price_unit')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
-                                            ->toggleable()
-                                            ->width(100),
-                                        InfolistTableColumn::make('purchase_price')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
                                             ->toggleable()
                                             ->width(100),
                                         InfolistTableColumn::make('margin')
@@ -781,7 +795,7 @@ class QuotationResource extends Resource
                                             ->width(100)
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_subtotal')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
+                                            ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.amount'))
                                             ->toggleable()
                                             ->width(100),
                                     ])
@@ -795,10 +809,21 @@ class QuotationResource extends Resource
                                             ->placeholder('-')
                                             ->numeric(),
 
+                                        TextEntry::make('qty_delivered')
+                                            ->placeholder('-')
+                                            ->numeric()
+                                            ->visible(fn ($record): bool => in_array($record?->state, [OrderState::SALE])),
+
+                                        TextEntry::make('qty_invoiced')
+                                            ->placeholder('-')
+                                            ->numeric()
+                                            ->visible(fn ($record): bool => in_array($record?->state, [OrderState::SALE])),
+
                                         TextEntry::make('uom')
                                             ->formatStateUsing(function ($state, ProductSettings $settings) {
                                                 return $settings->enable_uom && $state ? $state['name'] : '-';
-                                            }),
+                                            })
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
 
                                         TextEntry::make('customer_lead')
                                             ->placeholder('-')
@@ -808,7 +833,8 @@ class QuotationResource extends Resource
                                         TextEntry::make('product_packaging_qty')
                                             ->formatStateUsing(function ($state, ProductSettings $settings) {
                                                 return $settings->enable_packagings && $state ? $state : '-';
-                                            }),
+                                            })
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_packagings),
 
                                         TextEntry::make('productPackaging')
                                             ->formatStateUsing(fn ($state) => $state['name'])
@@ -819,10 +845,6 @@ class QuotationResource extends Resource
                                             ->placeholder('-')
                                             ->money(fn ($record) => $record->currency->code)
                                             ->weight(FontWeight::Medium),
-
-                                        TextEntry::make('purchase_price')
-                                            ->placeholder('-')
-                                            ->money(fn ($record) => $record->currency->code),
 
                                         TextEntry::make('margin')
                                             ->formatStateUsing(function ($state, PriceSettings $settings) {
