@@ -49,6 +49,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema as DBSchema;
 use Illuminate\View\ComponentAttributeBag;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
@@ -270,14 +271,13 @@ class QuotationResource extends Resource
                                                     $get('company_id') ?? Auth::user()->default_company_id,
                                                 )->orderBy('id'),
                                             )
-                                            ->default(fn (Get $get): ?int => Warehouse::where(
-                                                'company_id',
-                                                $get('company_id') ?? Auth::user()->default_company_id,
-                                            )->orderBy('id')->value('id'))
+                                            ->default(fn (Get $get): ?int => static::getDefaultWarehouseId(
+                                                $get('company_id') ?? Auth::user()->default_company_id
+                                            ))
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
-                                            ->visible(Package::isPluginInstalled('inventories')),
+                                            ->visible(fn (): bool => static::canUseInventoryWarehouses()),
                                         DatePicker::make('commitment_date')
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.shipping.fields.commitment-date'))
@@ -322,7 +322,7 @@ class QuotationResource extends Resource
                                                 $companyId = $state ?? Auth::user()->default_company_id;
 
                                                 $set('currency_id', Company::find($state)?->currency_id);
-                                                $set('warehouse_id', Warehouse::where('company_id', $companyId)->orderBy('id')->value('id'));
+                                                $set('warehouse_id', static::getDefaultWarehouseId($companyId));
                                             })
                                             ->reactive()
                                             ->default(Auth::user()->default_company_id),
@@ -1054,6 +1054,21 @@ class QuotationResource extends Resource
                     ]),
             ])
             ->columns(1);
+    }
+
+    private static function canUseInventoryWarehouses(): bool
+    {
+        return Package::isPluginInstalled('inventories')
+            && DBSchema::hasTable('inventories_warehouses');
+    }
+
+    private static function getDefaultWarehouseId(?int $companyId): ?int
+    {
+        if (! $companyId || ! static::canUseInventoryWarehouses()) {
+            return null;
+        }
+
+        return Warehouse::where('company_id', $companyId)->orderBy('id')->value('id');
     }
 
     public static function getProductRepeater(): Repeater
