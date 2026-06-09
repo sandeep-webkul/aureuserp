@@ -16,9 +16,9 @@
             {{ $this->resourcesInfolist }}
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 p-6">
+        <div class="from-primary-600 to-primary-500 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-gradient-to-r p-6">
             <div class="flex items-center gap-4">
-                <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/20">
+                <div class="size-12 flex shrink-0 items-center justify-center rounded-full bg-white/20">
                     <x-filament::icon icon="heroicon-o-chat-bubble-left-right" class="size-6 text-white" />
                 </div>
 
@@ -33,7 +33,7 @@
             </div>
 
             <div class="flex shrink-0 flex-wrap items-center gap-3">
-                <a
+                {{-- <a
                     href="https://aureuserp.com/contacts"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -41,13 +41,13 @@
                 >
                     <x-filament::icon icon="heroicon-m-chat-bubble-left-ellipsis" class="size-4" />
                     <span>{{ __('support::filament/pages/help.contact.live_chat') }}</span>
-                </a>
+                </a> --}}
 
                 <a
                     href="https://aureuserp.com/contacts"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-primary-600 shadow-sm transition hover:bg-gray-100"
+                    class="text-primary-600 inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-white px-5 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-gray-100"
                 >
                     <span>{{ __('support::filament/pages/help.contact.button') }}</span>
                     <x-filament::icon icon="heroicon-m-arrow-right" class="size-4" />
