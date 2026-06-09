@@ -1767,7 +1767,7 @@ class InventoryManager
         } else {
             $newMoveValues = $this->preparePushMoveCopyValues($rule, $move, $newScheduledAt);
 
-            $newMove = $move->replicate(['order_id', 'work_order_id'])->fill($newMoveValues);
+            $newMove = $move->replicate(['order_id', 'work_order_id', 'purchase_order_line_id'])->fill($newMoveValues);
 
             $newMove->save();
 
