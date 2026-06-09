@@ -2086,7 +2086,7 @@ class QuotationResource extends Resource
             'view'       => ViewQuotation::route('/{record}'),
             'edit'       => EditQuotation::route('/{record}/edit'),
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
-            'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
+            'operations' => ManageDeliveries::route('/{record}/deliveries'),
         ];
     }
 
