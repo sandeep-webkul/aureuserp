@@ -196,6 +196,7 @@ return [
         'columns' => [
             'number'             => 'Number',
             'status'             => 'Status',
+            'delivery-status'    => 'Delivery Status',
             'invoice-status'     => 'Invoice Status',
             'creation-date'      => 'Creation Date',
             'commitment-date'    => 'Commitment Date',
@@ -319,7 +320,9 @@ return [
                             'product-variants'    => 'Product Variants',
                             'product-simple'      => 'Product Simple',
                             'quantity'            => 'Quantity',
-                            'uom'                 => 'Unit Of Measure',
+                            'qty-delivered'       => 'Delivered',
+                            'qty-invoiced'        => 'Invoiced',
+                            'uom'                 => 'UOM',
                             'lead-time'           => 'Lead Time',
                             'packaging-qty'       => 'Packaging Quantity',
                             'packaging'           => 'Packaging',
