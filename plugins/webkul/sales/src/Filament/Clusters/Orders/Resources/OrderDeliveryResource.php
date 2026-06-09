@@ -17,7 +17,7 @@ class OrderDeliveryResource extends QuotationDeliveryResource
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return OrderResource::asParent()
-            ->relationship('deliveries')
+            ->relationship('operations')
             ->inverseRelationship('saleOrder');
     }
 

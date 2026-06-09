@@ -17,7 +17,7 @@ class PurchaseOrderReceiptResource extends QuotationReceiptResource
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return PurchaseOrderResource::asParent()
-            ->relationship('receipts')
+            ->relationship('operations')
             ->inverseRelationship('purchaseOrders');
     }
 
