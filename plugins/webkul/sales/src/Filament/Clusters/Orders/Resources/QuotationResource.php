@@ -270,10 +270,15 @@ class QuotationResource extends Resource
                                                     $get('company_id') ?? Auth::user()->default_company_id,
                                                 )->orderBy('id'),
                                             )
-                                            ->default(fn (Get $get): ?int => Warehouse::where(
-                                                'company_id',
-                                                $get('company_id') ?? Auth::user()->default_company_id,
-                                            )->orderBy('id')->value('id'))
+                                            ->default(function (Get $get) {
+                                                if (! Package::isPluginInstalled('inventories')) {
+                                                    return null;
+                                                }
+
+                                                $companyId = $get('company_id') ?? Auth::user()->default_company_id;
+
+                                                return Warehouse::where('company_id', $companyId)->orderBy('id')->value('id');
+                                            })
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
