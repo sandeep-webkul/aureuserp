@@ -277,7 +277,8 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
-                                            ->visible(Package::isPluginInstalled('inventories')),
+                                            ->visible(Package::isPluginInstalled('inventories'))
+                                            ->live(),
                                         DatePicker::make('commitment_date')
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.shipping.fields.commitment-date'))
