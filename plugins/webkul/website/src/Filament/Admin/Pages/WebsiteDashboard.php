@@ -18,7 +18,7 @@ use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
 use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
 use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
 use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
-
+use Webkul\PluginManager\Package;
 class WebsiteDashboard extends BaseDashboard
 {
     use HasFiltersForm, HasPageShield;
@@ -71,15 +71,17 @@ class WebsiteDashboard extends BaseDashboard
      * @return array<class-string<Widget>
      */
     public function getWidgets(): array
-    {
-        return [
+    {     
+        return array_filter([
             StatsOverview::class,
-            BlogChart::class,
-            CategoriesPieChart::class,
-            BlogAuthorsChart::class,
-            BlogStatusPieChart::class,
-            TopCategoriesTable::class,
-            RecentBlogsTable::class,
-        ];
+            ...(Package::isPluginInstalled('blogs') ? [
+                BlogChart::class,
+                CategoriesPieChart::class,
+                BlogAuthorsChart::class,
+                BlogStatusPieChart::class,
+                TopCategoriesTable::class,
+                RecentBlogsTable::class,
+            ] : []),
+        ]);
     }
 }
