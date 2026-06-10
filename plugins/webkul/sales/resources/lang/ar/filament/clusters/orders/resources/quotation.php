@@ -196,6 +196,7 @@ return [
         'columns' => [
             'number'             => 'الرقم',
             'status'             => 'الحالة',
+            'delivery-status'    => 'حالة التسليم',
             'invoice-status'     => 'حالة الفاتورة',
             'creation-date'      => 'تاريخ الإنشاء',
             'commitment-date'    => 'تاريخ الالتزام',
@@ -319,6 +320,8 @@ return [
                             'product-variants'    => 'متغيرات المنتج',
                             'product-simple'      => 'منتج بسيط',
                             'quantity'            => 'الكمية',
+                            'qty-delivered'       => 'الكمية المسلّمة',
+                            'qty-invoiced'        => 'الكمية المفوترة',
                             'uom'                 => 'وحدة القياس',
                             'lead-time'           => 'وقت التسليم',
                             'packaging-qty'       => 'كمية التغليف',
