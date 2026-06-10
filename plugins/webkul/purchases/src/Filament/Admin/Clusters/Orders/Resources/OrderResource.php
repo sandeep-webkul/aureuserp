@@ -387,6 +387,11 @@ class OrderResource extends Resource
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('receipt_status')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.receipt-status'))
+                    ->sortable()
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ]))
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
