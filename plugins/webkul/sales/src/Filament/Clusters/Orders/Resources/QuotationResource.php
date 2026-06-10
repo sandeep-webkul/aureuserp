@@ -277,6 +277,7 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
+                                            ->live()
                                             ->visible(fn (): bool => static::canUseInventoryWarehouses()),
                                         DatePicker::make('commitment_date')
                                             ->disabled(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
