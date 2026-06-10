@@ -2,14 +2,15 @@
 
 namespace Webkul\Invoice\Filament\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Invoice\Filament\Clusters\PluginSettings;
 use Webkul\Invoice\Filament\Clusters\Settings\Pages\Products as BaseProducts;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class Products extends BaseProducts
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'invoice/settings/products';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'products';
 }

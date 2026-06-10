@@ -2,14 +2,15 @@
 
 namespace Webkul\Purchase\Filament\Admin\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Purchase\Filament\Admin\Clusters\PluginSettings;
 use Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageOrders as BaseManageOrders;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageOrders extends BaseManageOrders
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'purchase/settings/manage-orders';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-orders';
 }

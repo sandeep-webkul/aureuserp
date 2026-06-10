@@ -2,14 +2,15 @@
 
 namespace Webkul\Accounting\Filament\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Accounting\Filament\Clusters\PluginSettings;
 use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageTaxes as BaseManageTaxes;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageTaxes extends BaseManageTaxes
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'accounting/settings/manage-taxes';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-taxes';
 }

@@ -2,14 +2,15 @@
 
 namespace Webkul\Purchase\Filament\Admin\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Purchase\Filament\Admin\Clusters\PluginSettings;
 use Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts as BaseManageProducts;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageProducts extends BaseManageProducts
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'purchase/settings/manage-products';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-products';
 }

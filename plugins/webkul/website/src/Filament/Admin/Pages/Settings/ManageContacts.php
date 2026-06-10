@@ -2,14 +2,15 @@
 
 namespace Webkul\Website\Filament\Admin\Pages\Settings;
 
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
+use UnitEnum;
+use Webkul\Website\Filament\Admin\Clusters\PluginSettings;
 use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts as BaseManageContacts;
 
 class ManageContacts extends BaseManageContacts
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'website/settings/manage-contacts';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-contacts';
 }

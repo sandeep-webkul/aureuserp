@@ -2,14 +2,15 @@
 
 namespace Webkul\Manufacturing\Filament\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Manufacturing\Filament\Clusters\PluginSettings;
 use Webkul\Manufacturing\Filament\Clusters\Settings\Pages\ManageOperations as BaseManageOperations;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageOperations extends BaseManageOperations
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'manufacturing/settings/manage-operations';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-operations';
 }

@@ -2,14 +2,15 @@
 
 namespace Webkul\Accounting\Filament\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Accounting\Filament\Clusters\PluginSettings;
 use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageDefaultAccounts as BaseManageDefaultAccounts;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageDefaultAccounts extends BaseManageDefaultAccounts
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'accounting/settings/manage-default-accounts';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-default-accounts';
 }

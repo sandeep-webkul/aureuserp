@@ -10,7 +10,6 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
-use Webkul\Website\Filament\Admin\Pages\Settings\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -99,15 +98,7 @@ class WebsitePlugin implements Plugin
                     ->discoverClusters(
                         in: __DIR__.'/Filament/Admin/Widgets',
                         for: 'Webkul\\Website\\Filament\\Admin\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('website::filament/app.navigation.settings.label'))
-                            ->url(fn () => ManageContacts::getUrl())
-                            ->group(fn () => __('website::filament/app.navigation.settings.group'))
-                            ->sort(5)
-                            ->visible(fn () => ManageContacts::canAccess()),
-                    ]);
+                    );
             });
     }
 

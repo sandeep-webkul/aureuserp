@@ -2,14 +2,15 @@
 
 namespace Webkul\Inventory\Filament\Pages\Settings;
 
+use UnitEnum;
+use Webkul\Inventory\Filament\Clusters\PluginSettings;
 use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageLogistics as BaseManageLogistics;
-use Webkul\Support\Filament\Concerns\HasSettingsMirror;
 
 class ManageLogistics extends BaseManageLogistics
 {
-    use HasSettingsMirror;
+    protected static ?string $cluster = PluginSettings::class;
 
-    protected static ?string $slug = 'inventory/settings/manage-logistics';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $slug = 'manage-logistics';
 }
