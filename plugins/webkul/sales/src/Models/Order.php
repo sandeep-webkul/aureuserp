@@ -91,6 +91,7 @@ class Order extends Model
         'validity_date'   => 'date',
         'date_order'      => 'date',
         'signed_on'       => 'date',
+        'locked'          => 'boolean',
     ];
 
     public function getLogAttributeLabels(): array
