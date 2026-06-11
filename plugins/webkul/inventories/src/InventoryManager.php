@@ -308,10 +308,12 @@ class InventoryManager
 
         if ($merge) {
             $moves = $this->mergeMoves($moves, mergeInto: $mergeInto)
-                ->map(fn ($move) => Move::find($move->id));
+                ->map(fn ($move) => Move::find($move->id))
+                ->filter();
         }
 
-        $negReturnMoves = $moves->filter(fn (Move $move) => float_compare($move->product_uom_qty, 0, precisionRounding: $move->uom->rounding) < 0
+        $negReturnMoves = $moves->filter(
+            fn (Move $move) => float_compare($move->product_uom_qty, 0, precisionRounding: $move->uom->rounding) < 0
         );
 
         $negToPush = $negReturnMoves->filter(
@@ -1767,7 +1769,7 @@ class InventoryManager
         } else {
             $newMoveValues = $this->preparePushMoveCopyValues($rule, $move, $newScheduledAt);
 
-            $newMove = $move->replicate(['order_id', 'work_order_id'])->fill($newMoveValues);
+            $newMove = $move->replicate(['order_id', 'work_order_id', 'purchase_order_line_id'])->fill($newMoveValues);
 
             $newMove->save();
 

@@ -135,6 +135,7 @@ return [
             'total-amount'     => 'Total Amount',
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
+            'receipt-status'   => 'Receipt Status',
             'currency'         => 'Currency',
         ],
 

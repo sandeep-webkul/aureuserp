@@ -387,6 +387,11 @@ class OrderResource extends Resource
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('receipt_status')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.receipt-status'))
+                    ->sortable()
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ]))
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
@@ -990,21 +995,16 @@ class OrderResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
-                        $qtyReceived = $record?->qty_received ?? 0;
+                    ->rule(function (Get $get): \Closure {
+                        return function (string $attribute, $value, \Closure $fail) use ($get): void {
+                            $qtyReceived = (float) ($get('qty_received') ?? 0);
 
-                        if ($qtyReceived > 0 && floatval($state) < $qtyReceived) {
-                            $set('product_qty', $qtyReceived);
-
-                            Notification::make()
-                                ->danger()
-                                ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.title'))
-                                ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.body', ['qty' => $qtyReceived]))
-                                ->send();
-
-                            return;
-                        }
-
+                            if ($qtyReceived > 0 && (float) $value < $qtyReceived) {
+                                $fail(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.body', ['qty' => $qtyReceived]));
+                            }
+                        };
+                    })
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
