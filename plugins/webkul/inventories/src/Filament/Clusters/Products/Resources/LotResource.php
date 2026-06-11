@@ -156,7 +156,7 @@ class LotResource extends Resource
                     ->sortable()
                     ->formatStateUsing(function ($state, $record) {
                         // If the related product is soft deleted, show "(Deleted Product)"
-                        if (method_exists($record, 'product') && $record->product?->trashed()) {
+                        if ($record->product?->trashed()) {
                             return trim(($record->product?->name ?? '—').' (Deleted Product)');
                         }
 
