@@ -109,6 +109,13 @@ class LotResource extends Resource
                                         titleAttribute: 'name',
                                         modifyQueryUsing: fn (Builder $query) => $query->where('tracking', ProductTracking::LOT)->whereNull('is_configurable'),
                                     )
+                                    ->getOptionLabelFromRecordUsing(function ($record) {
+                                        if ($record?->trashed()) {
+                                            return trim(($record->name ?? '—').' (Deleted Product)');
+                                        }
+
+                                        return $record->name ?? '—';
+                                    })
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -146,7 +153,15 @@ class LotResource extends Resource
                 TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.product'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state, $record) {
+                        // If the related product is soft deleted, show "(Deleted Product)"
+                        if (method_exists($record, 'product') && $record->product?->trashed()) {
+                            return trim(($record->product?->name ?? '—').' (Deleted Product)');
+                        }
+
+                        return $state ?? '—';
+                    }),
                 TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.reference'))
                     ->placeholder('—')
