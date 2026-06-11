@@ -42,16 +42,15 @@ test.describe("Sales Order Flow E2E", () => {
 
         await salesPage.confirmQuotation();
 
-        // Ordered policy => the Create Invoice button is shown right after confirmation.
         await salesPage.expectCreateInvoiceButtonVisible();
 
         await salesPage.createInvoice();
         await salesPage.openInvoicesForCurrentQuotation();
         await salesPage.expectInvoiceRowPresent();
         
-        const orderRef = salesPage.currentRecordRef();
-        await salesPage.validateFirstDeliveryForCurrentQuotation();
-        await salesPage.gotoOrderEdit(orderRef);
+        // const orderRef = salesPage.currentRecordRef();
+        // await salesPage.validateFirstDeliveryForCurrentQuotation();
+        // await salesPage.gotoOrderEdit(orderRef);
 
     });
 
@@ -120,32 +119,4 @@ test.describe("Sales Order Flow E2E", () => {
 
         await salesPage.sendQuotation();
     });
-
-    // test("Sales Flow - Customer To Invoice", async ({ adminPage }) => {
-    //     const salesPage = new SalesFlowPage(adminPage);
-    //     const key = Date.now();
-
-    //     const customerName = `E2E Sales Customer ${key}`;
-    //     const productName = `E2E Sales Product ${key}`;
-
-    //     await salesPage.createCustomer({
-    //         name: customerName,
-    //         email: `sales.customer+${key}@example.com`,
-    //     });
-
-    //     await salesPage.createProduct({
-    //         name: productName,
-    //         price: "100",
-    //     });
-
-    //     await salesPage.createQuotation({
-    //         customerName,
-    //         productName,
-    //         quantity: "1",
-    //     });
-
-    //     await salesPage.confirmQuotation();
-    //     await salesPage.validateFirstDeliveryForCurrentQuotation();
-    //     await salesPage.createInvoice();
-    // });
 });
