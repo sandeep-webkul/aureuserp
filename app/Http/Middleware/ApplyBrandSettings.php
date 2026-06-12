@@ -14,17 +14,11 @@ use Webkul\Support\Settings\BrandSettings;
 
 class ApplyBrandSettings
 {
-    /**
-     * The shade whose lightness/chroma a picked color is anchored to, so the
-     * resting button background (Filament's `--primary-600`) matches the
-     * exact hex the admin chose.
-     */
-    protected const ANCHOR_SHADE = 600;
+    protected const ANCHOR_SHADE = 500;
 
     /**
-     * Filament's reference lightness per shade (see Color::generatePalette).
-     * Used as the ramp's shape; remapped so the anchor shade hits the picked
-     * color's own lightness instead of Filament's fixed value.
+     * Filament's reference lightness per shade (see Color::generatePalette),
+     * used as the ramp's shape on each side of the 500/600 anchor band.
      *
      * @var array<int, float>
      */
@@ -43,8 +37,8 @@ class ApplyBrandSettings
     ];
 
     /**
-     * Filament's reference chroma per shade. Scaled by the picked color's
-     * chroma so the saturation taper across the ramp is preserved.
+     * Filament's reference chroma per shade, normalised so the anchor band
+     * carries the picked color's exact saturation and tapers toward the ends.
      *
      * @var array<int, float>
      */
@@ -62,16 +56,6 @@ class ApplyBrandSettings
         950 => 0.07136,
     ];
 
-    /**
-     * Override the current panel's branding (colors, logos, favicon and logo
-     * height) from the BrandSettings, for every panel this middleware is
-     * attached to. Any value left empty falls back to the panel's default.
-     *
-     * Runs after Filament's `SetUpPanel` middleware, so the panel's default
-     * colors are already registered and the values applied here take priority.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $panel = Filament::getCurrentPanel();
@@ -90,14 +74,10 @@ class ApplyBrandSettings
             $brandColors = [];
 
             foreach ($colorKeys as $colorKey) {
-                $hexColor = $brand->{$colorKey.'_color'};
+                $seed = $brand->{$colorKey.'_color'} ?: ($panelDefaultColors[$colorKey][600] ?? null);
 
-                if (! $hexColor) {
-                    $hexColor = $panelDefaultColors[$colorKey][600] ?? null;
-                }
-
-                if ($hexColor) {
-                    $brandColors[$colorKey] = $this->paletteFromHex($hexColor);
+                if ($seed) {
+                    $brandColors[$colorKey] = $this->paletteFromHex($seed);
                 }
             }
 
@@ -121,18 +101,11 @@ class ApplyBrandSettings
                 $panel->brandLogoHeight($brand->logo_height);
             }
         } catch (Throwable) {
-            // Settings not migrated yet or repository unavailable — keep defaults.
         }
 
         return $next($request);
     }
 
-    /**
-     * Resolve a stored logo/favicon value to a usable URL. Uploaded files live
-     * on the public storage disk; the seeded ERP defaults (e.g. images/logo.svg)
-     * live under the public/ root and are served via asset(). Absolute URLs are
-     * returned untouched.
-     */
     protected function assetUrl(string $path): string
     {
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
@@ -146,20 +119,9 @@ class ApplyBrandSettings
         return asset($path);
     }
 
-    /**
-     * Build a full 50–950 OKLCH palette from a single hex, anchoring the
-     * picked color at ANCHOR_SHADE so the resting button matches it exactly.
-     *
-     * Lightness is remapped with two linear segments — [anchor..white] above
-     * the anchor and [black..anchor] below — preserving shade ordering for any
-     * input, including pure black or white. Chroma keeps Filament's taper,
-     * scaled to the picked color's saturation; neutral picks stay achromatic.
-     *
-     * @return array<int, string>
-     */
-    protected function paletteFromHex(string $hex): array
+    protected function paletteFromHex(string $seed): array
     {
-        [$lightness, $chroma, $hue] = sscanf(Color::convertToOklch($hex), 'oklch(%f %f %f)');
+        [$lightness, $chroma, $hue] = sscanf(Color::convertToOklch($seed), 'oklch(%f %f %f)');
 
         $anchorLightness = self::LIGHTNESS[self::ANCHOR_SHADE];
         $anchorChroma = self::CHROMA[self::ANCHOR_SHADE];
