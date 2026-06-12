@@ -691,10 +691,7 @@ class InventoryManager
 
         foreach ($resultPackages as $resultPackage) {
             $locationCount = $resultPackage->quantities
-                ->filter(fn ($quantity) => ! float_is_zero(
-                    abs($quantity->quantity) + abs($quantity->reserved_quantity),
-                    precisionRounding: $quantity->uom->rounding
-                ))
+                ->filter(fn($quantity) => float_compare($quantity->quantity, 0.0, precisionRounding: $quantity->uom->rounding) > 0)
                 ->pluck('location_id')
                 ->unique()
                 ->count();
