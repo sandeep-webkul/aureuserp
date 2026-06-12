@@ -67,6 +67,10 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2026_05_01_065935_add_resource_columns_in_calendar_attendances_table',
             ])
             ->runsMigrations()
+            ->hasSettings([
+                '2026_06_12_000001_create_brand_settings',
+            ])
+            ->runsSettings()
             ->hasSeeder('Webkul\\Support\\Database\\Seeders\\DatabaseSeeder');
     }
 
