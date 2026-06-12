@@ -8,7 +8,7 @@ class PluginSettings extends Cluster
 {
     protected static ?string $slug = 'inventory/settings';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     public static function getNavigationLabel(): string
     {
