@@ -135,6 +135,7 @@ return [
             'total-amount'     => 'المبلغ الإجمالي',
             'status'           => 'الحالة',
             'billing-status'   => 'حالة الفوترة',
+            'receipt-status'   => 'حالة الاستلام',
             'currency'         => 'العملة',
         ],
 
