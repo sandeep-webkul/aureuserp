@@ -106,15 +106,15 @@ class ApplyBrandSettings
             }
 
             if (! empty($brand->light_logo)) {
-                $panel->brandLogo(Storage::disk('public')->url($brand->light_logo));
+                $panel->brandLogo($this->assetUrl($brand->light_logo));
             }
 
             if (! empty($brand->dark_logo)) {
-                $panel->darkModeBrandLogo(Storage::disk('public')->url($brand->dark_logo));
+                $panel->darkModeBrandLogo($this->assetUrl($brand->dark_logo));
             }
 
             if (! empty($brand->favicon)) {
-                $panel->favicon(Storage::disk('public')->url($brand->favicon));
+                $panel->favicon($this->assetUrl($brand->favicon));
             }
 
             if (! empty($brand->logo_height)) {
@@ -125,6 +125,25 @@ class ApplyBrandSettings
         }
 
         return $next($request);
+    }
+
+    /**
+     * Resolve a stored logo/favicon value to a usable URL. Uploaded files live
+     * on the public storage disk; the seeded ERP defaults (e.g. images/logo.svg)
+     * live under the public/ root and are served via asset(). Absolute URLs are
+     * returned untouched.
+     */
+    protected function assetUrl(string $path): string
+    {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
+            return $path;
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return asset($path);
     }
 
     /**
