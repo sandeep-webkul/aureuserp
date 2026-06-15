@@ -66,7 +66,7 @@ class VendorResource extends BaseVendorResource
         $table = parent::table($table);
 
         return $table
-            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->pushColumns(static::getCustomTableColumns())
             ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
     }
 
