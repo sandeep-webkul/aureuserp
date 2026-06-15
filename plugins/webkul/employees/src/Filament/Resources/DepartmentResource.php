@@ -57,8 +57,6 @@ class DepartmentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?int $navigationSort = 2;
-
     public static function getNavigationLabel(): string
     {
         return __('employees::filament/resources/department.navigation.title');
@@ -81,6 +79,8 @@ class DepartmentResource extends Resource
             __('employees::filament/resources/department.global-search.company')            => $record->company?->name ?? '—',
         ];
     }
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
@@ -151,10 +151,10 @@ class DepartmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 Stack::make([
                     ImageColumn::make('manager.partner.avatar')
-                        ->imageHeight(35)
+                        ->height(35)
                         ->circular()
                         ->width(35),
                     Stack::make([
@@ -181,7 +181,7 @@ class DepartmentResource extends Resource
                             ->visible(fn ($record) => filled($record?->company?->name)),
                     ])->space(1),
                 ])->space(4),
-            ]))
+            ])
             ->contentGrid([
                 'md' => 2,
                 'xl' => 4,
@@ -329,7 +329,6 @@ class DepartmentResource extends Resource
                                                     ->html()
                                                     ->state(fn (Department $record): string => static::buildHierarchyTree($record)),
                                             ])->columnSpan('full'),
-                                        ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2)->columnSpanFull(),
                             ]),

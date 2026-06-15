@@ -2,12 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
-use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
@@ -25,7 +20,7 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $model = Product::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -34,58 +29,6 @@ class ProductResource extends BaseProductResource
     protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = Vendors::class;
-
-    public static function form(Schema $schema): Schema
-    {
-        $schema = parent::form($schema);
-
-        $components = $schema->getComponents();
-
-        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
-
-        $firstGroupChildComponents[] = Section::make()
-            ->visible(! empty($customFormFields = static::getCustomFormFields()))
-            ->schema($customFormFields)
-            ->columns(2);
-
-        $components[0]->childComponents($firstGroupChildComponents);
-
-        $schema->components($components);
-
-        return $schema;
-    }
-
-    public static function table(Table $table): Table
-    {
-        $table = parent::table($table);
-
-        return $table
-            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
-            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        $schema = parent::infolist($schema);
-
-        $components = $schema->getComponents();
-
-        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
-
-        $customInfolistEntries = static::getCustomInfolistEntries();
-
-        if (! empty($customInfolistEntries)) {
-            $firstGroupChildComponents[] = Section::make()
-                ->schema($customInfolistEntries)
-                ->columns(2);
-        }
-
-        $components[0]->childComponents($firstGroupChildComponents);
-
-        $schema->components($components);
-
-        return $schema;
-    }
 
     public static function getRecordSubNavigation(Page $page): array
     {

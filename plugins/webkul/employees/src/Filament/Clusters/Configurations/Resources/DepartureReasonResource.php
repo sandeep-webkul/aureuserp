@@ -2,7 +2,6 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,7 +13,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
@@ -25,15 +23,12 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource\Pages\ListDepartureReasons;
 use Webkul\Employee\Models\DepartureReason;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class DepartureReasonResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = DepartureReason::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFire;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-fire';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -59,7 +54,6 @@ class DepartureReasonResource extends Resource
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.form.fields.name'))
                     ->required(),
-                ...static::getCustomFormFields(),
             ])->columns(1);
     }
 
@@ -70,14 +64,13 @@ class DepartureReasonResource extends Resource
                 TextEntry::make('name')
                     ->placeholder('—')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.infolist.name')),
-                ...static::getCustomInfolistEntries(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.id'))
                     ->searchable()
@@ -101,8 +94,8 @@ class DepartureReasonResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -136,7 +129,7 @@ class DepartureReasonResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()

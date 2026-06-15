@@ -174,7 +174,7 @@ class WarehouseResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.columns.name'))
                     ->searchable(),
@@ -204,14 +204,14 @@ class WarehouseResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 SelectFilter::make('company_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.filters.company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('company.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.groups.company'))
@@ -357,7 +357,6 @@ class WarehouseResource extends Resource
                                             ->placeholder('—'),
                                     ]),
                             ]),
-                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columnSpan(['lg' => 2]),
 

@@ -2,7 +2,6 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -16,7 +15,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -29,15 +27,12 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmployeeCategoryResource\Pages\ListEmployeeCategories;
 use Webkul\Employee\Models\EmployeeCategory;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class EmployeeCategoryResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = EmployeeCategory::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -68,14 +63,13 @@ class EmployeeCategoryResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
                     ->hexColor(),
-                ...static::getCustomFormFields(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.columns.id'))
                     ->searchable()
@@ -104,8 +98,8 @@ class EmployeeCategoryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -128,7 +122,7 @@ class EmployeeCategoryResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.filters.updated-by')),
                     ]),
-            ]))
+            ])
             ->groups([
                 Group::make('name')
                     ->label('Job Position')
@@ -204,7 +198,6 @@ class EmployeeCategoryResource extends Resource
                 ColorEntry::make('color')
                     ->placeholder('—')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.infolist.color')),
-                ...static::getCustomInfolistEntries(),
             ]);
     }
 

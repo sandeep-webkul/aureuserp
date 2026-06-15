@@ -9,7 +9,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -66,7 +65,7 @@ class CustomEntries extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->whereIn('customizable_type', $this->getCustomizableTypes());
+            ->where('customizable_type', $this->getResourceClass()::getModel());
 
         if (! empty($this->include)) {
             $query->whereIn('code', $this->include);
@@ -77,23 +76,6 @@ class CustomEntries extends Component
         }
 
         return $query->orderBy('sort')->get();
-    }
-
-    protected function getCustomizableTypes(): array
-    {
-        $model = $this->getResourceClass()::getModel();
-
-        $types = [$model];
-
-        foreach (class_parents($model) as $parent) {
-            if ($parent === Model::class) {
-                break;
-            }
-
-            $types[] = $parent;
-        }
-
-        return $types;
     }
 
     protected function createEntry(Field $field): Component

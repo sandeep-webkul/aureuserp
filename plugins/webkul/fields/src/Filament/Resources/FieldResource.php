@@ -183,20 +183,9 @@ class FieldResource extends Resource
                                     ->searchable()
                                     ->native(false)
                                     ->disabledOn('edit')
-                                    ->options(function () {
-                                        return collect(Filament::getResources())
-                                            ->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))
-                                            ->unique(fn ($resource) => $resource::getModel())
-                                            ->mapWithKeys(function ($resource) {
-                                                $resourceName = str($resource)->afterLast('\\')->beforeLast('Resource')->headline()->toString();
-                                                $pluginName = str($resource)->after('Webkul\\')->before('\\')->headline()->toString();
-
-                                                return [
-                                                    $resource::getModel() => "{$pluginName} - {$resourceName}",
-                                                ];
-                                            })
-                                            ->sort();
-                                    }),
+                                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
+                                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
+                                    ])),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -245,20 +234,9 @@ class FieldResource extends Resource
                     ]),
                 SelectFilter::make('customizable_type')
                     ->label(__('fields::filament/resources/field.table.filters.resource'))
-                    ->options(function () {
-                        return collect(Filament::getResources())
-                            ->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))
-                            ->unique(fn ($resource) => $resource::getModel())
-                            ->mapWithKeys(function ($resource) {
-                                $resourceName = str($resource)->afterLast('\\')->beforeLast('Resource')->headline()->toString();
-                                $pluginName = str($resource)->after('Webkul\\')->before('\\')->headline()->toString();
-
-                                return [
-                                    $resource::getModel() => "{$pluginName} - {$resourceName}",
-                                ];
-                            })
-                            ->sort();
-                    }),
+                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
+                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
+                    ])),
             ])
             ->recordActions([
                 ActionGroup::make([

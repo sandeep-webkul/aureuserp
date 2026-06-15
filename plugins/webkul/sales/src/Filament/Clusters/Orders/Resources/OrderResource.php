@@ -4,10 +4,8 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
 use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
@@ -20,11 +18,11 @@ use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class OrderResource extends QuotationResource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 2;
 
