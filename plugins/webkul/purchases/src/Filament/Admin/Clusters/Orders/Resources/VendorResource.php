@@ -2,8 +2,13 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BaseVendorResource;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
@@ -25,7 +30,7 @@ class VendorResource extends BaseVendorResource
 
     protected static ?string $model = Partner::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -36,6 +41,53 @@ class VendorResource extends BaseVendorResource
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function form(Schema $schema): Schema
+    {
+        $schema = parent::form($schema);
+
+        $components = $schema->getComponents();
+
+        $customFormFields = static::getCustomFormFields();
+
+        if (! empty($customFormFields)) {
+            $components[] = Section::make()
+                ->schema($customFormFields)
+                ->columns(2);
+        }
+
+        $schema->components($components);
+
+        return $schema;
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        return $table
+            ->pushColumns(static::getCustomTableColumns())
+            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        $schema = parent::infolist($schema);
+
+        $components = $schema->getComponents();
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $components[] = Section::make()
+                ->schema($customInfolistEntries)
+                ->columns(2);
+        }
+
+        $schema->components($components);
+
+        return $schema;
+    }
 
     public static function getNavigationLabel(): string
     {

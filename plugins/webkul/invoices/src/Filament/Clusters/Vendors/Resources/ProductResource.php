@@ -3,6 +3,8 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
@@ -41,6 +43,26 @@ class ProductResource extends BaseProductResource
         return __('invoices::filament/clusters/vendors/resources/product.navigation.title');
     }
 
+    public static function form(Schema $schema): Schema
+    {
+        $schema = parent::form($schema);
+
+        $components = $schema->getComponents();
+
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
+
+        $firstGroupChildComponents[] = Section::make()
+            ->visible(! empty($customFormFields = static::getCustomFormFields()))
+            ->schema($customFormFields)
+            ->columns(2);
+
+        $components[0]->childComponents($firstGroupChildComponents);
+
+        $schema->components($components);
+
+        return $schema;
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         $items = [
@@ -70,12 +92,35 @@ class ProductResource extends BaseProductResource
             ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
             ->all();
 
-        $table = $table->filters([
-            QueryBuilder::make()
-                ->constraints($filtered),
-        ]);
+        return $table
+            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->filters(static::mergeCustomTableFilters([
+                QueryBuilder::make()
+                    ->constraints($filtered),
+            ]));
+    }
 
-        return $table;
+    public static function infolist(Schema $schema): Schema
+    {
+        $schema = parent::infolist($schema);
+
+        $components = $schema->getComponents();
+
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $firstGroupChildComponents[] = Section::make()
+                ->schema($customInfolistEntries)
+                ->columns(2);
+        }
+
+        $components[0]->childComponents($firstGroupChildComponents);
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function getPages(): array

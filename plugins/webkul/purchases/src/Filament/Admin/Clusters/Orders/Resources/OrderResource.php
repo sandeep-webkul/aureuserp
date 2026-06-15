@@ -623,6 +623,7 @@ class OrderResource extends Resource
                                         ->hint(fn ($record): string => $record->mail_reminder_confirmed ? __('purchases::filament/admin/clusters/orders/resources/order.infolist.sections.general.entries.confirmed-by-vendor') : ''),
                                 ]),
                             ]),
+                        ...static::getCustomInfolistEntries(),
                     ]),
 
                 Tabs::make('Tabs')

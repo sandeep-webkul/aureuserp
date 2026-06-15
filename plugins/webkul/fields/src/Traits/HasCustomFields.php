@@ -3,6 +3,7 @@
 namespace Webkul\Field\Traits;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Models\Field;
 
 trait HasCustomFields
@@ -41,20 +42,31 @@ trait HasCustomFields
         try {
             $customFields = $this->getCustomFields();
 
-            $this->mergeFillable(self::$customFillable ??= $customFields->pluck('code')->toArray());
+            $this->mergeFillable($customFields->pluck('code')->toArray());
 
-            $this->mergeCasts(self::$customCasts ??= $customFields->select('code', 'type', 'is_multiselect')->get());
-        } catch (Exception $e) {
-            // do nothing
+            $this->mergeCasts($customFields->select('code', 'type', 'is_multiselect')->get());
+        } catch (Exception) {
         }
     }
 
-    /**
-     * Get all custom field codes for this model
-     */
     protected function getCustomFields()
     {
-        return Field::where('customizable_type', get_class($this));
+        return Field::whereIn('customizable_type', static::getCustomizableTypes());
+    }
+
+    protected static function getCustomizableTypes(): array
+    {
+        $types = [static::class];
+
+        foreach (class_parents(static::class) as $parent) {
+            if ($parent === Model::class) {
+                break;
+            }
+
+            $types[] = $parent;
+        }
+
+        return $types;
     }
 
     /**
