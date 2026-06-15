@@ -372,6 +372,8 @@ class PluginResource extends Resource
                 }
             });
 
+        Package::refreshPluginCaches();
+
         if (empty($errors)) {
             Notification::make()
                 ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled.title'))
@@ -414,39 +416,7 @@ class PluginResource extends Resource
 
     protected static function getPhpExecutablePath(): string
     {
-        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
-
-        if (
-            $phpPath
-            && file_exists($phpPath)
-        ) {
-            return $phpPath;
-        }
-
-        $phpPath = PHP_BINARY;
-
-        if (strpos($phpPath, 'fpm') !== false) {
-            $phpPath = str_replace('fpm', '', $phpPath);
-        }
-
-        if (file_exists($phpPath)) {
-            return $phpPath;
-        }
-
-        $commonPaths = [
-            '/usr/local/bin/php',
-            '/usr/bin/php',
-            '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-        ];
-
-        foreach ($commonPaths as $path) {
-            if (file_exists($path)) {
-                return $path;
-            }
-        }
-
-        return 'php';
+        return Package::phpBinaryPath();
     }
 
     protected static function buildTimeoutCommand(int $seconds, string $command): string
