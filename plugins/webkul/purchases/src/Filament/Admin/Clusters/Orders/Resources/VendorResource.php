@@ -61,6 +61,15 @@ class VendorResource extends BaseVendorResource
         return $schema;
     }
 
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        return $table
+            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         $schema = parent::infolist($schema);
