@@ -2,11 +2,8 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources;
 
-use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
@@ -30,7 +27,7 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $model = Product::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -53,15 +50,6 @@ class ProductResource extends BaseProductResource
 
         $components = $schema->getComponents();
 
-        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
-
-        $firstGroupChildComponents[] = Section::make()
-            ->visible(! empty($customFormFields = static::getCustomFormFields()))
-            ->schema($customFormFields)
-            ->columns(2);
-
-        $components[0]->childComponents($firstGroupChildComponents);
-
         $schema->components($components);
 
         return $schema;
@@ -75,12 +63,12 @@ class ProductResource extends BaseProductResource
             ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
             ->all();
 
-        return $table
-            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
-            ->filters(static::mergeCustomTableFilters([
-                QueryBuilder::make()
-                    ->constraints($filtered),
-            ]));
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function infolist(Schema $schema): Schema
@@ -88,18 +76,6 @@ class ProductResource extends BaseProductResource
         $schema = BaseProductResource::infolist($schema);
 
         $components = $schema->getComponents();
-
-        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
-
-        $customInfolistEntries = static::getCustomInfolistEntries();
-
-        if (! empty($customInfolistEntries)) {
-            $firstGroupChildComponents[] = Section::make()
-                ->schema($customInfolistEntries)
-                ->columns(2);
-        }
-
-        $components[0]->childComponents($firstGroupChildComponents);
 
         $schema->components($components);
 

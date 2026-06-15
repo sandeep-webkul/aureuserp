@@ -14,7 +14,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -71,7 +70,7 @@ class CustomFields extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->whereIn('customizable_type', $this->getCustomizableTypes());
+            ->where('customizable_type', $this->getResourceClass()::getModel());
 
         if (! empty($this->include)) {
             $query->whereIn('code', $this->include);
@@ -172,22 +171,5 @@ class CustomFields extends Component
                 $component->{$name}();
             }
         }
-    }
-
-    protected function getCustomizableTypes(): array
-    {
-        $model = $this->getResourceClass()::getModel();
-
-        $types = [$model];
-
-        foreach (class_parents($model) as $parent) {
-            if ($parent === Model::class) {
-                break;
-            }
-
-            $types[] = $parent;
-        }
-
-        return $types;
     }
 }

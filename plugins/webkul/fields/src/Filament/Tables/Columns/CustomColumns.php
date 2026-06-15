@@ -9,7 +9,6 @@ use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -61,7 +60,7 @@ class CustomColumns extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->whereIn('customizable_type', $this->getCustomizableTypes())
+            ->where('customizable_type', $this->getResourceClass()::getModel())
             ->where('use_in_table', true);
 
         if (! empty($this->include)) {
@@ -122,22 +121,5 @@ class CustomColumns extends Component
                 $column->{$name}();
             }
         }
-    }
-
-    protected function getCustomizableTypes(): array
-    {
-        $model = $this->getResourceClass()::getModel();
-
-        $types = [$model];
-
-        foreach (class_parents($model) as $parent) {
-            if ($parent === Model::class) {
-                break;
-            }
-
-            $types[] = $parent;
-        }
-
-        return $types;
     }
 }
