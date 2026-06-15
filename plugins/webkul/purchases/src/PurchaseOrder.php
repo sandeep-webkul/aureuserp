@@ -507,7 +507,9 @@ class PurchaseOrder
 
             $moves = $this->createInventoryMoves(collect([$line]), $operation);
 
-            $moves = InventoryFacade::confirmMoves($operation->moves);
+            $moves = InventoryFacade::confirmMoves($moves);
+
+            $moves = Move::where('id', $moves->pluck('id'))->get();
 
             InventoryFacade::assignMoves($moves);
         }
@@ -580,7 +582,7 @@ class PurchaseOrder
         $url = PurchaseOrderResource::getUrl('view', ['record' => $record]);
 
         $operation->addMessage([
-            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$record->name}</a>.",
+            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm\">{$record->name}</a>.",
             'type' => 'comment',
         ]);
     }
@@ -654,19 +656,20 @@ class PurchaseOrder
             fn ($move) => $move->state !== InventoryEnums\MoveState::CANCELED && ! $move->isPurchaseReturn()
         );
 
+
+        $qtyToPush = $line->product_qty - $qty;
+
+        $moveDestinationsInitialDemand = $this->getMoveDestinationsInitialDemand($line, $moveDestinations);
+
         if ($moveDestinations->isEmpty()) {
             $qtyToAttach = 0;
-
-            $qtyToPush = $line->product_qty - $qty;
         } else {
-            $moveDestinationsInitialDemand = $this->getMoveDestinationsInitialDemand($line, $moveDestinations);
-
             $qtyToAttach = $moveDestinationsInitialDemand - $qty;
-
-            $qtyToPush = $line->product_qty - $moveDestinationsInitialDemand;
         }
 
         if (float_compare($qtyToAttach, 0.0, precisionRounding: $line->uom->rounding) > 0) {
+            $qtyToPush = $line->product_qty - $moveDestinationsInitialDemand;
+
             [$productUomQty, $productUom] = $line->uom->adjustUomQuantities($qtyToAttach, $line->product->uom);
 
             $values[] = $this->prepareInventoryMoveValues($line, $operation, $priceUnit, $productUomQty, $productUom);

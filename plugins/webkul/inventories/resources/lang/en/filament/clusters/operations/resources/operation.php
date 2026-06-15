@@ -192,14 +192,15 @@ return [
     ],
 
     'tabs' => [
-        'todo'     => 'To Do',
-        'my'       => 'My Transfers',
-        'starred'  => 'Starred',
-        'draft'    => 'Draft',
-        'waiting'  => 'Waiting',
-        'ready'    => 'Ready',
-        'done'     => 'Done',
-        'canceled' => 'Canceled',
+        'todo'        => 'To Do',
+        'my'          => 'My Transfers',
+        'starred'     => 'Starred',
+        'draft'       => 'Draft',
+        'waiting'     => 'Waiting',
+        'ready'       => 'Ready',
+        'done'        => 'Done',
+        'canceled'    => 'Canceled',
+        'back-orders' => 'Back Orders',
     ],
 
     'notifications' => [

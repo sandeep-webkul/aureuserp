@@ -203,6 +203,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->maxValue(99999999999)
                     ->maxValue(fn () => $this->getOwnerRecord()->tracking == ProductTracking::SERIAL ? 1 : 999999999)
                     ->default(0)
+                    ->suffix(fn () => $this->getOwnerRecord()->uom?->name)
                     ->required(),
             ])
             ->columns(1);

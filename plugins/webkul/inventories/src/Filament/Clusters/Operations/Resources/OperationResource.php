@@ -837,16 +837,6 @@ class OperationResource extends Resource
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
-                    ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
-                TextInput::make('quantity')
-                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.quantity'))
-                    ->numeric()
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->default(0)
-                    ->required()
-                    ->visible(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT)
-                    ->disabled(fn (?Move $record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
                     ->suffix(function (?Move $record, Get $get): mixed {
                         if (
                             ! $get('product_id')
@@ -870,6 +860,16 @@ class OperationResource extends Resource
                                 ], escape: false),
                         );
                     })
+                    ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
+                TextInput::make('quantity')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.quantity'))
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->default(0)
+                    ->required()
+                    ->visible(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT)
+                    ->disabled(fn (?Move $record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
                     ->suffixAction(fn (Move $record) => static::getMoveLinesAction($record)),
                 Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
@@ -1176,37 +1176,40 @@ class OperationResource extends Resource
     public static function getPresetTableViews(): array
     {
         return [
-            'todo_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.todo'))
+            'todo' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.todo'))
                 ->favorite()
                 ->icon('heroicon-s-clipboard-document-list')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNotIn('state', [OperationState::DONE, OperationState::CANCELED])),
-            'my_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.my'))
+            'my' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.my'))
                 ->favorite()
                 ->icon('heroicon-s-user')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::id())),
-            'favorite_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.starred'))
+            'favorite' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.starred'))
                 ->favorite()
                 ->icon('heroicon-s-star')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_favorite', true)),
-            'draft_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.draft'))
+            'draft' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.draft'))
                 ->favorite()
                 ->icon('heroicon-s-pencil-square')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::DRAFT)),
-            'waiting_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.waiting'))
+            'waiting' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.waiting'))
                 ->favorite()
                 ->icon('heroicon-s-clock')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::CONFIRMED)),
-            'ready_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.ready'))
+            'ready' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.ready'))
                 ->favorite()
                 ->icon('heroicon-s-play-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::ASSIGNED)),
-            'done_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.done'))
+            'done' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.done'))
                 ->favorite()
                 ->icon('heroicon-s-check-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::DONE)),
-            'canceled_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.canceled'))
+            'canceled' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.canceled'))
                 ->icon('heroicon-s-x-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::CANCELED)),
+            'backorders' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.back-orders'))
+                ->icon('heroicon-s-arrow-uturn-left')
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('back_order_id')),
         ];
     }
 

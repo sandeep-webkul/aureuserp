@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Models\Order;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
@@ -20,6 +21,8 @@ use Webkul\Security\Traits\HasResourcePermissionQuery;
 class OrderResource extends QuotationResource
 {
     use HasCustomFields, HasResourcePermissionQuery;
+
+    protected static ?string $model = Order::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingBag;
 
@@ -63,7 +66,7 @@ class OrderResource extends QuotationResource
             'view'       => ViewOrder::route('/{record}'),
             'edit'       => EditOrder::route('/{record}/edit'),
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
-            'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
+            'operations' => ManageDeliveries::route('/{record}/deliveries'),
         ];
     }
 
