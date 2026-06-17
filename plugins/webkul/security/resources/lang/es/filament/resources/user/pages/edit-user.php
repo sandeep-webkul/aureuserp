@@ -2,32 +2,32 @@
 
 return [
     'notification' => [
-        'title' => 'User updated',
-        'body'  => 'The user has been updated successfully.',
+        'title' => 'Usuario actualizado',
+        'body'  => 'El usuario se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'change-password' => [
-            'label' => 'Change Password',
+            'label' => 'Cambiar contraseña',
 
             'notification' => [
-                'title' => 'Password changed',
-                'body'  => 'The password has been changed successfully.',
+                'title' => 'Contraseña cambiada',
+                'body'  => 'La contraseña se ha cambiado correctamente.',
             ],
 
             'form' => [
-                'new-password'         => 'New Password',
-                'confirm-new-password' => 'Confirm New Password',
+                'new-password'         => 'Nueva contraseña',
+                'confirm-new-password' => 'Confirmar nueva contraseña',
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'User deleted',
-                'body'  => 'The user has been deleted successfully.',
+                'title' => 'Usuario eliminado',
+                'body'  => 'El usuario se ha eliminado correctamente.',
                 'error' => [
-                    'title' => 'User Cannot Be Deleted',
-                    'body'  => 'This is a default user or you cannot delete yourself.',
+                    'title' => 'No se puede eliminar el usuario',
+                    'body'  => 'Este es un usuario predeterminado o no puede eliminarse a sí mismo.',
                 ],
             ],
         ],

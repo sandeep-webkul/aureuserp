@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Category updated',
-        'body'  => 'The category has been updated successfully.',
+        'title' => 'Categoría actualizada',
+        'body'  => 'La categoría se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Category deleted',
-                'body'  => 'The category has been deleted successfully.',
+                'title' => 'Categoría eliminada',
+                'body'  => 'La categoría se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'title' => 'View Currency',
+    'title' => 'Ver moneda',
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Currency deleted',
-                'body'  => 'The currency has been deleted successfully.',
+                'title' => 'Moneda eliminada',
+                'body'  => 'La moneda se ha eliminado correctamente.',
             ],
         ],
     ],

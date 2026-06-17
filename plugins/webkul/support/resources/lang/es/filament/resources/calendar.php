@@ -1,52 +1,52 @@
 <?php
 
 return [
-    'title' => 'Working Schedules',
+    'title' => 'Horarios laborales',
 
     'navigation' => [
-        'title' => 'Working Schedules',
-        'group' => 'Employee',
+        'title' => 'Horarios laborales',
+        'group' => 'Empleado',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'Estado',
+        'created-by' => 'Creado por',
+        'created-at' => 'Creado el',
+        'updated-at' => 'Actualizado el',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General Information',
+                'title'  => 'Información general',
                 'fields' => [
-                    'name'                  => 'Name',
-                    'schedule-name'         => 'Schedule Name',
-                    'schedule-name-tooltip' => 'Please write descriptive working schedule name.',
-                    'timezone'              => 'Timezone',
-                    'timezone-tooltip'      => 'Please select the timezone for the working schedule.',
-                    'company'               => 'Company',
+                    'name'                  => 'Nombre',
+                    'schedule-name'         => 'Nombre del horario',
+                    'schedule-name-tooltip' => 'Escriba un nombre descriptivo para el horario laboral.',
+                    'timezone'              => 'Zona horaria',
+                    'timezone-tooltip'      => 'Seleccione la zona horaria del horario laboral.',
+                    'company'               => 'Empresa',
                 ],
             ],
 
             'configuration' => [
-                'title'  => 'Work Hours Configuration',
+                'title'  => 'Configuración de horas de trabajo',
                 'fields' => [
-                    'hours-per-day'                   => 'Hours Per Day',
-                    'hours-per-day-suffix'            => 'Hours',
-                    'full-time-required-hours'        => 'Full Time Required Hours',
-                    'full-time-required-hours-suffix' => 'Hours Per Week',
+                    'hours-per-day'                   => 'Horas por día',
+                    'hours-per-day-suffix'            => 'Horas',
+                    'full-time-required-hours'        => 'Horas requeridas a tiempo completo',
+                    'full-time-required-hours-suffix' => 'Horas por semana',
                 ],
             ],
 
             'flexibility' => [
-                'title'  => 'Flexibility',
+                'title'  => 'Flexibilidad',
                 'fields' => [
-                    'status'                     => 'Status',
-                    'two-weeks-calendar'         => 'Two Weeks Calendar',
-                    'two-weeks-calendar-tooltip' => 'Enable alternating two-week work schedule.',
-                    'flexible-hours'             => 'Flexible Hours',
-                    'flexible-hours-tooltip'     => 'Allow employees to have flexible work hours.',
+                    'status'                     => 'Estado',
+                    'two-weeks-calendar'         => 'Calendario de dos semanas',
+                    'two-weeks-calendar-tooltip' => 'Habilitar un horario laboral alterno de dos semanas.',
+                    'flexible-hours'             => 'Horas flexibles',
+                    'flexible-hours-tooltip'     => 'Permitir que los empleados tengan horas de trabajo flexibles.',
                 ],
             ],
         ],
@@ -55,62 +55,62 @@ return [
     'table' => [
         'columns' => [
             'id'             => 'ID',
-            'name'           => 'Schedule Name',
-            'timezone'       => 'Timezone',
-            'company'        => 'Company',
-            'flexible-hours' => 'Flexible Hours',
-            'status'         => 'Status',
-            'daily-hours'    => 'Daily Hours',
-            'created-by'     => 'Created By',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
+            'name'           => 'Nombre del horario',
+            'timezone'       => 'Zona horaria',
+            'company'        => 'Empresa',
+            'flexible-hours' => 'Horas flexibles',
+            'status'         => 'Estado',
+            'daily-hours'    => 'Horas diarias',
+            'created-by'     => 'Creado por',
+            'created-at'     => 'Creado el',
+            'updated-at'     => 'Actualizado el',
         ],
 
         'filters' => [
-            'company'                  => 'Company',
-            'is-active'                => 'Status',
-            'two-week-calendar'        => 'Two Weeks Calendar',
-            'flexible-hours'           => 'Flexible Hours',
-            'timezone'                 => 'Timezone',
-            'name'                     => 'Schedule Name',
-            'attendance'               => 'Attendance',
-            'created-by'               => 'Created By',
-            'daily-hours'              => 'Daily Hours',
-            'full-time-required-hours' => 'Full Time Required Hours',
-            'updated-at'               => 'Updated At',
-            'created-at'               => 'Created At',
+            'company'                  => 'Empresa',
+            'is-active'                => 'Estado',
+            'two-week-calendar'        => 'Calendario de dos semanas',
+            'flexible-hours'           => 'Horas flexibles',
+            'timezone'                 => 'Zona horaria',
+            'name'                     => 'Nombre del horario',
+            'attendance'               => 'Asistencia',
+            'created-by'               => 'Creado por',
+            'daily-hours'              => 'Horas diarias',
+            'full-time-required-hours' => 'Horas requeridas a tiempo completo',
+            'updated-at'               => 'Actualizado el',
+            'created-at'               => 'Creado el',
         ],
 
         'groups' => [
-            'name'           => 'Schedule Name',
-            'status'         => 'Status',
-            'timezone'       => 'Timezone',
-            'flexible-hours' => 'Flexible Hours',
-            'daily-hours'    => 'Daily Hours',
-            'created-by'     => 'Created By',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
+            'name'           => 'Nombre del horario',
+            'status'         => 'Estado',
+            'timezone'       => 'Zona horaria',
+            'flexible-hours' => 'Horas flexibles',
+            'daily-hours'    => 'Horas diarias',
+            'created-by'     => 'Creado por',
+            'created-at'     => 'Creado el',
+            'updated-at'     => 'Actualizado el',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Calendar Plan restored',
-                    'body'  => 'The calendar plan has been restored successfully.',
+                    'title' => 'Plan de calendario restaurado',
+                    'body'  => 'El plan de calendario se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Calendar Plan deleted',
-                    'body'  => 'The calendar plan has been deleted successfully.',
+                    'title' => 'Plan de calendario eliminado',
+                    'body'  => 'El plan de calendario se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Calendar Plan force deleted',
-                    'body'  => 'The calendar plan has been force deleted successfully.',
+                    'title' => 'Plan de calendario eliminado permanentemente',
+                    'body'  => 'El plan de calendario se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -118,22 +118,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Calendar Plans restored',
-                    'body'  => 'The calendar plans has been restored successfully.',
+                    'title' => 'Planes de calendario restaurados',
+                    'body'  => 'Los planes de calendario se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Calendar Plans deleted',
-                    'body'  => 'The calendar plans has been deleted successfully.',
+                    'title' => 'Planes de calendario eliminados',
+                    'body'  => 'Los planes de calendario se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Calendar Plans force deleted',
-                    'body'  => 'The calendar plans has been force deleted successfully.',
+                    'title' => 'Planes de calendario eliminados permanentemente',
+                    'body'  => 'Los planes de calendario se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -142,35 +142,35 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'General Information',
+                'title'   => 'Información general',
                 'entries' => [
-                    'name'                  => 'Name',
-                    'schedule-name'         => 'Schedule Name',
-                    'schedule-name-tooltip' => 'Please write descriptive working schedule name.',
-                    'timezone'              => 'Timezone',
-                    'timezone-tooltip'      => 'Please select the timezone for the working schedule.',
-                    'company'               => 'Company',
+                    'name'                  => 'Nombre',
+                    'schedule-name'         => 'Nombre del horario',
+                    'schedule-name-tooltip' => 'Escriba un nombre descriptivo para el horario laboral.',
+                    'timezone'              => 'Zona horaria',
+                    'timezone-tooltip'      => 'Seleccione la zona horaria del horario laboral.',
+                    'company'               => 'Empresa',
                 ],
             ],
 
             'configuration' => [
-                'title'   => 'Work Hours Configuration',
+                'title'   => 'Configuración de horas de trabajo',
                 'entries' => [
-                    'hours-per-day'                   => 'Hours Per Day',
-                    'hours-per-day-suffix'            => ' Hours',
-                    'full-time-required-hours'        => 'Full Time Required Hours',
-                    'full-time-required-hours-suffix' => ' Hours Per Week',
+                    'hours-per-day'                   => 'Horas por día',
+                    'hours-per-day-suffix'            => ' Horas',
+                    'full-time-required-hours'        => 'Horas requeridas a tiempo completo',
+                    'full-time-required-hours-suffix' => ' Horas por semana',
                 ],
             ],
 
             'flexibility' => [
-                'title'   => 'Flexibility',
+                'title'   => 'Flexibilidad',
                 'entries' => [
-                    'status'                     => 'Status',
-                    'two-weeks-calendar'         => 'Two Weeks Calendar',
-                    'two-weeks-calendar-tooltip' => 'Enable alternating two-week work schedule.',
-                    'flexible-hours'             => 'Flexible Hours',
-                    'flexible-hours-tooltip'     => 'Allow employees to have flexible work hours.',
+                    'status'                     => 'Estado',
+                    'two-weeks-calendar'         => 'Calendario de dos semanas',
+                    'two-weeks-calendar-tooltip' => 'Habilitar un horario laboral alterno de dos semanas.',
+                    'flexible-hours'             => 'Horas flexibles',
+                    'flexible-hours-tooltip'     => 'Permitir que los empleados tengan horas de trabajo flexibles.',
                 ],
             ],
         ],

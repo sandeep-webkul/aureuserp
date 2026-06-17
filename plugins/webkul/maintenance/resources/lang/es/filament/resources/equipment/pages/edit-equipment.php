@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Equipment updated',
-        'body'  => 'The equipment has been updated successfully.',
+        'title' => 'Equipo actualizado',
+        'body'  => 'El equipo se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Equipment archived',
-                'body'  => 'The equipment has been archived successfully.',
+                'title' => 'Equipo archivado',
+                'body'  => 'El equipo se ha archivado correctamente.',
             ],
         ],
     ],

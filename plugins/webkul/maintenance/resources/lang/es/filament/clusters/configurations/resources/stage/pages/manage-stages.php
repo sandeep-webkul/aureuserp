@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Stage',
+            'label' => 'Nueva etapa',
 
             'notification' => [
-                'title' => 'Stage created',
-                'body'  => 'The stage has been created successfully.',
+                'title' => 'Etapa creada',
+                'body'  => 'La etapa se ha creado correctamente.',
             ],
         ],
     ],

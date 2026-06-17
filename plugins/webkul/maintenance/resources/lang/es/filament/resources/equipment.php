@@ -2,53 +2,53 @@
 
 return [
     'navigation' => [
-        'group' => 'Maintenance',
-        'title' => 'Equipment',
+        'group' => 'Mantenimiento',
+        'title' => 'Equipo',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General Information',
+                'title'  => 'Información general',
                 'fields' => [
-                    'name' => 'Name',
-                    'note' => 'Description',
+                    'name' => 'Nombre',
+                    'note' => 'Descripción',
                 ],
             ],
 
             'settings' => [
-                'title'  => 'Settings',
+                'title'  => 'Configuración',
                 'fields' => [
-                    'category'   => 'Equipment Category',
-                    'team'       => 'Maintenance Team',
-                    'company'    => 'Company',
-                    'technician' => 'Technician',
-                    'owner'      => 'Owner',
-                    'location'   => 'Used in location',
+                    'category'   => 'Categoría de equipo',
+                    'team'       => 'Equipo de mantenimiento',
+                    'company'    => 'Empresa',
+                    'technician' => 'Técnico',
+                    'owner'      => 'Propietario',
+                    'location'   => 'Utilizado en la ubicación',
                 ],
             ],
 
             'product-information' => [
-                'title'  => 'Product Information',
+                'title'  => 'Información del producto',
                 'fields' => [
-                    'partner'                     => 'Vendor',
-                    'partner-ref'                 => 'Vendor Reference',
-                    'model'                       => 'Model',
-                    'serial-no'                   => 'Serial Number',
-                    'effective-date'              => 'Effective Date',
-                    'effective-date-hint-tooltip' => 'Used as the starting point for calculating Mean Time Between Failure.',
-                    'cost'                        => 'Cost',
-                    'warranty-date'               => 'Warranty Expiration Date',
+                    'partner'                     => 'Proveedor',
+                    'partner-ref'                 => 'Referencia del proveedor',
+                    'model'                       => 'Modelo',
+                    'serial-no'                   => 'Número de serie',
+                    'effective-date'              => 'Fecha de entrada en vigor',
+                    'effective-date-hint-tooltip' => 'Se utiliza como punto de partida para calcular el tiempo medio entre fallos.',
+                    'cost'                        => 'Costo',
+                    'warranty-date'               => 'Fecha de vencimiento de la garantía',
                 ],
             ],
 
             'maintenance' => [
-                'title'  => 'Maintenance',
+                'title'  => 'Mantenimiento',
                 'fields' => [
-                    'expected-mtbf' => 'Expected Mean Time Between Failure',
+                    'expected-mtbf' => 'Tiempo medio entre fallos esperado',
                 ],
                 'suffixes' => [
-                    'days' => 'days',
+                    'days' => 'días',
                 ],
             ],
         ],
@@ -56,60 +56,60 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Equipment Name',
-            'owner'      => 'Owner',
-            'serial-no'  => 'Serial Number',
-            'category'   => 'Equipment Category',
-            'technician' => 'Technician',
-            'company'    => 'Company',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre del equipo',
+            'owner'      => 'Propietario',
+            'serial-no'  => 'Número de serie',
+            'category'   => 'Categoría de equipo',
+            'technician' => 'Técnico',
+            'company'    => 'Empresa',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'category'   => 'Equipment Category',
-            'team'       => 'Maintenance Team',
-            'technician' => 'Technician',
+            'category'   => 'Categoría de equipo',
+            'team'       => 'Equipo de mantenimiento',
+            'technician' => 'Técnico',
         ],
 
         'groups' => [
-            'category'   => 'Equipment Category',
-            'owner'      => 'Owner',
-            'technician' => 'Technician',
-            'vendor'     => 'Vendor',
+            'category'   => 'Categoría de equipo',
+            'owner'      => 'Propietario',
+            'technician' => 'Técnico',
+            'vendor'     => 'Proveedor',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Equipment updated',
-                    'body'  => 'The equipment has been updated successfully.',
+                    'title' => 'Equipo actualizado',
+                    'body'  => 'El equipo se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Equipment restored',
-                    'body'  => 'The equipment has been restored successfully.',
+                    'title' => 'Equipo restaurado',
+                    'body'  => 'El equipo se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Equipment archived',
-                    'body'  => 'The equipment has been archived successfully.',
+                    'title' => 'Equipo archivado',
+                    'body'  => 'El equipo se ha archivado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Equipment deleted',
-                        'body'  => 'The equipment has been permanently deleted.',
+                        'title' => 'Equipo eliminado',
+                        'body'  => 'El equipo se ha eliminado de forma permanente.',
                     ],
 
                     'error' => [
-                        'title' => 'Equipment could not be deleted',
-                        'body'  => 'This equipment is referenced by another record.',
+                        'title' => 'No se pudo eliminar el equipo',
+                        'body'  => 'Este equipo está referenciado por otro registro.',
                     ],
                 ],
             ],
@@ -118,15 +118,15 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Equipment restored',
-                    'body'  => 'The selected equipment has been restored successfully.',
+                    'title' => 'Equipo restaurado',
+                    'body'  => 'El equipo seleccionado se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Equipment archived',
-                    'body'  => 'The selected equipment has been archived successfully.',
+                    'title' => 'Equipo archivado',
+                    'body'  => 'El equipo seleccionado se ha archivado correctamente.',
                 ],
             ],
         ],
@@ -134,8 +134,8 @@ return [
         'empty-state' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Equipment created',
-                    'body'  => 'The equipment has been created successfully.',
+                    'title' => 'Equipo creado',
+                    'body'  => 'El equipo se ha creado correctamente.',
                 ],
             ],
         ],
@@ -144,49 +144,49 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'General Information',
+                'title'   => 'Información general',
                 'entries' => [
-                    'name' => 'Name',
-                    'note' => 'Description',
+                    'name' => 'Nombre',
+                    'note' => 'Descripción',
                 ],
             ],
 
             'settings' => [
-                'title'   => 'Settings',
+                'title'   => 'Configuración',
                 'entries' => [
-                    'category'   => 'Equipment Category',
-                    'team'       => 'Maintenance Team',
-                    'company'    => 'Company',
-                    'technician' => 'Technician',
-                    'owner'      => 'Owner',
-                    'location'   => 'Used in location',
+                    'category'   => 'Categoría de equipo',
+                    'team'       => 'Equipo de mantenimiento',
+                    'company'    => 'Empresa',
+                    'technician' => 'Técnico',
+                    'owner'      => 'Propietario',
+                    'location'   => 'Utilizado en la ubicación',
                 ],
             ],
 
             'product-information' => [
-                'title'   => 'Product Information',
+                'title'   => 'Información del producto',
                 'entries' => [
-                    'partner'        => 'Vendor',
-                    'partner-ref'    => 'Vendor Reference',
-                    'model'          => 'Model',
-                    'serial-no'      => 'Serial Number',
-                    'effective-date' => 'Effective Date',
-                    'cost'           => 'Cost',
-                    'warranty-date'  => 'Warranty Expiration Date',
+                    'partner'        => 'Proveedor',
+                    'partner-ref'    => 'Referencia del proveedor',
+                    'model'          => 'Modelo',
+                    'serial-no'      => 'Número de serie',
+                    'effective-date' => 'Fecha de entrada en vigor',
+                    'cost'           => 'Costo',
+                    'warranty-date'  => 'Fecha de vencimiento de la garantía',
                 ],
             ],
 
             'maintenance' => [
-                'title'   => 'Maintenance',
+                'title'   => 'Mantenimiento',
                 'entries' => [
-                    'expected-mtbf'          => 'Expected Mean Time Between Failure',
-                    'maintenance-count'      => 'Maintenance Count',
-                    'maintenance-open-count' => 'Open Maintenance Count',
-                    'assigned-at'            => 'Assigned Date',
-                    'scraped-at'             => 'Scrap Date',
+                    'expected-mtbf'          => 'Tiempo medio entre fallos esperado',
+                    'maintenance-count'      => 'Número de mantenimientos',
+                    'maintenance-open-count' => 'Número de mantenimientos abiertos',
+                    'assigned-at'            => 'Fecha de asignación',
+                    'scraped-at'             => 'Fecha de desecho',
                 ],
                 'suffixes' => [
-                    'days' => 'days',
+                    'days' => 'días',
                 ],
             ],
         ],

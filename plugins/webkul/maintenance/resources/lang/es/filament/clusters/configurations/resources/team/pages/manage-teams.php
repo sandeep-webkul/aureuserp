@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Team',
+            'label' => 'Nuevo equipo',
 
             'notification' => [
-                'title' => 'Team created',
-                'body'  => 'The team has been created successfully.',
+                'title' => 'Equipo creado',
+                'body'  => 'El equipo se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Todos',
+        'archived' => 'Archivado',
     ],
 ];

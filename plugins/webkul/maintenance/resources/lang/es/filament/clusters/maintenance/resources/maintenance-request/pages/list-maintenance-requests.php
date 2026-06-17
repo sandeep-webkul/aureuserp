@@ -3,21 +3,21 @@
 return [
     'header-actions' => [
         'create' => [
-            'label'        => 'New Maintenance Request',
+            'label'        => 'Nueva solicitud de mantenimiento',
             'notification' => [
-                'title' => 'Maintenance request created',
-                'body'  => 'The maintenance request has been created successfully.',
+                'title' => 'Solicitud de mantenimiento creada',
+                'body'  => 'La solicitud de mantenimiento se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'my-maintenances' => 'My Maintenances',
-        'todo'            => 'To Do',
-        'done'            => 'Done',
-        'high-priority'   => 'High-priority',
-        'unscheduled'     => 'Unscheduled',
-        'active'          => 'Active',
-        'cancelled'       => 'Cancelled',
+        'my-maintenances' => 'Mis mantenimientos',
+        'todo'            => 'Por hacer',
+        'done'            => 'Hecho',
+        'high-priority'   => 'Prioridad alta',
+        'unscheduled'     => 'Sin programar',
+        'active'          => 'Activo',
+        'cancelled'       => 'Cancelado',
     ],
 ];

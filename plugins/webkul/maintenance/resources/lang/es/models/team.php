@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Maintenance Team',
+    'title' => 'Equipo de mantenimiento',
 ];

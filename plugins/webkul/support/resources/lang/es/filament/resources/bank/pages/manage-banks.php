@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Bank',
+            'label' => 'Nuevo banco',
 
             'notification' => [
-                'title' => 'Bank created',
-                'body'  => 'The bank has been created successfully.',
+                'title' => 'Banco creado',
+                'body'  => 'El banco se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Todos',
+        'archived' => 'Archivados',
     ],
 ];

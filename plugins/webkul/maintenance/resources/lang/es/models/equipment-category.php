@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Equipment Category',
+    'title' => 'Categoría de equipo',
 ];

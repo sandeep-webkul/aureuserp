@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Maintenance request updated',
-        'body'  => 'The maintenance request has been updated successfully.',
+        'title' => 'Solicitud de mantenimiento actualizada',
+        'body'  => 'La solicitud de mantenimiento se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Maintenance request archived',
-                'body'  => 'The maintenance request has been archived successfully.',
+                'title' => 'Solicitud de mantenimiento archivada',
+                'body'  => 'La solicitud de mantenimiento se ha archivado correctamente.',
             ],
         ],
     ],

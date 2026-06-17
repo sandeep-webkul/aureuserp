@@ -1,57 +1,57 @@
 <?php
 
 return [
-    'title' => 'Departments',
+    'title' => 'Departamentos',
 
     'navigation' => [
-        'title' => 'Departments',
-        'group' => 'Employees',
+        'title' => 'Departamentos',
+        'group' => 'Empleados',
     ],
 
     'form' => [
         'sections' => [
             'activity-type-details' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'fields' => [
-                    'name'                => 'Activity Type',
-                    'name-tooltip'        => 'Enter the official activity type name',
-                    'action'              => 'Action',
-                    'default-user'        => 'Default User',
-                    'summary'             => 'Summary',
-                    'note'                => 'Note',
+                    'name'                => 'Tipo de actividad',
+                    'name-tooltip'        => 'Introduzca el nombre oficial del tipo de actividad',
+                    'action'              => 'Acción',
+                    'default-user'        => 'Usuario predeterminado',
+                    'summary'             => 'Resumen',
+                    'note'                => 'Nota',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'Información de retraso',
 
                 'fields' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-form'             => 'Delay Form',
-                    'delay-form-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'Cantidad de retraso',
+                    'delay-unit'             => 'Unidad de retraso',
+                    'delay-form'             => 'Origen del retraso',
+                    'delay-form-helper-text' => 'Fuente del cálculo del retraso',
                 ],
             ],
 
             'advanced-information' => [
-                'title' => 'Advanced Information',
+                'title' => 'Información avanzada',
 
                 'fields' => [
-                    'icon'                => 'Icon',
-                    'decoration-type'     => 'Decoration Type',
-                    'chaining-type'       => 'Chaining Type',
-                    'suggest'             => 'Suggest',
-                    'trigger'             => 'Trigger',
+                    'icon'                => 'Icono',
+                    'decoration-type'     => 'Tipo de decoración',
+                    'chaining-type'       => 'Tipo de encadenamiento',
+                    'suggest'             => 'Sugerir',
+                    'trigger'             => 'Activar',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'Estado y configuración',
 
                 'fields' => [
-                    'status'               => 'Status',
-                    'keep-done-activities' => 'Keep Done Activities',
+                    'status'               => 'Estado',
+                    'keep-done-activities' => 'Mantener actividades completadas',
                 ],
             ],
         ],
@@ -59,61 +59,61 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Activity Type',
-            'summary'    => 'Summary',
-            'planned-in' => 'Planned In',
-            'type'       => 'Type',
-            'action'     => 'Action',
-            'status'     => 'Status',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Tipo de actividad',
+            'summary'    => 'Resumen',
+            'planned-in' => 'Planificado en',
+            'type'       => 'Tipo',
+            'action'     => 'Acción',
+            'status'     => 'Estado',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'             => 'Name',
-            'action-category'  => 'Action Category',
-            'status'           => 'Status',
-            'delay-count'      => 'Delay Count',
-            'delay-unit'       => 'Delay Unit',
-            'delay-source'     => 'Delay Source',
-            'associated-model' => 'Associated Model',
-            'chaining-type'    => 'Chaining Type',
-            'decoration-type'  => 'Decoration Type',
-            'default-user'     => 'Default User',
-            'creation-date'    => 'Creation Date',
-            'last-update'      => 'Last Update',
+            'name'             => 'Nombre',
+            'action-category'  => 'Categoría de acción',
+            'status'           => 'Estado',
+            'delay-count'      => 'Cantidad de retraso',
+            'delay-unit'       => 'Unidad de retraso',
+            'delay-source'     => 'Origen del retraso',
+            'associated-model' => 'Modelo asociado',
+            'chaining-type'    => 'Tipo de encadenamiento',
+            'decoration-type'  => 'Tipo de decoración',
+            'default-user'     => 'Usuario predeterminado',
+            'creation-date'    => 'Fecha de creación',
+            'last-update'      => 'Última actualización',
         ],
 
         'filters' => [
-            'action'    => 'Action',
-            'status'    => 'Status',
-            'has-delay' => 'Has Delay',
+            'action'    => 'Acción',
+            'status'    => 'Estado',
+            'has-delay' => 'Tiene retraso',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity type restored',
-                    'body'  => 'The activity type has been restored successfully.',
+                    'title' => 'Tipo de actividad restaurado',
+                    'body'  => 'El tipo de actividad se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity type deleted',
-                    'body'  => 'The activity type has been deleted successfully.',
+                    'title' => 'Tipo de actividad eliminado',
+                    'body'  => 'El tipo de actividad se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Activity type force deleted',
-                        'body'  => 'The Activity type has been force deleted successfully.',
+                        'title' => 'Tipo de actividad eliminado permanentemente',
+                        'body'  => 'El tipo de actividad se ha eliminado permanentemente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Activity type  could not be deleted',
-                        'body'  => 'The Activity type  cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el tipo de actividad',
+                        'body'  => 'El tipo de actividad no se puede eliminar porque está en uso actualmente.',
                     ],
                 ],
             ],
@@ -122,22 +122,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity types restored',
-                    'body'  => 'The activity types has been restored successfully.',
+                    'title' => 'Tipos de actividad restaurados',
+                    'body'  => 'Los tipos de actividad se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity types deleted',
-                    'body'  => 'The activity types has been deleted successfully.',
+                    'title' => 'Tipos de actividad eliminados',
+                    'body'  => 'Los tipos de actividad se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity types force deleted',
-                    'body'  => 'The activity types has been force deleted successfully.',
+                    'title' => 'Tipos de actividad eliminados permanentemente',
+                    'body'  => 'Los tipos de actividad se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -146,48 +146,48 @@ return [
     'infolist' => [
         'sections' => [
             'activity-type-details' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'entries' => [
-                    'name'                => 'Activity Type',
-                    'name-tooltip'        => 'Enter the official activity type name',
-                    'action'              => 'Action',
-                    'default-user'        => 'Default User',
-                    'plugin'              => 'Plugin',
-                    'summary'             => 'Summary',
-                    'note'                => 'Note',
+                    'name'                => 'Tipo de actividad',
+                    'name-tooltip'        => 'Introduzca el nombre oficial del tipo de actividad',
+                    'action'              => 'Acción',
+                    'default-user'        => 'Usuario predeterminado',
+                    'plugin'              => 'Complemento',
+                    'summary'             => 'Resumen',
+                    'note'                => 'Nota',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'Información de retraso',
 
                 'entries' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-form'             => 'Delay Form',
-                    'delay-form-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'Cantidad de retraso',
+                    'delay-unit'             => 'Unidad de retraso',
+                    'delay-form'             => 'Origen del retraso',
+                    'delay-form-helper-text' => 'Fuente del cálculo del retraso',
                 ],
             ],
 
             'advanced-information' => [
-                'title' => 'Advanced Information',
+                'title' => 'Información avanzada',
 
                 'entries' => [
-                    'icon'                => 'Icon',
-                    'decoration-type'     => 'Decoration Type',
-                    'chaining-type'       => 'Chaining Type',
-                    'suggest'             => 'Suggest',
-                    'trigger'             => 'Trigger',
+                    'icon'                => 'Icono',
+                    'decoration-type'     => 'Tipo de decoración',
+                    'chaining-type'       => 'Tipo de encadenamiento',
+                    'suggest'             => 'Sugerir',
+                    'trigger'             => 'Activar',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'Estado y configuración',
 
                 'entries' => [
-                    'status'               => 'Status',
-                    'keep-done-activities' => 'Keep Done Activities',
+                    'status'               => 'Estado',
+                    'keep-done-activities' => 'Mantener actividades completadas',
                 ],
             ],
         ],

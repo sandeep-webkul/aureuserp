@@ -1,42 +1,42 @@
 <?php
 
 return [
-    'title' => 'Users',
+    'title' => 'Usuarios',
 
     'navigation' => [
-        'title' => 'Users',
-        'group' => 'Settings',
+        'title' => 'Usuarios',
+        'group' => 'Configuración',
     ],
 
     'global-search' => [
-        'email' => 'Email',
+        'email' => 'Correo electrónico',
     ],
 
     'form' => [
         'validation' => [
-            'cannot-remove-last-admin'   => 'Cannot remove the admin role from the last admin user.',
-            'first-user-must-be-admin'   => 'The first user in the system must be assigned an admin role.',
+            'cannot-remove-last-admin'   => 'No se puede quitar el rol de administrador del último usuario administrador.',
+            'first-user-must-be-admin'   => 'Al primer usuario del sistema se le debe asignar un rol de administrador.',
         ],
 
         'sections' => [
             'general-information' => [
-                'title'  => 'General Information',
+                'title'  => 'Información general',
                 'fields' => [
-                    'name'                  => 'Name',
-                    'email'                 => 'Email',
-                    'password'              => 'Password',
-                    'password-confirmation' => 'Password Confirmation',
+                    'name'                  => 'Nombre',
+                    'email'                 => 'Correo electrónico',
+                    'password'              => 'Contraseña',
+                    'password-confirmation' => 'Confirmación de contraseña',
                 ],
             ],
 
             'permissions' => [
-                'title'  => 'Permissions',
+                'title'  => 'Permisos',
                 'fields' => [
                     'roles'                                    => 'Roles',
-                    'permissions'                              => 'Permissions',
-                    'resource-permission'                      => 'Resource Permission',
-                    'resource-permission-self-change-disabled' => 'You cannot change your own resource permission. Ask another administrator to update it.',
-                    'teams'                                    => 'Teams',
+                    'permissions'                              => 'Permisos',
+                    'resource-permission'                      => 'Permiso de recurso',
+                    'resource-permission-self-change-disabled' => 'No puede cambiar su propio permiso de recurso. Pida a otro administrador que lo actualice.',
+                    'teams'                                    => 'Equipos',
                 ],
             ],
 
@@ -45,17 +45,17 @@ return [
             ],
 
             'lang-and-status' => [
-                'title'  => 'Language & Status',
+                'title'  => 'Idioma y estado',
                 'fields' => [
-                    'language' => 'Preferred Language',
-                    'status'   => 'Status',
+                    'language' => 'Idioma preferido',
+                    'status'   => 'Estado',
                 ],
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'             => 'Multiempresa',
+                'allowed-companies' => 'Empresas permitidas',
+                'default-company'   => 'Empresa predeterminada',
             ],
         ],
     ],
@@ -63,49 +63,49 @@ return [
     'table' => [
         'columns' => [
             'avatar'              => 'Avatar',
-            'name'                => 'Name',
-            'email'               => 'Email',
-            'teams'               => 'Teams',
-            'role'                => 'Role',
-            'resource-permission' => 'Resource Permission',
-            'default-company'     => 'Default Company',
-            'allowed-company'     => 'Allowed Company',
-            'created-by'          => 'Created By',
-            'created-at'          => 'Created At',
-            'updated-at'          => 'Updated At',
+            'name'                => 'Nombre',
+            'email'               => 'Correo electrónico',
+            'teams'               => 'Equipos',
+            'role'                => 'Rol',
+            'resource-permission' => 'Permiso de recurso',
+            'default-company'     => 'Empresa predeterminada',
+            'allowed-company'     => 'Empresa permitida',
+            'created-by'          => 'Creado por',
+            'created-at'          => 'Creado el',
+            'updated-at'          => 'Actualizado el',
         ],
 
         'filters' => [
-            'resource-permission' => 'Resource Permission',
-            'teams'               => 'Teams',
+            'resource-permission' => 'Permiso de recurso',
+            'teams'               => 'Equipos',
             'roles'               => 'Roles',
-            'default-company'     => 'Default Company',
-            'allowed-companies'   => 'Allowed Companies',
+            'default-company'     => 'Empresa predeterminada',
+            'allowed-companies'   => 'Empresas permitidas',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'User edited',
-                    'body'  => 'The user has been edited successfully.',
+                    'title' => 'Usuario editado',
+                    'body'  => 'El usuario se ha editado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'User deleted',
-                    'body'  => 'The user has been deleted successfully.',
+                    'title' => 'Usuario eliminado',
+                    'body'  => 'El usuario se ha eliminado correctamente.',
                     'error' => [
-                        'title' => 'User Cannot Be Deleted',
-                        'body'  => 'This is a default user or you cannot delete yourself.',
+                        'title' => 'No se puede eliminar el usuario',
+                        'body'  => 'Este es un usuario predeterminado o no puede eliminarse a sí mismo.',
                     ],
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'User restored',
-                    'body'  => 'The user has been restored successfully.',
+                    'title' => 'Usuario restaurado',
+                    'body'  => 'El usuario se ha restaurado correctamente.',
                 ],
             ],
         ],
@@ -113,25 +113,25 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Users restored',
-                    'body'  => 'The users has been restored successfully.',
+                    'title' => 'Usuarios restaurados',
+                    'body'  => 'Los usuarios se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Users deleted',
-                    'body'  => 'The users has been deleted successfully.',
+                    'title' => 'Usuarios eliminados',
+                    'body'  => 'Los usuarios se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Users force deleted',
-                    'body'  => 'The users has been force deleted successfully.',
+                    'title' => 'Usuarios eliminados permanentemente',
+                    'body'  => 'Los usuarios se han eliminado permanentemente correctamente.',
                     'error' => [
-                        'title' => 'User could not be deleted',
-                        'body'  => 'The user cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el usuario',
+                        'body'  => 'El usuario no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -140,8 +140,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Users created',
-                    'body'  => 'The users has been created successfully.',
+                    'title' => 'Usuarios creados',
+                    'body'  => 'Los usuarios se han creado correctamente.',
                 ],
             ],
         ],
@@ -150,22 +150,22 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title'   => 'General Information',
+                'title'   => 'Información general',
                 'entries' => [
-                    'name'                  => 'Name',
-                    'email'                 => 'Email',
-                    'password'              => 'Password',
-                    'password-confirmation' => 'Password Confirmation',
+                    'name'                  => 'Nombre',
+                    'email'                 => 'Correo electrónico',
+                    'password'              => 'Contraseña',
+                    'password-confirmation' => 'Confirmación de contraseña',
                 ],
             ],
 
             'permissions' => [
-                'title'   => 'Permissions',
+                'title'   => 'Permisos',
                 'entries' => [
                     'roles'               => 'Roles',
-                    'permissions'         => 'Permissions',
-                    'resource-permission' => 'Resource Permission',
-                    'teams'               => 'Teams',
+                    'permissions'         => 'Permisos',
+                    'resource-permission' => 'Permiso de recurso',
+                    'teams'               => 'Equipos',
                 ],
             ],
 
@@ -174,17 +174,17 @@ return [
             ],
 
             'lang-and-status' => [
-                'title'   => 'Language & Status',
+                'title'   => 'Idioma y estado',
                 'entries' => [
-                    'language' => 'Preferred Language',
-                    'status'   => 'Status',
+                    'language' => 'Idioma preferido',
+                    'status'   => 'Estado',
                 ],
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'             => 'Multiempresa',
+                'allowed-companies' => 'Empresas permitidas',
+                'default-company'   => 'Empresa predeterminada',
             ],
         ],
     ],

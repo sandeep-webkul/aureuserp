@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Maintenance request created',
-        'body'  => 'The maintenance request has been created successfully.',
+        'title' => 'Solicitud de mantenimiento creada',
+        'body'  => 'La solicitud de mantenimiento se ha creado correctamente.',
     ],
 ];

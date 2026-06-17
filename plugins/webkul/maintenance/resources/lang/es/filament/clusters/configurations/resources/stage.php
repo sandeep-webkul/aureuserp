@@ -2,40 +2,40 @@
 
 return [
     'navigation' => [
-        'title' => 'Stages',
+        'title' => 'Etapas',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Name',
-            'done' => 'Done',
+            'name' => 'Nombre',
+            'done' => 'Hecho',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'done'       => 'Done',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'done'       => 'Hecho',
+            'created-at' => 'Creado el',
         ],
 
         'groups' => [
-            'done'       => 'Done',
-            'created-at' => 'Created At',
+            'done'       => 'Hecho',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Stage updated',
-                    'body'  => 'The stage has been updated successfully.',
+                    'title' => 'Etapa actualizada',
+                    'body'  => 'La etapa se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Stage deleted',
-                    'body'  => 'The stage has been deleted successfully.',
+                    'title' => 'Etapa eliminada',
+                    'body'  => 'La etapa se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -43,8 +43,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Stages deleted',
-                    'body'  => 'The stages have been deleted successfully.',
+                    'title' => 'Etapas eliminadas',
+                    'body'  => 'Las etapas se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -53,11 +53,11 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'entries' => [
-                    'name' => 'Name',
-                    'done' => 'Done',
+                    'name' => 'Nombre',
+                    'done' => 'Hecho',
                 ],
             ],
         ],

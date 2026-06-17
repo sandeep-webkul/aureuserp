@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'breadcrumb' => 'Manage Currency',
-    'title'      => 'Manage Currency',
+    'breadcrumb' => 'Gestionar moneda',
+    'title'      => 'Gestionar moneda',
     'group'      => 'General',
 
     'navigation' => [
-        'label' => 'Manage Currency',
+        'label' => 'Gestionar moneda',
     ],
 
     'form' => [
         'default-currency' => [
-            'label'       => 'Default Currency',
-            'helper-text' => 'The default currency used in the application.',
+            'label'       => 'Moneda predeterminada',
+            'helper-text' => 'La moneda predeterminada utilizada en la aplicación.',
         ],
     ],
 ];

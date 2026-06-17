@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Activity Type updated',
-        'body'  => 'The activity type has been updated successfully.',
+        'title' => 'Tipo de actividad actualizado',
+        'body'  => 'El tipo de actividad se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Activity type deleted',
-                'body'  => 'The activity type has been deleted successfully.',
+                'title' => 'Tipo de actividad eliminado',
+                'body'  => 'El tipo de actividad se ha eliminado correctamente.',
             ],
         ],
     ],

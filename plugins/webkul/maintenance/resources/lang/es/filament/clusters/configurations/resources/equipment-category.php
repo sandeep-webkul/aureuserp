@@ -2,19 +2,19 @@
 
 return [
     'navigation' => [
-        'title' => 'Categories',
+        'title' => 'Categorías',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'fields' => [
-                    'name'       => 'Name',
-                    'technician' => 'Responsible',
-                    'company'    => 'Company',
-                    'note'       => 'Note',
+                    'name'       => 'Nombre',
+                    'technician' => 'Responsable',
+                    'company'    => 'Empresa',
+                    'note'       => 'Nota',
                 ],
             ],
         ],
@@ -22,28 +22,28 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'technician' => 'Responsible',
-            'company'    => 'Company',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'technician' => 'Responsable',
+            'company'    => 'Empresa',
+            'created-at' => 'Creado el',
         ],
 
         'groups' => [
-            'technician' => 'Responsible',
+            'technician' => 'Responsable',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Category updated',
-                    'body'  => 'The category has been updated successfully.',
+                    'title' => 'Categoría actualizada',
+                    'body'  => 'La categoría se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Category deleted',
-                    'body'  => 'The category has been deleted successfully.',
+                    'title' => 'Categoría eliminada',
+                    'body'  => 'La categoría se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -51,8 +51,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Categories deleted',
-                    'body'  => 'The categories have been deleted successfully.',
+                    'title' => 'Categorías eliminadas',
+                    'body'  => 'Las categorías se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -60,8 +60,8 @@ return [
         'empty-state' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Category created',
-                    'body'  => 'The category has been created successfully.',
+                    'title' => 'Categoría creada',
+                    'body'  => 'La categoría se ha creado correctamente.',
                 ],
             ],
         ],
@@ -70,13 +70,13 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'entries' => [
-                    'name'       => 'Name',
-                    'technician' => 'Responsible',
-                    'company'    => 'Company',
-                    'note'       => 'Note',
+                    'name'       => 'Nombre',
+                    'technician' => 'Responsable',
+                    'company'    => 'Empresa',
+                    'note'       => 'Nota',
                 ],
             ],
         ],

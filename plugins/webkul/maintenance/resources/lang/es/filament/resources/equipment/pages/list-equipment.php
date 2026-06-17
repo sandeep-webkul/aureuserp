@@ -3,19 +3,19 @@
 return [
     'header-actions' => [
         'create' => [
-            'label'        => 'New Equipment',
+            'label'        => 'Nuevo equipo',
             'notification' => [
-                'title' => 'Equipment created',
-                'body'  => 'The equipment has been created successfully.',
+                'title' => 'Equipo creado',
+                'body'  => 'El equipo se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'my-equipment'      => 'My Equipment',
-        'assigned'          => 'Assigned',
-        'unassigned'        => 'Unassigned',
-        'under-maintenance' => 'Under Maintenance',
-        'archived'          => 'Archived',
+        'my-equipment'      => 'Mis equipos',
+        'assigned'          => 'Asignado',
+        'unassigned'        => 'Sin asignar',
+        'under-maintenance' => 'En mantenimiento',
+        'archived'          => 'Archivado',
     ],
 ];

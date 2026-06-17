@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Role Updated',
-        'body'  => 'The role was updated successfully.',
+        'title' => 'Rol actualizado',
+        'body'  => 'El rol se ha actualizado correctamente.',
     ],
 ];

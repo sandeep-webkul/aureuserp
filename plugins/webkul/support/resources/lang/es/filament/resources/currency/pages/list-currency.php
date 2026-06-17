@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'title' => 'Currencies',
+    'title' => 'Monedas',
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Currency',
+            'label' => 'Nueva moneda',
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'active'   => 'Active',
-        'inactive' => 'Inactive',
+        'all'      => 'Todas',
+        'active'   => 'Activas',
+        'inactive' => 'Inactivas',
     ],
 ];

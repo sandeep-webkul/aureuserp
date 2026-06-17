@@ -1,65 +1,65 @@
 <?php
 
 return [
-    'title'                   => 'Profile',
-    'heading'                 => 'Profile',
-    'subheading'              => 'Manage your account settings and preferences.',
-    'information_section'     => 'Profile Information',
-    'information_description' => "Update your account's profile information and email address.",
+    'title'                   => 'Perfil',
+    'heading'                 => 'Perfil',
+    'subheading'              => 'Gestionar la configuración y las preferencias de la cuenta.',
+    'information_section'     => 'Información del perfil',
+    'information_description' => 'Actualizar la información del perfil y el correo electrónico de la cuenta.',
 
     'notification' => [
         'success' => [
-            'title' => 'Profile Updated',
-            'body'  => 'Your profile has been updated successfully.',
+            'title' => 'Perfil actualizado',
+            'body'  => 'El perfil se ha actualizado correctamente.',
         ],
 
         'error' => [
-            'title' => 'Profile Update Failed',
-            'body'  => 'There was an error updating your profile.',
+            'title' => 'Error al actualizar el perfil',
+            'body'  => 'Se produjo un error al actualizar el perfil.',
         ],
 
         'validation-error' => [
-            'title' => 'Validation Error',
+            'title' => 'Error de validación',
         ],
     ],
 
     'actions' => [
-        'save' => 'Save Changes',
+        'save' => 'Guardar cambios',
     ],
 
     'fields' => [
-        'avatar'          => 'Profile Photo',
-        'name'            => 'Name',
-        'email'           => 'Email',
-        'language'        => 'Preferred Language',
-        'language_helper' => 'The admin interface will be shown in this language.',
+        'avatar'          => 'Foto de perfil',
+        'name'            => 'Nombre',
+        'email'           => 'Correo electrónico',
+        'language'        => 'Idioma preferido',
+        'language_helper' => 'La interfaz de administración se mostrará en este idioma.',
     ],
 
     'password' => [
-        'section'     => 'Update Password',
-        'description' => 'Ensure your account is using a long, random password to stay secure.',
-        'current'     => 'Current Password',
-        'new'         => 'New Password',
-        'confirm'     => 'Confirm Password',
-        'helper'      => 'Must be at least 8 characters long.',
+        'section'     => 'Actualizar contraseña',
+        'description' => 'Asegúrese de que la cuenta use una contraseña larga y aleatoria para mayor seguridad.',
+        'current'     => 'Contraseña actual',
+        'new'         => 'Nueva contraseña',
+        'confirm'     => 'Confirmar contraseña',
+        'helper'      => 'Debe tener al menos 8 caracteres.',
 
         'errors' => [
-            'current-required'  => 'Current password is required.',
-            'current-incorrect' => 'The current password is incorrect. Please try again.',
-            'same-as-current'   => 'The new password must be different from your current password.',
+            'current-required'  => 'La contraseña actual es obligatoria.',
+            'current-incorrect' => 'La contraseña actual es incorrecta. Inténtelo de nuevo.',
+            'same-as-current'   => 'La nueva contraseña debe ser diferente de la contraseña actual.',
         ],
 
-        'current-helper' => 'Enter your current password to verify your identity.',
+        'current-helper' => 'Introduzca la contraseña actual para verificar su identidad.',
 
         'notification' => [
             'success' => [
-                'title' => 'Password Updated',
-                'body'  => 'Your password has been updated successfully.',
+                'title' => 'Contraseña actualizada',
+                'body'  => 'La contraseña se ha actualizado correctamente.',
             ],
 
             'error' => [
-                'title' => 'Password Update Failed',
-                'body'  => 'There was an error updating your password.',
+                'title' => 'Error al actualizar la contraseña',
+                'body'  => 'Se produjo un error al actualizar la contraseña.',
             ],
         ],
     ],

@@ -2,38 +2,38 @@
 
 return [
     'tabs' => [
-        'all'      => 'All Users',
-        'archived' => 'Archived Users',
+        'all'      => 'Todos los usuarios',
+        'archived' => 'Usuarios archivados',
     ],
 
     'header-actions' => [
         'invite' => [
-            'title' => 'Invite User',
+            'title' => 'Invitar usuario',
             'modal' => [
-                'submit-action-label' => 'Invite User',
+                'submit-action-label' => 'Invitar usuario',
             ],
             'form' => [
-                'email' => 'Email',
+                'email' => 'Correo electrónico',
             ],
             'notification' => [
                 'success' => [
-                    'title' => 'User invited',
-                    'body'  => 'User has been invited successfully',
+                    'title' => 'Usuario invitado',
+                    'body'  => 'El usuario se ha invitado correctamente',
                 ],
                 'error' => [
-                    'title' => 'User Invitation Failed',
-                    'body'  => 'The system encountered an unexpected error while trying to send the user invitation.',
+                    'title' => 'Error al invitar al usuario',
+                    'body'  => 'El sistema encontró un error inesperado al intentar enviar la invitación del usuario.',
                 ],
 
                 'default-company-error' => [
-                    'title' => 'Default Company Not Set',
-                    'body'  => 'Please set the default company from settings, before inviting a user.',
+                    'title' => 'Empresa predeterminada no establecida',
+                    'body'  => 'Establezca la empresa predeterminada en la configuración antes de invitar a un usuario.',
                 ],
             ],
         ],
 
         'create' => [
-            'label' => 'New User',
+            'label' => 'Nuevo usuario',
         ],
     ],
 ];

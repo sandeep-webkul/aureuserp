@@ -1,37 +1,37 @@
 <?php
 
 return [
-    'title' => 'Teams',
+    'title' => 'Equipos',
 
     'navigation' => [
-        'title' => 'Teams',
-        'group' => 'Settings',
+        'title' => 'Equipos',
+        'group' => 'Configuración',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Name',
+            'name' => 'Nombre',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Team updated',
-                    'body'  => 'The team has been updated successfully.',
+                    'title' => 'Equipo actualizado',
+                    'body'  => 'El equipo se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Team deleted',
-                    'body'  => 'The team has been deleted successfully.',
+                    'title' => 'Equipo eliminado',
+                    'body'  => 'El equipo se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -39,8 +39,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Teams created',
-                    'body'  => 'The teams has been created successfully.',
+                    'title' => 'Equipos creados',
+                    'body'  => 'Los equipos se han creado correctamente.',
                 ],
             ],
         ],
@@ -49,23 +49,23 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'          => 'Name',
-                'job-title'     => 'Job Title',
-                'work-email'    => 'Work Email',
-                'work-mobile'   => 'Work Mobile',
-                'work-phone'    => 'Work Phone',
-                'manager'       => 'Manager',
-                'department'    => 'Department',
-                'job-position'  => 'Job Position',
-                'team-tags'     => 'Team Tags',
-                'coach'         => 'Coach',
+                'name'          => 'Nombre',
+                'job-title'     => 'Puesto de trabajo',
+                'work-email'    => 'Correo electrónico laboral',
+                'work-mobile'   => 'Móvil laboral',
+                'work-phone'    => 'Teléfono laboral',
+                'manager'       => 'Gerente',
+                'department'    => 'Departamento',
+                'job-position'  => 'Cargo',
+                'team-tags'     => 'Etiquetas de equipo',
+                'coach'         => 'Mentor',
             ],
         ],
     ],
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
+            'name' => 'Nombre',
         ],
     ],
 ];

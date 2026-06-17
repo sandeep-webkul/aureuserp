@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'before-plan-date' => 'Before Plan Date',
-    'after-plan-date'  => 'After Plan Date',
+    'before-plan-date' => 'Antes de la fecha planificada',
+    'after-plan-date'  => 'Después de la fecha planificada',
 ];

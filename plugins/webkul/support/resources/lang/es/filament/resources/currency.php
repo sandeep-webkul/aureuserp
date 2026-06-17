@@ -1,100 +1,100 @@
 <?php
 
 return [
-    'title' => 'Currencies',
+    'title' => 'Monedas',
 
     'navigation' => [
-        'title' => 'Currencies',
-        'group' => 'Settings',
+        'title' => 'Monedas',
+        'group' => 'Configuración',
     ],
 
     'form' => [
         'sections' => [
             'currency-details' => [
-                'title' => 'Currency Information',
+                'title' => 'Información de la moneda',
 
                 'fields' => [
-                    'name'         => 'Currency Name',
-                    'name-tooltip' => 'Enter the official currency name',
-                    'symbol'       => 'Currency Symbol',
-                    'full-name'    => 'Full Name',
-                    'iso-numeric'  => 'ISO Numeric Code',
+                    'name'         => 'Nombre de la moneda',
+                    'name-tooltip' => 'Introduzca el nombre oficial de la moneda',
+                    'symbol'       => 'Símbolo de la moneda',
+                    'full-name'    => 'Nombre completo',
+                    'iso-numeric'  => 'Código ISO numérico',
                 ],
             ],
 
             'format-information' => [
-                'title' => 'Format Configuration',
+                'title' => 'Configuración de formato',
 
                 'fields' => [
-                    'decimal-places'        => 'Decimal Places',
-                    'rounding'              => 'Rounding Precision',
-                    'rounding-helper-text'  => 'Set the rounding precision for currency calculations',
+                    'decimal-places'        => 'Decimales',
+                    'rounding'              => 'Precisión de redondeo',
+                    'rounding-helper-text'  => 'Establezca la precisión de redondeo para los cálculos de la moneda',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'Estado y configuración',
 
                 'fields' => [
-                    'status' => 'Status',
+                    'status' => 'Estado',
                 ],
             ],
 
             'rates' => [
-                'title'       => 'Currency Rates',
-                'description' => 'Manage historic exchange rates for this currency relative to the base currency (USD).',
+                'title'       => 'Tasas de cambio',
+                'description' => 'Gestione las tasas de cambio históricas de esta moneda respecto a la moneda base (USD).',
 
                 'fields' => [
-                    'name'              => 'Date',
-                    'unit-per-currency' => 'Unit Per :currency',
-                    'currency-per-unit' => ':currency Per Unit',
+                    'name'              => 'Fecha',
+                    'unit-per-currency' => 'Unidad por :currency',
+                    'currency-per-unit' => ':currency por unidad',
                 ],
 
-                'add-rate'   => 'Add Rate',
-                'item-label' => 'Rate',
+                'add-rate'   => 'Agregar tasa',
+                'item-label' => 'Tasa',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'           => 'Currency Name',
-            'symbol'         => 'Symbol',
-            'full-name'      => 'Full Name',
-            'iso-numeric'    => 'ISO Code',
-            'decimal-places' => 'Decimal Places',
-            'rounding'       => 'Rounding',
-            'status'         => 'Status',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
+            'name'           => 'Nombre de la moneda',
+            'symbol'         => 'Símbolo',
+            'full-name'      => 'Nombre completo',
+            'iso-numeric'    => 'Código ISO',
+            'decimal-places' => 'Decimales',
+            'rounding'       => 'Redondeo',
+            'status'         => 'Estado',
+            'created-at'     => 'Creado el',
+            'updated-at'     => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'           => 'Name',
-            'status'         => 'Status',
-            'decimal-places' => 'Decimal Places',
-            'creation-date'  => 'Creation Date',
-            'last-update'    => 'Last Update',
+            'name'           => 'Nombre',
+            'status'         => 'Estado',
+            'decimal-places' => 'Decimales',
+            'creation-date'  => 'Fecha de creación',
+            'last-update'    => 'Última actualización',
         ],
 
         'filters' => [
-            'status' => 'Status',
+            'status' => 'Estado',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title'   => 'Currency deleted',
-                    'body'    => 'The currency has been deleted successfully.',
+                    'title'   => 'Moneda eliminada',
+                    'body'    => 'La moneda se ha eliminado correctamente.',
 
                     'success' => [
-                        'title' => 'Currency deleted',
-                        'body'  => 'The currency has been deleted successfully.',
+                        'title' => 'Moneda eliminada',
+                        'body'  => 'La moneda se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Currency could not be deleted',
-                        'body'  => 'The currency cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar la moneda',
+                        'body'  => 'La moneda no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -103,8 +103,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Currencies deleted',
-                    'body'  => 'The currencies have been deleted successfully.',
+                    'title' => 'Monedas eliminadas',
+                    'body'  => 'Las monedas se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -113,40 +113,40 @@ return [
     'infolist' => [
         'sections' => [
             'currency-details' => [
-                'title' => 'Currency Information',
+                'title' => 'Información de la moneda',
 
                 'entries' => [
-                    'name'         => 'Currency Name',
-                    'symbol'       => 'Currency Symbol',
-                    'full-name'    => 'Full Name',
-                    'iso-numeric'  => 'ISO Numeric Code',
+                    'name'         => 'Nombre de la moneda',
+                    'symbol'       => 'Símbolo de la moneda',
+                    'full-name'    => 'Nombre completo',
+                    'iso-numeric'  => 'Código ISO numérico',
                 ],
             ],
 
             'format-information' => [
-                'title' => 'Format Configuration',
+                'title' => 'Configuración de formato',
 
                 'entries' => [
-                    'decimal-places' => 'Decimal Places',
-                    'rounding'       => 'Rounding Precision',
+                    'decimal-places' => 'Decimales',
+                    'rounding'       => 'Precisión de redondeo',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'Estado y configuración',
 
                 'entries' => [
-                    'status' => 'Status',
+                    'status' => 'Estado',
                 ],
             ],
 
             'rates' => [
-                'title'       => 'Currency Rates',
+                'title'       => 'Tasas de cambio',
 
                 'entries' => [
-                    'name'              => 'Date',
-                    'unit-per-currency' => 'Unit Per :currency',
-                    'currency-per-unit' => ':currency Per Unit',
+                    'name'              => 'Fecha',
+                    'unit-per-currency' => 'Unidad por :currency',
+                    'currency-per-unit' => ':currency por unidad',
                 ],
             ],
         ],

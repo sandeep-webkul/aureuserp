@@ -1,86 +1,86 @@
 <?php
 
 return [
-    'title' => 'Companies',
+    'title' => 'Empresas',
 
     'navigation' => [
-        'title' => 'Companies',
-        'group' => 'Settings',
+        'title' => 'Empresas',
+        'group' => 'Configuración',
     ],
 
     'global-search' => [
-        'email' => 'Email',
+        'email' => 'Correo electrónico',
     ],
 
     'form' => [
         'sections' => [
             'company-information' => [
-                'title'  => 'Company Information',
+                'title'  => 'Información de la empresa',
                 'fields' => [
-                    'name'                  => 'Company Name',
-                    'registration-number'   => 'Registration Number',
-                    'company-id'            => 'Company ID',
-                    'tax-id'                => 'Tax ID',
-                    'tax-id-tooltip'        => 'The Tax ID is a unique identifier for your company.',
-                    'website'               => 'Website',
+                    'name'                  => 'Nombre de la empresa',
+                    'registration-number'   => 'Número de registro',
+                    'company-id'            => 'ID de la empresa',
+                    'tax-id'                => 'Identificación fiscal',
+                    'tax-id-tooltip'        => 'La identificación fiscal es un identificador único de su empresa.',
+                    'website'               => 'Sitio web',
                 ],
             ],
 
             'address-information' => [
-                'title'  => 'Address Information',
+                'title'  => 'Información de dirección',
 
                 'fields' => [
-                    'street1'        => 'Street 1',
-                    'street2'        => 'Street 2',
-                    'city'           => 'City',
-                    'zipcode'        => 'Zip Code',
-                    'country'        => 'Country',
-                    'currency-name'  => 'Currency Name',
-                    'phone-code'     => 'Phone Code',
-                    'code'           => 'Code',
-                    'country-name'   => 'Country Name',
-                    'state-required' => 'State Required',
-                    'zip-required'   => 'Zip Required',
-                    'create-country' => 'Create Country',
-                    'state'          => 'State',
-                    'state-name'     => 'State Name',
-                    'state-code'     => 'State Code',
-                    'create-state'   => 'Create State',
+                    'street1'        => 'Calle 1',
+                    'street2'        => 'Calle 2',
+                    'city'           => 'Ciudad',
+                    'zipcode'        => 'Código postal',
+                    'country'        => 'País',
+                    'currency-name'  => 'Nombre de la moneda',
+                    'phone-code'     => 'Código telefónico',
+                    'code'           => 'Código',
+                    'country-name'   => 'Nombre del país',
+                    'state-required' => 'Estado obligatorio',
+                    'zip-required'   => 'Código postal obligatorio',
+                    'create-country' => 'Crear país',
+                    'state'          => 'Estado',
+                    'state-name'     => 'Nombre del estado',
+                    'state-code'     => 'Código del estado',
+                    'create-state'   => 'Crear estado',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'fields' => [
-                    'default-currency'        => 'Default Currency',
-                    'currency-name'           => 'Currency Name',
-                    'currency-full-name'      => 'Currency Full Name',
-                    'currency-symbol'         => 'Currency Symbol',
-                    'currency-iso-numeric'    => 'Currency ISO Numeric',
-                    'currency-decimal-places' => 'Currency Decimal Places',
-                    'currency-rounding'       => 'Currency Rounding',
-                    'currency-status'         => 'Currency Status',
-                    'company-foundation-date' => 'Company Foundation Date',
-                    'currency-create'         => 'Create Currency',
-                    'status'                  => 'Status',
+                    'default-currency'        => 'Moneda predeterminada',
+                    'currency-name'           => 'Nombre de la moneda',
+                    'currency-full-name'      => 'Nombre completo de la moneda',
+                    'currency-symbol'         => 'Símbolo de la moneda',
+                    'currency-iso-numeric'    => 'Código ISO numérico de la moneda',
+                    'currency-decimal-places' => 'Decimales de la moneda',
+                    'currency-rounding'       => 'Redondeo de la moneda',
+                    'currency-status'         => 'Estado de la moneda',
+                    'company-foundation-date' => 'Fecha de fundación de la empresa',
+                    'currency-create'         => 'Crear moneda',
+                    'status'                  => 'Estado',
                 ],
             ],
 
             'branding' => [
-                'title'  => 'Branding',
+                'title'  => 'Personalización de marca',
                 'fields' => [
-                    'company-logo' => 'Company Logo',
+                    'company-logo' => 'Logotipo de la empresa',
                     'color'        => 'Color',
                 ],
             ],
 
             'contact-information' => [
-                'title'  => 'Contact Information',
+                'title'  => 'Información de contacto',
                 'fields' => [
-                    'email'  => 'Email Address',
-                    'phone'  => 'Phone Number',
-                    'mobile' => 'Phone Number',
+                    'email'  => 'Dirección de correo electrónico',
+                    'phone'  => 'Número de teléfono',
+                    'mobile' => 'Número de teléfono',
                 ],
             ],
         ],
@@ -88,54 +88,54 @@ return [
 
     'table' => [
         'columns' => [
-            'logo'                 => 'Logo',
-            'company-name'         => 'Company Name',
-            'branches'             => 'Branches',
-            'email'                => 'Email',
-            'city'                 => 'City',
-            'country'              => 'Country',
-            'currency'             => 'Currency',
-            'status'               => 'Status',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'logo'                 => 'Logotipo',
+            'company-name'         => 'Nombre de la empresa',
+            'branches'             => 'Sucursales',
+            'email'                => 'Correo electrónico',
+            'city'                 => 'Ciudad',
+            'country'              => 'País',
+            'currency'             => 'Moneda',
+            'status'               => 'Estado',
+            'created-at'           => 'Creado el',
+            'updated-at'           => 'Actualizado el',
         ],
 
         'groups' => [
-            'company-name' => 'Company Name',
-            'city'         => 'City',
-            'country'      => 'Country',
-            'state'        => 'State',
-            'email'        => 'Email',
-            'phone'        => 'Phone',
-            'currency'     => 'Currency',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'company-name' => 'Nombre de la empresa',
+            'city'         => 'Ciudad',
+            'country'      => 'País',
+            'state'        => 'Estado',
+            'email'        => 'Correo electrónico',
+            'phone'        => 'Teléfono',
+            'currency'     => 'Moneda',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'filters' => [
-            'status'  => 'Status',
-            'country' => 'Country',
+            'status'  => 'Estado',
+            'country' => 'País',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Company edited',
-                    'body'  => 'The company has been edited successfully.',
+                    'title' => 'Empresa editada',
+                    'body'  => 'La empresa se ha editado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Company deleted',
-                    'body'  => 'The company has been deleted successfully.',
+                    'title' => 'Empresa eliminada',
+                    'body'  => 'La empresa se ha eliminado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Company restored',
-                    'body'  => 'The company has been restored successfully.',
+                    'title' => 'Empresa restaurada',
+                    'body'  => 'La empresa se ha restaurado correctamente.',
                 ],
             ],
         ],
@@ -143,22 +143,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Companies restored',
-                    'body'  => 'The companies has been restored successfully.',
+                    'title' => 'Empresas restauradas',
+                    'body'  => 'Las empresas se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Companies deleted',
-                    'body'  => 'The companies has been deleted successfully.',
+                    'title' => 'Empresas eliminadas',
+                    'body'  => 'Las empresas se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Companies force deleted',
-                    'body'  => 'The companies has been force deleted successfully.',
+                    'title' => 'Empresas eliminadas permanentemente',
+                    'body'  => 'Las empresas se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -166,8 +166,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Companies created',
-                    'body'  => 'The companies has been created successfully.',
+                    'title' => 'Empresas creadas',
+                    'body'  => 'Las empresas se han creado correctamente.',
                 ],
             ],
         ],
@@ -176,72 +176,72 @@ return [
     'infolist' => [
         'sections' => [
             'company-information' => [
-                'title'   => 'Company Information',
+                'title'   => 'Información de la empresa',
                 'entries' => [
-                    'name'                  => 'Company Name',
-                    'registration-number'   => 'Registration Number',
-                    'company-id'            => 'Company ID',
-                    'tax-id'                => 'Tax ID',
-                    'tax-id-tooltip'        => 'The Tax ID is a unique identifier for your company.',
-                    'website'               => 'Website',
+                    'name'                  => 'Nombre de la empresa',
+                    'registration-number'   => 'Número de registro',
+                    'company-id'            => 'ID de la empresa',
+                    'tax-id'                => 'Identificación fiscal',
+                    'tax-id-tooltip'        => 'La identificación fiscal es un identificador único de su empresa.',
+                    'website'               => 'Sitio web',
                 ],
             ],
 
             'address-information' => [
-                'title'  => 'Address Information',
+                'title'  => 'Información de dirección',
 
                 'entries' => [
-                    'street1'        => 'Street 1',
-                    'street2'        => 'Street 2',
-                    'city'           => 'City',
-                    'zipcode'        => 'Zip Code',
-                    'country'        => 'Country',
-                    'currency-name'  => 'Currency Name',
-                    'phone-code'     => 'Phone Code',
-                    'code'           => 'Code',
-                    'country-name'   => 'Country Name',
-                    'state-required' => 'State Required',
-                    'zip-required'   => 'Zip Required',
-                    'create-country' => 'Create Country',
-                    'state'          => 'State',
-                    'state-name'     => 'State Name',
-                    'state-code'     => 'State Code',
-                    'create-state'   => 'Create State',
+                    'street1'        => 'Calle 1',
+                    'street2'        => 'Calle 2',
+                    'city'           => 'Ciudad',
+                    'zipcode'        => 'Código postal',
+                    'country'        => 'País',
+                    'currency-name'  => 'Nombre de la moneda',
+                    'phone-code'     => 'Código telefónico',
+                    'code'           => 'Código',
+                    'country-name'   => 'Nombre del país',
+                    'state-required' => 'Estado obligatorio',
+                    'zip-required'   => 'Código postal obligatorio',
+                    'create-country' => 'Crear país',
+                    'state'          => 'Estado',
+                    'state-name'     => 'Nombre del estado',
+                    'state-code'     => 'Código del estado',
+                    'create-state'   => 'Crear estado',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'entries' => [
-                    'default-currency'        => 'Default Currency',
-                    'currency-name'           => 'Currency Name',
-                    'currency-full-name'      => 'Currency Full Name',
-                    'currency-symbol'         => 'Currency Symbol',
-                    'currency-iso-numeric'    => 'Currency ISO Numeric',
-                    'currency-decimal-places' => 'Currency Decimal Places',
-                    'currency-rounding'       => 'Currency Rounding',
-                    'currency-status'         => 'Currency Status',
-                    'company-foundation-date' => 'Company Foundation Date',
-                    'currency-create'         => 'Create Currency',
-                    'status'                  => 'Status',
+                    'default-currency'        => 'Moneda predeterminada',
+                    'currency-name'           => 'Nombre de la moneda',
+                    'currency-full-name'      => 'Nombre completo de la moneda',
+                    'currency-symbol'         => 'Símbolo de la moneda',
+                    'currency-iso-numeric'    => 'Código ISO numérico de la moneda',
+                    'currency-decimal-places' => 'Decimales de la moneda',
+                    'currency-rounding'       => 'Redondeo de la moneda',
+                    'currency-status'         => 'Estado de la moneda',
+                    'company-foundation-date' => 'Fecha de fundación de la empresa',
+                    'currency-create'         => 'Crear moneda',
+                    'status'                  => 'Estado',
                 ],
             ],
 
             'branding' => [
-                'title'   => 'Branding',
+                'title'   => 'Personalización de marca',
                 'entries' => [
-                    'company-logo' => 'Company Logo',
+                    'company-logo' => 'Logotipo de la empresa',
                     'color'        => 'Color',
                 ],
             ],
 
             'contact-information' => [
-                'title'   => 'Contact Information',
+                'title'   => 'Información de contacto',
                 'entries' => [
-                    'email'  => 'Email Address',
-                    'phone'  => 'Phone Number',
-                    'mobile' => 'Phone Number',
+                    'email'  => 'Dirección de correo electrónico',
+                    'phone'  => 'Número de teléfono',
+                    'mobile' => 'Número de teléfono',
                 ],
             ],
         ],

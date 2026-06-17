@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Maintenance Request',
+    'title' => 'Solicitud de mantenimiento',
 ];

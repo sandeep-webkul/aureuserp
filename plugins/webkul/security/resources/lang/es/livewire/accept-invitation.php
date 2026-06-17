@@ -3,19 +3,19 @@
 return [
     'header' => [
         'sub-heading' => [
-            'accept-invitation' => 'Accept Invitation',
+            'accept-invitation' => 'Aceptar invitación',
         ],
     ],
 
-    'title' => 'Register',
+    'title' => 'Registrarse',
 
-    'heading' => 'Sign up',
+    'heading' => 'Crear cuenta',
 
     'actions' => [
 
         'login' => [
-            'before' => 'or',
-            'label'  => 'sign in to your account',
+            'before' => 'o',
+            'label'  => 'inicie sesión en su cuenta',
         ],
 
     ],
@@ -23,26 +23,26 @@ return [
     'form' => [
 
         'email' => [
-            'label' => 'Email address',
+            'label' => 'Correo electrónico',
         ],
 
         'name' => [
-            'label' => 'Name',
+            'label' => 'Nombre',
         ],
 
         'password' => [
-            'label'                => 'Password',
-            'validation_attribute' => 'password',
+            'label'                => 'Contraseña',
+            'validation_attribute' => 'contraseña',
         ],
 
         'password_confirmation' => [
-            'label' => 'Confirm password',
+            'label' => 'Confirmar contraseña',
         ],
 
         'actions' => [
 
             'register' => [
-                'label' => 'Sign up',
+                'label' => 'Crear cuenta',
             ],
 
         ],
@@ -52,8 +52,8 @@ return [
     'notifications' => [
 
         'throttled' => [
-            'title' => 'Too many registration attempts',
-            'body'  => 'Please try again in :seconds seconds.',
+            'title' => 'Demasiados intentos de registro',
+            'body'  => 'Vuelva a intentarlo en :seconds segundos.',
         ],
 
     ],

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'all'  => 'All',
-    'even' => 'Even',
-    'odd'  => 'Odd',
+    'all'  => 'Todas',
+    'even' => 'Par',
+    'odd'  => 'Impar',
 ];

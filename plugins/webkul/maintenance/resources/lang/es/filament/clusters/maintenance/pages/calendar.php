@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'title'      => 'Maintenance Calendar',
+    'title'      => 'Calendario de mantenimiento',
     'navigation' => [
-        'title' => 'Maintenance Calendar',
+        'title' => 'Calendario de mantenimiento',
     ],
 ];

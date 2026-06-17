@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'forever' => 'Forever',
-    'until'   => 'Until',
+    'forever' => 'Siempre',
+    'until'   => 'Hasta',
 ];

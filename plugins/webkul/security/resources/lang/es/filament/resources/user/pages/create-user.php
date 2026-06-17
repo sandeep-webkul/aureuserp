@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'User created',
-        'body'  => 'The user has been created successfully.',
+        'title' => 'Usuario creado',
+        'body'  => 'El usuario se ha creado correctamente.',
     ],
 ];

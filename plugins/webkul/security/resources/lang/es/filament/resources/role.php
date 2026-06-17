@@ -10,8 +10,8 @@ return [
 
     'notification' => [
         'system-role-delete' => [
-            'title' => 'System Role Cannot Be Deleted',
-            'body'  => 'This is a system role and cannot be deleted.',
+            'title' => 'No se puede eliminar el rol del sistema',
+            'body'  => 'Este es un rol del sistema y no se puede eliminar.',
         ],
     ],
 ];

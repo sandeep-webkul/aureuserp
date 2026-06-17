@@ -2,63 +2,63 @@
 
 return [
     'heading' => [
-        'title' => 'Maintenance Calendar',
+        'title' => 'Calendario de mantenimiento',
     ],
 
     'config' => [
         'button-text' => [
-            'today' => 'Today',
-            'year'  => 'Year',
-            'month' => 'Month',
-            'week'  => 'Week',
-            'list'  => 'List',
+            'today' => 'Hoy',
+            'year'  => 'Año',
+            'month' => 'Mes',
+            'week'  => 'Semana',
+            'list'  => 'Lista',
         ],
     ],
 
     'header-actions' => [
         'create' => [
-            'label'         => 'New Request',
-            'modal-heading' => 'New Maintenance Request',
+            'label'         => 'Nueva solicitud',
+            'modal-heading' => 'Nueva solicitud de mantenimiento',
             'notification'  => [
                 'success' => [
-                    'title' => 'Maintenance request created',
-                    'body'  => 'The maintenance request has been created successfully.',
+                    'title' => 'Solicitud de mantenimiento creada',
+                    'body'  => 'La solicitud de mantenimiento se ha creado correctamente.',
                 ],
                 'error' => [
-                    'title' => 'Maintenance request could not be created',
-                    'body'  => 'Create a maintenance stage and team first.',
+                    'title' => 'No se pudo crear la solicitud de mantenimiento',
+                    'body'  => 'Cree primero una etapa y un equipo de mantenimiento.',
                 ],
             ],
         ],
     ],
 
     'view-action' => [
-        'label' => 'View',
+        'label' => 'Ver',
     ],
 
     'modal-actions' => [
         'edit' => [
-            'label' => 'Edit',
+            'label' => 'Editar',
         ],
     ],
 
     'form' => [
         'fields' => [
-            'subject'      => 'Subject',
-            'scheduled-at' => 'Scheduled At',
+            'subject'      => 'Asunto',
+            'scheduled-at' => 'Programado para',
         ],
     ],
 
     'infolist' => [
-        'title'   => 'Maintenance Request',
+        'title'   => 'Solicitud de mantenimiento',
         'entries' => [
-            'subject'          => 'Subject',
-            'date'             => 'Date',
-            'time'             => 'Time',
-            'technician'       => 'Technician',
-            'priority'         => 'Priority',
-            'maintenance-type' => 'Maintenance Type',
-            'stage'            => 'Stage',
+            'subject'          => 'Asunto',
+            'date'             => 'Fecha',
+            'time'             => 'Hora',
+            'technician'       => 'Técnico',
+            'priority'         => 'Prioridad',
+            'maintenance-type' => 'Tipo de mantenimiento',
+            'stage'            => 'Etapa',
         ],
     ],
 ];

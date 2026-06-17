@@ -2,54 +2,54 @@
 
 return [
     'navigation' => [
-        'title' => 'Teams',
+        'title' => 'Equipos',
     ],
 
     'form' => [
-        'name'    => 'Name',
-        'company' => 'Company',
-        'users'   => 'Team Members',
+        'name'    => 'Nombre',
+        'company' => 'Empresa',
+        'users'   => 'Miembros del equipo',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'company'    => 'Company',
-            'users'      => 'Team Members',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'company'    => 'Empresa',
+            'users'      => 'Miembros del equipo',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Team updated',
-                    'body'  => 'The team has been updated successfully.',
+                    'title' => 'Equipo actualizado',
+                    'body'  => 'El equipo se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Team restored',
-                    'body'  => 'The team has been restored successfully.',
+                    'title' => 'Equipo restaurado',
+                    'body'  => 'El equipo se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Team deleted',
-                    'body'  => 'The team has been deleted successfully.',
+                    'title' => 'Equipo eliminado',
+                    'body'  => 'El equipo se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Team force deleted',
-                        'body'  => 'The team has been force deleted successfully.',
+                        'title' => 'Equipo eliminado de forma permanente',
+                        'body'  => 'El equipo se ha eliminado de forma permanente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Team could not be force deleted',
-                        'body'  => 'The team is being used and cannot be force deleted.',
+                        'title' => 'No se pudo eliminar el equipo de forma permanente',
+                        'body'  => 'El equipo está en uso y no se puede eliminar de forma permanente.',
                     ],
                 ],
             ],
@@ -58,15 +58,15 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Teams restored',
-                    'body'  => 'The teams have been restored successfully.',
+                    'title' => 'Equipos restaurados',
+                    'body'  => 'Los equipos se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Teams deleted',
-                    'body'  => 'The teams have been deleted successfully.',
+                    'title' => 'Equipos eliminados',
+                    'body'  => 'Los equipos se han eliminado correctamente.',
                 ],
             ],
         ],

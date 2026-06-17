@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Company created',
-        'body'  => 'The company has been created successfully.',
+        'title' => 'Empresa creada',
+        'body'  => 'La empresa se ha creado correctamente.',
     ],
 ];

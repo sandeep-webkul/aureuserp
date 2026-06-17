@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Edit Currency',
+    'title' => 'Editar moneda',
 
     'notification' => [
-        'title' => 'Currency updated',
-        'body'  => 'The currency has been updated successfully.',
+        'title' => 'Moneda actualizada',
+        'body'  => 'La moneda se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Currency deleted',
-                'body'  => 'The currency has been deleted successfully.',
+                'title' => 'Moneda eliminada',
+                'body'  => 'La moneda se ha eliminado correctamente.',
             ],
         ],
     ],

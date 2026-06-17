@@ -4,91 +4,91 @@ return [
     'form' => [
         'tabs' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'sections' => [
                     'branch-information' => [
-                        'title' => 'Branch Information',
+                        'title' => 'Información de la sucursal',
 
                         'fields' => [
-                            'company-name'                => 'Company Name',
-                            'registration-number'         => 'Registration Number',
-                            'tax-id'                      => 'Tax ID',
-                            'tax-id-tooltip'              => 'The Tax ID is a unique identifier for your company.',
+                            'company-name'                => 'Nombre de la empresa',
+                            'registration-number'         => 'Número de registro',
+                            'tax-id'                      => 'NIF',
+                            'tax-id-tooltip'              => 'El NIF es un identificador único de su empresa.',
                             'color'                       => 'Color',
-                            'company-id'                  => 'Company ID',
-                            'company-id-tooltip'          => 'The Company ID is a unique identifier for your company.',
+                            'company-id'                  => 'ID de empresa',
+                            'company-id-tooltip'          => 'El ID de empresa es un identificador único de su empresa.',
                         ],
                     ],
 
                     'branding' => [
-                        'title'  => 'Branding',
+                        'title'  => 'Personalización de marca',
                         'fields' => [
-                            'branch-logo' => 'Branch Logo',
+                            'branch-logo' => 'Logotipo de la sucursal',
                         ],
                     ],
                 ],
             ],
 
             'address-information' => [
-                'title' => 'Address Information',
+                'title' => 'Información de dirección',
 
                 'sections' => [
                     'address-information' => [
-                        'title' => 'Address Information',
+                        'title' => 'Información de dirección',
 
                         'fields' => [
-                            'street1'                => 'Street 1',
-                            'street2'                => 'Street 2',
-                            'city'                   => 'City',
-                            'zip'                    => 'Zip Code',
-                            'country'                => 'Country',
-                            'country-currency-name'  => 'Currency Name',
-                            'country-phone-code'     => 'Phone Code',
-                            'country-code'           => 'Code',
-                            'country-name'           => 'Country Name',
-                            'country-state-required' => 'State Required',
-                            'country-zip-required'   => 'Zip Required',
-                            'country-create'         => 'Create Country',
-                            'state'                  => 'State',
-                            'state-name'             => 'State Name',
-                            'state-code'             => 'State Code',
-                            'zip-code'               => 'Zip Code',
-                            'state-create'           => 'Create State',
+                            'street1'                => 'Calle 1',
+                            'street2'                => 'Calle 2',
+                            'city'                   => 'Ciudad',
+                            'zip'                    => 'Código postal',
+                            'country'                => 'País',
+                            'country-currency-name'  => 'Nombre de la moneda',
+                            'country-phone-code'     => 'Código telefónico',
+                            'country-code'           => 'Código',
+                            'country-name'           => 'Nombre del país',
+                            'country-state-required' => 'Provincia obligatoria',
+                            'country-zip-required'   => 'Código postal obligatorio',
+                            'country-create'         => 'Crear país',
+                            'state'                  => 'Provincia',
+                            'state-name'             => 'Nombre de la provincia',
+                            'state-code'             => 'Código de la provincia',
+                            'zip-code'               => 'Código postal',
+                            'state-create'           => 'Crear provincia',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Additional Information',
+                        'title' => 'Información adicional',
 
                         'fields' => [
-                            'default-currency'        => 'Default Currency',
-                            'currency-name'           => 'Currency Name',
-                            'currency-full-name'      => 'Currency Full Name',
-                            'currency-symbol'         => 'Currency Symbol',
-                            'currency-iso-numeric'    => 'Currency ISO Numeric',
-                            'currency-decimal-places' => 'Currency Decimal Places',
-                            'currency-rounding'       => 'Currency Rounding',
-                            'currency-status'         => 'Currency Status',
-                            'currency-create'         => 'Create Currency',
-                            'company-foundation-date' => 'Company Foundation Date',
-                            'status'                  => 'Status',
+                            'default-currency'        => 'Moneda predeterminada',
+                            'currency-name'           => 'Nombre de la moneda',
+                            'currency-full-name'      => 'Nombre completo de la moneda',
+                            'currency-symbol'         => 'Símbolo de la moneda',
+                            'currency-iso-numeric'    => 'ISO numérico de la moneda',
+                            'currency-decimal-places' => 'Decimales de la moneda',
+                            'currency-rounding'       => 'Redondeo de la moneda',
+                            'currency-status'         => 'Estado de la moneda',
+                            'currency-create'         => 'Crear moneda',
+                            'company-foundation-date' => 'Fecha de fundación de la empresa',
+                            'status'                  => 'Estado',
                         ],
                     ],
                 ],
             ],
 
             'contact-information' => [
-                'title' => 'Contact Information',
+                'title' => 'Información de contacto',
 
                 'sections' => [
                     'contact-information' => [
-                        'title' => 'Contact Information',
+                        'title' => 'Información de contacto',
 
                         'fields' => [
-                            'email-address' => 'Email Address',
-                            'phone-number'  => 'Phone Number',
-                            'mobile-number' => 'Phone Number',
+                            'email-address' => 'Correo electrónico',
+                            'phone-number'  => 'Número de teléfono',
+                            'mobile-number' => 'Número de teléfono',
                         ],
                     ],
                 ],
@@ -98,41 +98,41 @@ return [
 
     'table' => [
         'columns' => [
-            'logo'                 => 'Logo',
-            'company-name'         => 'Branch Name',
-            'branches'             => 'Branches',
-            'email'                => 'Email',
-            'city'                 => 'City',
-            'country'              => 'Country',
-            'currency'             => 'Currency',
-            'status'               => 'Status',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'logo'                 => 'Logotipo',
+            'company-name'         => 'Nombre de la sucursal',
+            'branches'             => 'Sucursales',
+            'email'                => 'Correo electrónico',
+            'city'                 => 'Ciudad',
+            'country'              => 'País',
+            'currency'             => 'Moneda',
+            'status'               => 'Estado',
+            'created-at'           => 'Creado el',
+            'updated-at'           => 'Actualizado el',
         ],
 
         'groups' => [
-            'company-name' => 'Branch Name',
-            'city'         => 'City',
-            'country'      => 'Country',
-            'state'        => 'State',
-            'email'        => 'Email',
-            'phone'        => 'Phone',
-            'currency'     => 'Currency',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'company-name' => 'Nombre de la sucursal',
+            'city'         => 'Ciudad',
+            'country'      => 'País',
+            'state'        => 'Provincia',
+            'email'        => 'Correo electrónico',
+            'phone'        => 'Teléfono',
+            'currency'     => 'Moneda',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'filters' => [
-            'trashed' => 'Trashed',
-            'status'  => 'Status',
-            'country' => 'Country',
+            'trashed' => 'Eliminados',
+            'status'  => 'Estado',
+            'country' => 'País',
         ],
 
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Branch created',
-                    'body'  => 'The branch has been created successfully.',
+                    'title' => 'Sucursal creada',
+                    'body'  => 'La sucursal se ha creado correctamente.',
                 ],
             ],
         ],
@@ -140,22 +140,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Branch updated',
-                    'body'  => 'The branch has been updated successfully.',
+                    'title' => 'Sucursal actualizada',
+                    'body'  => 'La sucursal se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Branch deleted',
-                    'body'  => 'The branch has been deleted successfully.',
+                    'title' => 'Sucursal eliminada',
+                    'body'  => 'La sucursal se ha eliminado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Branch restored',
-                    'body'  => 'The branch has been restored successfully.',
+                    'title' => 'Sucursal restaurada',
+                    'body'  => 'La sucursal se ha restaurado correctamente.',
                 ],
             ],
         ],
@@ -163,22 +163,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Branches restored',
-                    'body'  => 'The branches has been restored successfully.',
+                    'title' => 'Sucursales restauradas',
+                    'body'  => 'Las sucursales se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Branches deleted',
-                    'body'  => 'The branches has been deleted successfully.',
+                    'title' => 'Sucursales eliminadas',
+                    'body'  => 'Las sucursales se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Branches force deleted',
-                    'body'  => 'The branches has been force deleted successfully.',
+                    'title' => 'Sucursales eliminadas permanentemente',
+                    'body'  => 'Las sucursales se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -187,88 +187,88 @@ return [
     'infolist' => [
         'tabs' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'sections' => [
                     'branch-information' => [
-                        'title' => 'Branch Information',
+                        'title' => 'Información de la sucursal',
 
                         'entries' => [
-                            'company-name'                => 'Company Name',
-                            'registration-number'         => 'Registration Number',
-                            'registration-number-tooltip' => 'The Tax ID is a unique identifier for your company.',
+                            'company-name'                => 'Nombre de la empresa',
+                            'registration-number'         => 'Número de registro',
+                            'registration-number-tooltip' => 'El NIF es un identificador único de su empresa.',
                             'color'                       => 'Color',
                         ],
                     ],
 
                     'branding' => [
-                        'title'   => 'Branding',
+                        'title'   => 'Personalización de marca',
                         'entries' => [
-                            'branch-logo' => 'Branch Logo',
+                            'branch-logo' => 'Logotipo de la sucursal',
                         ],
                     ],
                 ],
             ],
 
             'address-information' => [
-                'title' => 'Address Information',
+                'title' => 'Información de dirección',
 
                 'sections' => [
                     'address-information' => [
-                        'title' => 'Address Information',
+                        'title' => 'Información de dirección',
 
                         'entries' => [
-                            'street1'                => 'Street 1',
-                            'street2'                => 'Street 2',
-                            'city'                   => 'City',
-                            'zip'                    => 'Zip Code',
-                            'country'                => 'Country',
-                            'country-currency-name'  => 'Currency Name',
-                            'country-phone-code'     => 'Phone Code',
-                            'country-code'           => 'Code',
-                            'country-name'           => 'Country Name',
-                            'country-state-required' => 'State Required',
-                            'country-zip-required'   => 'Zip Required',
-                            'country-create'         => 'Create Country',
-                            'state'                  => 'State',
-                            'state-name'             => 'State Name',
-                            'state-code'             => 'State Code',
-                            'zip-code'               => 'Zip Code',
-                            'state-create'           => 'Create State',
+                            'street1'                => 'Calle 1',
+                            'street2'                => 'Calle 2',
+                            'city'                   => 'Ciudad',
+                            'zip'                    => 'Código postal',
+                            'country'                => 'País',
+                            'country-currency-name'  => 'Nombre de la moneda',
+                            'country-phone-code'     => 'Código telefónico',
+                            'country-code'           => 'Código',
+                            'country-name'           => 'Nombre del país',
+                            'country-state-required' => 'Provincia obligatoria',
+                            'country-zip-required'   => 'Código postal obligatorio',
+                            'country-create'         => 'Crear país',
+                            'state'                  => 'Provincia',
+                            'state-name'             => 'Nombre de la provincia',
+                            'state-code'             => 'Código de la provincia',
+                            'zip-code'               => 'Código postal',
+                            'state-create'           => 'Crear provincia',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Additional Information',
+                        'title' => 'Información adicional',
 
                         'entries' => [
-                            'default-currency'        => 'Default Currency',
-                            'currency-name'           => 'Currency Name',
-                            'currency-full-name'      => 'Currency Full Name',
-                            'currency-symbol'         => 'Currency Symbol',
-                            'currency-iso-numeric'    => 'Currency ISO Numeric',
-                            'currency-decimal-places' => 'Currency Decimal Places',
-                            'currency-rounding'       => 'Currency Rounding',
-                            'currency-status'         => 'Currency Status',
-                            'currency-create'         => 'Create Currency',
-                            'company-foundation-date' => 'Company Foundation Date',
-                            'status'                  => 'Status',
+                            'default-currency'        => 'Moneda predeterminada',
+                            'currency-name'           => 'Nombre de la moneda',
+                            'currency-full-name'      => 'Nombre completo de la moneda',
+                            'currency-symbol'         => 'Símbolo de la moneda',
+                            'currency-iso-numeric'    => 'ISO numérico de la moneda',
+                            'currency-decimal-places' => 'Decimales de la moneda',
+                            'currency-rounding'       => 'Redondeo de la moneda',
+                            'currency-status'         => 'Estado de la moneda',
+                            'currency-create'         => 'Crear moneda',
+                            'company-foundation-date' => 'Fecha de fundación de la empresa',
+                            'status'                  => 'Estado',
                         ],
                     ],
                 ],
             ],
 
             'contact-information' => [
-                'title' => 'Contact Information',
+                'title' => 'Información de contacto',
 
                 'sections' => [
                     'contact-information' => [
-                        'title' => 'Contact Information',
+                        'title' => 'Información de contacto',
 
                         'entries' => [
-                            'email-address' => 'Email Address',
-                            'phone-number'  => 'Phone Number',
-                            'mobile-number' => 'Phone Number',
+                            'email-address' => 'Correo electrónico',
+                            'phone-number'  => 'Número de teléfono',
+                            'mobile-number' => 'Número de teléfono',
                         ],
                     ],
                 ],

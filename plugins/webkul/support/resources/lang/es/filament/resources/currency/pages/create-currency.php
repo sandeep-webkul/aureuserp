@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Currency',
+    'title' => 'Crear moneda',
 
     'notification' => [
-        'title' => 'Currency created',
-        'body'  => 'The currency has been created successfully.',
+        'title' => 'Moneda creada',
+        'body'  => 'La moneda se ha creado correctamente.',
     ],
 ];

@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'suggest' => 'Suggest Next Activity',
-    'trigger' => 'Trigger Next Activity',
+    'suggest' => 'Sugerir actividad siguiente',
+    'trigger' => 'Activar actividad siguiente',
 ];

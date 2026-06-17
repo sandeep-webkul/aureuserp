@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'previous-activity' => 'After Previous Activity Deadline',
-    'current-date'      => 'After Complete Date',
+    'previous-activity' => 'Después de la fecha límite de la actividad anterior',
+    'current-date'      => 'Después de la fecha de finalización',
 ];
