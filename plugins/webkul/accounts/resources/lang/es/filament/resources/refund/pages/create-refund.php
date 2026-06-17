@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Refund created',
-        'body'  => 'The refund has been created successfully.',
+        'title' => 'Reembolso creado',
+        'body'  => 'El reembolso se ha creado correctamente.',
     ],
 ];

@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'title'       => 'Payment',
-    'model-label' => 'Payment',
+    'title'       => 'Pago',
+    'model-label' => 'Pago',
 
     'navigation' => [
-        'title' => 'Payments',
-        'group' => 'Invoices',
+        'title' => 'Pagos',
+        'group' => 'Facturas',
     ],
 
     'record-sub-navigation' => [
-        'journal-entry' => 'Journal Entry',
+        'journal-entry' => 'Asiento contable',
     ],
 ];

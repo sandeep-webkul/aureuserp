@@ -3,29 +3,29 @@
 return [
     'form' => [
         'fields' => [
-            'tax-source'      => 'Tax Source',
-            'tax-destination' => 'Tax Destination',
+            'tax-source'      => 'Impuesto de origen',
+            'tax-destination' => 'Impuesto de destino',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'tax-source'      => 'Tax Source',
-            'tax-destination' => 'Tax Destination',
+            'tax-source'      => 'Impuesto de origen',
+            'tax-destination' => 'Impuesto de destino',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Payment Due Term updated',
-                    'body'  => 'The payment due term has been updated successfully.',
+                    'title' => 'Condición de pago actualizada',
+                    'body'  => 'La condición de pago se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Due Term deleted',
-                    'body'  => 'The payment due term has been deleted successfully.',
+                    'title' => 'Condición de pago eliminada',
+                    'body'  => 'La condición de pago se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -33,8 +33,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Payment Due Term created',
-                    'body'  => 'The payment due term has been created successfully.',
+                    'title' => 'Condición de pago creada',
+                    'body'  => 'La condición de pago se ha creado correctamente.',
                 ],
             ],
         ],
@@ -42,8 +42,8 @@ return [
 
     'infolist' => [
         'entries' => [
-            'tax-source'      => 'Tax Source',
-            'tax-destination' => 'Tax Destination',
+            'tax-source'      => 'Impuesto de origen',
+            'tax-destination' => 'Impuesto de destino',
         ],
     ],
 ];

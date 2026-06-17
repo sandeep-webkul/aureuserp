@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'create-bank-account' => 'Create Bank Account',
+    'create-bank-account' => 'Crear cuenta bancaria',
 ];

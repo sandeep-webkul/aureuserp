@@ -1,23 +1,23 @@
 <?php
 
 return [
-    'title' => 'Pay',
+    'title' => 'Pagar',
 
     'form' => [
         'fields' => [
-            'journal'              => 'Journal',
-            'amount'               => 'Amount',
-            'currency'             => 'Currency',
-            'payment-method-line'  => 'Payment Method Line',
-            'payment-date'         => 'Payment Date',
-            'partner-bank-account' => 'Partner Bank Account',
-            'communication'        => 'Memo',
+            'journal'              => 'Diario',
+            'amount'               => 'Importe',
+            'currency'             => 'Moneda',
+            'payment-method-line'  => 'Línea de método de pago',
+            'payment-date'         => 'Fecha de pago',
+            'partner-bank-account' => 'Cuenta bancaria del contacto',
+            'communication'        => 'Nota',
         ],
     ],
 
     'notifications' => [
         'payment-failed' => [
-            'title' => 'Payment Failed',
+            'title' => 'Pago fallido',
         ],
     ],
 ];

@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Overview',
-        'group' => 'Accounting',
+        'title' => 'Resumen',
+        'group' => 'Contabilidad',
     ],
 ];

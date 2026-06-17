@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Cash Rounding',
+    'model-label' => 'Redondeo de efectivo',
 
     'navigation' => [
-        'title' => 'Cash Roundings',
-        'group' => 'Accounting',
+        'title' => 'Redondeos de efectivo',
+        'group' => 'Contabilidad',
     ],
 ];

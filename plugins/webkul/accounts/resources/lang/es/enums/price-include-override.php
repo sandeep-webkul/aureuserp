@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'included' => 'Included',
-    'excluded' => 'Excluded',
+    'included' => 'Incluido',
+    'excluded' => 'Excluido',
 ];

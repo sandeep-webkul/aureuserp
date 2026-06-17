@@ -4,28 +4,28 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'payment-term'         => 'Payment Term',
-                'early-discount'       => 'Early Discount',
-                'discount-days-prefix' => 'if paid within',
-                'discount-days-suffix' => 'days',
-                'reduced-tax'          => 'Reduced tax',
-                'note'                 => 'Note',
-                'status'               => 'Status',
+                'payment-term'         => 'Condición de pago',
+                'early-discount'       => 'Descuento por pronto pago',
+                'discount-days-prefix' => 'si se paga dentro de',
+                'discount-days-suffix' => 'días',
+                'reduced-tax'          => 'Impuesto reducido',
+                'note'                 => 'Nota',
+                'status'               => 'Estado',
             ],
         ],
 
         'tabs' => [
             'due-terms' => [
-                'title' => 'Due Terms',
+                'title' => 'Plazos de vencimiento',
 
                 'repeater' => [
                     'due-terms' => [
                         'fields' => [
-                            'value'                  => 'Value',
-                            'due'                    => 'Due',
-                            'delay-type'             => 'Delay Type',
-                            'days-on-the-next-month' => 'Days on the next month',
-                            'days'                   => 'Days',
+                            'value'                  => 'Valor',
+                            'due'                    => 'Vencimiento',
+                            'delay-type'             => 'Tipo de retraso',
+                            'days-on-the-next-month' => 'Días del mes siguiente',
+                            'days'                   => 'Días',
                         ],
                     ],
                 ],
@@ -35,47 +35,47 @@ return [
 
     'table' => [
         'columns' => [
-            'payment-term' => 'Payment Term',
-            'company'      => 'Company',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'payment-term' => 'Condición de pago',
+            'company'      => 'Empresa',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'groups' => [
-            'company-name'        => 'Company Name',
-            'discount-days'       => 'Discount Days',
-            'early-pay-discount'  => 'Early Pay Discount',
-            'payment-term'        => 'Payment Term',
-            'display-on-invoice'  => 'Display on Invoice',
-            'early-discount'      => 'Early Discount',
-            'discount-percentage' => 'Discount Percentage',
+            'company-name'        => 'Nombre de la empresa',
+            'discount-days'       => 'Días de descuento',
+            'early-pay-discount'  => 'Descuento por pronto pago',
+            'payment-term'        => 'Condición de pago',
+            'display-on-invoice'  => 'Mostrar en la factura',
+            'early-discount'      => 'Descuento por pronto pago',
+            'discount-percentage' => 'Porcentaje de descuento',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Payment Term restored',
-                    'body'  => 'The payment term has been restored successfully.',
+                    'title' => 'Condición de pago restaurada',
+                    'body'  => 'La condición de pago se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'Condición de pago eliminada',
+                    'body'  => 'La condición de pago se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Payment Term force deleted',
-                        'body'  => 'The payment term has been force deleted successfully.',
+                        'title' => 'Condición de pago eliminada permanentemente',
+                        'body'  => 'La condición de pago se ha eliminado permanentemente correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Payment Term force deletion failed',
-                        'body'  => 'The payment term could not be force deleted because it is associated journal entries.',
+                        'title' => 'Error al eliminar permanentemente la condición de pago',
+                        'body'  => 'La condición de pago no se pudo eliminar permanentemente porque tiene asientos contables asociados.',
                     ],
                 ],
             ],
@@ -84,28 +84,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Payment Terms restored',
-                    'body'  => 'The payment Terms has been restored successfully.',
+                    'title' => 'Condiciones de pago restauradas',
+                    'body'  => 'Las condiciones de pago se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Terms deleted',
-                    'body'  => 'The payment Terms has been deleted successfully.',
+                    'title' => 'Condiciones de pago eliminadas',
+                    'body'  => 'Las condiciones de pago se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Payment Terms force deleted',
-                        'body'  => 'The payment Terms has been force deleted successfully.',
+                        'title' => 'Condiciones de pago eliminadas permanentemente',
+                        'body'  => 'Las condiciones de pago se han eliminado permanentemente correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Payment Terms force deletion failed',
-                        'body'  => 'The payment terms could not be force deleted because they have associated journal entries.',
+                        'title' => 'Error al eliminar permanentemente las condiciones de pago',
+                        'body'  => 'Las condiciones de pago no se pudieron eliminar permanentemente porque tienen asientos contables asociados.',
                     ],
                 ],
             ],
@@ -115,29 +115,29 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'payment-term'         => 'Payment Term',
-                'early-discount'       => 'Early Discount',
-                'discount-percentage'  => 'Discount Percentage',
-                'discount-days-prefix' => 'if paid within',
-                'discount-days-suffix' => 'days',
-                'reduced-tax'          => 'Reduced tax',
-                'note'                 => 'Note',
-                'status'               => 'Status',
+                'payment-term'         => 'Condición de pago',
+                'early-discount'       => 'Descuento por pronto pago',
+                'discount-percentage'  => 'Porcentaje de descuento',
+                'discount-days-prefix' => 'si se paga dentro de',
+                'discount-days-suffix' => 'días',
+                'reduced-tax'          => 'Impuesto reducido',
+                'note'                 => 'Nota',
+                'status'               => 'Estado',
             ],
         ],
 
         'tabs' => [
             'due-terms' => [
-                'title' => 'Due Terms',
+                'title' => 'Plazos de vencimiento',
 
                 'repeater' => [
                     'due-terms' => [
                         'entries' => [
-                            'value'                  => 'Value',
-                            'due'                    => 'Due',
-                            'delay-type'             => 'Delay Type',
-                            'days-on-the-next-month' => 'Days on the next month',
-                            'days'                   => 'Days',
+                            'value'                  => 'Valor',
+                            'due'                    => 'Vencimiento',
+                            'delay-type'             => 'Tipo de retraso',
+                            'days-on-the-next-month' => 'Días del mes siguiente',
+                            'days'                   => 'Días',
                         ],
                     ],
                 ],

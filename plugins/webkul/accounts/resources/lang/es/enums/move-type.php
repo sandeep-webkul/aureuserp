@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'entry'       => 'Journal Entry',
-    'out-invoice' => 'Customer Invoice',
-    'out-refund'  => 'Customer Credit Note',
-    'in-invoice'  => 'Vendor Bill',
-    'in-refund'   => 'Vendor Credit Note',
-    'out-receipt' => 'Sales Receipt',
-    'in-receipt'  => 'Purchase Receipt',
+    'entry'       => 'Asiento contable',
+    'out-invoice' => 'Factura de cliente',
+    'out-refund'  => 'Nota de crédito de cliente',
+    'in-invoice'  => 'Factura de proveedor',
+    'in-refund'   => 'Nota de crédito de proveedor',
+    'out-receipt' => 'Recibo de venta',
+    'in-receipt'  => 'Recibo de compra',
 ];

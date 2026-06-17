@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title'          => 'Refund',
+    'title'          => 'Reembolso',
 ];

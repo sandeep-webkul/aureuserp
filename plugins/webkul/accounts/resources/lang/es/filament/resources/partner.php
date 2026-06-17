@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Partners',
+    'title' => 'Contactos',
 
     'navigation' => [
-        'title' => 'Partners',
+        'title' => 'Contactos',
     ],
 
     'form' => [
@@ -12,72 +12,72 @@ return [
             'sales-purchases' => [
                 'fieldsets' => [
                     'sales' => [
-                        'title' => 'Sales',
+                        'title' => 'Ventas',
 
                         'fields' => [
-                            'sales-person'   => 'Sales Person',
-                            'payment-terms'  => 'Payment Terms',
-                            'payment-method' => 'Payment Method',
+                            'sales-person'   => 'Vendedor',
+                            'payment-terms'  => 'Condiciones de pago',
+                            'payment-method' => 'Método de pago',
                         ],
                     ],
 
                     'purchase' => [
-                        'title' => 'Purchase',
+                        'title' => 'Compra',
 
                         'fields' => [
-                            'payment-terms'  => 'Payment Terms',
-                            'payment-method' => 'Payment Method',
+                            'payment-terms'  => 'Condiciones de pago',
+                            'payment-method' => 'Método de pago',
                         ],
                     ],
 
                     'fiscal-information' => [
-                        'title' => 'Fiscal Information',
+                        'title' => 'Información fiscal',
 
                         'fields' => [
-                            'fiscal-position'    => 'Fiscal Position',
+                            'fiscal-position'    => 'Posición fiscal',
                         ],
                     ],
                 ],
             ],
 
             'invoicing' => [
-                'title'  => 'Invoicing',
+                'title'  => 'Facturación',
 
                 'fieldsets' => [
                     'customer-invoices' => [
-                        'title' => 'Customer Invoices',
+                        'title' => 'Facturas de cliente',
 
                         'fields' => [
-                            'invoice-sending-method'   => 'Invoice Sending Method',
-                            'invoice-edi-format-store' => 'eInvoice Format',
-                            'peppol-eas'               => 'Peppol Address',
+                            'invoice-sending-method'   => 'Método de envío de facturas',
+                            'invoice-edi-format-store' => 'Formato de factura electrónica',
+                            'peppol-eas'               => 'Dirección Peppol',
                             'endpoint'                 => 'Endpoint',
                         ],
                     ],
 
                     'accounting-entries' => [
-                        'title' => 'Accounting Entries',
+                        'title' => 'Asientos contables',
 
                         'fields' => [
-                            'account-receivable' => 'Account Receivable',
-                            'account-payable'    => 'Account Payable',
+                            'account-receivable' => 'Cuenta por cobrar',
+                            'account-payable'    => 'Cuenta por pagar',
                         ],
                     ],
 
                     'automation' => [
-                        'title' => 'Automation',
+                        'title' => 'Automatización',
 
                         'fields' => [
-                            'auto-post-bills'                => 'Auto Post Bills',
-                            'ignore-abnormal-invoice-amount' => 'Ignore Abnormal Invoice Amount',
-                            'ignore-abnormal-invoice-date'   => 'Ignore Abnormal Invoice Date',
+                            'auto-post-bills'                => 'Contabilizar facturas de proveedor automáticamente',
+                            'ignore-abnormal-invoice-amount' => 'Ignorar importe de factura anómalo',
+                            'ignore-abnormal-invoice-date'   => 'Ignorar fecha de factura anómala',
                         ],
                     ],
                 ],
             ],
 
             'internal-notes' => [
-                'title' => 'Internal Notes',
+                'title' => 'Notas internas',
             ],
         ],
     ],
@@ -88,72 +88,72 @@ return [
             'sales-purchases' => [
                 'fieldsets' => [
                     'sales' => [
-                        'title' => 'Sales',
+                        'title' => 'Ventas',
 
                         'entries' => [
-                            'sales-person'   => 'Sales Person',
-                            'payment-terms'  => 'Payment Terms',
-                            'payment-method' => 'Payment Method',
+                            'sales-person'   => 'Vendedor',
+                            'payment-terms'  => 'Condiciones de pago',
+                            'payment-method' => 'Método de pago',
                         ],
                     ],
 
                     'purchase' => [
-                        'title' => 'Purchase',
+                        'title' => 'Compra',
 
                         'entries' => [
-                            'payment-terms'  => 'Payment Terms',
-                            'payment-method' => 'Payment Method',
+                            'payment-terms'  => 'Condiciones de pago',
+                            'payment-method' => 'Método de pago',
                         ],
                     ],
 
                     'fiscal-information' => [
-                        'title' => 'Fiscal Information',
+                        'title' => 'Información fiscal',
 
                         'entries' => [
-                            'fiscal-position'    => 'Fiscal Position',
+                            'fiscal-position'    => 'Posición fiscal',
                         ],
                     ],
                 ],
             ],
 
             'invoicing' => [
-                'title'  => 'Invoicing',
+                'title'  => 'Facturación',
 
                 'fieldsets' => [
                     'customer-invoices' => [
-                        'title' => 'Customer Invoices',
+                        'title' => 'Facturas de cliente',
 
                         'entries' => [
-                            'invoice-sending-method'   => 'Invoice Sending Method',
-                            'invoice-edi-format-store' => 'eInvoice Format',
-                            'peppol-eas'               => 'Peppol Address',
+                            'invoice-sending-method'   => 'Método de envío de facturas',
+                            'invoice-edi-format-store' => 'Formato de factura electrónica',
+                            'peppol-eas'               => 'Dirección Peppol',
                             'endpoint'                 => 'Endpoint',
                         ],
                     ],
 
                     'accounting-entries' => [
-                        'title' => 'Accounting Entries',
+                        'title' => 'Asientos contables',
 
                         'entries' => [
-                            'account-receivable' => 'Account Receivable',
-                            'account-payable'    => 'Account Payable',
+                            'account-receivable' => 'Cuenta por cobrar',
+                            'account-payable'    => 'Cuenta por pagar',
                         ],
                     ],
 
                     'automation' => [
-                        'title' => 'Automation',
+                        'title' => 'Automatización',
 
                         'entries' => [
-                            'auto-post-bills'                => 'Auto Post Bills',
-                            'ignore-abnormal-invoice-amount' => 'Ignore Abnormal Invoice Amount',
-                            'ignore-abnormal-invoice-date'   => 'Ignore Abnormal Invoice Date',
+                            'auto-post-bills'                => 'Contabilizar facturas de proveedor automáticamente',
+                            'ignore-abnormal-invoice-amount' => 'Ignorar importe de factura anómalo',
+                            'ignore-abnormal-invoice-date'   => 'Ignorar fecha de factura anómala',
                         ],
                     ],
                 ],
             ],
 
             'internal-notes' => [
-                'title' => 'Internal Notes',
+                'title' => 'Notas internas',
             ],
         ],
     ],

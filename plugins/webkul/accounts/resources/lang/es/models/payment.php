@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title'          => 'Payment',
+    'title'          => 'Pago',
 
     'log-attributes' => [
-        'date'              => 'Date',
-        'payment-type'      => 'Payment Type',
-        'partner-type'      => 'Partner Type',
-        'memo'              => 'Memo',
-        'payment-reference' => 'Payment Reference',
-        'amount'            => 'Amount',
-        'partner'           => 'Partner',
-        'partner-bank'      => 'Partner Bank',
-        'payment-method'    => 'Payment Method',
-        'currency'          => 'Currency',
+        'date'              => 'Fecha',
+        'payment-type'      => 'Tipo de pago',
+        'partner-type'      => 'Tipo de contacto',
+        'memo'              => 'Memorándum',
+        'payment-reference' => 'Referencia de pago',
+        'amount'            => 'Importe',
+        'partner'           => 'Contacto',
+        'partner-bank'      => 'Banco del contacto',
+        'payment-method'    => 'Método de pago',
+        'currency'          => 'Moneda',
     ],
 ];

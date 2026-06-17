@@ -3,42 +3,42 @@
 return [
     'form' => [
         'fields' => [
-            'code' => 'Code',
-            'name' => 'Name',
+            'code' => 'Código',
+            'name' => 'Nombre',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'code'       => 'Code',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
+            'code'       => 'Código',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
         ],
 
         'groups' => [
-            'code' => 'Code',
-            'name' => 'Name',
+            'code' => 'Código',
+            'name' => 'Nombre',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Incoterm updated',
-                    'body'  => 'The incoterm has been updated successfully.',
+                    'title' => 'Incoterm actualizado',
+                    'body'  => 'El incoterm se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterm deleted',
-                    'body'  => 'The incoterm has been deleted successfully.',
+                    'title' => 'Incoterm eliminado',
+                    'body'  => 'El incoterm se ha eliminado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Incoterm restored',
-                    'body'  => 'The incoterm has been restored successfully.',
+                    'title' => 'Incoterm restaurado',
+                    'body'  => 'El incoterm se ha restaurado correctamente.',
                 ],
             ],
         ],
@@ -46,22 +46,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Incoterms restored',
-                    'body'  => 'The incoterms has been restored successfully.',
+                    'title' => 'Incoterms restaurados',
+                    'body'  => 'Los incoterms se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterms deleted',
-                    'body'  => 'The incoterms has been deleted successfully.',
+                    'title' => 'Incoterms eliminados',
+                    'body'  => 'Los incoterms se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Incoterms force deleted',
-                    'body'  => 'The incoterms has been force deleted successfully.',
+                    'title' => 'Incoterms eliminados permanentemente',
+                    'body'  => 'Los incoterms se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -69,8 +69,8 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
-            'code' => 'Code',
+            'name' => 'Nombre',
+            'code' => 'Código',
         ],
     ],
 ];

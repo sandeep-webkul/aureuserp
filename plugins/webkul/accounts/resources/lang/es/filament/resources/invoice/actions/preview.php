@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Preview',
+    'title' => 'Vista previa',
 
     'modal' => [
-        'title' => 'Preview Invoice',
+        'title' => 'Vista previa de la factura',
 
         'action' => [
             'close' => [
-                'title' => 'Close',
+                'title' => 'Cerrar',
             ],
 
             'print' => [
-                'title' => 'Print',
+                'title' => 'Imprimir',
             ],
         ],
     ],

@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Tax',
+    'model-label' => 'Impuesto',
 
     'navigation' => [
-        'title' => 'Taxes',
-        'group' => 'Accounting',
+        'title' => 'Impuestos',
+        'group' => 'Contabilidad',
     ],
 ];

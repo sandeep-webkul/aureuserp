@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title' => 'Reset To Draft',
+    'title' => 'Restablecer a borrador',
 
     'validation' => [
         'notification' => [
             'error' => [
                 'invalid-state' => [
-                    'title' => 'Journal Entry State Invalid',
-                    'body'  => 'Only posted or cancelled journal entries can be reset to draft.',
+                    'title' => 'Estado del asiento contable no válido',
+                    'body'  => 'Solo los asientos contables contabilizados o cancelados pueden restablecerse a borrador.',
                 ],
             ],
         ],

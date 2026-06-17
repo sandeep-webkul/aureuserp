@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'next'        => 'Next',
-    'overdue'     => 'Overdue',
-    'before-date' => 'Before Date',
-    'full'        => 'Full',
+    'next'        => 'Siguiente',
+    'overdue'     => 'Vencido',
+    'before-date' => 'Antes de la fecha',
+    'full'        => 'Completo',
 ];

@@ -2,21 +2,21 @@
 
 return [
     'notification' => [
-        'title' => 'Invoice updated',
-        'body'  => 'The invoice has been updated successfully.',
+        'title' => 'Factura actualizada',
+        'body'  => 'La factura se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Invoice deleted',
-                'body'  => 'The invoice has been deleted successfully.',
+                'title' => 'Factura eliminada',
+                'body'  => 'La factura se ha eliminado correctamente.',
             ],
         ],
 
         'reverse' => [
-            'label'         => 'Credit Note',
-            'modal-heading' => 'Create Credit Note',
+            'label'         => 'Nota de crédito',
+            'modal-heading' => 'Crear nota de crédito',
         ],
     ],
 ];

@@ -2,95 +2,95 @@
 
 return [
     'navigation' => [
-        'title' => 'Bank Accounts',
-        'group' => 'Banks',
+        'title' => 'Cuentas bancarias',
+        'group' => 'Bancos',
     ],
 
     'form' => [
-        'account-number'     => 'Account Number',
+        'account-number'     => 'Número de cuenta',
         'bank'               => [
-            'title'    => 'Bank',
+            'title'    => 'Banco',
             'sections' => [
                 'general' => [
                     'title' => 'General',
 
                     'fields' => [
-                        'name'  => 'Name',
-                        'code'  => 'Bank Identifier Code',
-                        'email' => 'Email',
-                        'phone' => 'Phone',
+                        'name'  => 'Nombre',
+                        'code'  => 'Código de identificación bancaria',
+                        'email' => 'Correo electrónico',
+                        'phone' => 'Teléfono',
                     ],
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'Dirección',
 
                     'fields' => [
-                        'address' => 'Address',
-                        'city'    => 'City',
-                        'street1' => 'Street 1',
-                        'street2' => 'Street 2',
-                        'state'   => 'State',
-                        'zip'     => 'Zip',
-                        'country' => 'Country',
+                        'address' => 'Dirección',
+                        'city'    => 'Ciudad',
+                        'street1' => 'Calle 1',
+                        'street2' => 'Calle 2',
+                        'state'   => 'Provincia',
+                        'zip'     => 'Código postal',
+                        'country' => 'País',
                     ],
                 ],
             ],
         ],
 
-        'account-holder'     => 'Account Holder',
+        'account-holder'     => 'Titular de la cuenta',
     ],
 
     'table' => [
         'columns' => [
-            'account-number' => 'Account Number',
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'send-money'     => 'Can Send Money',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
-            'deleted-at'     => 'Deleted At',
+            'account-number' => 'Número de cuenta',
+            'bank'           => 'Banco',
+            'account-holder' => 'Titular de la cuenta',
+            'send-money'     => 'Puede enviar dinero',
+            'created-at'     => 'Creado el',
+            'updated-at'     => 'Actualizado el',
+            'deleted-at'     => 'Eliminado el',
         ],
 
         'filters' => [
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'creator'        => 'Creator',
-            'can-send-money' => 'Can Send Money',
+            'bank'           => 'Banco',
+            'account-holder' => 'Titular de la cuenta',
+            'creator'        => 'Creador',
+            'can-send-money' => 'Puede enviar dinero',
         ],
 
         'groups' => [
-            'bank'               => 'Bank',
-            'can-send-money'     => 'Can Send Money',
-            'created-at'         => 'Created At',
+            'bank'               => 'Banco',
+            'can-send-money'     => 'Puede enviar dinero',
+            'created-at'         => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Bank account updated',
-                    'body'  => 'The bank account has been updated successfully.',
+                    'title' => 'Cuenta bancaria actualizada',
+                    'body'  => 'La cuenta bancaria se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank account restored',
-                    'body'  => 'The bank account has been restored successfully.',
+                    'title' => 'Cuenta bancaria restaurada',
+                    'body'  => 'La cuenta bancaria se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank account deleted',
-                    'body'  => 'The bank account has been deleted successfully.',
+                    'title' => 'Cuenta bancaria eliminada',
+                    'body'  => 'La cuenta bancaria se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank account force deleted',
-                    'body'  => 'The bank account has been force deleted successfully.',
+                    'title' => 'Cuenta bancaria eliminada permanentemente',
+                    'body'  => 'La cuenta bancaria se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -98,22 +98,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank accounts restored',
-                    'body'  => 'The bank accounts has been restored successfully.',
+                    'title' => 'Cuentas bancarias restauradas',
+                    'body'  => 'Las cuentas bancarias se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts deleted',
-                    'body'  => 'The bank accounts has been deleted successfully.',
+                    'title' => 'Cuentas bancarias eliminadas',
+                    'body'  => 'Las cuentas bancarias se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts force deleted',
-                    'body'  => 'The bank accounts has been force deleted successfully.',
+                    'title' => 'Cuentas bancarias eliminadas permanentemente',
+                    'body'  => 'Las cuentas bancarias se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],

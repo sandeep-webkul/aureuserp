@@ -2,25 +2,25 @@
 
 return [
     'notification' => [
-        'title' => 'Tax updated',
-        'body'  => 'The tax has been updated successfully.',
+        'title' => 'Impuesto actualizado',
+        'body'  => 'El impuesto se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Tax deleted',
-                    'body'  => 'The tax has been deleted successfully.',
+                    'title' => 'Impuesto eliminado',
+                    'body'  => 'El impuesto se ha eliminado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Tax could not be deleted',
-                    'body'  => 'The tax cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el impuesto',
+                    'body'  => 'El impuesto no se puede eliminar porque está actualmente en uso.',
                 ],
 
                 'invalid-repartition-lines' => [
-                    'title' => 'Invalid Repartition Lines',
+                    'title' => 'Líneas de reparto no válidas',
                 ],
             ],
         ],

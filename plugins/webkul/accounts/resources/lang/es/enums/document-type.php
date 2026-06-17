@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'invoice' => 'Invoice',
-    'refund'  => 'Refund',
+    'invoice' => 'Factura',
+    'refund'  => 'Reembolso',
 ];

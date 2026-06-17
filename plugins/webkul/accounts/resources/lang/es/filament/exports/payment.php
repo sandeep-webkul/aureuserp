@@ -2,19 +2,19 @@
 
 return [
     'columns' => [
-        'date'            => 'Date',
-        'name'            => 'Name',
-        'journal'         => 'Journal',
-        'payment-method'  => 'Payment Method',
-        'partner'         => 'Partner',
-        'amount-currency' => 'Amount Currency',
-        'amount'          => 'Amount',
-        'state'           => 'State',
-        'company'         => 'Company',
+        'date'            => 'Fecha',
+        'name'            => 'Nombre',
+        'journal'         => 'Diario',
+        'payment-method'  => 'Método de pago',
+        'partner'         => 'Contacto',
+        'amount-currency' => 'Moneda del importe',
+        'amount'          => 'Importe',
+        'state'           => 'Estado',
+        'company'         => 'Empresa',
     ],
 
     'notification' => [
-        'completed' => 'Your payment export has completed and :count row(s) exported.',
-        'failed'    => ':count row(s) failed to export.',
+        'completed' => 'La exportación del pago se ha completado y se exportaron :count fila(s).',
+        'failed'    => 'No se pudieron exportar :count fila(s).',
     ],
 ];

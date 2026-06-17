@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Receipts',
+    'title' => 'Recibos',
 
     'navigation' => [
-        'title' => 'Receipts',
+        'title' => 'Recibos',
     ],
 
     'form' => [
         'fieldset' => [
-            'title'  => 'Recipient',
+            'title'  => 'Destinatario',
             'fields' => [
-                'reference'         => 'Reference',
-                'payment-reference' => 'Payment Reference',
+                'reference'         => 'Referencia',
+                'payment-reference' => 'Referencia de pago',
             ],
         ],
     ],

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'open'    => 'Open',
-    'partner' => 'Base on Partner',
-    'invoice' => 'Base on Invoice',
+    'open'    => 'Abierto',
+    'partner' => 'Basado en el contacto',
+    'invoice' => 'Basado en la factura',
 ];

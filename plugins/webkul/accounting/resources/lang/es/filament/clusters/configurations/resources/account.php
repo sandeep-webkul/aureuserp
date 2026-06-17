@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Chart of Account',
+    'model-label' => 'Plan de cuentas',
 
     'navigation' => [
-        'title' => 'Chart of Accounts',
-        'group' => 'Accounting',
+        'title' => 'Plan de cuentas',
+        'group' => 'Contabilidad',
     ],
 ];

@@ -3,8 +3,8 @@
 return [
     'header-actions' => [
         'notification' => [
-            'title' => 'Bank Account created',
-            'body'  => 'The bank account has been created successfully.',
+            'title' => 'Cuenta bancaria creada',
+            'body'  => 'La cuenta bancaria se ha creado correctamente.',
         ],
     ],
 ];

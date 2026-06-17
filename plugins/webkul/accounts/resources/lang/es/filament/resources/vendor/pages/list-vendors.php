@@ -1,11 +1,11 @@
 <?php
 
 return  [
-    'title' => 'Vendors',
+    'title' => 'Proveedores',
 
     'header-actions' => [
         'create' => [
-            'title' => 'New Vendor',
+            'title' => 'Nuevo proveedor',
         ]
     ]
 ];

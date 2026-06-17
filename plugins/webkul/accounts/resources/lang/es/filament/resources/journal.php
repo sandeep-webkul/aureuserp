@@ -4,104 +4,104 @@ return [
     'form' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'Asientos contables',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'  => 'Accounting Information',
+                        'title'  => 'Información contable',
                         'fields' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
+                            'dedicated-credit-note-sequence' => 'Secuencia dedicada para notas de crédito',
+                            'dedicated-payment-sequence'     => 'Secuencia dedicada para pagos',
+                            'sort-code-placeholder'          => 'Introducir el código del diario',
+                            'sort-code'                      => 'Ordenar',
+                            'currency'                       => 'Moneda',
                             'color'                          => 'Color',
-                            'default-account'                => 'Default Account',
-                            'profit-account'                 => 'Profit Account',
-                            'loss-account'                   => 'Loss Account',
-                            'suspense-account'               => 'Suspense Account',
-                            'bank-account'                   => 'Bank Account',
+                            'default-account'                => 'Cuenta predeterminada',
+                            'profit-account'                 => 'Cuenta de ganancias',
+                            'loss-account'                   => 'Cuenta de pérdidas',
+                            'suspense-account'               => 'Cuenta transitoria',
+                            'bank-account'                   => 'Cuenta bancaria',
                         ],
                     ],
 
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'Número de cuenta bancaria',
                     ],
                 ],
             ],
 
             'incoming-payments' => [
-                'title'            => 'Incoming Payments',
-                'add-action-label' => 'Add Line',
+                'title'            => 'Pagos entrantes',
+                'add-action-label' => 'Añadir línea',
 
                 'fields' => [
-                    'payment-method'             => 'Payment Method',
-                    'display-name'               => 'Display Name',
-                    'account-number'             => 'Outstanding Receipts Accounts',
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'payment-method'             => 'Método de pago',
+                    'display-name'               => 'Nombre para mostrar',
+                    'account-number'             => 'Cuentas de cobros pendientes',
+                    'relation-notes'             => 'Notas de relación',
+                    'relation-notes-placeholder' => 'Introducir cualquier detalle de la relación',
                 ],
             ],
 
             'outgoing-payments' => [
-                'title'            => 'Outgoing Payments',
-                'add-action-label' => 'Add Line',
+                'title'            => 'Pagos salientes',
+                'add-action-label' => 'Añadir línea',
 
                 'fields' => [
-                    'payment-method'             => 'Payment Method',
-                    'display-name'               => 'Display Name',
-                    'account-number'             => 'Outstanding Payments Accounts',
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'payment-method'             => 'Método de pago',
+                    'display-name'               => 'Nombre para mostrar',
+                    'account-number'             => 'Cuentas de pagos pendientes',
+                    'relation-notes'             => 'Notas de relación',
+                    'relation-notes-placeholder' => 'Introducir cualquier detalle de la relación',
                 ],
             ],
 
             'advanced-settings' => [
-                'title'  => 'Advanced Settings',
+                'title'  => 'Configuración avanzada',
 
                 'fields' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+                    'allowed-accounts'       => 'Cuentas permitidas',
+                    'control-access'         => 'Control de acceso',
+                    'payment-communication'  => 'Comunicación de pago',
+                    'auto-check-on-post'     => 'Verificar automáticamente al contabilizar',
+                    'communication-type'     => 'Tipo de comunicación',
+                    'communication-standard' => 'Estándar de comunicación',
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'Información general',
 
             'fields' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'Nombre',
+                'type'    => 'Tipo',
+                'company' => 'Empresa',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'type'       => 'Type',
-            'code'       => 'Code',
-            'currency'   => 'Currency',
-            'created-by' => 'Created By',
-            'status'     => 'Status',
+            'name'       => 'Nombre',
+            'type'       => 'Tipo',
+            'code'       => 'Código',
+            'currency'   => 'Moneda',
+            'created-by' => 'Creado por',
+            'status'     => 'Estado',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Journal deleted',
-                        'body'  => 'The journal has been deleted successfully.',
+                        'title' => 'Diario eliminado',
+                        'body'  => 'El diario se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Journal deletion failed',
-                        'body'  => 'The journal cannot be deleted because it is currently in use.',
+                        'title' => 'Error al eliminar el diario',
+                        'body'  => 'El diario no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -111,13 +111,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Journal deleted',
-                        'body'  => 'The journal has been deleted successfully.',
+                        'title' => 'Diario eliminado',
+                        'body'  => 'El diario se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Journals deletion failed',
-                        'body'  => 'The journals cannot be deleted because they are currently in use.',
+                        'title' => 'Error al eliminar los diarios',
+                        'body'  => 'Los diarios no se pueden eliminar porque están actualmente en uso.',
                     ],
                 ],
             ],
@@ -127,91 +127,91 @@ return [
     'infolist' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'Asientos contables',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'   => 'Accounting Information',
+                        'title'   => 'Información contable',
 
                         'entries' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
+                            'dedicated-credit-note-sequence' => 'Secuencia dedicada para notas de crédito',
+                            'dedicated-payment-sequence'     => 'Secuencia dedicada para pagos',
+                            'sort-code-placeholder'          => 'Introducir el código del diario',
+                            'sort-code'                      => 'Ordenar',
+                            'currency'                       => 'Moneda',
                             'color'                          => 'Color',
-                            'default-account'                => 'Default Account',
-                            'profit-account'                 => 'Profit Account',
-                            'loss-account'                   => 'Loss Account',
-                            'suspense-account'               => 'Suspense Account',
+                            'default-account'                => 'Cuenta predeterminada',
+                            'profit-account'                 => 'Cuenta de ganancias',
+                            'loss-account'                   => 'Cuenta de pérdidas',
+                            'suspense-account'               => 'Cuenta transitoria',
                         ],
                     ],
 
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'Número de cuenta bancaria',
 
                         'entries' => [
-                            'account-number' => 'Account Number',
+                            'account-number' => 'Número de cuenta',
                         ],
                     ],
                 ],
             ],
 
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title' => 'Pagos entrantes',
 
                 'entries' => [
-                    'payment-method'             => 'Payment Method',
-                    'display-name'               => 'Display Name',
-                    'account-number'             => 'Outstanding Receipts Accounts',
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'payment-method'             => 'Método de pago',
+                    'display-name'               => 'Nombre para mostrar',
+                    'account-number'             => 'Cuentas de cobros pendientes',
+                    'relation-notes'             => 'Notas de relación',
+                    'relation-notes-placeholder' => 'Introducir cualquier detalle de la relación',
                 ],
             ],
 
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title' => 'Pagos salientes',
 
                 'entries' => [
-                    'payment-method'             => 'Payment Method',
-                    'display-name'               => 'Display Name',
-                    'account-number'             => 'Outstanding Payments Accounts',
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'payment-method'             => 'Método de pago',
+                    'display-name'               => 'Nombre para mostrar',
+                    'account-number'             => 'Cuentas de pagos pendientes',
+                    'relation-notes'             => 'Notas de relación',
+                    'relation-notes-placeholder' => 'Introducir cualquier detalle de la relación',
                 ],
             ],
 
             'advanced-settings' => [
-                'title'   => 'Advanced Settings',
+                'title'   => 'Configuración avanzada',
 
                 'allowed-accounts' => [
-                    'title' => 'Allowed Accounts',
+                    'title' => 'Cuentas permitidas',
 
                     'entries' => [
-                        'allowed-accounts'       => 'Allowed Accounts',
-                        'control-access'         => 'Control Access',
-                        'auto-check-on-post'     => 'Auto Check on Post',
+                        'allowed-accounts'       => 'Cuentas permitidas',
+                        'control-access'         => 'Control de acceso',
+                        'auto-check-on-post'     => 'Verificar automáticamente al contabilizar',
                     ],
                 ],
 
                 'payment-communication'  => [
-                    'title' => 'Payment Communication',
+                    'title' => 'Comunicación de pago',
 
                     'entries' => [
-                        'communication-type'     => 'Communication Type',
-                        'communication-standard' => 'Communication Standard',
+                        'communication-type'     => 'Tipo de comunicación',
+                        'communication-standard' => 'Estándar de comunicación',
                     ],
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'Información general',
 
             'entries' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'Nombre',
+                'type'    => 'Tipo',
+                'company' => 'Empresa',
             ],
         ],
     ],

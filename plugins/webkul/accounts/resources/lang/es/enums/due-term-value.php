@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'percent' => 'Percent',
-    'fixed'   => 'Fixed',
+    'percent' => 'Porcentaje',
+    'fixed'   => 'Fijo',
 ];

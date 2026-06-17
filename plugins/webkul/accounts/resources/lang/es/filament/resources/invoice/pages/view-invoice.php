@@ -4,14 +4,14 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Invoice deleted',
-                'body'  => 'The invoice has been deleted successfully.',
+                'title' => 'Factura eliminada',
+                'body'  => 'La factura se ha eliminado correctamente.',
             ],
         ],
 
         'reverse' => [
-            'label'         => 'Credit Note',
-            'modal-heading' => 'Create Credit Note',
+            'label'         => 'Nota de crédito',
+            'modal-heading' => 'Crear nota de crédito',
         ],
     ],
 ];

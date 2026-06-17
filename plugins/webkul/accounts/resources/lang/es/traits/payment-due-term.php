@@ -2,36 +2,36 @@
 
 return [
     'form' => [
-        'value'                  => 'Value',
-        'due'                    => 'Due',
-        'delay-due'              => 'Delay Due',
-        'delay-type'             => 'Delay Type',
-        'days-on-the-next-month' => 'Days on the next month',
-        'days'                   => 'Days',
-        'payment-term'           => 'Payment Term',
+        'value'                  => 'Valor',
+        'due'                    => 'Vencimiento',
+        'delay-due'              => 'Vencimiento del plazo',
+        'delay-type'             => 'Tipo de plazo',
+        'days-on-the-next-month' => 'Días del mes siguiente',
+        'days'                   => 'Días',
+        'payment-term'           => 'Condición de pago',
     ],
 
     'table' => [
         'columns' => [
-            'due'          => 'Due',
-            'value'        => 'Value',
-            'value-amount' => 'Value Amount',
-            'after'        => 'After',
-            'delay-type'   => 'Delay Type',
+            'due'          => 'Vencimiento',
+            'value'        => 'Valor',
+            'value-amount' => 'Importe del valor',
+            'after'        => 'Después',
+            'delay-type'   => 'Tipo de plazo',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Payment Due Term updated',
-                    'body'  => 'The payment due term has been updated successfully.',
+                    'title' => 'Condición de pago actualizada',
+                    'body'  => 'La condición de pago se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Due Term deleted',
-                    'body'  => 'The payment due term has been deleted successfully.',
+                    'title' => 'Condición de pago eliminada',
+                    'body'  => 'La condición de pago se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -39,8 +39,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Payment Due Term created',
-                    'body'  => 'The payment due term has been created successfully.',
+                    'title' => 'Condición de pago creada',
+                    'body'  => 'La condición de pago se ha creado correctamente.',
                 ],
             ],
         ],

@@ -2,11 +2,11 @@
 
 return [
     'tabs' => [
-        'all'           => 'All',
-        'sales'         => 'Sales',
-        'purchases'     => 'Purchases',
-        'cash'          => 'Cash',
-        'bank'          => 'Bank',
-        'miscellaneous' => 'Miscellaneous',
+        'all'           => 'Todos',
+        'sales'         => 'Ventas',
+        'purchases'     => 'Compras',
+        'cash'          => 'Efectivo',
+        'bank'          => 'Banco',
+        'miscellaneous' => 'Varios',
     ],
 ];

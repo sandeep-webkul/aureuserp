@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Journal',
+    'model-label' => 'Diario',
 
     'navigation' => [
-        'title' => 'Journals',
-        'group' => 'Accounting',
+        'title' => 'Diarios',
+        'group' => 'Contabilidad',
     ],
 ];

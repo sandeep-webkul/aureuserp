@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title' => 'Credit Note',
+    'title' => 'Nota de crédito',
 
     'navigation' => [
-        'title' => 'Credit Notes',
+        'title' => 'Notas de crédito',
     ],
 
     'global-search' => [
-        'customer' => 'Customer',
-        'amount'   => 'Amount',
+        'customer' => 'Cliente',
+        'amount'   => 'Importe',
     ],
 ];

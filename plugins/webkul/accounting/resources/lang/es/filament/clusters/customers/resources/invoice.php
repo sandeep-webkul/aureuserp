@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Invoice',
+    'title' => 'Factura',
 
     'navigation' => [
-        'title' => 'Invoices',
+        'title' => 'Facturas',
     ],
 
     'global-search' => [
-        'customer' => 'Customer',
-        'date'     => 'Date',
-        'due-date' => 'Due Date',
-        'amount'   => 'Amount',
+        'customer' => 'Cliente',
+        'date'     => 'Fecha',
+        'due-date' => 'Fecha de vencimiento',
+        'amount'   => 'Importe',
     ],
 ];

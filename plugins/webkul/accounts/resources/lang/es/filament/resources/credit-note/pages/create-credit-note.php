@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Credit note created',
-        'body'  => 'The credit note has been created successfully.',
+        'title' => 'Nota de crédito creada',
+        'body'  => 'La nota de crédito se ha creado correctamente.',
     ],
 ];

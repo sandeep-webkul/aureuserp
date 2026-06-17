@@ -3,21 +3,21 @@
 return [
     'notification' => [
         'success' => [
-            'title' => 'Payment term updated',
-            'body'  => 'The payment term has been updated successfully.',
+            'title' => 'Condición de pago actualizada',
+            'body'  => 'La condición de pago se ha actualizado correctamente.',
         ],
 
         'validation-error' => [
-            'title' => 'Validation Error',
-            'body'  => 'The Due Term must have at least one percent line and the sum of the percent must be 100%.',
+            'title' => 'Error de validación',
+            'body'  => 'El plazo de vencimiento debe tener al menos una línea de porcentaje y la suma de los porcentajes debe ser 100%.',
         ],
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Payment term deleted',
-                'body'  => 'The payment term has been deleted successfully.',
+                'title' => 'Condición de pago eliminada',
+                'body'  => 'La condición de pago se ha eliminado correctamente.',
             ],
         ],
     ],

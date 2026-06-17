@@ -2,38 +2,38 @@
 
 return [
     'form' => [
-        'factor-percent'    => 'Factor Percent',
-        'factor-ratio'      => 'Factor Ratio',
-        'repartition-type'  => 'Repartition Type',
-        'document-type'     => 'Document Type',
-        'account'           => 'Account',
-        'tax'               => 'Tax',
-        'tax-closing-entry' => 'Tax Closing Entry',
+        'factor-percent'    => 'Porcentaje del factor',
+        'factor-ratio'      => 'Proporción del factor',
+        'repartition-type'  => 'Tipo de reparto',
+        'document-type'     => 'Tipo de documento',
+        'account'           => 'Cuenta',
+        'tax'               => 'Impuesto',
+        'tax-closing-entry' => 'Asiento de cierre de impuestos',
     ],
 
     'table' => [
         'columns' => [
-            'factor-percent'    => 'Factor Percent(%)',
-            'account'           => 'Account',
-            'tax'               => 'Tax',
-            'company'           => 'Company',
-            'repartition-type'  => 'Repartition Type',
-            'document-type'     => 'Document Type',
-            'tax-closing-entry' => 'Tax Closing Entry',
+            'factor-percent'    => 'Porcentaje del factor (%)',
+            'account'           => 'Cuenta',
+            'tax'               => 'Impuesto',
+            'company'           => 'Empresa',
+            'repartition-type'  => 'Tipo de reparto',
+            'document-type'     => 'Tipo de documento',
+            'tax-closing-entry' => 'Asiento de cierre de impuestos',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tax Partition updated',
-                    'body'  => 'The tax partition has been updated successfully.',
+                    'title' => 'Reparto de impuestos actualizado',
+                    'body'  => 'El reparto de impuestos se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term deleted',
-                    'body'  => 'The tax Partition term has been deleted successfully.',
+                    'title' => 'Reparto de impuestos eliminado',
+                    'body'  => 'El reparto de impuestos se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -41,8 +41,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term created',
-                    'body'  => 'The tax Partition term has been created successfully.',
+                    'title' => 'Reparto de impuestos creado',
+                    'body'  => 'El reparto de impuestos se ha creado correctamente.',
                 ],
             ],
         ],

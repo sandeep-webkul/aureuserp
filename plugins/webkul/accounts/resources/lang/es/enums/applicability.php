@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'account'  => 'Account',
-    'taxes'    => 'Taxes',
-    'products' => 'Products',
+    'account'  => 'Cuenta',
+    'taxes'    => 'Impuestos',
+    'products' => 'Productos',
 ];

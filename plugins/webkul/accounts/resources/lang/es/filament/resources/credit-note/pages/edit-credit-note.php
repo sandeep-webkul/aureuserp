@@ -2,20 +2,20 @@
 
 return [
     'notification' => [
-        'title' => 'Credit note updated',
-        'body'  => 'The credit note has been updated successfully.',
+        'title' => 'Nota de crédito actualizada',
+        'body'  => 'La nota de crédito se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Credit note deleted',
-                'body'  => 'Credit note has been deleted successfully.',
+                'title' => 'Nota de crédito eliminada',
+                'body'  => 'La nota de crédito se ha eliminado correctamente.',
             ],
         ],
 
         'preview' => [
-            'modal-heading' => 'Preview Credit Note',
+            'modal-heading' => 'Vista previa de la nota de crédito',
         ],
     ],
 ];

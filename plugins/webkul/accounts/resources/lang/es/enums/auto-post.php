@@ -2,8 +2,8 @@
 
 return [
     'no'        => 'No',
-    'at-date'   => 'At Date',
-    'monthly'   => 'Monthly',
-    'quarterly' => 'Quarterly',
-    'yearly'    => 'Yearly',
+    'at-date'   => 'En la fecha',
+    'monthly'   => 'Mensual',
+    'quarterly' => 'Trimestral',
+    'yearly'    => 'Anual',
 ];

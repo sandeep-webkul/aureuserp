@@ -4,23 +4,23 @@ return [
     'header-actions' => [
         'create' => [
             'notification' => [
-                'title' => 'Account created',
-                'body'  => 'The account has been created successfully.',
+                'title' => 'Cuenta creada',
+                'body'  => 'La cuenta se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'receivable' => 'Receivable',
-        'payable'    => 'Payable',
-        'equity'     => 'Equity',
-        'assets'     => 'Assets',
-        'liability'  => 'Liability',
-        'income'     => 'Income',
-        'expenses'   => 'Expenses',
+        'receivable' => 'Por cobrar',
+        'payable'    => 'Por pagar',
+        'equity'     => 'Patrimonio',
+        'assets'     => 'Activos',
+        'liability'  => 'Pasivo',
+        'income'     => 'Ingresos',
+        'expenses'   => 'Gastos',
     ],
 
     'tree' => [
-        'all' => 'All',
+        'all' => 'Todos',
     ],
 ];

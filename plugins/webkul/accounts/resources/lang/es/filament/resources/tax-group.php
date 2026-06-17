@@ -4,45 +4,45 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'Empresa',
+                'country'            => 'País',
+                'name'               => 'Nombre',
+                'preceding-subtotal' => 'Subtotal anterior',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'company'            => 'Company',
-            'country'            => 'Country',
-            'created-by'         => 'Created By',
-            'name'               => 'Name',
-            'preceding-subtotal' => 'Preceding Subtotal',
-            'created-at'         => 'Created At',
-            'updated-at'         => 'Updated At',
+            'company'            => 'Empresa',
+            'country'            => 'País',
+            'created-by'         => 'Creado por',
+            'name'               => 'Nombre',
+            'preceding-subtotal' => 'Subtotal anterior',
+            'created-at'         => 'Creado el',
+            'updated-at'         => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'company'    => 'Company',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'company'    => 'Empresa',
+            'country'    => 'País',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax Group deleted',
-                        'body'  => 'The tax group has been deleted successfully.',
+                        'title' => 'Grupo de impuestos eliminado',
+                        'body'  => 'El grupo de impuestos se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax Group could not be deleted',
-                        'body'  => 'The tax group cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el grupo de impuestos',
+                        'body'  => 'El grupo de impuestos no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -52,13 +52,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax Groups deleted',
-                        'body'  => 'The tax groups has been deleted successfully.',
+                        'title' => 'Grupos de impuestos eliminados',
+                        'body'  => 'Los grupos de impuestos se han eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax Groups could not be deleted',
-                        'body'  => 'The tax groups cannot be deleted because they are currently in use.',
+                        'title' => 'No se pudieron eliminar los grupos de impuestos',
+                        'body'  => 'Los grupos de impuestos no se pueden eliminar porque están actualmente en uso.',
                     ],
                 ],
             ],
@@ -68,10 +68,10 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'Empresa',
+                'country'            => 'País',
+                'name'               => 'Nombre',
+                'preceding-subtotal' => 'Subtotal anterior',
             ],
         ],
     ],

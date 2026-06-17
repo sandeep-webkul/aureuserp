@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'currency',
+    'model-label' => 'moneda',
 
     'navigation' => [
-        'title' => 'Currencies',
-        'group' => 'Accounting',
+        'title' => 'Monedas',
+        'group' => 'Contabilidad',
     ],
 ];

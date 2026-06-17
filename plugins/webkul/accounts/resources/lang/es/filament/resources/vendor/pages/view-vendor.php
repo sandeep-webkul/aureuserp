@@ -1,5 +1,5 @@
 <?php
 
 return  [
-    'title' => 'View Vendor',
+    'title' => 'Ver proveedor',
 ];

@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'title' => 'Print & Send',
+    'title' => 'Imprimir y enviar',
 
     'modal' => [
-        'title' => 'Preview Invoice',
+        'title' => 'Vista previa de la factura',
 
         'form' => [
-            'partners'    => 'Customer',
-            'subject'     => 'Subject',
-            'description' => 'Description',
-            'files'       => 'Attachment',
+            'partners'    => 'Cliente',
+            'subject'     => 'Asunto',
+            'description' => 'Descripción',
+            'files'       => 'Adjunto',
         ],
 
         'action' => [
             'submit' => [
-                'title' => 'Send',
+                'title' => 'Enviar',
             ],
         ],
 
         'notification' => [
             'invoice-sent' => [
-                'title' => 'Invoice Sent',
-                'body'  => 'Invoice has been sent successfully.',
+                'title' => 'Factura enviada',
+                'body'  => 'La factura se ha enviado correctamente.',
             ],
         ],
     ],

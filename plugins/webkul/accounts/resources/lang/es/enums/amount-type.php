@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'fixed'    => 'Fixed',
-    'group'    => 'Group',
-    'percent'  => 'Percent',
-    'division' => 'Division',
-    'code'     => 'Custom Formula',
+    'fixed'    => 'Fijo',
+    'group'    => 'Grupo',
+    'percent'  => 'Porcentaje',
+    'division' => 'División',
+    'code'     => 'Fórmula personalizada',
 ];

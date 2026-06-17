@@ -4,47 +4,47 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'Nombre',
+                'tax-type'        => 'Tipo de impuesto',
+                'tax-computation' => 'Cálculo del impuesto',
+                'tax-scope'       => 'Ámbito del impuesto',
+                'status'          => 'Estado',
+                'amount'          => 'Importe',
             ],
 
             'repeater' => [
                 'invoice-repartition-lines' => [
-                    'label' => 'Invoice Repartition Lines',
+                    'label' => 'Líneas de reparto de factura',
                 ],
 
                 'refund-repartition-lines' => [
-                    'label' => 'Refund Repartition Lines',
+                    'label' => 'Líneas de reparto de reembolso',
                 ],
 
                 'fields' => [
-                    'type'           => 'Type',
+                    'type'           => 'Tipo',
                     'factor-percent' => 'Factor %',
-                    'account'        => 'Account',
+                    'account'        => 'Cuenta',
                 ],
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'Opciones avanzadas',
 
                     'fields' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Included in Price',
-                        'include-base-amount' => 'Affect Base of Subsequent Taxes',
-                        'is-base-affected'    => 'Base Affected by Previous Taxes',
+                        'invoice-label'       => 'Etiqueta de factura',
+                        'tax-group'           => 'Grupo de impuestos',
+                        'country'             => 'País',
+                        'include-in-price'    => 'Incluido en el precio',
+                        'include-base-amount' => 'Afecta a la base de impuestos posteriores',
+                        'is-base-affected'    => 'Base afectada por impuestos anteriores',
                     ],
                 ],
 
                 'fields' => [
-                    'description' => 'Description',
-                    'legal-notes' => 'Legal Notes',
+                    'description' => 'Descripción',
+                    'legal-notes' => 'Notas legales',
                 ],
             ],
         ],
@@ -52,45 +52,45 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                   => 'Name',
-            'amount-type'            => 'Amount Type',
-            'company'                => 'Company',
-            'tax-group'              => 'Tax Group',
-            'country'                => 'Country',
-            'tax-type'               => 'Tax Type',
-            'tax-scope'              => 'Tax Scope',
-            'amount-type'            => 'Amount Type',
-            'invoice-label'          => 'Invoice Label',
-            'tax-exigibility'        => 'Tax Exigibility',
-            'price-include-override' => 'Price Include Override',
-            'amount'                 => 'Amount',
-            'status'                 => 'Status',
-            'include-base-amount'    => 'Include Base Amount',
-            'is-base-affected'       => 'Is Base Affected',
+            'name'                   => 'Nombre',
+            'amount-type'            => 'Tipo de importe',
+            'company'                => 'Empresa',
+            'tax-group'              => 'Grupo de impuestos',
+            'country'                => 'País',
+            'tax-type'               => 'Tipo de impuesto',
+            'tax-scope'              => 'Ámbito del impuesto',
+            'amount-type'            => 'Tipo de importe',
+            'invoice-label'          => 'Etiqueta de factura',
+            'tax-exigibility'        => 'Exigibilidad del impuesto',
+            'price-include-override' => 'Anulación de inclusión en precio',
+            'amount'                 => 'Importe',
+            'status'                 => 'Estado',
+            'include-base-amount'    => 'Incluir importe base',
+            'is-base-affected'       => 'Base afectada',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company'      => 'Company',
-            'tax-group'    => 'Tax Group',
-            'country'      => 'Country',
-            'created-by'   => 'Created By',
-            'type-tax-use' => 'Type Tax Use',
-            'tax-scope'    => 'Tax Scope',
-            'amount-type'  => 'Amount Type',
+            'name'         => 'Nombre',
+            'company'      => 'Empresa',
+            'tax-group'    => 'Grupo de impuestos',
+            'country'      => 'País',
+            'created-by'   => 'Creado por',
+            'type-tax-use' => 'Tipo de uso del impuesto',
+            'tax-scope'    => 'Ámbito del impuesto',
+            'amount-type'  => 'Tipo de importe',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax deleted',
-                        'body'  => 'The Tax has been deleted successfully.',
+                        'title' => 'Impuesto eliminado',
+                        'body'  => 'El impuesto se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax could not be deleted',
-                        'body'  => 'The tax cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el impuesto',
+                        'body'  => 'El impuesto no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -100,13 +100,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Taxes deleted',
-                        'body'  => 'The taxes has been deleted successfully.',
+                        'title' => 'Impuestos eliminados',
+                        'body'  => 'Los impuestos se han eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Taxes could not be deleted',
-                        'body'  => 'The taxes cannot be deleted because they are currently in use.',
+                        'title' => 'No se pudieron eliminar los impuestos',
+                        'body'  => 'Los impuestos no se pueden eliminar porque están actualmente en uso.',
                     ],
                 ],
             ],
@@ -116,7 +116,7 @@ return [
             'create' => [
                 'notifications' => [
                     'invalid-repartition-lines' => [
-                        'title' => 'Invalid Repartition Lines',
+                        'title' => 'Líneas de reparto no válidas',
                     ],
                 ],
             ],
@@ -124,7 +124,7 @@ return [
             'edit' => [
                 'notifications' => [
                     'invalid-repartition-lines' => [
-                        'title' => 'Invalid Repartition Lines',
+                        'title' => 'Líneas de reparto no válidas',
                     ],
                 ],
             ],
@@ -134,33 +134,33 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'Nombre',
+                'tax-type'        => 'Tipo de impuesto',
+                'tax-computation' => 'Cálculo del impuesto',
+                'tax-scope'       => 'Ámbito del impuesto',
+                'status'          => 'Estado',
+                'amount'          => 'Importe',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'Opciones avanzadas',
 
                     'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'Etiqueta de factura',
+                        'tax-group'           => 'Grupo de impuestos',
+                        'country'             => 'País',
+                        'include-in-price'    => 'Incluir en el precio',
+                        'include-base-amount' => 'Incluir importe base',
+                        'is-base-affected'    => 'Base afectada',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
+                    'title'   => 'Descripción y notas legales de la factura',
                     'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'Descripción',
+                        'legal-notes' => 'Notas legales',
                     ],
                 ],
             ],

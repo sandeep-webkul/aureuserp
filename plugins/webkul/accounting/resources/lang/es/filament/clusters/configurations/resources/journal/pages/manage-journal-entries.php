@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Journal Entries',
+        'title' => 'Asientos contables',
     ],
 ];

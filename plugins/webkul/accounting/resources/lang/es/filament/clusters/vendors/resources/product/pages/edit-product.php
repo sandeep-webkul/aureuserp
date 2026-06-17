@@ -2,27 +2,27 @@
 
 return [
     'notification' => [
-        'title' => 'Product updated',
-        'body'  => 'The product has been updated successfully.',
+        'title' => 'Producto actualizado',
+        'body'  => 'El producto se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'update-quantity' => [
-            'label'                     => 'Update Quantity',
-            'modal-heading'             => 'Update Product Quantity',
-            'modal-submit-action-label' => 'Update',
+            'label'                     => 'Actualizar cantidad',
+            'modal-heading'             => 'Actualizar cantidad del producto',
+            'modal-submit-action-label' => 'Actualizar',
 
             'form' => [
                 'fields' => [
-                    'on-hand-qty' => 'On Hand Quantity',
+                    'on-hand-qty' => 'Cantidad disponible',
                 ],
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Product deleted',
-                'body'  => 'The product has been deleted successfully.',
+                'title' => 'Producto eliminado',
+                'body'  => 'El producto se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -4,14 +4,14 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Bill deleted',
-                'body'  => 'Bill has been deleted successfully.',
+                'title' => 'Factura de proveedor eliminada',
+                'body'  => 'La factura de proveedor se ha eliminado correctamente.',
             ],
         ],
 
         'reverse' => [
-            'label'         => 'Refund',
-            'modal-heading' => 'Create Refund',
+            'label'         => 'Reembolso',
+            'modal-heading' => 'Crear reembolso',
         ],
     ],
 ];

@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'sale'     => 'Sale',
-    'purchase' => 'Purchase',
-    'cash'     => 'Cash',
-    'bank'     => 'Bank',
-    'credit'   => 'Credit Card',
-    'general'  => 'Miscellaneous',
+    'sale'     => 'Venta',
+    'purchase' => 'Compra',
+    'cash'     => 'Efectivo',
+    'bank'     => 'Banco',
+    'credit'   => 'Tarjeta de crédito',
+    'general'  => 'Varios',
 ];

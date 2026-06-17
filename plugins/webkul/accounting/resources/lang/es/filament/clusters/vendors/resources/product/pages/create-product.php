@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Product created',
-        'body'  => 'The product has been created successfully.',
+        'title' => 'Producto creado',
+        'body'  => 'El producto se ha creado correctamente.',
     ],
 ];

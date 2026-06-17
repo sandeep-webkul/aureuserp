@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title'          => 'Bill',
+    'title'          => 'Factura de proveedor',
 ];

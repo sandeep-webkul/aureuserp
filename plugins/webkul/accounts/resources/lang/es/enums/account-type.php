@@ -2,56 +2,56 @@
 
 return [
     'assets' => [
-        'label'   => 'Assets',
+        'label'   => 'Activos',
         'options' => [
-            'receivable'  => 'Receivable',
-            'cash'        => 'Bank and Cash',
-            'current'     => 'Current Assets',
-            'non-current' => 'Non-current Assets',
-            'prepayments' => 'Prepayments',
-            'fixed'       => 'Fixed Assets',
+            'receivable'  => 'Por cobrar',
+            'cash'        => 'Banco y efectivo',
+            'current'     => 'Activos corrientes',
+            'non-current' => 'Activos no corrientes',
+            'prepayments' => 'Pagos anticipados',
+            'fixed'       => 'Activos fijos',
         ],
     ],
 
     'liabilities' => [
-        'label'   => 'Liabilities',
+        'label'   => 'Pasivos',
         'options' => [
-            'payable'     => 'Payable',
-            'credit-card' => 'Credit Card',
-            'current'     => 'Current Liabilities',
-            'non-current' => 'Non-current Liabilities',
+            'payable'     => 'Por pagar',
+            'credit-card' => 'Tarjeta de crédito',
+            'current'     => 'Pasivos corrientes',
+            'non-current' => 'Pasivos no corrientes',
         ],
     ],
 
     'equity' => [
-        'label'   => 'Equity',
+        'label'   => 'Patrimonio',
         'options' => [
-            'equity'     => 'Equity',
-            'unaffected' => 'Current Year Earnings',
+            'equity'     => 'Patrimonio',
+            'unaffected' => 'Resultados del ejercicio actual',
         ],
     ],
 
     'income' => [
-        'label'   => 'Income',
+        'label'   => 'Ingresos',
         'options' => [
-            'income' => 'Income',
-            'other'  => 'Other Income',
+            'income' => 'Ingresos',
+            'other'  => 'Otros ingresos',
         ],
     ],
 
     'expenses' => [
-        'label'   => 'Expenses',
+        'label'   => 'Gastos',
         'options' => [
-            'expense'      => 'Expenses',
-            'depreciation' => 'Depreciation',
-            'direct-cost'  => 'Cost of Revenue',
+            'expense'      => 'Gastos',
+            'depreciation' => 'Depreciación',
+            'direct-cost'  => 'Costo de ventas',
         ],
     ],
 
     'off-balance' => [
-        'label'   => 'Off-Balance Sheet',
+        'label'   => 'Fuera de balance',
         'options' => [
-            'off-balance' => 'Off-Balance Sheet',
+            'off-balance' => 'Fuera de balance',
         ],
     ],
 ];

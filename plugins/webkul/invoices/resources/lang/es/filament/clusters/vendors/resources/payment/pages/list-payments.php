@@ -2,6 +2,6 @@
 
 return [
     'tabs' => [
-        'vendor-payments' => 'Vendor Payments',
+        'vendor-payments' => 'Pagos a proveedores',
     ],
 ];

@@ -1,38 +1,38 @@
 <?php
 
 return [
-    'title' => 'Manage Taxes',
+    'title' => 'Gestionar impuestos',
 
     'form' => [
         'default-taxes' => [
-            'label'       => 'Default Taxes',
-            'helper-text' => 'Default will be applied on products if no tax is selected',
+            'label'       => 'Impuestos predeterminados',
+            'helper-text' => 'El predeterminado se aplicará a los productos si no se selecciona ningún impuesto',
         ],
 
         'sales-tax' => [
-            'label' => 'Sales Tax',
+            'label' => 'Impuesto sobre ventas',
         ],
 
         'purchase-tax' => [
-            'label' => 'Purchase Tax',
+            'label' => 'Impuesto sobre compras',
         ],
 
         'prices' => [
-            'label' => 'Prices',
+            'label' => 'Precios',
         ],
 
         'rounding-method' => [
-            'label'       => 'Rounding Method',
-            'helper-text' => 'Method used to round tax amounts',
+            'label'       => 'Método de redondeo',
+            'helper-text' => 'Método utilizado para redondear los importes de impuestos',
 
             'options' => [
-                'round-per-line' => 'Round Per Line',
-                'round-globally' => 'Round Globally',
+                'round-per-line' => 'Redondear por línea',
+                'round-globally' => 'Redondear globalmente',
             ],
         ],
 
         'fiscal-country' => [
-            'label' => 'Fiscal Country',
+            'label' => 'País fiscal',
         ],
     ],
 ];

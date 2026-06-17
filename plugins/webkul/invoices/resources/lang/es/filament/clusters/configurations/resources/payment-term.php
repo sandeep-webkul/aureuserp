@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Payment Term',
+    'model-label' => 'Condición de pago',
 
     'navigation' => [
-        'title' => 'Payment Terms',
-        'group' => 'Invoicing',
+        'title' => 'Condiciones de pago',
+        'group' => 'Facturación',
     ],
 ];

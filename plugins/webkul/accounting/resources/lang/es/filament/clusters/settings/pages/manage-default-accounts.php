@@ -1,51 +1,51 @@
 <?php
 
 return [
-    'title' => 'Manage Default Accounts',
+    'title' => 'Gestionar cuentas predeterminadas',
 
     'form' => [
         'exchange-difference-entries' => [
-            'label' => 'Exchange Difference Entries',
+            'label' => 'Asientos de diferencia de cambio',
 
             'fields' => [
                 'journal' => [
-                    'label' => 'Journal',
+                    'label' => 'Diario',
                 ],
 
                 'gain' => [
-                    'label' => 'Gain',
+                    'label' => 'Ganancia',
                 ],
 
                 'loss' => [
-                    'label' => 'Loss',
+                    'label' => 'Pérdida',
                 ],
             ],
         ],
 
         'bank-transfer-and-payments' => [
-            'label' => 'Bank Transfer and Payments',
+            'label' => 'Transferencias y pagos bancarios',
 
             'fields' => [
                 'bank-suspense-account' => [
-                    'label' => 'Bank Suspense Account',
+                    'label' => 'Cuenta transitoria bancaria',
                 ],
 
                 'transfer-account' => [
-                    'label' => 'Transfer Account',
+                    'label' => 'Cuenta de transferencia',
                 ],
             ],
         ],
 
         'product-accounts' => [
-            'label' => 'Product Accounts',
+            'label' => 'Cuentas de producto',
 
             'fields' => [
                 'income-account' => [
-                    'label' => 'Income Account',
+                    'label' => 'Cuenta de ingresos',
                 ],
 
                 'expense-account' => [
-                    'label' => 'Expense Account',
+                    'label' => 'Cuenta de gastos',
                 ],
             ],
         ],

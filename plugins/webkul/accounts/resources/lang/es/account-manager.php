@@ -2,15 +2,15 @@
 
 return [
     'post-action-validate' => [
-        'customer-required'    => 'Please provide a valid Customer to proceed with the Customer Invoice validation.',
-        'vendor-required'      => 'Please provide a valid Vendor to proceed with the Vendor Bill validation.',
-        'bank-archived'        => 'The selected Partner Bank attached to this invoice is archived.',
-        'negative-amount'      => 'Invoice can not be confirmed with a negative total amount.',
-        'date-required'        => 'Please provide a valid Bill/Refund Date to proceed with the Bill/Refund validation.',
-        'currency-archived'    => 'You cannot confirm an invoice with an archived currency.',
-        'account-deprecated'   => 'One or more lines in this invoice are using deprecated accounts.',
-        'lines-required'       => 'Please add at least one line to the invoice.',
-        'draft-state-required' => 'Only invoices in draft state can be confirmed.',
-        'journal-archived'     => 'You cannot confirm an invoice with an archived journal.',
+        'customer-required'    => 'Proporcione un cliente válido para continuar con la validación de la factura de cliente.',
+        'vendor-required'      => 'Proporcione un proveedor válido para continuar con la validación de la factura de proveedor.',
+        'bank-archived'        => 'La cuenta bancaria del contacto asociada a esta factura está archivada.',
+        'negative-amount'      => 'La factura no se puede confirmar con un importe total negativo.',
+        'date-required'        => 'Proporcione una fecha de factura/reembolso válida para continuar con la validación de la factura/reembolso.',
+        'currency-archived'    => 'No se puede confirmar una factura con una moneda archivada.',
+        'account-deprecated'   => 'Una o más líneas de esta factura utilizan cuentas obsoletas.',
+        'lines-required'       => 'Agregue al menos una línea a la factura.',
+        'draft-state-required' => 'Solo se pueden confirmar las facturas en estado borrador.',
+        'journal-archived'     => 'No se puede confirmar una factura con un diario archivado.',
     ],
 ];

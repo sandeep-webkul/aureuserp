@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title'          => 'Credit Note',
+    'title'          => 'Nota de crédito',
 ];

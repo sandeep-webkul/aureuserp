@@ -2,25 +2,25 @@
 
 return [
     'notification' => [
-        'title' => 'Bill updated',
-        'body'  => 'The bill has been updated successfully.',
+        'title' => 'Factura de proveedor actualizada',
+        'body'  => 'La factura de proveedor se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Bill deleted',
-                'body'  => 'Bill has been deleted successfully.',
+                'title' => 'Factura de proveedor eliminada',
+                'body'  => 'La factura de proveedor se ha eliminado correctamente.',
             ],
         ],
 
         'preview' => [
-            'modal-heading' => 'Preview Bill',
+            'modal-heading' => 'Vista previa de la factura de proveedor',
         ],
 
         'reverse' => [
-            'label'         => 'Refund',
-            'modal-heading' => 'Create Refund',
+            'label'         => 'Reembolso',
+            'modal-heading' => 'Crear reembolso',
         ],
     ],
 ];

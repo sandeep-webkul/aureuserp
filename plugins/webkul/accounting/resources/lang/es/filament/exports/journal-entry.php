@@ -2,25 +2,25 @@
 
 return [
     'columns' => [
-        'invoice-date' => 'Invoice Date',
-        'date'         => 'Date',
-        'number'       => 'Number',
-        'partner'      => 'Partner',
-        'reference'    => 'Reference',
-        'journal'      => 'Journal',
-        'company'      => 'Company',
+        'invoice-date' => 'Fecha de factura',
+        'date'         => 'Fecha',
+        'number'       => 'Número',
+        'partner'      => 'Contacto',
+        'reference'    => 'Referencia',
+        'journal'      => 'Diario',
+        'company'      => 'Empresa',
         'total'        => 'Total',
-        'state'        => 'State',
-        'checked'      => 'Checked',
+        'state'        => 'Estado',
+        'checked'      => 'Verificado',
     ],
 
     'values' => [
-        'yes' => 'Yes',
+        'yes' => 'Sí',
         'no'  => 'No',
     ],
 
     'notification' => [
-        'completed' => 'Your journal entry export has completed and :count row(s) exported.',
-        'failed'    => ':count row(s) failed to export.',
+        'completed' => 'La exportación de su asiento contable se ha completado y se exportaron :count fila(s).',
+        'failed'    => 'No se pudieron exportar :count fila(s).',
     ],
 ];

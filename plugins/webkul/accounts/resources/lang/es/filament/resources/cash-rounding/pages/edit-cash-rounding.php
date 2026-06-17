@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Cash rounding updated',
-        'body'  => 'The cash rounding has been updated successfully.',
+        'title' => 'Redondeo de efectivo actualizado',
+        'body'  => 'El redondeo de efectivo se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Cash rounding deleted',
-                'body'  => 'The cash rounding has been deleted successfully.',
+                'title' => 'Redondeo de efectivo eliminado',
+                'body'  => 'El redondeo de efectivo se ha eliminado correctamente.',
             ],
         ],
     ],

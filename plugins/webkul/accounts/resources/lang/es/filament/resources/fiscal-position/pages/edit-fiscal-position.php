@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Fiscal position updated',
-        'body'  => 'The fiscal position has been updated successfully.',
+        'title' => 'Posición fiscal actualizada',
+        'body'  => 'La posición fiscal se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Fiscal position deleted',
-                'body'  => 'The fiscal position has been deleted successfully.',
+                'title' => 'Posición fiscal eliminada',
+                'body'  => 'La posición fiscal se ha eliminado correctamente.',
             ],
         ],
     ],

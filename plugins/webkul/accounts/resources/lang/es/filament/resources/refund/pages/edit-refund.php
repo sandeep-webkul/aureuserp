@@ -2,20 +2,20 @@
 
 return [
     'notification' => [
-        'title' => 'Refund updated',
-        'body'  => 'The refund has been updated successfully.',
+        'title' => 'Reembolso actualizado',
+        'body'  => 'El reembolso se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Refund deleted',
-                'body'  => 'Refund has been deleted successfully.',
+                'title' => 'Reembolso eliminado',
+                'body'  => 'El reembolso se ha eliminado correctamente.',
             ],
         ],
 
         'preview' => [
-            'modal-heading' => 'Preview Refund',
+            'modal-heading' => 'Vista previa del reembolso',
         ],
     ],
 ];

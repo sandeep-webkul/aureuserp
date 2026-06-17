@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Journal Entries',
+    'title' => 'Asientos contables',
 
     'navigation' => [
-        'title' => 'Journal Entries',
+        'title' => 'Asientos contables',
     ],
 
     'record-sub-navigation' => [
-        'payment' => 'Payment',
+        'payment' => 'Pago',
     ],
 
     'global-search' => [
-        'number'   => 'Number',
-        'partner'  => 'Partner',
-        'date'     => 'Invoice Date',
-        'due-date' => 'Invoice Due Date',
+        'number'   => 'Número',
+        'partner'  => 'Contacto',
+        'date'     => 'Fecha de factura',
+        'due-date' => 'Fecha de vencimiento de factura',
     ],
 
     'form' => [
@@ -24,59 +24,59 @@ return [
                 'title'  => 'General',
 
                 'fields' => [
-                    'reference'       => 'Reference',
-                    'accounting-date' => 'Accounting Date',
-                    'journal'         => 'Journal',
+                    'reference'       => 'Referencia',
+                    'accounting-date' => 'Fecha contable',
+                    'journal'         => 'Diario',
                 ],
             ],
         ],
 
         'tabs' => [
             'lines' => [
-                'title' => 'Journal Items',
+                'title' => 'Apuntes contables',
 
                 'repeater' => [
-                    'title'       => 'Items',
-                    'add-item'    => 'Add Item',
+                    'title'       => 'Apuntes',
+                    'add-item'    => 'Agregar apunte',
 
                     'columns' => [
-                        'account'                  => 'Account',
-                        'partner'                  => 'Partner',
-                        'label'                    => 'Label',
-                        'amount-currency'          => 'Amount (Currency)',
-                        'currency'                 => 'Currency',
-                        'taxes'                    => 'Taxes',
-                        'debit'                    => 'Debit',
-                        'credit'                   => 'Credit',
-                        'discount-amount-currency' => 'Discount Amount (Currency)',
+                        'account'                  => 'Cuenta',
+                        'partner'                  => 'Contacto',
+                        'label'                    => 'Etiqueta',
+                        'amount-currency'          => 'Importe (moneda)',
+                        'currency'                 => 'Moneda',
+                        'taxes'                    => 'Impuestos',
+                        'debit'                    => 'Débito',
+                        'credit'                   => 'Crédito',
+                        'discount-amount-currency' => 'Importe de descuento (moneda)',
                     ],
 
                     'fields' => [
-                        'account'                  => 'Account',
-                        'partner'                  => 'Partner',
-                        'label'                    => 'Label',
-                        'amount-currency'          => 'Amount (Currency)',
-                        'currency'                 => 'Currency',
-                        'taxes'                    => 'Taxes',
-                        'debit'                    => 'Debit',
-                        'credit'                   => 'Credit',
-                        'discount-amount-currency' => 'Discount Amount (Currency)',
+                        'account'                  => 'Cuenta',
+                        'partner'                  => 'Contacto',
+                        'label'                    => 'Etiqueta',
+                        'amount-currency'          => 'Importe (moneda)',
+                        'currency'                 => 'Moneda',
+                        'taxes'                    => 'Impuestos',
+                        'debit'                    => 'Débito',
+                        'credit'                   => 'Crédito',
+                        'discount-amount-currency' => 'Importe de descuento (moneda)',
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'Otra información',
 
                 'fields' => [
-                    'checked'         => 'Checked',
-                    'company'         => 'Company',
-                    'fiscal-position' => 'Fiscal Position',
+                    'checked'         => 'Verificado',
+                    'company'         => 'Empresa',
+                    'fiscal-position' => 'Posición fiscal',
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y condiciones',
             ],
         ],
     ],
@@ -84,16 +84,16 @@ return [
     'table' => [
         'total'   => 'Total',
         'columns' => [
-            'invoice-date' => 'Invoice Date',
-            'date'         => 'Date',
-            'number'       => 'Number',
-            'partner'      => 'Partner',
-            'reference'    => 'Reference',
-            'journal'      => 'Journal',
-            'company'      => 'Company',
+            'invoice-date' => 'Fecha de factura',
+            'date'         => 'Fecha',
+            'number'       => 'Número',
+            'partner'      => 'Contacto',
+            'reference'    => 'Referencia',
+            'journal'      => 'Diario',
+            'company'      => 'Empresa',
             'total'        => 'Total',
-            'state'        => 'State',
-            'checked'      => 'Checked',
+            'state'        => 'Estado',
+            'checked'      => 'Verificado',
         ],
 
         'summarizers' => [
@@ -101,31 +101,31 @@ return [
         ],
 
         'groups' => [
-            'partner'        => 'Partner',
-            'journal'        => 'Journal',
-            'state'          => 'State',
-            'payment-method' => 'Payment Method',
-            'date'           => 'Date',
-            'invoice-date'   => 'Invoice Date',
-            'company'        => 'Company',
+            'partner'        => 'Contacto',
+            'journal'        => 'Diario',
+            'state'          => 'Estado',
+            'payment-method' => 'Método de pago',
+            'date'           => 'Fecha',
+            'invoice-date'   => 'Fecha de factura',
+            'company'        => 'Empresa',
         ],
 
         'filters' => [
-            'number'                       => 'Number',
-            'invoice-partner-display-name' => 'Invoice Partner Display Name',
-            'invoice-date'                 => 'Invoice Date',
-            'invoice-due-date'             => 'Invoice Due Date',
-            'invoice-origin'               => 'Invoice Origin',
-            'reference'                    => 'Reference',
-            'created-at'                   => 'Created At',
-            'updated-at'                   => 'Updated At',
+            'number'                       => 'Número',
+            'invoice-partner-display-name' => 'Nombre del contacto de la factura',
+            'invoice-date'                 => 'Fecha de factura',
+            'invoice-due-date'             => 'Fecha de vencimiento de factura',
+            'invoice-origin'               => 'Origen de la factura',
+            'reference'                    => 'Referencia',
+            'created-at'                   => 'Creado el',
+            'updated-at'                   => 'Actualizado el',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment deleted',
-                    'body'  => 'The payment has been deleted successfully.',
+                    'title' => 'Pago eliminado',
+                    'body'  => 'El pago se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -133,15 +133,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payments deleted',
-                    'body'  => 'The payments has been deleted successfully.',
+                    'title' => 'Pagos eliminados',
+                    'body'  => 'Los pagos se han eliminado correctamente.',
                 ],
             ],
         ],
 
         'toolbar-actions' => [
             'export' => [
-                'label' => 'Export',
+                'label' => 'Exportar',
             ],
         ],
     ],
@@ -151,49 +151,49 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
-                    'number'          => 'Number',
-                    'reference'       => 'Reference',
-                    'accounting-date' => 'Accounting Date',
-                    'journal'         => 'Journal',
+                    'number'          => 'Número',
+                    'reference'       => 'Referencia',
+                    'accounting-date' => 'Fecha contable',
+                    'journal'         => 'Diario',
                 ],
             ],
         ],
 
         'tabs' => [
             'lines' => [
-                'title' => 'Journal Items',
+                'title' => 'Apuntes contables',
 
                 'repeater' => [
                     'entries' => [
-                        'account'  => 'Account',
-                        'partner'  => 'Partner',
-                        'label'    => 'Label',
-                        'currency' => 'Currency',
-                        'taxes'    => 'Taxes',
-                        'debit'    => 'Debit',
-                        'credit'   => 'Credit',
+                        'account'  => 'Cuenta',
+                        'partner'  => 'Contacto',
+                        'label'    => 'Etiqueta',
+                        'currency' => 'Moneda',
+                        'taxes'    => 'Impuestos',
+                        'debit'    => 'Débito',
+                        'credit'   => 'Crédito',
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title' => 'Other Information',
+                'title' => 'Otra información',
 
                 'fieldset' => [
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'Contabilidad',
 
                         'entries' => [
-                            'company'         => 'Company',
-                            'fiscal-position' => 'Fiscal Position',
-                            'checked'         => 'Checked',
+                            'company'         => 'Empresa',
+                            'fiscal-position' => 'Posición fiscal',
+                            'checked'         => 'Verificado',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y condiciones',
             ],
         ],
     ],

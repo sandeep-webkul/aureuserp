@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Journal Entry deleted',
-                'body'  => 'The journal entry has been deleted successfully.',
+                'title' => 'Asiento contable eliminado',
+                'body'  => 'El asiento contable se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -2,29 +2,29 @@
 
 return [
     'global-search' => [
-        'zip-from' => 'Zip From',
-        'zip-to'   => 'Zip To',
-        'name'     => 'Name',
+        'zip-from' => 'Código postal desde',
+        'zip-to'   => 'Código postal hasta',
+        'name'     => 'Nombre',
     ],
 
     'form' => [
         'fields' => [
-            'name'                   => 'Name',
-            'foreign-vat'            => 'Foreign VAT',
-            'country'                => 'Country',
-            'country-group'          => 'Country Group',
-            'zip-from'               => 'Zip From',
-            'zip-to'                 => 'Zip To',
-            'detect-automatically'   => 'Detect Automatically',
-            'notes'                  => 'Notes',
-            'company'                => 'Company',
+            'name'                   => 'Nombre',
+            'foreign-vat'            => 'NIF extranjero',
+            'country'                => 'País',
+            'country-group'          => 'Grupo de países',
+            'zip-from'               => 'Código postal desde',
+            'zip-to'                 => 'Código postal hasta',
+            'detect-automatically'   => 'Detectar automáticamente',
+            'notes'                  => 'Notas',
+            'company'                => 'Empresa',
         ],
         'tabs' => [
             'account-mapping' => [
                 'table' => [
                     'columns' => [
-                        'source-account'      => 'Source Account',
-                        'destination-account' => 'Destination Account',
+                        'source-account'      => 'Cuenta de origen',
+                        'destination-account' => 'Cuenta de destino',
                     ],
                 ],
 
@@ -32,8 +32,8 @@ return [
             'tax-mapping' => [
                 'table' => [
                     'columns' => [
-                        'tax-source'      => 'Tax Source',
-                        'tax-destination' => 'Tax Destination',
+                        'tax-source'      => 'Impuesto de origen',
+                        'tax-destination' => 'Impuesto de destino',
                     ],
                 ],
             ],
@@ -42,22 +42,22 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                 => 'Name',
-            'company'              => 'Company',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'created-by'           => 'Created By',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'status'               => 'Status',
-            'detect-automatically' => 'Detect Automatically',
+            'name'                 => 'Nombre',
+            'company'              => 'Empresa',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de países',
+            'created-by'           => 'Creado por',
+            'zip-from'             => 'Código postal desde',
+            'zip-to'               => 'Código postal hasta',
+            'status'               => 'Estado',
+            'detect-automatically' => 'Detectar automáticamente',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'Condición de pago eliminada',
+                    'body'  => 'La condición de pago se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -65,8 +65,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Fiscal Position deleted',
-                    'body'  => 'The fiscal Position has been deleted successfully.',
+                    'title' => 'Posición fiscal eliminada',
+                    'body'  => 'La posición fiscal se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -74,14 +74,14 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                 => 'Nombre',
+            'foreign-vat'          => 'NIF extranjero',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de países',
+            'zip-from'             => 'Código postal desde',
+            'zip-to'               => 'Código postal hasta',
+            'detect-automatically' => 'Detectar automáticamente',
+            'notes'                => 'Notas',
         ],
     ],
 ];

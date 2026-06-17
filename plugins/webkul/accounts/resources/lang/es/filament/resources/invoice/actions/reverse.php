@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'title' => 'Reverse',
+    'title' => 'Revertir',
 
     'modal' => [
-        'heading' => 'Create Reverse',
+        'heading' => 'Crear reversión',
 
         'form' => [
-            'reason'  => 'Reason displayed on Reverse',
-            'journal' => 'Journal',
-            'date'    => 'Date',
+            'reason'  => 'Motivo mostrado en la reversión',
+            'journal' => 'Diario',
+            'date'    => 'Fecha',
         ],
     ],
 ];

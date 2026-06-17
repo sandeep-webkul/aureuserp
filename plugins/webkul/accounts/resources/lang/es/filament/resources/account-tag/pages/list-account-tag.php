@@ -3,8 +3,8 @@
 return [
     'header-actions' => [
         'notification' => [
-            'title' => 'Account tag created',
-            'body'  => 'The account tag has been created successfully.',
+            'title' => 'Etiqueta de cuenta creada',
+            'body'  => 'La etiqueta de cuenta se ha creado correctamente.',
         ],
     ],
 ];

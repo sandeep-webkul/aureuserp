@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'download' => 'Download',
-    'by-email' => 'Email',
-    'by-post'  => 'Post',
+    'download' => 'Descargar',
+    'by-email' => 'Correo electrónico',
+    'by-post'  => 'Correo postal',
 ];

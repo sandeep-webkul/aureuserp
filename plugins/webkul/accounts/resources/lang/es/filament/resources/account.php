@@ -2,74 +2,74 @@
 
 return [
     'global-search' => [
-        'code' => 'Code',
-        'type' => 'Type',
+        'code' => 'Código',
+        'type' => 'Tipo',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'code'                   => 'Code',
-                'account-name'           => 'Account Name',
-                'accounting'             => 'Accounting',
-                'account-type'           => 'Account Type',
-                'parent-account'         => 'Parent Account',
-                'parent-account-helper'  => 'Select an existing account to make this a sub-account.',
-                'default-taxes'          => 'Default Taxes',
-                'tags'                   => 'Tags',
-                'journals'               => 'Journals',
-                'journals-helper'        => 'Suggested automatically based on the selected Account Type. You can override the selection.',
-                'currency'               => 'Currency',
-                'deprecated'             => 'Deprecated',
-                'reconcile'              => 'Allow Reconcile',
-                'non-trade'              => 'Non Trade',
-                'companies'              => 'Companies',
+                'code'                   => 'Código',
+                'account-name'           => 'Nombre de la cuenta',
+                'accounting'             => 'Contabilidad',
+                'account-type'           => 'Tipo de cuenta',
+                'parent-account'         => 'Cuenta principal',
+                'parent-account-helper'  => 'Seleccionar una cuenta existente para convertirla en subcuenta.',
+                'default-taxes'          => 'Impuestos predeterminados',
+                'tags'                   => 'Etiquetas',
+                'journals'               => 'Diarios',
+                'journals-helper'        => 'Sugeridos automáticamente según el tipo de cuenta seleccionado. Puede modificar la selección.',
+                'currency'               => 'Moneda',
+                'deprecated'             => 'Obsoleto',
+                'reconcile'              => 'Permitir conciliación',
+                'non-trade'              => 'No comercial',
+                'companies'              => 'Empresas',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'code'           => 'Code',
-            'account-name'   => 'Account Name',
-            'account-type'   => 'Account',
-            'parent-account' => 'Parent Account',
-            'currency'       => 'Currency',
-            'journals'       => 'Journals',
-            'reconcile'      => 'Allow Reconcile',
+            'code'           => 'Código',
+            'account-name'   => 'Nombre de la cuenta',
+            'account-type'   => 'Cuenta',
+            'parent-account' => 'Cuenta principal',
+            'currency'       => 'Moneda',
+            'journals'       => 'Diarios',
+            'reconcile'      => 'Permitir conciliación',
         ],
 
         'grouping' => [
-            'account-type' => 'Account Type',
+            'account-type' => 'Tipo de cuenta',
         ],
 
         'filters' => [
-            'account-type'     => 'Account Type',
-            'parent-account'   => 'Parent Account',
-            'allow-reconcile'  => 'Allow Reconcile',
-            'currency'         => 'Currency',
-            'account-journals' => 'Journals',
-            'non-trade'        => 'Non Trade',
+            'account-type'     => 'Tipo de cuenta',
+            'parent-account'   => 'Cuenta principal',
+            'allow-reconcile'  => 'Permitir conciliación',
+            'currency'         => 'Moneda',
+            'account-journals' => 'Diarios',
+            'non-trade'        => 'No comercial',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Account updated',
-                    'body'  => 'The account has been updated successfully.',
+                    'title' => 'Cuenta actualizada',
+                    'body'  => 'La cuenta se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Account deleted',
-                        'body'  => 'The account has been deleted successfully.',
+                        'title' => 'Cuenta eliminada',
+                        'body'  => 'La cuenta se ha eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Account deletion failed',
-                        'body'  => 'The account could not be deleted because it has associated journal items.',
+                        'title' => 'Error al eliminar la cuenta',
+                        'body'  => 'No se pudo eliminar la cuenta porque tiene apuntes contables asociados.',
                     ],
                 ],
             ],
@@ -79,13 +79,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Accounts deleted',
-                        'body'  => 'The accounts has been deleted successfully.',
+                        'title' => 'Cuentas eliminadas',
+                        'body'  => 'Las cuentas se han eliminado correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Accounts deletion failed',
-                        'body'  => 'The accounts could not be deleted because they have associated journal items.',
+                        'title' => 'Error al eliminar las cuentas',
+                        'body'  => 'No se pudieron eliminar las cuentas porque tienen apuntes contables asociados.',
                     ],
                 ],
             ],
@@ -95,19 +95,19 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'code'           => 'Code',
-                'account-name'   => 'Account Name',
-                'accounting'     => 'Accounting',
-                'account-type'   => 'Account Type',
-                'parent-account' => 'Parent Account',
-                'sub-accounts'   => 'Sub Accounts',
-                'default-taxes'  => 'Default Taxes',
-                'tags'           => 'Tags',
-                'journals'       => 'Journals',
-                'currency'       => 'Currency',
-                'deprecated'     => 'Deprecated',
-                'reconcile'      => 'Reconcile',
-                'non-trade'      => 'Non Trade',
+                'code'           => 'Código',
+                'account-name'   => 'Nombre de la cuenta',
+                'accounting'     => 'Contabilidad',
+                'account-type'   => 'Tipo de cuenta',
+                'parent-account' => 'Cuenta principal',
+                'sub-accounts'   => 'Subcuentas',
+                'default-taxes'  => 'Impuestos predeterminados',
+                'tags'           => 'Etiquetas',
+                'journals'       => 'Diarios',
+                'currency'       => 'Moneda',
+                'deprecated'     => 'Obsoleto',
+                'reconcile'      => 'Conciliación',
+                'non-trade'      => 'No comercial',
             ],
         ],
     ],

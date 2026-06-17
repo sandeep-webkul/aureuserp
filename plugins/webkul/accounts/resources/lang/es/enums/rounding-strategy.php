@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'biggest-tax' => 'Modify tax amount',
-    'add-invoice' => 'Add Invoice Line',
+    'biggest-tax' => 'Modificar importe del impuesto',
+    'add-invoice' => 'Añadir línea de factura',
 ];

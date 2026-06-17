@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Journal Entry updated',
-        'body'  => 'The journal entry has been updated successfully.',
+        'title' => 'Asiento contable actualizado',
+        'body'  => 'El asiento contable se ha actualizado correctamente.',
     ],
 ];

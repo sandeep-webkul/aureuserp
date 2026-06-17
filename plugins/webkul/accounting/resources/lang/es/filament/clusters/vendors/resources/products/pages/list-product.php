@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'sales'    => 'Sales',
-        'purchase' => 'Purchase',
+        'sales'    => 'Ventas',
+        'purchase' => 'Compras',
     ],
 ];

@@ -1,5 +1,5 @@
 <?php
 
 return  [
-    'title' => 'Create Vendor',
+    'title' => 'Crear proveedor',
 ];

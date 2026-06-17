@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Fiscal Position',
+    'model-label' => 'Posición fiscal',
 
     'navigation' => [
-        'title' => 'Fiscal Positions',
-        'group' => 'Accounting',
+        'title' => 'Posiciones fiscales',
+        'group' => 'Contabilidad',
     ],
 ];

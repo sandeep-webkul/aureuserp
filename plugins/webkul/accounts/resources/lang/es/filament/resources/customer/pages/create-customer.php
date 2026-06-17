@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Create Customer',
+    'title' => 'Crear cliente',
 ];

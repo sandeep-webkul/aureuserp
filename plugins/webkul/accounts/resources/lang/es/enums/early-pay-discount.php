@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'included' => 'On Early Payment',
-    'excluded' => 'Never',
-    'mixed'    => 'Always (Upon Invoice)',
+    'included' => 'En el pago anticipado',
+    'excluded' => 'Nunca',
+    'mixed'    => 'Siempre (al facturar)',
 ];

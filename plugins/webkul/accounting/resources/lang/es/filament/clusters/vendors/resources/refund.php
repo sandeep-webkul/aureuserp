@@ -1,23 +1,23 @@
 <?php
 
 return [
-    'title' => 'Refund',
+    'title' => 'Reembolso',
 
     'navigation' => [
-        'title' => 'Refunds',
+        'title' => 'Reembolsos',
     ],
 
     'global-search' => [
-        'vendor' => 'Vendor',
-        'amount' => 'Amount',
+        'vendor' => 'Proveedor',
+        'amount' => 'Importe',
     ],
 
     'form' => [
-        'biller'            => 'Biller',
-        'name'              => 'Vendor Credit Note',
+        'biller'            => 'Facturador',
+        'name'              => 'Nota de crédito de proveedor',
         'name-placeholder'  => 'RBILL/2025/02/0001',
-        'reference'         => 'Reference',
-        'payment-reference' => 'Payment Reference',
-        'date'              => 'Accounting Date',
+        'reference'         => 'Referencia',
+        'payment-reference' => 'Referencia de pago',
+        'date'              => 'Fecha contable',
     ],
 ];

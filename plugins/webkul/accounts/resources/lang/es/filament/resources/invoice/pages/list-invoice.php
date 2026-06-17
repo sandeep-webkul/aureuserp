@@ -2,16 +2,16 @@
 
 return [
     'tabs' => [
-        'invoices'    => 'Invoices',
-        'draft'       => 'Draft',
-        'posted'      => 'Posted',
-        'cancelled'   => 'Cancelled',
-        'not-secured' => 'Not Secured',
-        'refund'      => 'Refund',
-        'to-check'    => 'To Check',
-        'to-pay'      => 'To Pay',
-        'in-payment'  => 'In Payment',
-        'unpaid'      => 'Unpaid',
-        'overdue'     => 'Overdue',
+        'invoices'    => 'Facturas',
+        'draft'       => 'Borrador',
+        'posted'      => 'Contabilizado',
+        'cancelled'   => 'Cancelado',
+        'not-secured' => 'No asegurado',
+        'refund'      => 'Reembolso',
+        'to-check'    => 'Por verificar',
+        'to-pay'      => 'Por pagar',
+        'in-payment'  => 'En pago',
+        'unpaid'      => 'Sin pagar',
+        'overdue'     => 'Vencido',
     ],
 ];
