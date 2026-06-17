@@ -110,6 +110,7 @@ export class ErpLocators {
     readonly salesProductNameInput: Locator;
     readonly salesProductCategorySelect: Locator;
     readonly salesProductPriceInput: Locator;
+    readonly salesProductInvoicePolicySelect: Locator;
     readonly salesProductUomSelect: Locator;
     readonly salesProductSaveButton: Locator;
     readonly salesProductCreateButton: Locator;
@@ -397,6 +398,7 @@ export class ErpLocators {
         this.salesProductNameInput = page.locator('input[id="form.name"]').first();
         this.salesProductCategorySelect = page.locator('input[id="form.category_id"], [role="combobox"][aria-label*="Category"], [role="combobox"][aria-labelledby*="Category"]').first();
         this.salesProductPriceInput = page.locator('input[id="form.price"]').first();
+        this.salesProductInvoicePolicySelect = page.locator('select[id="form.invoice_policy"]').first();
         this.salesProductUomSelect = page.locator('input[id="form.uom_id"], [role="combobox"][aria-label*="UOM"], [role="combobox"][aria-labelledby*="UOM"]').first();
         this.salesProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
         this.salesProductEditButton = page.getByRole('link', { name: 'Edit' });
@@ -411,13 +413,13 @@ export class ErpLocators {
         this.salesQuotationProductSelectInput = page.locator('[wire\\:key*=".form.products."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.salesQuotationQuantityInput = page.locator('input[id^="form.products."][id$=".product_qty"]');
         this.salesQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
-        this.salesQuotationSaveButton = page.getByRole('button', { name: /^(Create|Save changes|Submit)$/i }).first();
+        this.salesQuotationSaveButton = page.locator('button[type="submit"]').filter({ hasText: /^\s*(Create|Save changes|Submit)\s*$/i }).first();
         this.salesQuotationConfirmButton = page.getByRole("button", { name: /Confirm/i }).first();
         this.salesQuotationSendButton = page.getByRole("button", { name: /Send by Email|Send/i }).first();
         this.salesQuotationSendSubmitButton = page.getByRole("dialog").getByRole("button", { name: /Send|Submit/i }).first(); 
         this.salesQuotationSentRadio = page.getByRole("radio", { name: /Quotation Sent/i });
         this.salesQuotationCreateInvoiceButton = page.getByRole("button", { name: /Create Invoice/i }).first();
-        this.salesQuotationInvoiceSubmitButton = page.getByRole("dialog").getByRole("button", { name: /Create Invoice/i }).first();
+        this.salesQuotationInvoiceSubmitButton = page.getByRole("dialog").getByRole("button", { name: /^(Submit|Confirm|Create Invoice)$/i }).first();
         this.salesQuotationDeliveriesTable = page.locator("table, div.fi-ta-empty-state");
         this.salesQuotationDeliveryEditButton = page.getByRole('table').getByRole('link', { name: 'Edit' });
         this.salesDeliveryValidateButton = page.getByRole("button", { name: /Validate/i }).first();

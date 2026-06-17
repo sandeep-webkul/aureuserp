@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Order Deadline',
                     'expected-arrival'         => 'Expected Arrival',
                     'confirmed-by-vendor'      => 'Confirmed by Vendor',
+                    'deliver-to'               => 'Deliver To',
                 ],
             ],
         ],
@@ -135,6 +136,7 @@ return [
             'total-amount'     => 'Total Amount',
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
+            'receipt-status'   => 'Receipt Status',
             'currency'         => 'Currency',
         ],
 

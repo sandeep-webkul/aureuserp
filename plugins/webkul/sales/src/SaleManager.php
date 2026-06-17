@@ -176,7 +176,7 @@ class SaleManager
 
         $line = $this->computeQtyDelivered($line);
 
-        $line->qty_to_invoice = $line->qty_delivered - $line->qty_invoiced;
+        $line = $this->computeQtyToInvoice($line);
 
         $subTotal = $line->price_unit * $line->product_qty;
 
@@ -275,6 +275,23 @@ class SaleManager
             }
 
             $line->qty_delivered = $qty;
+        }
+
+        return $line;
+    }
+
+    public function computeQtyToInvoice(OrderLine $line): OrderLine
+    {
+        $policy = $line->product?->invoice_policy ?? $line->product?->parent?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
+
+        if ($line->state == OrderState::SALE && ! $line->display_type) {
+            if ($policy === InvoicePolicy::ORDER->value) {
+                $line->qty_to_invoice = $line->product_uom_qty - $line->qty_invoiced;
+            } else {
+                $line->qty_to_invoice = $line->qty_delivered - $line->qty_invoiced;
+            }
+        } else {
+            $line->qty_to_invoice = 0.0;
         }
 
         return $line;

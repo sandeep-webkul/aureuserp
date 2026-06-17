@@ -413,4 +413,34 @@ class Operation extends Model
 
         return $impactedOperations->unique('id');
     }
+
+
+    public function getEntirePackDestinationLocation($moveLines)
+    {
+        $destinationLocationIds = $moveLines
+            ->pluck('destination_location_id')
+            ->unique()
+            ->values();
+
+        if ($destinationLocationIds->count() > 1) {
+            return false;
+        }
+
+        return $destinationLocationIds->first();
+    }
+
+    public function checkMoveLinesMapQuant($moveLines, Package $package): mixed
+    {
+        return $package->checkMoveLinesMapQuant(
+            $moveLines->filter(fn ($moveLine) => $moveLine->product->is_storable)
+        );
+    }
+
+    public function checkMoveLinesMapQuantPackage(Package $package): mixed
+    {
+        return $this->checkMoveLinesMapQuant(
+            $this->moveLines->filter(fn ($moveLine) => $moveLine->package_id === $package->id),
+            $package
+        );
+    }
 }

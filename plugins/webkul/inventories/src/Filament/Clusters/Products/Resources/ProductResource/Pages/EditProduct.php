@@ -7,7 +7,6 @@ use Filament\Support\Exceptions\Halt;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Product\Filament\Resources\ProductResource\Pages\EditProduct as BaseEditProduct;
 
 class EditProduct extends BaseEditProduct
@@ -77,10 +76,4 @@ class EditProduct extends BaseEditProduct
         }
     }
 
-    protected function getHeaderActions(): array
-    {
-        return array_merge([
-            UpdateQuantityAction::make(),
-        ], parent::getHeaderActions());
-    }
 }
