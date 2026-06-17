@@ -1258,8 +1258,8 @@ class Move extends Model
 
         if (! $this->product->is_storable) {
             return [
-                'forecast_availability'  => $this->product_qty,
-                'forecast_expected_date' => false,
+                $this->product_qty,
+                false,
             ];
         }
 

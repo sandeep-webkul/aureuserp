@@ -131,9 +131,10 @@ class ProductQuantity extends Model
         static::created(function ($productQuantity) {
             if ($productQuantity->package) {
                 $productQuantity->package->update([
-                    'location_id' => $productQuantity->location_id,
                     'pack_date'   => now(),
                 ]);
+
+                $productQuantity->computePackageLocationCompany();
             }
 
             if ($productQuantity->lot) {
@@ -151,7 +152,38 @@ class ProductQuantity extends Model
             if (! $productQuantity->inventory_quantity_set) {
                 $productQuantity->applyInventory();
             }
+
+            if ($productQuantity->wasChanged('location_id') || $productQuantity->wasChanged('company_id')) {
+                if (! $productQuantity->package) {
+                    return;
+                }
+
+                $productQuantity->computePackageLocationCompany();
+            }
         });
+    }
+
+    public function computePackageLocationCompany()
+    {
+        $package = $this->package;
+
+        $package->location_id = null;
+
+        $package->company_id  = null;
+
+        $quantities = $package->quantities->filter(
+            fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
+        );
+
+        if ($quantities->isNotEmpty()) {
+            $package->location_id = $quantities->first()->location_id;
+
+            if ($package->quantities->every(fn ($quantity) => $quantity->company_id === $quantities->first()->company_id)) {
+                $package->company_id = $quantities->first()->company_id;
+            }
+        }
+
+        $package->save();
     }
 
     public function applyInventory()
