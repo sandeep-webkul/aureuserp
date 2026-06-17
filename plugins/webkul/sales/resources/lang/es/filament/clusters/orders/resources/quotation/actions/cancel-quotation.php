@@ -1,48 +1,48 @@
 <?php
 
 return [
-    'title' => 'Cancel',
+    'title' => 'Cancelar',
     'modal' => [
-        'heading'     => 'Cancel Quotation',
-        'description' => 'Are you sure you want to cancel this Quotation?',
+        'heading'     => 'Cancelar presupuesto',
+        'description' => '¿Seguro que quiere cancelar este presupuesto?',
     ],
 
     'footer-actions' => [
         'send-and-cancel' => [
-            'title' => 'Send & Cancel',
+            'title' => 'Enviar y cancelar',
 
             'notification' => [
                 'cancelled' => [
-                    'title' => 'Quotation cancelled',
-                    'body'  => 'Quotation has been cancelled and email has been sent successfully.',
+                    'title' => 'Presupuesto cancelado',
+                    'body'  => 'El presupuesto se ha cancelado y el correo se ha enviado correctamente.',
                 ],
             ],
         ],
 
         'cancel' => [
-            'title' => 'Cancel',
+            'title' => 'Cancelar',
 
             'notification' => [
                 'cancelled' => [
-                    'title' => 'Quotation cancelled',
-                    'body'  => 'Quotation has been cancelled successfully.',
+                    'title' => 'Presupuesto cancelado',
+                    'body'  => 'El presupuesto se ha cancelado correctamente.',
                 ],
             ],
         ],
 
         'close' => [
-            'title' => 'Close',
+            'title' => 'Cerrar',
         ],
     ],
 
     'form' => [
         'fields' => [
-            'partner'             => 'Partner',
-            'subject'             => 'Subject',
-            'subject-placeholder' => 'Subject',
-            'subject-default'     => 'Quotation :name has been cancelled for Sales Order #:id',
-            'description'         => 'Description',
-            'description-default' => 'Dear <b>:partner_name</b>, <br/><br/>We would like to inform you that your Sales Order <b>:name</b> has been cancelled. As a result, no further charges will apply to this order. If a refund is required, it will be processed at the earliest convenience.<br/><br/>Should you have any questions or require further assistance, please feel free to reach out to us.',
+            'partner'             => 'Contacto',
+            'subject'             => 'Asunto',
+            'subject-placeholder' => 'Asunto',
+            'subject-default'     => 'El presupuesto :name se ha cancelado para el pedido de venta #:id',
+            'description'         => 'Descripción',
+            'description-default' => 'Estimado/a <b>:partner_name</b>, <br/><br/>Le informamos que su pedido de venta <b>:name</b> ha sido cancelado. Como resultado, no se aplicarán más cargos a este pedido. Si se requiere un reembolso, se procesará lo antes posible.<br/><br/>Si tiene alguna pregunta o necesita más ayuda, no dude en ponerse en contacto con nosotros.',
         ],
     ],
 ];

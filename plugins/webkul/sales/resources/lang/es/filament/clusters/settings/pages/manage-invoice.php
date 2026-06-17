@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Manage Invoice',
+    'title' => 'Gestionar factura',
 
-    'breadcrumb' => 'Manage Invoice',
+    'breadcrumb' => 'Gestionar factura',
 
     'navigation' => [
-        'title' => 'Manage Invoice',
+        'title' => 'Gestionar factura',
     ],
 
     'form' => [
         'invoice-policy' => [
-            'label'      => 'Invoice Policy',
-            'label-help' => 'Define how invoices are generated from sales orders.',
+            'label'      => 'Política de facturación',
+            'label-help' => 'Definir cómo se generan las facturas a partir de los pedidos de venta.',
             'options'    => [
-                'order'    => 'Generate invoice based on ordered quantities',
-                'delivery' => 'Generate invoice based on delivered quantities',
+                'order'    => 'Generar factura según las cantidades pedidas',
+                'delivery' => 'Generar factura según las cantidades entregadas',
             ],
         ],
     ],

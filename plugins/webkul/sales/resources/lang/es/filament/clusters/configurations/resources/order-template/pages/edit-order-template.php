@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Order Template Product updated',
-        'body'  => 'The Order Template Product has been updated successfully',
+        'title' => 'Producto de plantilla de pedido actualizado',
+        'body'  => 'El producto de plantilla de pedido se ha actualizado correctamente',
     ],
 
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Order Template Product deleted',
-                'body'  => 'Order Template Product has been deleted successfully',
+                'title' => 'Producto de plantilla de pedido eliminado',
+                'body'  => 'El producto de plantilla de pedido se ha eliminado correctamente',
             ],
         ],
     ],

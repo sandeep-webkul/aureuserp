@@ -2,6 +2,6 @@
 
 return [
     'header-actions' => [
-        'create' => 'New RFQ',
+        'create' => 'Nueva solicitud de presupuesto',
     ],
 ];

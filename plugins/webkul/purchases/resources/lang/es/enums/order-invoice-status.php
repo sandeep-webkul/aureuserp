@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'no'          => 'Noting To Bill',
-    'to-invoiced' => 'Waiting Bills',
-    'invoiced'    => 'Fully Billed',
+    'no'          => 'Nada por facturar',
+    'to-invoiced' => 'Facturas en espera',
+    'invoiced'    => 'Totalmente facturado',
 ];

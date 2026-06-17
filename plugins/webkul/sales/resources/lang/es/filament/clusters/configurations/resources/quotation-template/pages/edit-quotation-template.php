@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation Template Updated',
-        'body'  => 'Quotation Template has been updated successfully.',
+        'title' => 'Plantilla de presupuesto actualizada',
+        'body'  => 'La plantilla de presupuesto se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Delete Quotation Template',
-                'body'  => 'Quotation template has been deleted successfully.',
+                'title' => 'Eliminar plantilla de presupuesto',
+                'body'  => 'La plantilla de presupuesto se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Delete Quotation',
-                'body'  => 'Quotation has been deleted successfully.',
+                'title' => 'Eliminar presupuesto',
+                'body'  => 'El presupuesto se ha eliminado correctamente.',
             ],
         ],
     ],

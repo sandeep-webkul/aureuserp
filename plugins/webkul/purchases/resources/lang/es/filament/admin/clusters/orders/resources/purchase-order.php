@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Purchase Orders',
+        'title' => 'Pedidos de compra',
     ],
 ];

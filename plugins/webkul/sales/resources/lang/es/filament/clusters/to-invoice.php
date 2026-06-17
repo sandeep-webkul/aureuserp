@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'To Invoice',
-        'group' => 'Sales',
+        'title' => 'Por facturar',
+        'group' => 'Ventas',
     ],
 ];

@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'label' => 'Lock',
+    'label' => 'Bloquear',
 
     'action' => [
         'notification' => [
             'success' => [
-                'title' => 'Order locked',
-                'body'  => 'The order has been locked successfully.',
+                'title' => 'Pedido bloqueado',
+                'body'  => 'El pedido se ha bloqueado correctamente.',
             ],
         ],
     ],

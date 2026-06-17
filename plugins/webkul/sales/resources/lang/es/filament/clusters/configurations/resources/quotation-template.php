@@ -1,50 +1,50 @@
 <?php
 
 return [
-    'title' => 'Quotation Template',
+    'title' => 'Plantilla de presupuesto',
 
     'navigation' => [
-        'title'  => 'Quotation Template',
-        'group'  => 'Sales Orders',
+        'title'  => 'Plantilla de presupuesto',
+        'group'  => 'Pedidos de venta',
     ],
 
     'form' => [
         'tabs' => [
             'products' => [
-                'title'  => 'Products',
+                'title'  => 'Productos',
                 'fields' => [
-                    'products'     => 'Products',
-                    'name'         => 'Name',
-                    'quantity'     => 'Quantity',
+                    'products'     => 'Productos',
+                    'name'         => 'Nombre',
+                    'quantity'     => 'Cantidad',
                 ],
             ],
 
             'terms-and-conditions' => [
-                'title'  => 'Terms & Conditions',
+                'title'  => 'Términos y condiciones',
                 'fields' => [
-                    'note-placeholder' => 'Write your terms and conditions for the quotations.',
+                    'note-placeholder' => 'Escriba sus términos y condiciones para los presupuestos.',
                 ],
             ],
         ],
 
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'fields' => [
-                    'name'               => 'Name',
-                    'quotation-validity' => 'Quotation Validity',
-                    'sale-journal'       => 'Sale Journal',
+                    'name'               => 'Nombre',
+                    'quotation-validity' => 'Validez del presupuesto',
+                    'sale-journal'       => 'Diario de ventas',
                 ],
             ],
 
             'signature-and-payment' => [
-                'title' => 'Signature & Payments',
+                'title' => 'Firma y pagos',
 
                 'fields' => [
-                    'online-signature'      => 'Online Signature',
-                    'online-payment'        => 'Online Payment',
-                    'prepayment-percentage' => 'Prepayment Percentage',
+                    'online-signature'      => 'Firma en línea',
+                    'online-payment'        => 'Pago en línea',
+                    'prepayment-percentage' => 'Porcentaje de anticipo',
                 ],
             ],
         ],
@@ -52,32 +52,32 @@ return [
 
     'table' => [
         'columns' => [
-            'created-by'            => 'Created by',
-            'company'               => 'Company',
-            'name'                  => 'Name',
-            'number-of-days'        => 'Number of days',
-            'journal'               => 'Sale Journal',
-            'signature-required'    => 'Signature Required',
-            'payment-required'      => 'Payment Required',
-            'prepayment-percentage' => 'Prepayment Percentage',
+            'created-by'            => 'Creado por',
+            'company'               => 'Empresa',
+            'name'                  => 'Nombre',
+            'number-of-days'        => 'Número de días',
+            'journal'               => 'Diario de ventas',
+            'signature-required'    => 'Firma requerida',
+            'payment-required'      => 'Pago requerido',
+            'prepayment-percentage' => 'Porcentaje de anticipo',
         ],
         'groups'  => [
-            'company' => 'Company',
-            'name'    => 'Name',
-            'journal' => 'Journal',
+            'company' => 'Empresa',
+            'name'    => 'Nombre',
+            'journal' => 'Diario',
         ],
         'filters' => [
-            'created-by' => 'Created By',
-            'company'    => 'Company',
-            'name'       => 'Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-by' => 'Creado por',
+            'company'    => 'Empresa',
+            'name'       => 'Nombre',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Quotation template deleted',
-                    'body'  => 'The quotation template has been deleted successfully.',
+                    'title' => 'Plantilla de presupuesto eliminada',
+                    'body'  => 'La plantilla de presupuesto se ha eliminado correctamente.',
                 ],
             ],
 
@@ -85,8 +85,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Quotation template deleted',
-                    'body'  => 'The quotation template has been deleted successfully.',
+                    'title' => 'Plantilla de presupuesto eliminada',
+                    'body'  => 'La plantilla de presupuesto se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -95,33 +95,33 @@ return [
     'infolist' => [
         'tabs' => [
             'products' => [
-                'title' => 'Products',
+                'title' => 'Productos',
             ],
             'terms-and-conditions' => [
-                'title' => 'Terms & Conditions',
+                'title' => 'Términos y condiciones',
             ],
         ],
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
             ],
             'signature_and_payment' => [
-                'title' => 'Signature & Payment',
+                'title' => 'Firma y pago',
             ],
         ],
         'entries' => [
-            'product'               => 'Product',
-            'description'           => 'Description',
-            'quantity'              => 'Quantity',
-            'unit-price'            => 'Unit Price',
-            'section-name'          => 'Section Name',
-            'note-title'            => 'Note Title',
-            'name'                  => 'Template Name',
-            'quotation-validity'    => 'Quotation Validity',
-            'sale-journal'          => 'Sale Journal',
-            'online-signature'      => 'Online Signature',
-            'online-payment'        => 'Online Payment',
-            'prepayment-percentage' => 'Prepayment Percentage',
+            'product'               => 'Producto',
+            'description'           => 'Descripción',
+            'quantity'              => 'Cantidad',
+            'unit-price'            => 'Precio unitario',
+            'section-name'          => 'Nombre de la sección',
+            'note-title'            => 'Título de la nota',
+            'name'                  => 'Nombre de la plantilla',
+            'quotation-validity'    => 'Validez del presupuesto',
+            'sale-journal'          => 'Diario de ventas',
+            'online-signature'      => 'Firma en línea',
+            'online-payment'        => 'Pago en línea',
+            'prepayment-percentage' => 'Porcentaje de anticipo',
         ],
     ],
 ];

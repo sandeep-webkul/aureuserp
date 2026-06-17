@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'label' => 'Unlock',
+    'label' => 'Desbloquear',
 
     'action' => [
         'notification' => [
             'success' => [
-                'title' => 'Order unlock',
-                'body'  => 'The order has been unlock successfully.',
+                'title' => 'Pedido desbloqueado',
+                'body'  => 'El pedido se ha desbloqueado correctamente.',
             ],
         ],
     ],

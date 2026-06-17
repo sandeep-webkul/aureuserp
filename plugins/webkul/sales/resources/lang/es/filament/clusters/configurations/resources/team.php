@@ -1,27 +1,27 @@
 <?php
 
 return [
-    'title' => 'Sales Teams',
+    'title' => 'Equipos de ventas',
 
     'navigation' => [
-        'title' => 'Sales Teams',
+        'title' => 'Equipos de ventas',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'name'     => 'Sales Team',
-                'status'   => 'Status',
+                'name'     => 'Equipo de ventas',
+                'status'   => 'Estado',
                 'fieldset' => [
                     'team-details' => [
-                        'title'  => 'Team Details',
+                        'title'  => 'Detalles del equipo',
                         'fields' => [
-                            'team-leader'            => 'Team Leader',
-                            'company'                => 'Company',
-                            'invoiced-target'        => 'Invoiced Target',
-                            'invoiced-target-suffix' => '/ Month',
+                            'team-leader'            => 'Líder del equipo',
+                            'company'                => 'Empresa',
+                            'invoiced-target'        => 'Objetivo facturado',
+                            'invoiced-target-suffix' => '/ Mes',
                             'color'                  => 'Color',
-                            'members'                => 'Members',
+                            'members'                => 'Miembros',
                         ],
                     ],
                 ],
@@ -32,53 +32,53 @@ return [
     'table' => [
         'columns' => [
             'id'              => 'ID',
-            'company'         => 'Company',
-            'team-leader'     => 'Team Leader',
-            'name'            => 'Name',
-            'status'          => 'Status',
-            'invoiced-target' => 'Invoiced Target',
+            'company'         => 'Empresa',
+            'team-leader'     => 'Líder del equipo',
+            'name'            => 'Nombre',
+            'status'          => 'Estado',
+            'invoiced-target' => 'Objetivo facturado',
             'color'           => 'Color',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'created-by'      => 'Creado por',
+            'created-at'      => 'Creado el',
+            'updated-at'      => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'        => 'Name',
-            'team-leader' => 'Team Leader',
-            'company'     => 'Company',
-            'created-by'  => 'Created By',
-            'updated-at'  => 'Updated At',
-            'created-at'  => 'Created At',
+            'name'        => 'Nombre',
+            'team-leader' => 'Líder del equipo',
+            'company'     => 'Empresa',
+            'created-by'  => 'Creado por',
+            'updated-at'  => 'Actualizado el',
+            'created-at'  => 'Creado el',
         ],
 
         'groups' => [
-            'name'        => 'Name',
-            'company'     => ' Company',
-            'team-leader' => 'Team Leader',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
+            'name'        => 'Nombre',
+            'company'     => ' Empresa',
+            'team-leader' => 'Líder del equipo',
+            'created-at'  => 'Creado el',
+            'updated-at'  => 'Actualizado el',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Sales Team restored',
-                    'body'  => 'The sales Team has been restored successfully.',
+                    'title' => 'Equipo de ventas restaurado',
+                    'body'  => 'El equipo de ventas se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Sales Team deleted',
-                    'body'  => 'The sales Team has been deleted successfully.',
+                    'title' => 'Equipo de ventas eliminado',
+                    'body'  => 'El equipo de ventas se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Sales Team force deleted',
-                    'body'  => 'The sales Team has been force deleted successfully.',
+                    'title' => 'Equipo de ventas eliminado permanentemente',
+                    'body'  => 'El equipo de ventas se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -86,22 +86,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Sales Teams restored',
-                    'body'  => 'The sales Teams has been restored successfully.',
+                    'title' => 'Equipos de ventas restaurados',
+                    'body'  => 'Los equipos de ventas se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Sales Teams deleted',
-                    'body'  => 'The sales Teams has been deleted successfully.',
+                    'title' => 'Equipos de ventas eliminados',
+                    'body'  => 'Los equipos de ventas se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Sales Teams force deleted',
-                    'body'  => 'The sales Teams has been force deleted successfully.',
+                    'title' => 'Equipos de ventas eliminados permanentemente',
+                    'body'  => 'Los equipos de ventas se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -109,8 +109,8 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Sales Teams created',
-                    'body'  => 'The sales Teams has been created successfully.',
+                    'title' => 'Equipos de ventas creados',
+                    'body'  => 'Los equipos de ventas se han creado correctamente.',
                 ],
             ],
         ],
@@ -119,18 +119,18 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'     => 'Sales Team',
-                'status'   => 'Status',
+                'name'     => 'Equipo de ventas',
+                'status'   => 'Estado',
                 'fieldset' => [
                     'team-details' => [
-                        'title'   => 'Team Details',
+                        'title'   => 'Detalles del equipo',
                         'entries' => [
-                            'team-leader'            => 'Team Leader',
-                            'company'                => 'Company',
-                            'invoiced-target'        => 'Invoiced Target',
-                            'invoiced-target-suffix' => '/ Month',
+                            'team-leader'            => 'Líder del equipo',
+                            'company'                => 'Empresa',
+                            'invoiced-target'        => 'Objetivo facturado',
+                            'invoiced-target-suffix' => '/ Mes',
                             'color'                  => 'Color',
-                            'members'                => 'Members',
+                            'members'                => 'Miembros',
                         ],
                     ],
                 ],

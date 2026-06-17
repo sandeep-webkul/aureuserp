@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation updated',
-        'body'  => 'The quotation has been updated successfully.',
+        'title' => 'Presupuesto actualizado',
+        'body'  => 'El presupuesto se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Delete Quotation',
-                'body'  => 'Quotation has been deleted successfully.',
+                'title' => 'Eliminar presupuesto',
+                'body'  => 'El presupuesto se ha eliminado correctamente.',
             ],
         ],
     ],

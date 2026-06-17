@@ -3,19 +3,19 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'Imprimir',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Order Deleted',
-                    'body'  => 'The order has been deleted successfully.',
+                    'title' => 'Pedido eliminado',
+                    'body'  => 'El pedido se ha eliminado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Order could not be deleted',
-                    'body'  => 'The order cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el pedido',
+                    'body'  => 'El pedido no se puede eliminar porque está actualmente en uso.',
                 ],
             ],
         ],

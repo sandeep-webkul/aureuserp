@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title'          => 'Team',
+    'title'          => 'Equipo',
 
     'log-attributes' => [
-        'name'            => 'Team Name',
-        'company'         => 'Company',
-        'team_leader'     => 'Team Leader',
-        'creator'         => 'Created By',
-        'status'          => 'Status',
-        'invoiced_target' => 'Invoiced Target',
+        'name'            => 'Nombre del equipo',
+        'company'         => 'Empresa',
+        'team_leader'     => 'Líder del equipo',
+        'creator'         => 'Creado por',
+        'status'          => 'Estado',
+        'invoiced_target' => 'Objetivo facturado',
     ],
 ];

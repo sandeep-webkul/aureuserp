@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title'          => 'Purchase Agreement',
+    'title'          => 'Acuerdo de compra',
 
     'log-attributes' => [
-        'state'     => 'Status',
-        'reference' => 'Reference',
-        'starts_at' => 'Start Date',
-        'ends_at'   => 'End Date',
-        'partner'   => 'Vendor',
-        'buyer'     => 'Buyer',
+        'state'     => 'Estado',
+        'reference' => 'Referencia',
+        'starts_at' => 'Fecha de inicio',
+        'ends_at'   => 'Fecha de fin',
+        'partner'   => 'Proveedor',
+        'buyer'     => 'Comprador',
     ],
 ];

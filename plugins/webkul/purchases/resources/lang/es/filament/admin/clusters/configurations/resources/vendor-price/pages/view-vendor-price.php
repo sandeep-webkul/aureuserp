@@ -2,20 +2,20 @@
 
 return [
     'navigation' => [
-        'title' => 'View Vendor Price List',
+        'title' => 'Ver lista de precios de proveedor',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Vendor Price deleted',
-                    'body'  => 'The vendor price has been deleted successfully.',
+                    'title' => 'Precio de proveedor eliminado',
+                    'body'  => 'El precio de proveedor se ha eliminado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Vendor Price could not be deleted',
-                    'body'  => 'The vendor price cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el precio de proveedor',
+                    'body'  => 'El precio de proveedor no se puede eliminar porque está actualmente en uso.',
                 ],
             ],
         ],

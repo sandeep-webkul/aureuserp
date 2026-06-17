@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'title' => 'Manage Products',
+    'title' => 'Gestionar productos',
 
     'form' => [
-        'enable-variants'               => 'Variants',
-        'enable-variants-helper-text'   => 'Set product attributes (e.g. color, size) to manage variants',
-        'enable-uom'                    => 'Unit of Measure',
-        'enable-uom-helper-text'        => 'Sell and purchase products in different units of measure',
-        'enable-packagings'             => 'Packagings',
-        'enable-packagings-helper-text' => 'Manage product packagings (e.g. pack of 6 bottles, box of 10 pieces)',
-        'configure-packagings'          => 'Configure Packagings',
+        'enable-variants'               => 'Variantes',
+        'enable-variants-helper-text'   => 'Establecer atributos de producto (p. ej. color, talla) para gestionar variantes',
+        'enable-uom'                    => 'Unidad de medida',
+        'enable-uom-helper-text'        => 'Vender y comprar productos en diferentes unidades de medida',
+        'enable-packagings'             => 'Embalajes',
+        'enable-packagings-helper-text' => 'Gestionar embalajes de productos (p. ej. paquete de 6 botellas, caja de 10 piezas)',
+        'configure-packagings'          => 'Configurar embalajes',
     ],
 ];

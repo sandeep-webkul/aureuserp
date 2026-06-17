@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Order',
+    'title' => 'Crear pedido',
 
     'notification' => [
-        'title' => 'Order created',
-        'body'  => 'The order has been created successfully.',
+        'title' => 'Pedido creado',
+        'body'  => 'El pedido se ha creado correctamente.',
     ],
 ];

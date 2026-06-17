@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'label' => 'Send PO By Email',
+    'label' => 'Enviar pedido de compra por correo electrónico',
 
     'form' => [
         'fields' => [
-            'to'      => 'To',
-            'subject' => 'Subject',
-            'message' => 'Message',
+            'to'      => 'Para',
+            'subject' => 'Asunto',
+            'message' => 'Mensaje',
         ],
     ],
 
     'action' => [
         'notification' => [
             'success' => [
-                'title' => 'Email sent',
-                'body'  => 'The email has been sent successfully.',
+                'title' => 'Correo electrónico enviado',
+                'body'  => 'El correo electrónico se ha enviado correctamente.',
             ],
         ],
     ],

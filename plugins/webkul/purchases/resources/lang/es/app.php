@@ -3,8 +3,8 @@
 return [
     'navigation' => [
         'settings' => [
-            'label' => 'Settings',
-            'group' => 'Purchase',
+            'label' => 'Configuración',
+            'group' => 'Compra',
         ],
     ],
 ];

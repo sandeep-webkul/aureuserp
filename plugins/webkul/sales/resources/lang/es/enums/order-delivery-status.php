@@ -2,7 +2,7 @@
 
 return [
     'no'      => 'No',
-    'pending' => 'Pending',
-    'partial' => 'Partial',
-    'full'    => 'Full',
+    'pending' => 'Pendiente',
+    'partial' => 'Parcial',
+    'full'    => 'Completo',
 ];

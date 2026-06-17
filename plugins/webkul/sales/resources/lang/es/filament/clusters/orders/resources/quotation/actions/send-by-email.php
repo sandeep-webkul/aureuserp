@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title'        => 'Send By Email',
-    'resend-title' => 'Re-Send By Email',
-    'quotation'    => 'quotation',
-    'quotations'   => 'quotations',
+    'title'        => 'Enviar por correo electrónico',
+    'resend-title' => 'Reenviar por correo electrónico',
+    'quotation'    => 'presupuesto',
+    'quotations'   => 'presupuestos',
 
     'modal' => [
-        'heading' => 'Send Quotation By Email',
+        'heading' => 'Enviar presupuesto por correo electrónico',
     ],
 
     'form' => [
         'fields' => [
-            'partners'    => 'Partners',
-            'subject'     => 'Subject',
-            'description' => 'Description',
-            'attachment'  => 'Attachment',
+            'partners'    => 'Contactos',
+            'subject'     => 'Asunto',
+            'description' => 'Descripción',
+            'attachment'  => 'Adjunto',
         ],
     ],
 
@@ -23,24 +23,24 @@ return [
         'notification' => [
             'email' => [
                 'no_recipients' => [
-                    'title' => 'No Recipients Selected',
-                    'body'  => 'Please select at least one partner to send quotations to.',
+                    'title' => 'Ningún destinatario seleccionado',
+                    'body'  => 'Seleccione al menos un contacto al que enviar los presupuestos.',
                 ],
 
                 'all_success' => [
-                    'title' => 'Quotations Sent!',
-                    'body'  => 'Your :plural have been successfully delivered to: :recipients',
+                    'title' => '¡Presupuestos enviados!',
+                    'body'  => 'Sus :plural se han entregado correctamente a: :recipients',
                 ],
 
                 'all_failed' => [
-                    'title' => 'Unable to Send Quotations',
-                    'body'  => 'We encountered issues sending your quotations: :failures',
+                    'title' => 'No se pudieron enviar los presupuestos',
+                    'body'  => 'Se produjeron problemas al enviar sus presupuestos: :failures',
                 ],
 
                 'partial_success' => [
-                    'title'       => 'Some Quotations Sent',
-                    'sent_part'   => 'Successfully delivered to: :recipients',
-                    'failed_part' => 'Could not deliver to: :failures',
+                    'title'       => 'Algunos presupuestos enviados',
+                    'sent_part'   => 'Entregado correctamente a: :recipients',
+                    'failed_part' => 'No se pudo entregar a: :failures',
                 ],
 
                 'failure_item' => ':partner (:reason)',

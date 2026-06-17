@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'delivered'  => 'Regular invoice',
-    'percentage' => 'Down payment (percentage)',
-    'fixed'      => 'Down payment (fixed amount)',
+    'delivered'  => 'Factura normal',
+    'percentage' => 'Anticipo (porcentaje)',
+    'fixed'      => 'Anticipo (importe fijo)',
 ];

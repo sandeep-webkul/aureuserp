@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation created',
-        'body'  => 'The quotation has been created successfully.',
+        'title' => 'Presupuesto creado',
+        'body'  => 'El presupuesto se ha creado correctamente.',
     ],
 ];

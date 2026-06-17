@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'section' => 'Section',
-    'note'    => 'Note',
+    'section' => 'Sección',
+    'note'    => 'Nota',
 ];

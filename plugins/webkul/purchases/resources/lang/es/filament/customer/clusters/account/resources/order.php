@@ -3,65 +3,65 @@
 return [
     'table' => [
         'columns' => [
-            'reference'         => 'Reference',
-            'total-amount'      => 'Total Amount',
-            'confirmation-date' => 'Confirmation Date',
-            'status'            => 'Status',
+            'reference'         => 'Referencia',
+            'total-amount'      => 'Importe total',
+            'confirmation-date' => 'Fecha de confirmación',
+            'status'            => 'Estado',
         ],
     ],
 
     'infolist' => [
         'settings' => [
             'entries' => [
-                'buyer' => 'Buyer',
+                'buyer' => 'Comprador',
             ],
 
             'actions' => [
                 'accept' => [
-                    'label' => 'Accept',
+                    'label' => 'Aceptar',
 
                     'notification' => [
-                        'title' => 'Quotation Accepted',
-                        'body'  => 'The RFQ has been acknowledged successfully.',
+                        'title' => 'Presupuesto aceptado',
+                        'body'  => 'La solicitud de presupuesto se ha confirmado correctamente.',
                     ],
 
                     'message' => [
-                        'body' => 'The RFQ has been acknowledged by vendor.',
+                        'body' => 'La solicitud de presupuesto ha sido confirmada por el proveedor.',
                     ],
                 ],
 
                 'decline' => [
-                    'label' => 'Decline',
+                    'label' => 'Rechazar',
 
                     'notification' => [
-                        'title' => 'Quotation Declined',
-                        'body'  => 'The RFQ has been declined successfully.',
+                        'title' => 'Presupuesto rechazado',
+                        'body'  => 'La solicitud de presupuesto se ha rechazado correctamente.',
                     ],
 
                     'message' => [
-                        'body' => 'The RFQ has been declined by vendor.',
+                        'body' => 'La solicitud de presupuesto ha sido rechazada por el proveedor.',
                     ],
                 ],
 
                 'print' => [
-                    'label' => 'Download/Print',
+                    'label' => 'Descargar/Imprimir',
                 ],
             ],
         ],
 
         'general' => [
             'entries' => [
-                'purchase-order'        => 'Purchase Order #:id',
-                'quotation'             => 'Request for Quotation #:id',
-                'order-date'            => 'Order Date',
-                'from'                  => 'From',
-                'confirmation-date'     => 'Confirmation Date',
-                'receipt-date'          => 'Receipt Date',
-                'products'              => 'Products',
-                'untaxed-amount'        => 'Untaxed Amount',
-                'tax-amount'            => 'Tax Amount',
+                'purchase-order'        => 'Pedido de compra n.º :id',
+                'quotation'             => 'Solicitud de presupuesto n.º :id',
+                'order-date'            => 'Fecha del pedido',
+                'from'                  => 'De',
+                'confirmation-date'     => 'Fecha de confirmación',
+                'receipt-date'          => 'Fecha de recepción',
+                'products'              => 'Productos',
+                'untaxed-amount'        => 'Importe sin impuestos',
+                'tax-amount'            => 'Importe de impuestos',
                 'total'                 => 'Total',
-                'communication-history' => 'Communication History',
+                'communication-history' => 'Historial de comunicaciones',
             ],
         ],
     ],

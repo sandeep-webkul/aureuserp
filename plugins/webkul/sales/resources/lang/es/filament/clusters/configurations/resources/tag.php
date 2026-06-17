@@ -1,46 +1,46 @@
 <?php
 
 return [
-    'title' => 'Tag',
+    'title' => 'Etiqueta',
 
     'navigation' => [
-        'title' => 'Tag',
-        'group' => 'Sales Orders',
+        'title' => 'Etiqueta',
+        'group' => 'Pedidos de venta',
     ],
 
     'form' => [
         'fields' => [
-            'name'  => 'Name',
+            'name'  => 'Nombre',
             'color' => 'Color',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'created-by' => 'Created by',
-            'name'       => 'Name',
+            'created-by' => 'Creado por',
+            'name'       => 'Nombre',
             'color'      => 'Color',
         ],
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Product Tag updated',
-                    'body'  => 'The product Tag has been updated successfully.',
+                    'title' => 'Etiqueta de producto actualizada',
+                    'body'  => 'La etiqueta de producto se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Product Tag deleted',
-                    'body'  => 'The product Tag has been deleted successfully.',
+                    'title' => 'Etiqueta de producto eliminada',
+                    'body'  => 'La etiqueta de producto se ha eliminado correctamente.',
                 ],
             ],
         ],
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Product Tag deleted',
-                    'body'  => 'The product Tag has been deleted successfully.',
+                    'title' => 'Etiqueta de producto eliminada',
+                    'body'  => 'La etiqueta de producto se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -48,7 +48,7 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'  => 'Name',
+            'name'  => 'Nombre',
             'color' => 'Color',
         ],
     ],

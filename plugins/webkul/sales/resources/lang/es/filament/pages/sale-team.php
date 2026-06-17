@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Sales Teams',
+        'title' => 'Equipos de ventas',
     ],
 ];

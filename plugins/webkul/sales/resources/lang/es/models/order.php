@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'title'          => 'Sales Order',
+    'title'          => 'Pedido de venta',
 
     'log-attributes' => [
-        'state'           => 'Order Status',
-        'locked'          => 'Locked',
-        'amount-untaxed'  => 'Amount Untaxed',
-        'amount-total'    => 'Amount Total',
-        'partner'         => 'Customer',
-        'sales-person'    => 'Sales Person',
-        'sales-team'      => 'Sales Team',
-        'payment-term'    => 'Payment Term',
-        'fiscal-position' => 'Fiscal Position',
+        'state'           => 'Estado del pedido',
+        'locked'          => 'Bloqueado',
+        'amount-untaxed'  => 'Importe sin impuestos',
+        'amount-total'    => 'Importe total',
+        'partner'         => 'Cliente',
+        'sales-person'    => 'Vendedor',
+        'sales-team'      => 'Equipo de ventas',
+        'payment-term'    => 'Plazo de pago',
+        'fiscal-position' => 'Posición fiscal',
     ],
 ];

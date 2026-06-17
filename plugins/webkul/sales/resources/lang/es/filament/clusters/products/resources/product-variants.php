@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Product variants',
+    'title' => 'Variantes de producto',
 
     'navigation' => [
-        'title' => 'Product variants',
-        'group' => 'Inventory',
+        'title' => 'Variantes de producto',
+        'group' => 'Inventario',
     ],
 ];

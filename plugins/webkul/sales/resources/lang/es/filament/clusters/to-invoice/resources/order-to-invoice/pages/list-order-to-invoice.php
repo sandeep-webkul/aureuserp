@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'my-orders' => 'My Orders',
-        'archived'  => 'Archived',
+        'my-orders' => 'Mis pedidos',
+        'archived'  => 'Archivados',
     ],
 ];

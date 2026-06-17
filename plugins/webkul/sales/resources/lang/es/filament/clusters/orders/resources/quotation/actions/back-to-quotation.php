@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'title' => 'Set as Quotation',
+    'title' => 'Establecer como presupuesto',
 
     'notification' => [
         'back-to-quotation' => [
-            'title' => 'Sale order set as Quotation',
-            'body'  => 'Sale order has been set as Quotation successfully.',
+            'title' => 'Pedido de venta establecido como presupuesto',
+            'body'  => 'El pedido de venta se ha establecido como presupuesto correctamente.',
         ],
     ],
 ];

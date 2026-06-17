@@ -2,37 +2,37 @@
 
 return [
     'notification' => [
-        'title' => 'Order updated',
-        'body'  => 'The order has been updated successfully.',
+        'title' => 'Pedido actualizado',
+        'body'  => 'El pedido se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'confirm' => [
-            'label' => 'Confirm',
+            'label' => 'Confirmar',
         ],
 
         'close' => [
-            'label' => 'Close',
+            'label' => 'Cerrar',
         ],
 
         'cancel' => [
-            'label' => 'Cancel',
+            'label' => 'Cancelar',
         ],
 
         'print' => [
-            'label' => 'Print',
+            'label' => 'Imprimir',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Order deleted',
-                    'body'  => 'The order has been deleted successfully.',
+                    'title' => 'Pedido eliminado',
+                    'body'  => 'El pedido se ha eliminado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Order could not be deleted',
-                    'body'  => 'The order cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el pedido',
+                    'body'  => 'El pedido no se puede eliminar porque está actualmente en uso.',
                 ],
             ],
         ],

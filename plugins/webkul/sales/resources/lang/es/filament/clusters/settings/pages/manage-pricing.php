@@ -1,20 +1,20 @@
 <?php
 
 return [
-    'title' => 'Manage Pricing',
+    'title' => 'Gestionar precios',
 
-    'breadcrumb' => 'Manage Pricing',
+    'breadcrumb' => 'Gestionar precios',
 
     'navigation' => [
-        'title' => 'Manage Pricing',
+        'title' => 'Gestionar precios',
     ],
 
     'form' => [
         'fields' => [
-            'discount'      => 'Discount',
-            'discount-help' => 'Enable discount on products.',
-            'margins'       => 'Margins',
-            'margins-help'  => 'Show margins on orders.',
+            'discount'      => 'Descuento',
+            'discount-help' => 'Habilitar descuento en los productos.',
+            'margins'       => 'Márgenes',
+            'margins-help'  => 'Mostrar márgenes en los pedidos.',
         ],
     ],
 ];

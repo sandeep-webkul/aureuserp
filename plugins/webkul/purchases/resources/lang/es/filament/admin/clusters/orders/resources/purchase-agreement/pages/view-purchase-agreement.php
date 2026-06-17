@@ -3,13 +3,13 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'Imprimir',
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Purchase Agreement Deleted',
-                'body'  => 'The purchase agreement has been deleted successfully.',
+                'title' => 'Acuerdo de compra eliminado',
+                'body'  => 'El acuerdo de compra se ha eliminado correctamente.',
             ],
         ],
     ],
