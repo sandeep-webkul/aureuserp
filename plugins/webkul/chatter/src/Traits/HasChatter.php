@@ -258,13 +258,6 @@ trait HasChatter
             return $this;
         }
 
-        /*
-         * Hydrate the base model in-memory instead of querying for it. A DB
-         * lookup would return null for soft-deleted or globally-scoped
-         * records, silently falling back to the child class and writing
-         * chatter against the wrong morph type. We only need the key and the
-         * morph class for polymorphic reads/writes, so no query is required.
-         */
         $owner = new $baseClass;
         $owner->setAttribute($owner->getKeyName(), $this->getKey());
         $owner->exists = true;
@@ -273,12 +266,6 @@ trait HasChatter
         return $owner;
     }
 
-    /**
-     * Resolve the first application model in the inheritance chain (the class
-     * whose parent is Laravel's base Model). Chatter must always read and
-     * write against this class so records survive being re-managed through a
-     * sibling resource (e.g. Quotation -> Order, Bill -> Move).
-     */
     public function resolveChatterModelClass(): string
     {
         $class = get_class($this);
@@ -293,9 +280,6 @@ trait HasChatter
         return $class;
     }
 
-    /**
-     * The morph class chatter records are stored against.
-     */
     public function getChatterMorphClass(): string
     {
         return $this->resolveChatterMessageOwner()->getMorphClass();
