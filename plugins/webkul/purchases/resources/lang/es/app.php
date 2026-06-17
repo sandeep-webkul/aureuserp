@@ -4,7 +4,7 @@ return [
     'navigation' => [
         'settings' => [
             'label' => 'Configuración',
-            'group' => 'Compra',
+            'group' => 'Compras',
         ],
     ],
 ];

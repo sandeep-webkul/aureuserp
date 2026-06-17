@@ -3,6 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Candidaturas',
-        'group' => 'Reclutamiento',
+        'group' => 'Contrataciones',
     ],
 ];

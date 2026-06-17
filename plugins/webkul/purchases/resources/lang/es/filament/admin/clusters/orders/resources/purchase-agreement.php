@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'Acuerdos de compra',
-        'group' => 'Compra',
+        'group' => 'Compras',
     ],
 
     'global-search' => [

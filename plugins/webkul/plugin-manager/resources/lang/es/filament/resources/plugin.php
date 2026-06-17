@@ -3,7 +3,7 @@
 return [
 
     'navigation' => [
-        'group' => 'Plugins',
+        'group' => 'Complementos',
     ],
 
     'title' => 'Plugin',

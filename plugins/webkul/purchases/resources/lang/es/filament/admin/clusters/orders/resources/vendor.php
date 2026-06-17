@@ -3,6 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Proveedores',
-        'group' => 'Compra',
+        'group' => 'Compras',
     ],
 ];
