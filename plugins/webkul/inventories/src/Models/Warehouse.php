@@ -1212,11 +1212,19 @@ class Warehouse extends Model implements Sortable
         $actions = $steps[$currentStep];
 
         if (isset($actions['archive'])) {
-            Location::withTrashed()->whereIn('id', $actions['archive'])->update(['deleted_at' => now()]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['archive'])
+                ->whereNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->delete());
         }
 
         if (isset($actions['restore'])) {
-            Location::withTrashed()->whereIn('id', $actions['restore'])->update(['deleted_at' => null]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['restore'])
+                ->whereNotNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->restore());
         }
     }
 
