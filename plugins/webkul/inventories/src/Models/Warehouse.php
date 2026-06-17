@@ -296,7 +296,7 @@ class Warehouse extends Model implements Sortable
         });
 
         static::forceDeleting(function (Warehouse $warehouse) {
-            $warehouse->viewLocation->forceDelete();
+            $warehouse->viewLocation()->withTrashed()->first()?->forceDelete();
         });
 
         static::restoring(function (Warehouse $warehouse) {
