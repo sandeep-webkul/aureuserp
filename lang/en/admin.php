@@ -9,6 +9,7 @@ return [
         'invoice'       => 'Invoices',
         'accounting'    => 'Accounting',
         'inventory'     => 'Inventory',
+        'maintenance'   => 'Maintenance',
         'manufacturing' => 'Manufacturing',
         'project'       => 'Project',
         'employee'      => 'Employees',
@@ -17,5 +18,6 @@ return [
         'website'       => 'Website',
         'plugin'        => 'Plugins',
         'setting'       => 'Settings',
+        'help'          => 'Help',
     ],
 ];

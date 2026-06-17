@@ -181,6 +181,11 @@ class Order extends Model
         return $this->belongsToMany(AccountMove::class, 'purchases_order_account_moves', 'order_id', 'move_id');
     }
 
+    public function bills(): BelongsToMany
+    {
+        return $this->belongsToMany(Bill::class, 'purchases_order_account_moves', 'order_id', 'move_id');
+    }
+
     public function operationType(): BelongsTo
     {
         return $this->belongsTo(OperationType::class, 'operation_type_id');

@@ -138,12 +138,23 @@ trait HasChatter
             'date_deadline' => $data['date_deadline'] ?? now(),
             'causer_type'   => $user?->getMorphClass(),
             'causer_id'     => $user?->id,
-            'company_id'    => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
+            'company_id'    => $data['company_id'] ?? ($user?->defaultCompany?->id ?? null),
         ], $data));
 
         $this->messages()->save($message);
 
         return $message;
+    }
+
+    public function addActivity(array $data): Message
+    {
+        $user = Filament::auth()->user() ?? Auth::user();
+
+        $data['assigned_to'] ??= $user?->id;
+
+        return $this->addMessage(array_merge($data, [
+            'type' => 'activity',
+        ]));
     }
 
     protected function resolveChatterMessageOwner(): Model
