@@ -9,14 +9,96 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 use Webkul\Chatter\Models\Attachment;
 use Webkul\Chatter\Models\Follower;
 use Webkul\Chatter\Models\Message;
 use Webkul\Partner\Models\Partner;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
 
 trait HasChatter
 {
+    public static function bootHasChatter(): void
+    {
+        static::created(function (Model $model): void {
+            $model->addDefaultChatterFollowers();
+        });
+
+        static::updated(function (Model $model): void {
+            $model->syncResponsibleChatterFollower();
+        });
+    }
+
+    public function syncResponsibleChatterFollower(): void
+    {
+        $column = $this->getChatterResponsibleColumn();
+
+        if (! $column || ! $this->wasChanged($column)) {
+            return;
+        }
+
+        try {
+            $partnerId = User::whereKey($this->getAttribute($column))->value('partner_id');
+
+            if ($partnerId && $partner = Partner::find($partnerId)) {
+                $this->addFollower($partner);
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    public function getChatterResponsibleColumn(): ?string
+    {
+        return 'user_id';
+    }
+
+    public function getChatterFollowerUserIds(): array
+    {
+        $columns = ['creator_id'];
+
+        if ($responsibleColumn = $this->getChatterResponsibleColumn()) {
+            $columns[] = $responsibleColumn;
+        }
+
+        $userIds = [];
+
+        foreach ($columns as $column) {
+            $value = $this->getAttribute($column);
+
+            if ($value) {
+                $userIds[] = $value;
+            }
+        }
+
+        return array_values(array_unique($userIds));
+    }
+
+    public function addDefaultChatterFollowers(): void
+    {
+        try {
+            $userIds = $this->getChatterFollowerUserIds();
+
+            if (empty($userIds)) {
+                return;
+            }
+
+            $partnerIds = User::whereIn('id', $userIds)
+                ->pluck('partner_id')
+                ->filter()
+                ->unique();
+
+            foreach ($partnerIds as $partnerId) {
+                if ($partner = Partner::find($partnerId)) {
+                    $this->addFollower($partner);
+                }
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
     public function messages(): MorphMany
     {
         $owner = $this->resolveChatterMessageOwner();
