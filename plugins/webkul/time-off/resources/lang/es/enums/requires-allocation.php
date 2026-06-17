@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'yes' => 'Yes',
-    'no'  => 'No Limit',
+    'yes' => 'Sí',
+    'no'  => 'Sin límite',
 ];

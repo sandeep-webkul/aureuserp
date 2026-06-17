@@ -2,12 +2,12 @@
 
 return [
     'heading' => [
-        'title' => 'Top Assignees',
+        'title' => 'Principales asignados',
     ],
 
     'table-columns' => [
-        'user'        => 'User',
-        'hours-spent' => 'Hours Spent',
-        'tasks'       => 'Tasks',
+        'user'        => 'Usuario',
+        'hours-spent' => 'Horas dedicadas',
+        'tasks'       => 'Tareas',
     ],
 ];

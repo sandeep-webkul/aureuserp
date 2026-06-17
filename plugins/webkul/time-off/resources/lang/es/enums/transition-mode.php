@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'immediately'    => 'Immediately',
-    'end-of-accrual' => 'After this accrual period',
+    'immediately'    => 'Inmediatamente',
+    'end-of-accrual' => 'Después de este período de acumulación',
 ];

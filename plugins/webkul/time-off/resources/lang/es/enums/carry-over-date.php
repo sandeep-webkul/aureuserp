@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'year-start' => 'At the start of the year',
-    'allocation' => 'At the allocation date',
-    'other'      => 'Other',
+    'year-start' => 'Al inicio del año',
+    'allocation' => 'En la fecha de asignación',
+    'other'      => 'Otro',
 ];

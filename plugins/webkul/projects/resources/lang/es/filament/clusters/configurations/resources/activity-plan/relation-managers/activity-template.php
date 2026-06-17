@@ -4,32 +4,32 @@ return [
     'form' => [
         'sections' => [
             'activity-details' => [
-                'title' => 'Activity Details',
+                'title' => 'Detalles de la actividad',
 
                 'fields' => [
-                    'activity-type' => 'Activity Type',
-                    'summary'       => 'Summary',
-                    'note'          => 'Note',
+                    'activity-type' => 'Tipo de actividad',
+                    'summary'       => 'Resumen',
+                    'note'          => 'Nota',
                 ],
             ],
 
             'assignment' => [
-                'title' => 'Assignment',
+                'title' => 'Asignación',
 
                 'fields' => [
-                    'assignment' => 'Assignment',
-                    'assignee'   => 'Assignee',
+                    'assignment' => 'Asignación',
+                    'assignee'   => 'Asignado a',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'Información de retraso',
 
                 'fields' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-from'             => 'Delay From',
-                    'delay-from-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'Cantidad de retraso',
+                    'delay-unit'             => 'Unidad de retraso',
+                    'delay-from'             => 'Retraso desde',
+                    'delay-from-helper-text' => 'Origen del cálculo del retraso',
                 ],
             ],
         ],
@@ -37,48 +37,48 @@ return [
 
     'table' => [
         'columns' => [
-            'activity-type' => 'Activity Type',
-            'summary'       => 'Summary',
-            'assignment'    => 'Assignment',
-            'assigned-to'   => 'Assigned To',
-            'interval'      => 'Interval',
-            'delay-unit'    => 'Delay Unit',
-            'delay-from'    => 'Delay From',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'activity-type' => 'Tipo de actividad',
+            'summary'       => 'Resumen',
+            'assignment'    => 'Asignación',
+            'assigned-to'   => 'Asignado a',
+            'interval'      => 'Intervalo',
+            'delay-unit'    => 'Unidad de retraso',
+            'delay-from'    => 'Retraso desde',
+            'created-by'    => 'Creado por',
+            'created-at'    => 'Creado el',
+            'updated-at'    => 'Actualizado el',
         ],
 
         'groups' => [
-            'activity-type' => 'Activity Type',
-            'assignment'    => 'Assignment',
-            'assigned-to'   => 'Assigned To',
-            'interval'      => 'Interval',
-            'delay-unit'    => 'Delay Unit',
-            'delay-from'    => 'Delay From',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'activity-type' => 'Tipo de actividad',
+            'assignment'    => 'Asignación',
+            'assigned-to'   => 'Asignado a',
+            'interval'      => 'Intervalo',
+            'delay-unit'    => 'Unidad de retraso',
+            'delay-from'    => 'Retraso desde',
+            'created-by'    => 'Creado por',
+            'created-at'    => 'Creado el',
+            'updated-at'    => 'Actualizado el',
         ],
 
         'filters' => [
-            'activity-type'   => 'Activity Type',
-            'activity-status' => 'Activity Status',
-            'has-delay'       => 'Has Delay',
+            'activity-type'   => 'Tipo de actividad',
+            'activity-status' => 'Estado de la actividad',
+            'has-delay'       => 'Tiene retraso',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Activity template updated',
-                    'body'  => 'The activity template has been updated successfully.',
+                    'title' => 'Plantilla de actividad actualizada',
+                    'body'  => 'La plantilla de actividad se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity template deleted',
-                    'body'  => 'The activity template has been deleted successfully.',
+                    'title' => 'Plantilla de actividad eliminada',
+                    'body'  => 'La plantilla de actividad se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -86,8 +86,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity templates deleted',
-                    'body'  => 'The activity templates has been deleted successfully.',
+                    'title' => 'Plantillas de actividad eliminadas',
+                    'body'  => 'Las plantillas de actividad se han eliminado correctamente.',
                 ],
             ],
         ],

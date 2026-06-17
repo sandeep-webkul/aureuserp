@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'single'   => 'Single',
-    'married'  => 'Married',
-    'divorced' => 'Divorced',
-    'widowed'  => 'Widowed',
+    'single'   => 'Soltero',
+    'married'  => 'Casado',
+    'divorced' => 'Divorciado',
+    'widowed'  => 'Viudo',
 ];

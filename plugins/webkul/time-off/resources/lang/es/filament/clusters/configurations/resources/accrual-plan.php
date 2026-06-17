@@ -1,33 +1,33 @@
 <?php
 
 return [
-    'title'      => 'Accrual Plan',
+    'title'      => 'Plan de acumulación',
     'navigation' => [
-        'title' => 'Accrual Plan',
+        'title' => 'Plan de acumulación',
     ],
 
     'form' => [
         'fields' => [
-            'name'                    => 'Title',
-            'is-based-on-worked-time' => 'Is Based on Worked Time',
-            'accrued-gain-time'       => 'Accrued Gain Time',
-            'carry-over-time'         => 'Carry Over Time',
-            'carry-over-date'         => 'Carry Over Date',
-            'status'                  => 'Status',
+            'name'                    => 'Título',
+            'is-based-on-worked-time' => 'Se basa en el tiempo trabajado',
+            'accrued-gain-time'       => 'Tiempo de ganancia acumulado',
+            'carry-over-time'         => 'Tiempo de traspaso',
+            'carry-over-date'         => 'Fecha de traspaso',
+            'status'                  => 'Estado',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'   => 'Name',
-            'levels' => 'Levels',
+            'name'   => 'Nombre',
+            'levels' => 'Niveles',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accrual Plan deleted',
-                    'body'  => 'The Accrual Plan has been deleted successfully.',
+                    'title' => 'Plan de acumulación eliminado',
+                    'body'  => 'El plan de acumulación se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -35,8 +35,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accrual Plan deleted',
-                    'body'  => 'The Accrual Plan has been deleted successfully.',
+                    'title' => 'Plan de acumulación eliminado',
+                    'body'  => 'El plan de acumulación se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -44,16 +44,16 @@ return [
 
     'infolist' => [
         'sections' => [
-            'basic-information' => 'Basic Information',
+            'basic-information' => 'Información básica',
         ],
 
         'entries' => [
-            'name'                    => 'Name',
-            'is-based-on-worked-time' => 'Is Based on Worked Time',
-            'accrued-gain-time'       => 'Accrued Gain Time',
-            'carry-over-time'         => 'Carry Over Time',
-            'carry-over-day'          => 'Carry Over Day',
-            'carry-over-month'        => 'Carry Over Month',
+            'name'                    => 'Nombre',
+            'is-based-on-worked-time' => 'Se basa en el tiempo trabajado',
+            'accrued-gain-time'       => 'Tiempo de ganancia acumulado',
+            'carry-over-time'         => 'Tiempo de traspaso',
+            'carry-over-day'          => 'Día de traspaso',
+            'carry-over-month'        => 'Mes de traspaso',
         ],
     ],
 ];

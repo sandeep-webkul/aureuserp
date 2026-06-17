@@ -2,12 +2,12 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Analysis',
+        'title' => 'Análisis de ausencias',
     ],
 
     'stats' => [
-        'pending-requests'  => 'Pending Requests',
-        'valid-until'       => 'Valid until :date',
-        'time-off-requests' => 'Time Off Requests',
+        'pending-requests'  => 'Solicitudes pendientes',
+        'valid-until'       => 'Válido hasta :date',
+        'time-off-requests' => 'Solicitudes de ausencia',
     ],
 ];

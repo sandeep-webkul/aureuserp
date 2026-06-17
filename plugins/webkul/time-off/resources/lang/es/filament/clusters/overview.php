@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Overview',
-        'group' => 'Time Off',
+        'title' => 'Resumen',
+        'group' => 'Ausencias',
     ],
 ];

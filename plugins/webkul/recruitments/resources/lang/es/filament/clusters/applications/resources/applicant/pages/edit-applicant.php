@@ -1,62 +1,62 @@
 <?php
 
 return [
-    'create-employee' => 'Create Employee',
-    'goto-employee'   => 'Go to Employee',
+    'create-employee' => 'Crear empleado',
+    'goto-employee'   => 'Ir al empleado',
 
     'notification' => [
-        'title' => 'Applicant updated',
-        'body'  => 'The applicant has been updated successfully.',
+        'title' => 'Candidato actualizado',
+        'body'  => 'El candidato se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Applicant deleted',
-                'body'  => 'The applicant has been deleted successfully.',
+                'title' => 'Candidato eliminado',
+                'body'  => 'El candidato se ha eliminado correctamente.',
             ],
         ],
         'force-delete' => [
             'notification' => [
-                'title' => 'Applicant deleted',
-                'body'  => 'The applicant has been force deleted successfully.',
+                'title' => 'Candidato eliminado',
+                'body'  => 'El candidato se ha eliminado de forma permanente correctamente.',
             ],
         ],
 
         'refuse' => [
-            'title'        => 'Refuse Reason',
+            'title'        => 'Motivo de rechazo',
             'notification' => [
-                'title' => 'Applicant refused',
-                'body'  => 'The applicant has been refused successfully.',
+                'title' => 'Candidato rechazado',
+                'body'  => 'El candidato se ha rechazado correctamente.',
             ],
         ],
 
         'reopen' => [
-            'title'        => 'Reopen Applicant',
+            'title'        => 'Reabrir candidato',
             'notification' => [
-                'title' => 'Applicant reopened',
-                'body'  => 'The applicant has been reopened successfully.',
+                'title' => 'Candidato reabierto',
+                'body'  => 'El candidato se ha reabierto correctamente.',
             ],
         ],
 
         'state' => [
             'notification' => [
-                'title' => 'Applicant state updated',
-                'body'  => 'The applicant state has been updated successfully.',
+                'title' => 'Estado del candidato actualizado',
+                'body'  => 'El estado del candidato se ha actualizado correctamente.',
             ],
         ],
     ],
 
     'mail' => [
         'application-refused' => [
-            'subject' => 'Your Job Application: :application',
+            'subject' => 'Tu candidatura: :application',
         ],
 
         'application-confirm' => [
-            'subject' => 'Your Job Application: :job_position',
+            'subject' => 'Tu candidatura: :job_position',
         ],
         'interviewer-assigned' => [
-            'subject' => 'You have been assigned to the Applicant :applicant.',
+            'subject' => 'Se te ha asignado al candidato :applicant.',
         ],
     ],
 ];

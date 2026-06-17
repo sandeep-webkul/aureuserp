@@ -2,16 +2,16 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Analysis',
+        'title' => 'Análisis de ausencias',
     ],
 
-    'label' => 'Overview',
+    'label' => 'Resumen',
 
     'types' => [
-        'draft'     => 'Draft',
-        'confirmed' => 'Confirmed',
-        'validated' => 'Validated',
-        'refused'   => 'Refused',
-        'cancelled' => 'Cancelled',
+        'draft'     => 'Borrador',
+        'confirmed' => 'Confirmado',
+        'validated' => 'Validado',
+        'refused'   => 'Rechazado',
+        'cancelled' => 'Cancelado',
     ],
 ];

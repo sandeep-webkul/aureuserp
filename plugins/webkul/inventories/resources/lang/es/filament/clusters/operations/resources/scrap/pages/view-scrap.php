@@ -2,6 +2,22 @@
 
 return [
     'header-actions' => [
+        'validate' => [
+            'label' => 'Validar',
+
+            'notification' => [
+                'warning' => [
+                    'title' => 'Stock insuficiente',
+                    'body'  => 'La merma tiene stock insuficiente para validar.',
+                ],
+
+                'success' => [
+                    'title' => 'Merma marcada como realizada',
+                    'body'  => 'La merma se ha marcado como realizada correctamente.',
+                ],
+            ],
+        ],
+
         'delete' => [
             'notification' => [
                 'success' => [

@@ -2,13 +2,13 @@
 
 return [
     'heading' => [
-        'title' => 'Stats Overview',
+        'title' => 'Resumen de estadísticas',
     ],
 
-    'total-tasks'          => 'Total Tasks',
-    'total-hours-spent'    => 'Total Hours Spent',
-    'total-time-remaining' => 'Total Time Remaining',
+    'total-tasks'          => 'Total de tareas',
+    'total-hours-spent'    => 'Total de horas dedicadas',
+    'total-time-remaining' => 'Total de tiempo restante',
 
-    'increase' => 'increase',
-    'decrease' => 'decrease',
+    'increase' => 'aumento',
+    'decrease' => 'disminución',
 ];

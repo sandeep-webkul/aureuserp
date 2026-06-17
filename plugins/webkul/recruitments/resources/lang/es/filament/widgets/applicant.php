@@ -2,11 +2,11 @@
 
 return [
     'heading' => [
-        'title' => 'Applicant Overview',
+        'title' => 'Resumen de candidatos',
     ],
 
-    'ongoing'  => 'Ongoing',
-    'hired'    => 'Hired',
-    'refused'  => 'Refused',
-    'archived' => 'Archived',
+    'ongoing'  => 'En curso',
+    'hired'    => 'Contratado',
+    'refused'  => 'Rechazado',
+    'archived' => 'Archivado',
 ];

@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Todas',
+        'archived' => 'Archivadas',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Putaway Rule',
+            'label' => 'Nueva regla de almacenamiento',
 
             'notification' => [
-                'title' => 'Putaway rule created',
-                'body'  => 'The putaway rule has been created successfully.',
+                'title' => 'Regla de almacenamiento creada',
+                'body'  => 'La regla de almacenamiento se ha creado correctamente.',
             ],
         ],
     ],

@@ -2,19 +2,19 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'office'   => 'Office',
-        'home'     => 'Home',
-        'other'    => 'Other',
+        'all'      => 'Todas',
+        'office'   => 'Oficina',
+        'home'     => 'Casa',
+        'other'    => 'Otra',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Work Location',
+            'label' => 'Nueva ubicación de trabajo',
 
             'notification' => [
-                'title' => 'Work Location created',
-                'body'  => 'The work location has been created successfully.',
+                'title' => 'Ubicación de trabajo creada',
+                'body'  => 'La ubicación de trabajo se ha creado correctamente.',
             ],
         ],
     ],

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Leave Type created',
-        'body'  => 'The leave type has been created successfully.',
+        'title' => 'Tipo de ausencia creado',
+        'body'  => 'El tipo de ausencia se ha creado correctamente.',
     ],
 ];

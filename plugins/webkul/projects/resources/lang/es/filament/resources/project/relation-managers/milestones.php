@@ -4,11 +4,11 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Project Milestone',
+                'label' => 'Agregar hito del proyecto',
 
                 'notification' => [
-                    'title' => 'Milestone created',
-                    'body'  => 'The milestone has been created successfully.',
+                    'title' => 'Hito creado',
+                    'body'  => 'El hito se ha creado correctamente.',
                 ],
             ],
         ],

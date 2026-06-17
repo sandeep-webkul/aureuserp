@@ -2,12 +2,12 @@
 
 return [
     'heading' => [
-        'title' => 'Top Projects',
+        'title' => 'Principales proyectos',
     ],
 
     'table-columns' => [
-        'project-name' => 'Project',
-        'hours-spent'  => 'Hours Spent',
-        'tasks'        => 'Tasks',
+        'project-name' => 'Proyecto',
+        'hours-spent'  => 'Horas dedicadas',
+        'tasks'        => 'Tareas',
     ],
 ];

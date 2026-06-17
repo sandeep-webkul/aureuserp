@@ -3,7 +3,7 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Employment Type',
+            'label' => 'Nuevo tipo de empleo',
         ],
     ],
 ];

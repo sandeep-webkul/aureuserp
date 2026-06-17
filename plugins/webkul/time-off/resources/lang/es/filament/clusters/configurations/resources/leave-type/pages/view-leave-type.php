@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Leave Type deleted',
-                'body'  => 'The leave type has been deleted successfully.',
+                'title' => 'Tipo de ausencia eliminado',
+                'body'  => 'El tipo de ausencia se ha eliminado correctamente.',
             ],
         ],
     ],

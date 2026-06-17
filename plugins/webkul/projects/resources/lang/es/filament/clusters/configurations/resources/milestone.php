@@ -2,53 +2,53 @@
 
 return [
     'navigation' => [
-        'title' => 'Milestones',
+        'title' => 'Hitos',
     ],
 
     'form' => [
-        'name'         => 'Name',
-        'deadline'     => 'Deadline',
-        'is-completed' => 'Is Completed',
-        'project'      => 'Project',
+        'name'         => 'Nombre',
+        'deadline'     => 'Fecha límite',
+        'is-completed' => 'Completado',
+        'project'      => 'Proyecto',
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'deadline'     => 'Deadline',
-            'is-completed' => 'Is Completed',
-            'completed-at' => 'Completed At',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'Nombre',
+            'deadline'     => 'Fecha límite',
+            'is-completed' => 'Completado',
+            'completed-at' => 'Completado el',
+            'project'      => 'Proyecto',
+            'creator'      => 'Creador',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'created-at'   => 'Created At',
+            'name'         => 'Nombre',
+            'is-completed' => 'Completado',
+            'project'      => 'Proyecto',
+            'created-at'   => 'Creado el',
         ],
 
         'filters' => [
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
+            'is-completed' => 'Completado',
+            'project'      => 'Proyecto',
+            'creator'      => 'Creador',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Milestone update',
-                    'body'  => 'The milestone has been update successfully.',
+                    'title' => 'Hito actualizado',
+                    'body'  => 'El hito se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestone deleted',
-                    'body'  => 'The milestone has been deleted successfully.',
+                    'title' => 'Hito eliminado',
+                    'body'  => 'El hito se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -56,8 +56,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestones deleted',
-                    'body'  => 'The milestones has been deleted successfully.',
+                    'title' => 'Hitos eliminados',
+                    'body'  => 'Los hitos se han eliminado correctamente.',
                 ],
             ],
         ],

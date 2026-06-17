@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Add Timesheet',
+            'label' => 'Agregar parte de horas',
 
             'notification' => [
-                'title' => 'Timesheet created',
-                'body'  => 'The timesheet has been created successfully.',
+                'title' => 'Parte de horas creado',
+                'body'  => 'El parte de horas se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'           => 'All Timesheets',
-        'my-timesheets' => 'My Timesheets',
+        'all'           => 'Todos los partes de horas',
+        'my-timesheets' => 'Mis partes de horas',
     ],
 ];

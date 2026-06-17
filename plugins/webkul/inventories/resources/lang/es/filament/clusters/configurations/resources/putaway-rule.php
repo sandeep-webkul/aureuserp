@@ -2,70 +2,70 @@
 
 return [
     'navigation' => [
-        'title' => 'Putaway Rules',
-        'group' => 'Warehouse Management',
+        'title' => 'Reglas de almacenamiento',
+        'group' => 'Gestión de almacenes',
     ],
 
     'form' => [
         'fields' => [
-            'in-location'          => 'When Product Arrives In',
-            'product'              => 'Product',
-            'product-placeholder'  => 'All Products',
-            'category'             => 'Product Category',
-            'category-placeholder' => 'All Categories',
-            'storage-category'     => 'Storage Category',
-            'out-location'         => 'Store To',
-            'sub-location'         => 'Sub Location',
-            'company'              => 'Company',
+            'in-location'          => 'Cuando el producto llega a',
+            'product'              => 'Producto',
+            'product-placeholder'  => 'Todos los productos',
+            'category'             => 'Categoría de producto',
+            'category-placeholder' => 'Todas las categorías',
+            'storage-category'     => 'Categoría de almacenamiento',
+            'out-location'         => 'Almacenar en',
+            'sub-location'         => 'Sububicación',
+            'company'              => 'Empresa',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'in-location'      => 'When Product Arrives In',
-            'product'          => 'Product',
-            'category'         => 'Product Category',
-            'storage-category' => 'Storage Category',
-            'out-location'     => 'Store To',
-            'sub-location'     => 'Sub Location',
-            'company'          => 'Company',
-            'deleted-at'       => 'Deleted At',
-            'created-at'       => 'Created At',
-            'updated-at'       => 'Updated At',
+            'in-location'      => 'Cuando el producto llega a',
+            'product'          => 'Producto',
+            'category'         => 'Categoría de producto',
+            'storage-category' => 'Categoría de almacenamiento',
+            'out-location'     => 'Almacenar en',
+            'sub-location'     => 'Sububicación',
+            'company'          => 'Empresa',
+            'deleted-at'       => 'Eliminado el',
+            'created-at'       => 'Creado el',
+            'updated-at'       => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Putaway rule updated',
-                    'body'  => 'The putaway rule has been updated successfully.',
+                    'title' => 'Regla de almacenamiento actualizada',
+                    'body'  => 'La regla de almacenamiento se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Putaway rule restored',
-                    'body'  => 'The putaway rule has been restored successfully.',
+                    'title' => 'Regla de almacenamiento restaurada',
+                    'body'  => 'La regla de almacenamiento se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Putaway rule deleted',
-                    'body'  => 'The putaway rule has been deleted successfully.',
+                    'title' => 'Regla de almacenamiento eliminada',
+                    'body'  => 'La regla de almacenamiento se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'error' => [
-                        'title' => 'Putaway rule could not be deleted',
-                        'body'  => 'The putaway rule cannot be permanently deleted because it is referenced by other records.',
+                        'title' => 'No se pudo eliminar la regla de almacenamiento',
+                        'body'  => 'La regla de almacenamiento no se puede eliminar permanentemente porque está referenciada por otros registros.',
                     ],
 
                     'success' => [
-                        'title' => 'Putaway rule permanently deleted',
-                        'body'  => 'The putaway rule has been permanently deleted successfully.',
+                        'title' => 'Regla de almacenamiento eliminada permanentemente',
+                        'body'  => 'La regla de almacenamiento se ha eliminado permanentemente correctamente.',
                     ],
                 ],
             ],
@@ -74,28 +74,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Putaway rules restored',
-                    'body'  => 'The putaway rules have been restored successfully.',
+                    'title' => 'Reglas de almacenamiento restauradas',
+                    'body'  => 'Las reglas de almacenamiento se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Putaway rules deleted',
-                    'body'  => 'The putaway rules have been deleted successfully.',
+                    'title' => 'Reglas de almacenamiento eliminadas',
+                    'body'  => 'Las reglas de almacenamiento se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'error' => [
-                        'title' => 'Putaway rules could not be deleted',
-                        'body'  => 'Some putaway rules cannot be permanently deleted because they are referenced by other records.',
+                        'title' => 'No se pudieron eliminar las reglas de almacenamiento',
+                        'body'  => 'Algunas reglas de almacenamiento no se pueden eliminar permanentemente porque están referenciadas por otros registros.',
                     ],
 
                     'success' => [
-                        'title' => 'Putaway rules permanently deleted',
-                        'body'  => 'The putaway rules have been permanently deleted successfully.',
+                        'title' => 'Reglas de almacenamiento eliminadas permanentemente',
+                        'body'  => 'Las reglas de almacenamiento se han eliminado permanentemente correctamente.',
                     ],
                 ],
             ],

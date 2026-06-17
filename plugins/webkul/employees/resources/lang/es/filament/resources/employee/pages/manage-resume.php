@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Manage Resumes',
+        'title' => 'Gestionar currículums',
     ],
 ];

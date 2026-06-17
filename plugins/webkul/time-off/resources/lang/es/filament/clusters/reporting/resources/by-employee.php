@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'title' => 'By Employees',
+    'title' => 'Por empleados',
 
     'navigation' => [
-        'title' => 'By Employees',
+        'title' => 'Por empleados',
     ],
 ];

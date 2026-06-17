@@ -6,27 +6,12 @@ return [
             'error' => [
                 'tracking-update' => [
                     'title' => 'Error al actualizar el seguimiento',
-                    'body'  => 'No puede cambiar el seguimiento de inventario de un producto que ya ha sido utilizado.',
+                    'body'  => 'No se puede cambiar el seguimiento de inventario de un producto que ya ha sido utilizado.',
                 ],
 
                 'track-by-update' => [
                     'title' => 'Error al actualizar el seguimiento',
-                    'body'  => 'Tiene productos en existencias que no tienen lote/número de serie. Puede asignarles lotes/números de serie realizando un ajuste de inventario.',
-                ],
-            ],
-        ],
-    ],
-
-    'header-actions' => [
-        'update-quantity' => [
-            'label'                     => 'Actualizar cantidad',
-            'modal-heading'             => 'Actualizar cantidad del producto',
-            'modal-submit-action-label' => 'Actualizar',
-
-            'form' => [
-                'fields' => [
-                    'product'     => 'Producto',
-                    'on-hand-qty' => 'Cantidad disponible',
+                    'body'  => 'Existen productos en stock que no tienen número de lote / serie. Se pueden asignar números de lote / serie realizando un ajuste de inventario.',
                 ],
             ],
         ],

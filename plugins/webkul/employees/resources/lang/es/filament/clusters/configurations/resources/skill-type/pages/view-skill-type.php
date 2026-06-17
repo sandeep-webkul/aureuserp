@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Skill type deleted',
-                'body'  => 'The skill type has been deleted successfully.',
+                'title' => 'Tipo de competencia eliminado',
+                'body'  => 'El tipo de competencia se ha eliminado correctamente.',
             ],
         ],
     ],

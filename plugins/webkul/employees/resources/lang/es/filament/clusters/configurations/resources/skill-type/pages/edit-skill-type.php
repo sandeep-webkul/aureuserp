@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Skill Type updated',
-        'body'  => 'The skill type has been updated successfully.',
+        'title' => 'Tipo de competencia actualizado',
+        'body'  => 'El tipo de competencia se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Skill Type deleted',
-                'body'  => 'The skill type has been deleted successfully.',
+                'title' => 'Tipo de competencia eliminado',
+                'body'  => 'El tipo de competencia se ha eliminado correctamente.',
             ],
         ],
     ],

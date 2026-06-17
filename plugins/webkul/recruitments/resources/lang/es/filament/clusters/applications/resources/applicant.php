@@ -1,71 +1,71 @@
 <?php
 
 return [
-    'title' => 'Applicant',
+    'title' => 'Candidato',
 
     'navigation' => [
-        'title' => 'Applicants',
+        'title' => 'Candidatos',
     ],
 
     'global-search' => [
-        'department' => 'Department',
-        'work-email' => 'Work Email',
-        'work-phone' => 'Work Phone',
+        'department' => 'Departamento',
+        'work-email' => 'Correo del trabajo',
+        'work-phone' => 'Teléfono del trabajo',
     ],
 
     'form' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'fields' => [
-                    'evaluation-good'           => 'Evaluation: Good',
-                    'evaluation-very-good'      => 'Evaluation: Very Good',
-                    'evaluation-very-excellent' => 'Evaluation: Very Excellent',
-                    'hired'                     => 'Hired',
-                    'candidate-name'            => 'Candidate name',
-                    'email'                     => 'Emails',
-                    'phone'                     => 'Phone',
-                    'linkedin-profile'          => 'Linkedin Profile',
-                    'recruiter'                 => 'Recruiter',
-                    'interviewer'               => 'Interviewer',
-                    'tags'                      => 'Tags',
-                    'notes'                     => 'Notes',
-                    'hired-date'                => 'Hired Date',
-                    'job-position'              => 'Job Positions',
+                    'evaluation-good'           => 'Evaluación: Buena',
+                    'evaluation-very-good'      => 'Evaluación: Muy buena',
+                    'evaluation-very-excellent' => 'Evaluación: Excelente',
+                    'hired'                     => 'Contratado',
+                    'candidate-name'            => 'Nombre del candidato',
+                    'email'                     => 'Correos',
+                    'phone'                     => 'Teléfono',
+                    'linkedin-profile'          => 'Perfil de LinkedIn',
+                    'recruiter'                 => 'Reclutador',
+                    'interviewer'               => 'Entrevistador',
+                    'tags'                      => 'Etiquetas',
+                    'notes'                     => 'Notas',
+                    'hired-date'                => 'Fecha de contratación',
+                    'job-position'              => 'Puestos de trabajo',
                 ],
             ],
 
             'education-and-availability' => [
-                'title' => 'Education & Availability',
+                'title' => 'Formación y disponibilidad',
 
                 'fields' => [
-                    'degree'            => 'Degree',
-                    'availability-date' => 'Availability Date',
+                    'degree'            => 'Titulación',
+                    'availability-date' => 'Fecha de disponibilidad',
                 ],
             ],
 
             'department' => [
-                'title' => 'Department',
+                'title' => 'Departamento',
             ],
 
             'salary' => [
-                'title' => 'Expected & Proposed Salary',
+                'title' => 'Salario esperado y propuesto',
 
                 'fields' => [
-                    'expected-salary'       => 'Expected Salary',
-                    'salary-proposed-extra' => 'Other Benefit',
-                    'proposed-salary'       => 'Proposed Salary',
-                    'salary-expected-extra' => 'Other Benefit',
+                    'expected-salary'       => 'Salario esperado',
+                    'salary-proposed-extra' => 'Otro beneficio',
+                    'proposed-salary'       => 'Salario propuesto',
+                    'salary-expected-extra' => 'Otro beneficio',
                 ],
             ],
 
             'source-and-medium' => [
-                'title' => 'Source & Medium',
+                'title' => 'Fuente y medio',
 
                 'fields' => [
-                    'source' => 'Source',
-                    'medium' => 'Medium',
+                    'source' => 'Fuente',
+                    'medium' => 'Medio',
                 ],
             ],
         ],
@@ -73,79 +73,79 @@ return [
 
     'table' => [
         'columns' => [
-            'partner-name'       => 'Partner Name',
-            'applied-on'         => 'Applied On',
-            'job-position'       => 'Job Position',
-            'stage'              => 'Stage',
-            'candidate-name'     => 'Candidate Name',
-            'evaluation'         => 'Evaluation',
-            'application-status' => 'Application Status',
-            'tags'               => 'Tags',
-            'refuse-reason'      => 'Refuse Reason',
-            'email'              => 'Email',
-            'recruiter'          => 'Recruiter',
-            'interviewer'        => 'Interviewer',
-            'candidate-phone'    => 'Phone',
-            'medium'             => 'Medium',
-            'source'             => 'Source',
-            'salary-expected'    => 'Expected Salary',
-            'availability-date'  => 'Availability Date',
+            'partner-name'       => 'Nombre del contacto',
+            'applied-on'         => 'Fecha de candidatura',
+            'job-position'       => 'Puesto de trabajo',
+            'stage'              => 'Etapa',
+            'candidate-name'     => 'Nombre del candidato',
+            'evaluation'         => 'Evaluación',
+            'application-status' => 'Estado de la candidatura',
+            'tags'               => 'Etiquetas',
+            'refuse-reason'      => 'Motivo de rechazo',
+            'email'              => 'Correo',
+            'recruiter'          => 'Reclutador',
+            'interviewer'        => 'Entrevistador',
+            'candidate-phone'    => 'Teléfono',
+            'medium'             => 'Medio',
+            'source'             => 'Fuente',
+            'salary-expected'    => 'Salario esperado',
+            'availability-date'  => 'Fecha de disponibilidad',
         ],
 
         'filters' => [
-            'source'                  => 'Source',
-            'medium'                  => 'Medium',
-            'candidate'               => 'Candidate',
-            'priority'                => 'Priority',
-            'salary-proposed-extra'   => 'Salary Proposed Extra',
-            'salary-expected-extra'   => 'Salary Expected Extra',
-            'applicant-notes'         => 'Applicant Notes',
-            'create-date'             => 'Applied On',
-            'date-closed'             => 'Hired Date',
-            'date-last-stage-updated' => 'Last Stage Updated',
-            'stage'                   => 'Stage',
-            'job-position'            => 'Job Position',
+            'source'                  => 'Fuente',
+            'medium'                  => 'Medio',
+            'candidate'               => 'Candidato',
+            'priority'                => 'Prioridad',
+            'salary-proposed-extra'   => 'Extra de salario propuesto',
+            'salary-expected-extra'   => 'Extra de salario esperado',
+            'applicant-notes'         => 'Notas del candidato',
+            'create-date'             => 'Fecha de candidatura',
+            'date-closed'             => 'Fecha de contratación',
+            'date-last-stage-updated' => 'Última actualización de etapa',
+            'stage'                   => 'Etapa',
+            'job-position'            => 'Puesto de trabajo',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Applicant Deleted',
-                    'body'  => 'The applicant was successfully deleted.',
+                    'title' => 'Candidato eliminado',
+                    'body'  => 'El candidato se ha eliminado correctamente.',
                 ],
             ],
         ],
 
         'groups' => [
-            'stage'          => 'Stage',
-            'job-position'   => 'Job Position',
-            'candidate-name' => 'Candidate Name',
-            'responsible'    => 'Responsible',
-            'creation-date'  => 'Creation Date',
-            'hired-date'     => 'Hired Date',
-            'last-stage'     => 'Last Stage',
-            'refuse-reason'  => 'Refuse Reason',
+            'stage'          => 'Etapa',
+            'job-position'   => 'Puesto de trabajo',
+            'candidate-name' => 'Nombre del candidato',
+            'responsible'    => 'Responsable',
+            'creation-date'  => 'Fecha de creación',
+            'hired-date'     => 'Fecha de contratación',
+            'last-stage'     => 'Última etapa',
+            'refuse-reason'  => 'Motivo de rechazo',
         ],
 
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Employees deleted',
-                    'body'  => 'The employees has been deleted successfully.',
+                    'title' => 'Empleados eliminados',
+                    'body'  => 'Los empleados se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Employees deleted',
-                    'body'  => 'The employees has been deleted successfully.',
+                    'title' => 'Empleados eliminados',
+                    'body'  => 'Los empleados se han eliminado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Employees restored',
-                    'body'  => 'The employees has been restored successfully.',
+                    'title' => 'Empleados restaurados',
+                    'body'  => 'Los empleados se han restaurado correctamente.',
                 ],
             ],
         ],
@@ -154,55 +154,55 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'entries' => [
-                    'evaluation-good'           => 'Evaluation: Good',
-                    'evaluation-very-good'      => 'Evaluation: Very Good',
-                    'evaluation-very-excellent' => 'Evaluation: Very Excellent',
-                    'hired'                     => 'Hired',
-                    'candidate-name'            => 'Candidate name',
-                    'email'                     => 'Emails',
-                    'phone'                     => 'Phone',
-                    'linkedin-profile'          => 'Linkedin Profile',
-                    'recruiter'                 => 'Recruiter',
-                    'interviewer'               => 'Interviewer',
-                    'tags'                      => 'Tags',
-                    'notes'                     => 'Notes',
-                    'job-position'              => 'Job Positions',
+                    'evaluation-good'           => 'Evaluación: Buena',
+                    'evaluation-very-good'      => 'Evaluación: Muy buena',
+                    'evaluation-very-excellent' => 'Evaluación: Excelente',
+                    'hired'                     => 'Contratado',
+                    'candidate-name'            => 'Nombre del candidato',
+                    'email'                     => 'Correos',
+                    'phone'                     => 'Teléfono',
+                    'linkedin-profile'          => 'Perfil de LinkedIn',
+                    'recruiter'                 => 'Reclutador',
+                    'interviewer'               => 'Entrevistador',
+                    'tags'                      => 'Etiquetas',
+                    'notes'                     => 'Notas',
+                    'job-position'              => 'Puestos de trabajo',
                 ],
             ],
 
             'education-and-availability' => [
-                'title' => 'Education & Availability',
+                'title' => 'Formación y disponibilidad',
 
                 'entries' => [
-                    'degree'            => 'Degree',
-                    'availability-date' => 'Availability Date',
+                    'degree'            => 'Titulación',
+                    'availability-date' => 'Fecha de disponibilidad',
                 ],
             ],
 
             'department' => [
-                'title' => 'Department',
+                'title' => 'Departamento',
             ],
 
             'salary' => [
-                'title' => 'Expected & Proposed Salary',
+                'title' => 'Salario esperado y propuesto',
 
                 'entries' => [
-                    'expected-salary'       => 'Expected Salary',
-                    'salary-proposed-extra' => 'Other Benefit',
-                    'proposed-salary'       => 'Proposed Salary',
-                    'salary-expected-extra' => 'Other Benefit',
+                    'expected-salary'       => 'Salario esperado',
+                    'salary-proposed-extra' => 'Otro beneficio',
+                    'proposed-salary'       => 'Salario propuesto',
+                    'salary-expected-extra' => 'Otro beneficio',
                 ],
             ],
 
             'source-and-medium' => [
-                'title' => 'Source & Medium',
+                'title' => 'Fuente y medio',
 
                 'entries' => [
-                    'source' => 'Source',
-                    'medium' => 'Medium',
+                    'source' => 'Fuente',
+                    'medium' => 'Medio',
                 ],
             ],
         ],

@@ -2,13 +2,13 @@
 
 return [
     'navigation' => [
-        'title' => 'Projects',
-        'group' => 'Project',
+        'title' => 'Proyectos',
+        'group' => 'Proyecto',
     ],
 
     'global-search' => [
-        'project-manager' => 'Project Manager',
-        'customer'        => 'Customer',
+        'project-manager' => 'Responsable del proyecto',
+        'customer'        => 'Cliente',
     ],
 
     'form' => [
@@ -17,42 +17,42 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'Project Name...',
-                    'description'      => 'Description',
+                    'name'             => 'Nombre',
+                    'name-placeholder' => 'Nombre del proyecto...',
+                    'description'      => 'Descripción',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'fields' => [
-                    'project-manager'             => 'Project Manager',
-                    'customer'                    => 'Customer',
-                    'start-date'                  => 'Start Date',
-                    'end-date'                    => 'End Date',
-                    'allocated-hours'             => 'Allocated Hours',
-                    'allocated-hours-helper-text' => 'In hours (Eg. 1.5 hours means 1 hour 30 minutes)',
-                    'tags'                        => 'Tags',
-                    'company'                     => 'Company',
+                    'project-manager'             => 'Responsable del proyecto',
+                    'customer'                    => 'Cliente',
+                    'start-date'                  => 'Fecha de inicio',
+                    'end-date'                    => 'Fecha de fin',
+                    'allocated-hours'             => 'Horas asignadas',
+                    'allocated-hours-helper-text' => 'En horas (ej. 1.5 horas significa 1 hora 30 minutos)',
+                    'tags'                        => 'Etiquetas',
+                    'company'                     => 'Empresa',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'Configuración',
 
                 'fields' => [
-                    'visibility'                   => 'Visibility',
-                    'visibility-hint-tooltip'      => 'Allow employees to access your project or tasks by adding them as followers. They will automatically gain access to any tasks assigned to them..',
-                    'private-description'          => 'Invited internal users only.',
-                    'internal-description'         => 'All internal users can see.',
-                    'public-description'           => 'Invited portal users and all internal users.',
-                    'time-management'              => 'Time Management',
-                    'allow-timesheets'             => 'Allow Timesheets',
-                    'allow-timesheets-helper-text' => 'Log time on tasks and track progress',
-                    'task-management'              => 'Task Management',
-                    'allow-milestones'             => 'Allow Milestones',
-                    'allow-milestones-helper-text' => 'Monitor key milestones that are essential for achieving success.',
+                    'visibility'                   => 'Visibilidad',
+                    'visibility-hint-tooltip'      => 'Permitir que los empleados accedan a su proyecto o tareas añadiéndolos como seguidores. Obtendrán acceso automáticamente a cualquier tarea que se les asigne.',
+                    'private-description'          => 'Solo usuarios internos invitados.',
+                    'internal-description'         => 'Todos los usuarios internos pueden ver.',
+                    'public-description'           => 'Usuarios del portal invitados y todos los usuarios internos.',
+                    'time-management'              => 'Gestión del tiempo',
+                    'allow-timesheets'             => 'Permitir partes de horas',
+                    'allow-timesheets-helper-text' => 'Registrar tiempo en las tareas y hacer seguimiento del progreso',
+                    'task-management'              => 'Gestión de tareas',
+                    'allow-milestones'             => 'Permitir hitos',
+                    'allow-milestones-helper-text' => 'Supervisar los hitos clave que son esenciales para alcanzar el éxito.',
                 ],
             ],
         ],
@@ -60,55 +60,55 @@ return [
 
     'table' => [
         'columns' => [
-            'name'            => 'Name',
-            'customer'        => 'Customer',
-            'start-date'      => 'Start Date',
-            'end-date'        => 'End Date',
-            'planned-date'    => 'Planned Date',
-            'remaining-hours' => 'Remaining Hours',
-            'project-manager' => 'Project Manager',
+            'name'            => 'Nombre',
+            'customer'        => 'Cliente',
+            'start-date'      => 'Fecha de inicio',
+            'end-date'        => 'Fecha de fin',
+            'planned-date'    => 'Fecha planificada',
+            'remaining-hours' => 'Horas restantes',
+            'project-manager' => 'Responsable del proyecto',
         ],
 
         'groups' => [
-            'stage'           => 'Stage',
-            'project-manager' => 'Project Manager',
-            'customer'        => 'Customer',
-            'created-at'      => 'Created At',
+            'stage'           => 'Etapa',
+            'project-manager' => 'Responsable del proyecto',
+            'customer'        => 'Cliente',
+            'created-at'      => 'Creado el',
         ],
 
         'filters' => [
-            'name'             => 'Name',
-            'visibility'       => 'Visibility',
-            'start-date'       => 'Start Date',
-            'end-date'         => 'End Date',
-            'allow-timesheets' => 'Allow Timesheets',
-            'allow-milestones' => 'Allow Milestones',
-            'allocated-hours'  => 'Allocated Hours',
-            'created-at'       => 'Created At',
-            'updated-at'       => 'Updated At',
-            'stage'            => 'Stage',
-            'customer'         => 'Customer',
-            'project-manager'  => 'Project Manager',
-            'company'          => 'Company',
-            'creator'          => 'Creator',
-            'tags'             => 'Tags',
+            'name'             => 'Nombre',
+            'visibility'       => 'Visibilidad',
+            'start-date'       => 'Fecha de inicio',
+            'end-date'         => 'Fecha de fin',
+            'allow-timesheets' => 'Permitir partes de horas',
+            'allow-milestones' => 'Permitir hitos',
+            'allocated-hours'  => 'Horas asignadas',
+            'created-at'       => 'Creado el',
+            'updated-at'       => 'Actualizado el',
+            'stage'            => 'Etapa',
+            'customer'         => 'Cliente',
+            'project-manager'  => 'Responsable del proyecto',
+            'company'          => 'Empresa',
+            'creator'          => 'Creador',
+            'tags'             => 'Etiquetas',
         ],
 
         'actions' => [
-            'tasks'      => ':count Tasks',
-            'milestones' => ':completed milestones completed out of :all',
+            'tasks'      => ':count tareas',
+            'milestones' => ':completed hitos completados de :all',
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Project restored',
-                    'body'  => 'The project has been restored successfully.',
+                    'title' => 'Proyecto restaurado',
+                    'body'  => 'El proyecto se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project deleted',
-                    'body'  => 'The project has been deleted successfully.',
+                    'title' => 'Proyecto eliminado',
+                    'body'  => 'El proyecto se ha eliminado correctamente.',
                 ],
             ],
 
@@ -117,13 +117,13 @@ return [
                 'notification' => [
 
                     'success' => [
-                        'title' => 'Project permanently deleted',
-                        'body'  => 'The project has been permanently deleted successfully.',
+                        'title' => 'Proyecto eliminado permanentemente',
+                        'body'  => 'El proyecto se ha eliminado permanentemente correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Project cannot be permanently deleted',
-                        'body'  => 'The project is associated with other records.',
+                        'title' => 'El proyecto no se puede eliminar permanentemente',
+                        'body'  => 'El proyecto está asociado a otros registros.',
                     ],
 
                 ],
@@ -138,54 +138,54 @@ return [
                 'title' => 'General',
 
                 'entries' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'Project Name...',
-                    'description'      => 'Description',
+                    'name'             => 'Nombre',
+                    'name-placeholder' => 'Nombre del proyecto...',
+                    'description'      => 'Descripción',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'entries' => [
-                    'project-manager'        => 'Project Manager',
-                    'customer'               => 'Customer',
-                    'project-timeline'       => 'Project Timeline',
-                    'allocated-hours'        => 'Allocated Hours',
-                    'allocated-hours-suffix' => ' Hours',
-                    'remaining-hours'        => 'Remaining Hours',
-                    'remaining-hours-suffix' => ' Hours',
-                    'current-stage'          => 'Current Stage',
-                    'tags'                   => 'Tags',
+                    'project-manager'        => 'Responsable del proyecto',
+                    'customer'               => 'Cliente',
+                    'project-timeline'       => 'Cronograma del proyecto',
+                    'allocated-hours'        => 'Horas asignadas',
+                    'allocated-hours-suffix' => ' Horas',
+                    'remaining-hours'        => 'Horas restantes',
+                    'remaining-hours-suffix' => ' Horas',
+                    'current-stage'          => 'Etapa actual',
+                    'tags'                   => 'Etiquetas',
                 ],
             ],
 
             'statistics' => [
-                'title' => 'Statistics',
+                'title' => 'Estadísticas',
 
                 'entries' => [
-                    'total-tasks'         => 'Total Tasks',
-                    'milestones-progress' => 'Milestones Progress',
+                    'total-tasks'         => 'Total de tareas',
+                    'milestones-progress' => 'Progreso de hitos',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'Información del registro',
 
                 'entries' => [
-                    'created-at'   => 'Created At',
-                    'created-by'   => 'Created By',
-                    'last-updated' => 'Last Updated',
+                    'created-at'   => 'Creado el',
+                    'created-by'   => 'Creado por',
+                    'last-updated' => 'Última actualización',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Project Settings',
+                'title' => 'Configuración del proyecto',
 
                 'entries' => [
-                    'visibility'         => 'Visibility',
-                    'timesheets-enabled' => 'Timesheets Enabled',
-                    'milestones-enabled' => 'Milestones Enabled',
+                    'visibility'         => 'Visibilidad',
+                    'timesheets-enabled' => 'Partes de horas habilitados',
+                    'milestones-enabled' => 'Hitos habilitados',
                 ],
             ],
         ],

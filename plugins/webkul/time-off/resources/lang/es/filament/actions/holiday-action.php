@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'title' => 'Holidays',
+    'title' => 'Días festivos',
     'form'  => [
         'placeholders' => [
-            'public-holiday'    => 'Public Holidays',
-            'mandatory-holiday' => 'Mandatory Holidays',
+            'public-holiday'    => 'Días festivos públicos',
+            'mandatory-holiday' => 'Días festivos obligatorios',
         ],
     ],
 ];

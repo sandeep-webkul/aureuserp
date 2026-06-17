@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Department created',
-        'body'  => 'The department has been created successfully.',
+        'title' => 'Departamento creado',
+        'body'  => 'El departamento se ha creado correctamente.',
     ],
 ];

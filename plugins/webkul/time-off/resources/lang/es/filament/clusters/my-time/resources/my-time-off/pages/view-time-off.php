@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Time Off Deleted',
-                'body'  => 'The time off has been deleted successfully.',
+                'title' => 'Ausencia eliminada',
+                'body'  => 'La ausencia se ha eliminado correctamente.',
             ],
         ],
     ],

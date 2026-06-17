@@ -1,89 +1,89 @@
 <?php
 
 return [
-    'title' => 'Work Locations',
+    'title' => 'Ubicaciones de trabajo',
 
     'navigation' => [
-        'title' => 'Work Locations',
-        'group' => 'Employee',
+        'title' => 'Ubicaciones de trabajo',
+        'group' => 'Empleado',
     ],
 
     'form' => [
-        'name'            => 'Name',
-        'company'         => 'Company',
-        'location-type'   => 'Location Type',
-        'location-number' => 'Location Number',
-        'status'          => 'Status',
+        'name'            => 'Nombre',
+        'company'         => 'Empresa',
+        'location-type'   => 'Tipo de ubicación',
+        'location-number' => 'Número de ubicación',
+        'status'          => 'Estado',
     ],
 
     'table' => [
         'columns' => [
             'id'              => 'ID',
-            'name'            => 'Name',
-            'status'          => 'Status',
-            'company'         => 'Company',
-            'location-type'   => 'Location Type',
-            'location-number' => 'Location Number',
-            'deleted-at'      => 'Deleted At',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'name'            => 'Nombre',
+            'status'          => 'Estado',
+            'company'         => 'Empresa',
+            'location-type'   => 'Tipo de ubicación',
+            'location-number' => 'Número de ubicación',
+            'deleted-at'      => 'Eliminado el',
+            'created-by'      => 'Creado por',
+            'created-at'      => 'Creado el',
+            'updated-at'      => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'            => 'Name',
-            'status'          => 'Status',
-            'created-by'      => 'Created By',
-            'company'         => 'Company',
-            'location-number' => 'Location Number',
-            'location-type'   => 'Location Type',
-            'updated-at'      => 'Updated At',
-            'created-at'      => 'Created At',
+            'name'            => 'Nombre',
+            'status'          => 'Estado',
+            'created-by'      => 'Creado por',
+            'company'         => 'Empresa',
+            'location-number' => 'Número de ubicación',
+            'location-type'   => 'Tipo de ubicación',
+            'updated-at'      => 'Actualizado el',
+            'created-at'      => 'Creado el',
         ],
 
         'groups' => [
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'location-type' => 'Location Type',
-            'company'       => 'Company',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'name'          => 'Nombre',
+            'status'        => 'Estado',
+            'location-type' => 'Tipo de ubicación',
+            'company'       => 'Empresa',
+            'created-by'    => 'Creado por',
+            'created-at'    => 'Creado el',
+            'updated-at'    => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Work Location updated',
-                    'body'  => 'The work Location has been updated successfully.',
+                    'title' => 'Ubicación de trabajo actualizada',
+                    'body'  => 'La ubicación de trabajo se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Work Location restored',
-                    'body'  => 'The work Location has been restored successfully.',
+                    'title' => 'Ubicación de trabajo restaurada',
+                    'body'  => 'La ubicación de trabajo se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Work Location deleted',
-                    'body'  => 'The work Location has been deleted successfully.',
+                    'title' => 'Ubicación de trabajo eliminada',
+                    'body'  => 'La ubicación de trabajo se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Work Location force deleted',
-                    'body'  => 'The work Location has been force deleted successfully.',
+                    'title' => 'Ubicación de trabajo eliminada permanentemente',
+                    'body'  => 'La ubicación de trabajo se ha eliminado permanentemente correctamente.',
                 ],
             ],
 
             'empty-state' => [
                 'notification' => [
-                    'title' => 'Work Location created',
-                    'body'  => 'The Work Location has been created successfully.',
+                    'title' => 'Ubicación de trabajo creada',
+                    'body'  => 'La ubicación de trabajo se ha creado correctamente.',
                 ],
             ],
         ],
@@ -91,25 +91,25 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Work Locations deleted',
-                    'body'  => 'The work Locations has been deleted successfully.',
+                    'title' => 'Ubicaciones de trabajo eliminadas',
+                    'body'  => 'Las ubicaciones de trabajo se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Work Locations force deleted',
-                    'body'  => 'The work Locations has been force deleted successfully.',
+                    'title' => 'Ubicaciones de trabajo eliminadas permanentemente',
+                    'body'  => 'Las ubicaciones de trabajo se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'            => 'Name',
-        'company'         => 'Company',
-        'location-type'   => 'Location Type',
-        'location-number' => 'Location Number',
-        'status'          => 'Status',
+        'name'            => 'Nombre',
+        'company'         => 'Empresa',
+        'location-type'   => 'Tipo de ubicación',
+        'location-number' => 'Número de ubicación',
+        'status'          => 'Estado',
     ],
 ];

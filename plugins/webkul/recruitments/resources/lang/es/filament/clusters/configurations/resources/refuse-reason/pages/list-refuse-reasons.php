@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Refuse reason created',
-        'body'  => 'The refuse reason has been created successfully.',
+        'title' => 'Motivo de rechazo creado',
+        'body'  => 'El motivo de rechazo se ha creado correctamente.',
     ],
 ];

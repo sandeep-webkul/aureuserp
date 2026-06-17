@@ -44,6 +44,9 @@ return [
                     'quantity'               => 'Cantidad',
                     'uom'                    => 'Unidad de medida del producto',
                 ],
+                'validation' => [
+                    'component-different-from-product' => 'El componente debe ser diferente del producto que se fabrica.',
+                ],
                 'create-form' => [
                     'fields' => [
                         'name'            => 'Nombre',

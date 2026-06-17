@@ -1,57 +1,57 @@
 <?php
 
 return [
-    'title' => 'Sources',
+    'title' => 'Fuentes',
 
     'navigation' => [
-        'title' => 'Sources',
+        'title' => 'Fuentes',
         'group' => 'UTMs',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'Estado',
+        'created-by' => 'Creado por',
+        'created-at' => 'Creado el',
+        'updated-at' => 'Actualizado el',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the source',
-            'status'           => 'Status',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Introducir el nombre de la fuente',
+            'status'           => 'Estado',
         ],
     ],
 
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
-            'status'     => 'Status',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'status'     => 'Estado',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Source updated',
-                    'body'  => 'The source has been updated successfully.',
+                    'title' => 'Fuente actualizada',
+                    'body'  => 'La fuente se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Source deleted',
-                    'body'  => 'The source has been deleted successfully.',
+                    'title' => 'Fuente eliminada',
+                    'body'  => 'La fuente se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -59,8 +59,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Sources deleted',
-                    'body'  => 'The Sources has been deleted successfully.',
+                    'title' => 'Fuentes eliminadas',
+                    'body'  => 'Las fuentes se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -68,14 +68,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Source created',
-                    'body'  => 'The source has been created successfully.',
+                    'title' => 'Fuente creada',
+                    'body'  => 'La fuente se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'Nombre',
     ],
 ];

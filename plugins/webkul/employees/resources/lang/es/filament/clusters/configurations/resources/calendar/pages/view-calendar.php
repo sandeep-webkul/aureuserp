@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Working Schedules deleted',
-                'body'  => 'The working schedules has been deleted successfully.',
+                'title' => 'Horarios de trabajo eliminados',
+                'body'  => 'Los horarios de trabajo se han eliminado correctamente.',
             ],
         ],
     ],

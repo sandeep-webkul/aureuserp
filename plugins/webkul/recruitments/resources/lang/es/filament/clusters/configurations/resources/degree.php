@@ -1,56 +1,56 @@
 <?php
 
 return [
-    'title' => 'Degrees',
+    'title' => 'Titulaciones',
 
     'navigation' => [
-        'title' => 'Degrees',
-        'group' => 'Applications',
+        'title' => 'Titulaciones',
+        'group' => 'Candidaturas',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'Estado',
+        'created-by' => 'Creado por',
+        'created-at' => 'Creado el',
+        'updated-at' => 'Actualizado el',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the degree',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Introducir el nombre de la titulación',
         ],
     ],
 
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'employee'   => 'Empleado',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Degree updated',
-                    'body'  => 'The degree has been updated successfully.',
+                    'title' => 'Titulación actualizada',
+                    'body'  => 'La titulación se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Degree deleted',
-                    'body'  => 'The degree has been deleted successfully.',
+                    'title' => 'Titulación eliminada',
+                    'body'  => 'La titulación se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -58,8 +58,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Degrees deleted',
-                    'body'  => 'The degrees has been deleted successfully.',
+                    'title' => 'Titulaciones eliminadas',
+                    'body'  => 'Las titulaciones se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -67,14 +67,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Degree created',
-                    'body'  => 'The degree has been created successfully.',
+                    'title' => 'Titulación creada',
+                    'body'  => 'La titulación se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'Nombre',
     ],
 ];

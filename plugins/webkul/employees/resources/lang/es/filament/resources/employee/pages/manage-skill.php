@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Manage Skills',
+        'title' => 'Gestionar competencias',
     ],
 ];

@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'title' => 'Job Position',
+    'title' => 'Puesto de trabajo',
 
     'navigation' => [
-        'title' => 'Job Positions',
+        'title' => 'Puestos de trabajo',
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
+            'name'         => 'Nombre',
+            'manager-name' => 'Responsable',
+            'company-name' => 'Empresa',
         ],
 
         'actions' => [
             'applications' => [
-                'new-applications' => ':count New Applications',
+                'new-applications' => ':count candidaturas nuevas',
             ],
 
             'to-recruitment' => [
-                'to-recruitment' => ':count To Recruitment',
+                'to-recruitment' => ':count por reclutar',
             ],
 
             'total-application' => [
-                'total-application' => ':count Applications',
+                'total-application' => ':count candidaturas',
             ],
         ],
     ],

@@ -3,13 +3,13 @@
 return [
     'notification' => [
         'success' => [
-            'title' => 'Time Off created',
-            'body'  => 'The time off has been created successfully.',
+            'title' => 'Ausencia creada',
+            'body'  => 'La ausencia se ha creado correctamente.',
         ],
 
         'warning' => [
-            'title' => 'You don\'t have an employee account',
-            'body'  => 'You don\'t have an employee account. Please contact your administrator.',
+            'title' => 'No tiene una cuenta de empleado',
+            'body'  => 'No tiene una cuenta de empleado. Contactar con el administrador.',
         ],
     ],
 ];

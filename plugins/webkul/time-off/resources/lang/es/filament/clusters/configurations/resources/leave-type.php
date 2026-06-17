@@ -1,42 +1,42 @@
 <?php
 
 return [
-    'title'      => 'Leave Type',
+    'title'      => 'Tipo de ausencia',
     'navigation' => [
-        'title' => 'Leave Type',
+        'title' => 'Tipo de ausencia',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General Information',
+                'title'  => 'Información general',
                 'fields' => [
-                    'name'                => 'Title',
-                    'approval'            => 'Approval',
-                    'requires-allocation' => 'Requires Allocation',
-                    'employee-requests'   => 'Employee Requests',
-                    'display-option'      => 'Display Option',
+                    'name'                => 'Título',
+                    'approval'            => 'Aprobación',
+                    'requires-allocation' => 'Requiere asignación',
+                    'employee-requests'   => 'Solicitudes de empleados',
+                    'display-option'      => 'Opción de visualización',
                 ],
             ],
             'display-option' => [
-                'title'  => 'Display Option',
+                'title'  => 'Opción de visualización',
                 'fields' => [
                     'color' => 'Color',
                 ],
             ],
             'configuration' => [
-                'title' => 'Configuration',
+                'title' => 'Configuración',
 
                 'fields' => [
-                    'notified-time-off-officers'          => 'Notified Time Off Officers',
-                    'take-time-off-in'                    => 'Take Time Off In',
-                    'public-holiday-included'             => 'Public Holiday Included',
-                    'allow-to-attach-supporting-document' => 'Allow to Attach Supporting Document',
-                    'show-on-dashboard'                   => 'Show on Dashboard',
-                    'allow-negative-cap'                  => 'Allow Negative Cap',
-                    'kind-off-time'                       => 'Kind of Time',
-                    'max-negative-cap'                    => 'Max Negative Cap',
-                    'kind-of-time'                        => 'Kind of Time Off',
+                    'notified-time-off-officers'          => 'Responsables de ausencias notificados',
+                    'take-time-off-in'                    => 'Tomar ausencia en',
+                    'public-holiday-included'             => 'Días festivos incluidos',
+                    'allow-to-attach-supporting-document' => 'Permitir adjuntar documento justificativo',
+                    'show-on-dashboard'                   => 'Mostrar en el panel',
+                    'allow-negative-cap'                  => 'Permitir límite negativo',
+                    'kind-off-time'                       => 'Tipo de tiempo',
+                    'max-negative-cap'                    => 'Límite negativo máximo',
+                    'kind-of-time'                        => 'Tipo de ausencia',
                 ],
             ],
         ],
@@ -44,37 +44,37 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                      => 'Name',
-            'company-name'              => 'Company',
+            'name'                      => 'Nombre',
+            'company-name'              => 'Empresa',
             'color'                     => 'Color',
-            'notified-time-officers'    => 'Notified Time Officers',
-            'time-off-approval'         => 'Time Off Approval',
-            'requires-allocation'       => 'Requires Allocation',
-            'allocation-approval'       => 'Allocation Approval',
-            'employee-request'          => 'Employee Request',
+            'notified-time-officers'    => 'Responsables de tiempo notificados',
+            'time-off-approval'         => 'Aprobación de ausencia',
+            'requires-allocation'       => 'Requiere asignación',
+            'allocation-approval'       => 'Aprobación de asignación',
+            'employee-request'          => 'Solicitud de empleado',
         ],
 
         'filters' => [
-            'name'                => 'Name',
-            'company-name'        => 'Company',
-            'time-off-approval'   => 'Time Off Approval',
-            'requires-allocation' => 'Requires Allocation',
-            'time-type'           => 'Time Type',
-            'request-unit'        => 'Request Unit',
-            'created-by'          => 'Created By',
+            'name'                => 'Nombre',
+            'company-name'        => 'Empresa',
+            'time-off-approval'   => 'Aprobación de ausencia',
+            'requires-allocation' => 'Requiere asignación',
+            'time-type'           => 'Tipo de tiempo',
+            'request-unit'        => 'Unidad de solicitud',
+            'created-by'          => 'Creado por',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Leave Type deleted',
-                    'body'  => 'The Leave type has been deleted successfully.',
+                    'title' => 'Tipo de ausencia eliminado',
+                    'body'  => 'El tipo de ausencia se ha eliminado correctamente.',
                 ],
             ],
             'restore' => [
                 'notification' => [
-                    'title' => 'Leave Type restored',
-                    'body'  => 'The Leave type has been restored successfully.',
+                    'title' => 'Tipo de ausencia restaurado',
+                    'body'  => 'El tipo de ausencia se ha restaurado correctamente.',
                 ],
             ],
         ],
@@ -82,27 +82,27 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Leave Type restored',
-                    'body'  => 'The Leave Type has been restored successfully.',
+                    'title' => 'Tipo de ausencia restaurado',
+                    'body'  => 'El tipo de ausencia se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Leave Type deleted',
-                    'body'  => 'The Leave Type has been deleted successfully.',
+                    'title' => 'Tipo de ausencia eliminado',
+                    'body'  => 'El tipo de ausencia se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Leave Type force deleted',
-                        'body'  => 'The Leave Type has been force deleted successfully.',
+                        'title' => 'Tipo de ausencia eliminado permanentemente',
+                        'body'  => 'El tipo de ausencia se ha eliminado permanentemente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Leave Type could not be deleted',
-                        'body'  => 'The Leave Type cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el tipo de ausencia',
+                        'body'  => 'El tipo de ausencia no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -112,33 +112,33 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'General Information',
+                'title'   => 'Información general',
                 'entries' => [
-                    'name'                => 'Title',
-                    'approval'            => 'Approval',
-                    'requires-allocation' => 'Requires Allocation',
-                    'employee-requests'   => 'Employee Requests',
-                    'display-option'      => 'Display Option',
+                    'name'                => 'Título',
+                    'approval'            => 'Aprobación',
+                    'requires-allocation' => 'Requiere asignación',
+                    'employee-requests'   => 'Solicitudes de empleados',
+                    'display-option'      => 'Opción de visualización',
                 ],
             ],
             'display-option' => [
-                'title'   => 'Display Option',
+                'title'   => 'Opción de visualización',
                 'entries' => [
                     'color' => 'Color',
                 ],
             ],
             'configuration' => [
-                'title' => 'Configuration',
+                'title' => 'Configuración',
 
                 'entries' => [
-                    'notified-time-off-officers'          => 'Notified Time Off Officers',
-                    'take-time-off-in'                    => 'Take Time Off In',
-                    'public-holiday-included'             => 'Public Holiday Included',
-                    'allow-to-attach-supporting-document' => 'Allow to Attach Supporting Document',
-                    'show-on-dashboard'                   => 'Show on Dashboard',
-                    'kind-off-time'                       => 'Kind of Time',
-                    'max-negative-cap'                    => 'Max Negative Cap',
-                    'kind-of-time'                        => 'Kind of Time Off',
+                    'notified-time-off-officers'          => 'Responsables de ausencias notificados',
+                    'take-time-off-in'                    => 'Tomar ausencia en',
+                    'public-holiday-included'             => 'Días festivos incluidos',
+                    'allow-to-attach-supporting-document' => 'Permitir adjuntar documento justificativo',
+                    'show-on-dashboard'                   => 'Mostrar en el panel',
+                    'kind-off-time'                       => 'Tipo de tiempo',
+                    'max-negative-cap'                    => 'Límite negativo máximo',
+                    'kind-of-time'                        => 'Tipo de ausencia',
                 ],
             ],
         ],

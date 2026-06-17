@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Employment Type',
+            'label' => 'Nuevo tipo de empleo',
 
             'notification' => [
-                'title' => 'Employment Type created',
-                'body'  => 'The employment type has been created successfully.',
+                'title' => 'Tipo de empleo creado',
+                'body'  => 'El tipo de empleo se ha creado correctamente.',
             ],
         ],
     ],

@@ -2,10 +2,10 @@
 
 return [
     'heading' => [
-        'title' => 'Tasks by Stage',
+        'title' => 'Tareas por etapa',
     ],
 
     'datasets' => [
-        'label' => 'Tasks created',
+        'label' => 'Tareas creadas',
     ],
 ];

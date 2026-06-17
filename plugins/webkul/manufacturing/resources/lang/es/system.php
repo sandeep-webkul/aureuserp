@@ -3,39 +3,39 @@
 return [
     'manufacturing-manager' => [
         'unplan-order' => [
-            'work-orders-already-done'    => "Some work orders are already done, so you cannot un-plan this manufacturing order.\n\nIt'd be a shame to waste all that progress, right?",
-            'work-orders-already-started' => "Some work orders have already started, so you cannot un-plan this manufacturing order.\n\nIt'd be a shame to waste all that progress, right?",
+            'work-orders-already-done'    => "Algunas órdenes de trabajo ya están hechas, por lo que no se puede desplanificar esta orden de fabricación.\n\nSería una pena desperdiciar todo ese progreso, ¿verdad?",
+            'work-orders-already-started' => "Algunas órdenes de trabajo ya han comenzado, por lo que no se puede desplanificar esta orden de fabricación.\n\nSería una pena desperdiciar todo ese progreso, ¿verdad?",
         ],
     ],
 
     'work-center-productivity-log' => [
-        'time-tracking'                    => 'Time Tracking: :name',
-        'no-performance-productivity-loss' => "You need to define at least one un archive productivity loss in the category 'Performance'. Create from configuration settings.",
+        'time-tracking'                    => 'Seguimiento de tiempo: :name',
+        'no-performance-productivity-loss' => "Debe definir al menos una pérdida de productividad sin archivar en la categoría 'Rendimiento'. Créela desde la configuración.",
     ],
 
     'work-center' => [
-        'already-unblocked' => 'It has already been unblocked.',
+        'already-unblocked' => 'Ya se ha desbloqueado.',
     ],
 
     'work-order' => [
-        'unblock-work-center'        => 'Please unblock the work center to start the work order.',
-        'already-done-or-cancelled'  => 'You cannot start a work order that is already done or cancelled',
-        'no-calendar-on-work-center' => 'There is no defined calendar on work center :name.',
-        'no-productivity-loss'       => "You need to define at least one productivity loss in the category 'Productivity'. Create Configuration settings.",
-        'no-performance-loss'        => "You need to define at least one productivity loss in the category 'Performance'. Create Configuration settings.",
-        'impossible-to-plan'         => 'Impossible to plan the work order. Please check the work center availabilities.',
+        'unblock-work-center'        => 'Desbloquee el centro de trabajo para iniciar la orden de trabajo.',
+        'already-done-or-cancelled'  => 'No se puede iniciar una orden de trabajo que ya está hecha o cancelada',
+        'no-calendar-on-work-center' => 'No hay ningún calendario definido en el centro de trabajo :name.',
+        'no-productivity-loss'       => "Debe definir al menos una pérdida de productividad en la categoría 'Productividad'. Créela desde la configuración.",
+        'no-performance-loss'        => "Debe definir al menos una pérdida de productividad en la categoría 'Rendimiento'. Créela desde la configuración.",
+        'impossible-to-plan'         => 'Imposible planificar la orden de trabajo. Compruebe la disponibilidad del centro de trabajo.',
     ],
 
     'order' => [
-        'product-in-byproducts'                    => 'You cannot have :product as the finished product and in the Byproducts',
-        'missing-lot-serial-number'                => 'You need to supply Lot/Serial Number for products and "consume" them: :missing_products',
-        'serial-number-already-produced'           => 'This serial number for product :product has already been produced',
-        'byproduct-serial-number-already-produced' => 'The serial number :number used for byproduct :product has already been produced',
-        'component-serial-number-consumed'         => 'The serial number :number used for component :component has already been consumed',
+        'product-in-byproducts'                    => 'No se puede tener :product como producto terminado y en los subproductos',
+        'missing-lot-serial-number'                => 'Debe proporcionar un número de lote/serie para los productos y "consumirlos": :missing_products',
+        'serial-number-already-produced'           => 'Este número de serie para el producto :product ya se ha producido',
+        'byproduct-serial-number-already-produced' => 'El número de serie :number utilizado para el subproducto :product ya se ha producido',
+        'component-serial-number-consumed'         => 'El número de serie :number utilizado para el componente :component ya se ha consumido',
         'components-availability'                  => [
-            'available'     => 'Available',
-            'not-available' => 'Not Available',
-            'expected'      => 'Expected :date',
+            'available'     => 'Disponible',
+            'not-available' => 'No disponible',
+            'expected'      => 'Previsto :date',
         ],
     ],
 ];

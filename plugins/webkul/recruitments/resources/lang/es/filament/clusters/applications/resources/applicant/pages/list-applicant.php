@@ -2,28 +2,28 @@
 
 return [
     'notification' => [
-        'title' => 'Applicant created',
-        'body'  => 'The applicant has been created successf ully.',
+        'title' => 'Candidato creado',
+        'body'  => 'El candidato se ha creado correctamente.',
     ],
 
     'tabs' => [
-        'my-applicants'          => 'My Applicants',
-        'un-assigned'            => 'Un Assigned',
-        'in-progress'            => 'In Progress',
-        'hired'                  => 'Hired',
-        'refused'                => 'Refused',
-        'archived'               => 'Archived',
-        'blocked'                => 'Blocked',
-        'directly-available'     => 'Directly Available',
-        'created-recently'       => 'Created Recently',
-        'stage-updated-recently' => 'Stage Updated Recently',
+        'my-applicants'          => 'Mis candidatos',
+        'un-assigned'            => 'Sin asignar',
+        'in-progress'            => 'En curso',
+        'hired'                  => 'Contratados',
+        'refused'                => 'Rechazados',
+        'archived'               => 'Archivados',
+        'blocked'                => 'Bloqueados',
+        'directly-available'     => 'Disponibles de inmediato',
+        'created-recently'       => 'Creados recientemente',
+        'stage-updated-recently' => 'Etapa actualizada recientemente',
     ],
 
     'header-actions' => [
         'create-applicant' => [
-            'label' => 'New Applicant',
+            'label' => 'Nuevo candidato',
 
-            'modal-title' => 'Create Applicant',
+            'modal-title' => 'Crear candidato',
         ],
     ],
 ];

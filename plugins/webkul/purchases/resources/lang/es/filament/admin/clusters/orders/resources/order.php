@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Fecha límite del pedido',
                     'expected-arrival'         => 'Llegada prevista',
                     'confirmed-by-vendor'      => 'Confirmado por el proveedor',
+                    'deliver-to'               => 'Entregar a',
                 ],
             ],
         ],
@@ -135,6 +136,7 @@ return [
             'total-amount'     => 'Importe total',
             'status'           => 'Estado',
             'billing-status'   => 'Estado de facturación',
+            'receipt-status'   => 'Estado de recepción',
             'currency'         => 'Moneda',
         ],
 

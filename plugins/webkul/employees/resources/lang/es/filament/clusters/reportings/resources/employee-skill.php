@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'title' => 'Skills',
+    'title' => 'Competencias',
 
     'navigation' => [
-        'title' => 'Skills',
+        'title' => 'Competencias',
     ],
 
     'form' => [
         'sections' => [
             'skill-details' => [
-                'title' => 'Skill Details',
+                'title' => 'Detalles de la competencia',
 
                 'fields' => [
-                    'employee'       => 'Employee',
-                    'skill'          => 'Skill',
-                    'skill-level'    => 'Level',
-                    'skill-type'     => 'Skill Type',
+                    'employee'       => 'Empleado',
+                    'skill'          => 'Competencia',
+                    'skill-level'    => 'Nivel',
+                    'skill-type'     => 'Tipo de competencia',
                 ],
             ],
             'addition-information' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'fields' => [
-                    'created-by' => 'Created By',
-                    'updated-by' => 'Updated By',
+                    'created-by' => 'Creado por',
+                    'updated-by' => 'Actualizado por',
                 ],
             ],
         ],
@@ -33,52 +33,52 @@ return [
     'table' => [
         'columns' => [
             'id'              => 'ID',
-            'employee'        => 'Employee',
-            'skill'           => 'Skill',
-            'skill-level'     => 'Level',
-            'skill-type'      => 'Skill Type',
-            'user'            => 'User',
-            'proficiency'     => 'Proficiency',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
+            'employee'        => 'Empleado',
+            'skill'           => 'Competencia',
+            'skill-level'     => 'Nivel',
+            'skill-type'      => 'Tipo de competencia',
+            'user'            => 'Usuario',
+            'proficiency'     => 'Dominio',
+            'created-by'      => 'Creado por',
+            'created-at'      => 'Creado el',
         ],
 
         'filters' => [
-            'employee'        => 'Employee',
-            'skill'           => 'Skill',
-            'skill-level'     => 'Level',
-            'skill-type'      => 'Skill Type',
-            'user'            => 'User',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'employee'        => 'Empleado',
+            'skill'           => 'Competencia',
+            'skill-level'     => 'Nivel',
+            'skill-type'      => 'Tipo de competencia',
+            'user'            => 'Usuario',
+            'created-by'      => 'Creado por',
+            'created-at'      => 'Creado el',
+            'updated-at'      => 'Actualizado el',
         ],
 
         'groups' => [
-            'employee'   => 'Employee',
-            'skill-type' => 'Skill Type',
+            'employee'   => 'Empleado',
+            'skill-type' => 'Tipo de competencia',
         ],
     ],
 
     'infolist' => [
         'sections' => [
             'skill-details' => [
-                'title' => 'Skill Details',
+                'title' => 'Detalles de la competencia',
 
                 'entries' => [
-                    'employee'        => 'Employee',
-                    'skill'           => 'Skill',
-                    'skill-level'     => 'Level',
-                    'skill-type'      => 'Skill Type',
+                    'employee'        => 'Empleado',
+                    'skill'           => 'Competencia',
+                    'skill-level'     => 'Nivel',
+                    'skill-type'      => 'Tipo de competencia',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
 
                 'entries' => [
-                    'created-by' => 'Created By',
-                    'updated-by' => 'Updated By',
+                    'created-by' => 'Creado por',
+                    'updated-by' => 'Actualizado por',
                 ],
             ],
         ],

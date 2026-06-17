@@ -2,115 +2,115 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Requests',
+        'title' => 'Solicitudes de ausencia',
     ],
 
     'modal-actions' => [
         'edit' => [
-            'title'                         => 'Edit',
-            'duration-display'              => ':count working day|:count working days',
-            'duration-display-with-weekend' => ':count working day (+ :weekend weekend day)|:count working days (+ :weekend weekend days)',
+            'title'                         => 'Editar',
+            'duration-display'              => ':count día laborable|:count días laborables',
+            'duration-display-with-weekend' => ':count día laborable (+ :weekend día de fin de semana)|:count días laborables (+ :weekend días de fin de semana)',
 
             'notification' => [
-                'title' => 'Time Off Updated',
-                'body'  => 'Your time off request has been updated successfully.',
+                'title' => 'Ausencia actualizada',
+                'body'  => 'Su solicitud de ausencia se ha actualizado correctamente.',
             ],
         ],
 
         'delete' => [
-            'title' => 'Delete',
+            'title' => 'Eliminar',
         ],
     ],
 
     'config' => [
         'button-text' => [
-            'today' => 'Today',
-            'month' => 'Month',
-            'week'  => 'Week',
-            'list'  => 'List',
+            'today' => 'Hoy',
+            'month' => 'Mes',
+            'week'  => 'Semana',
+            'list'  => 'Lista',
         ],
     ],
 
     'view-action' => [
-        'title'       => 'View',
-        'description' => 'View Time Off Request',
+        'title'       => 'Ver',
+        'description' => 'Ver solicitud de ausencia',
     ],
 
     'notifications' => [
         'employee-not-found' => [
-            'title' => 'Employee Not Found',
-            'body'  => 'Please add an employee to your profile before requesting time off.',
+            'title' => 'Empleado no encontrado',
+            'body'  => 'Agregue un empleado a su perfil antes de solicitar una ausencia.',
         ],
 
         'error' => [
-            'title' => 'Something went wrong',
-            'body'  => 'We could not process your time off request. Please try again.',
+            'title' => 'Algo salió mal',
+            'body'  => 'No se pudo procesar su solicitud de ausencia. Inténtelo de nuevo.',
         ],
     ],
 
     'header-actions' => [
         'create' => [
-            'title'       => 'New Time Off',
-            'description' => 'Create Time Off Request',
+            'title'       => 'Nueva ausencia',
+            'description' => 'Crear solicitud de ausencia',
 
             'notification' => [
-                'title' => 'Time Off Created',
-                'body'  => 'Time off request has been created successfully.',
+                'title' => 'Ausencia creada',
+                'body'  => 'La solicitud de ausencia se ha creado correctamente.',
             ],
 
             'employee-not-found' => [
                 'notification' => [
-                    'title' => 'Employee Not Found',
-                    'body'  => 'Please add an employee to your profile before creating a time off request.',
+                    'title' => 'Empleado no encontrado',
+                    'body'  => 'Agregue un empleado a su perfil antes de crear una solicitud de ausencia.',
                 ],
             ],
 
             'success' => [
                 'notification' => [
-                    'title' => 'Time Off Created',
-                    'body'  => 'Your time off request has been created successfully.',
+                    'title' => 'Ausencia creada',
+                    'body'  => 'Su solicitud de ausencia se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'form' => [
-        'title'       => 'Time Off Request',
-        'description' => 'Create or edit your time off request with the following details:',
+        'title'       => 'Solicitud de ausencia',
+        'description' => 'Cree o edite su solicitud de ausencia con los siguientes detalles:',
 
         'fields' => [
-            'time-off-type'             => 'Time Off Type',
-            'time-off-type-placeholder' => 'Select a time off type',
-            'time-off-type-helper'      => 'Select the type of time off you are requesting.',
-            'request-date-from'         => 'Request Date From',
-            'request-date-to'           => 'Request Date To',
-            'period'                    => 'Period',
-            'half-day'                  => 'Half Day',
-            'half-day-helper'           => 'Toggle for half-day leave.',
-            'requested-days'            => 'Requested (Days/Hours)',
-            'description'               => 'Description',
-            'description-placeholder'   => 'No description provided',
-            'description-helper'        => 'Provide a brief description of your time off request.',
-            'duration'                  => 'Duration',
-            'please-select-dates'       => 'Please select the request date from and to.',
+            'time-off-type'             => 'Tipo de ausencia',
+            'time-off-type-placeholder' => 'Seleccione un tipo de ausencia',
+            'time-off-type-helper'      => 'Seleccione el tipo de ausencia que está solicitando.',
+            'request-date-from'         => 'Fecha de solicitud desde',
+            'request-date-to'           => 'Fecha de solicitud hasta',
+            'period'                    => 'Período',
+            'half-day'                  => 'Medio día',
+            'half-day-helper'           => 'Active para una ausencia de medio día.',
+            'requested-days'            => 'Solicitado (días/horas)',
+            'description'               => 'Descripción',
+            'description-placeholder'   => 'Sin descripción proporcionada',
+            'description-helper'        => 'Proporcione una breve descripción de su solicitud de ausencia.',
+            'duration'                  => 'Duración',
+            'please-select-dates'       => 'Seleccione la fecha de solicitud desde y hasta.',
         ],
     ],
 
     'infolist' => [
-        'title'       => 'Time Off Details',
-        'description' => 'Here are the details of your time off request:',
+        'title'       => 'Detalles de la ausencia',
+        'description' => 'Estos son los detalles de su solicitud de ausencia:',
         'entries'     => [
-            'time-off-type'           => 'Time Off Type',
-            'request-date-from'       => 'Request Date From',
-            'request-date-to'         => 'Request Date To',
-            'description'             => 'Description',
-            'description-placeholder' => 'No description provided',
-            'duration'                => 'Duration',
-            'status'                  => 'Status',
+            'time-off-type'           => 'Tipo de ausencia',
+            'request-date-from'       => 'Fecha de solicitud desde',
+            'request-date-to'         => 'Fecha de solicitud hasta',
+            'description'             => 'Descripción',
+            'description-placeholder' => 'Sin descripción proporcionada',
+            'duration'                => 'Duración',
+            'status'                  => 'Estado',
         ],
     ],
 
     'events' => [
-        'title' => ':name On :status: :days day(s)',
+        'title' => ':name en :status: :days día(s)',
     ],
 ];

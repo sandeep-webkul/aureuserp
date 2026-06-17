@@ -2,5 +2,5 @@
 
 return [
     'regular' => 'Regular',
-    'accrual' => 'Accrual',
+    'accrual' => 'Acumulación',
 ];

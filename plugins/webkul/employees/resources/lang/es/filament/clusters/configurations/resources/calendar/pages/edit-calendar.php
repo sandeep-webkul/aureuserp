@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Work Schedule Plan updated',
-        'body'  => 'The work schedule plan has been updated successfully.',
+        'title' => 'Plan de horario de trabajo actualizado',
+        'body'  => 'El plan de horario de trabajo se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Work Schedule Plan deleted',
-                'body'  => 'The work schedule plan has been deleted successfully.',
+                'title' => 'Plan de horario de trabajo eliminado',
+                'body'  => 'El plan de horario de trabajo se ha eliminado correctamente.',
             ],
         ],
     ],

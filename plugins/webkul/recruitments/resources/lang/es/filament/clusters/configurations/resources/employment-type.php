@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Job Positions',
+        'group' => 'Puestos de trabajo',
     ],
 ];

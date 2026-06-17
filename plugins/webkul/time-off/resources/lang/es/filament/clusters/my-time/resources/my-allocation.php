@@ -1,70 +1,70 @@
 <?php
 
 return [
-    'title' => 'My Allocation',
+    'title' => 'Mi asignación',
 
-    'model-label' => 'My Allocation',
+    'model-label' => 'Mi asignación',
 
     'navigation' => [
-        'title' => 'My Allocation',
+        'title' => 'Mi asignación',
     ],
 
     'form' => [
         'fields' => [
-            'name'                => 'Name',
-            'name-placeholder'    => 'Time Off Type (From validity start to validity end/no limit)',
-            'time-off-type'       => 'Time Off Type',
-            'allocation-type'     => 'Allocation Type',
-            'validity-period'     => 'Validity Period',
-            'date-from'           => 'Date From',
-            'date-to'             => 'Date To',
-            'date-to-placeholder' => 'No Limit',
-            'allocation'          => 'Allocation',
-            'allocation-suffix'   => 'Number of Days',
-            'reason'              => 'Reason',
+            'name'                => 'Nombre',
+            'name-placeholder'    => 'Tipo de ausencia (desde el inicio de validez hasta el fin de validez/sin límite)',
+            'time-off-type'       => 'Tipo de ausencia',
+            'allocation-type'     => 'Tipo de asignación',
+            'validity-period'     => 'Período de validez',
+            'date-from'           => 'Fecha desde',
+            'date-to'             => 'Fecha hasta',
+            'date-to-placeholder' => 'Sin límite',
+            'allocation'          => 'Asignación',
+            'allocation-suffix'   => 'Número de días',
+            'reason'              => 'Motivo',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'time-off-type'   => 'Time Off Type',
-            'amount'          => 'Amount',
-            'allocation-type' => 'Allocation Type',
-            'status'          => 'Status',
+            'time-off-type'   => 'Tipo de ausencia',
+            'amount'          => 'Cantidad',
+            'allocation-type' => 'Tipo de asignación',
+            'status'          => 'Estado',
         ],
 
         'groups' => [
-            'time-off-type'   => 'Time Off Type',
-            'employee-name'   => 'Employee Name',
-            'allocation-type' => 'Allocation Type',
-            'status'          => 'Status',
-            'start-date'      => 'Start Date',
+            'time-off-type'   => 'Tipo de ausencia',
+            'employee-name'   => 'Nombre del empleado',
+            'allocation-type' => 'Tipo de asignación',
+            'status'          => 'Estado',
+            'start-date'      => 'Fecha de inicio',
         ],
 
         'actions' => [
             'approve' => [
                 'title' => [
-                    'validate' => 'Validate',
-                    'approve'  => 'Approve',
+                    'validate' => 'Validar',
+                    'approve'  => 'Aprobar',
                 ],
                 'notification' => [
-                    'title' => 'Allocation approved approved',
-                    'body'  => 'The allocation approved has been approved successfully.',
+                    'title' => 'Asignación aprobada',
+                    'body'  => 'La asignación se ha aprobado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Allocation deleted',
-                    'body'  => 'The allocation has been deleted successfully.',
+                    'title' => 'Asignación eliminada',
+                    'body'  => 'La asignación se ha eliminado correctamente.',
                 ],
             ],
 
             'refused' => [
-                'title'        => 'Refuse',
+                'title'        => 'Rechazar',
                 'notification' => [
-                    'title' => 'Allocation refused',
-                    'body'  => 'The allocation has been refused successfully.',
+                    'title' => 'Asignación rechazada',
+                    'body'  => 'La asignación se ha rechazado correctamente.',
                 ],
             ],
         ],
@@ -72,8 +72,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Allocations deleted',
-                    'body'  => 'The allocations has been deleted successfully.',
+                    'title' => 'Asignaciones eliminadas',
+                    'body'  => 'Las asignaciones se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -82,29 +82,29 @@ return [
     'infolist' => [
         'sections' => [
             'allocation-details' => [
-                'title'   => 'Allocation Details',
+                'title'   => 'Detalles de la asignación',
                 'entries' => [
-                    'name'                => 'Name',
-                    'time-off-type'       => 'Time Off Type',
-                    'allocation-type'     => 'Allocation Type',
+                    'name'                => 'Nombre',
+                    'time-off-type'       => 'Tipo de ausencia',
+                    'allocation-type'     => 'Tipo de asignación',
                 ],
             ],
 
             'validity-period' => [
-                'title'   => 'Validity Period',
+                'title'   => 'Período de validez',
                 'entries' => [
-                    'date-from' => 'Date From',
-                    'date-to'   => 'Date To',
-                    'reason'    => 'Reason',
+                    'date-from' => 'Fecha desde',
+                    'date-to'   => 'Fecha hasta',
+                    'reason'    => 'Motivo',
                 ],
             ],
             'allocation-status' => [
-                'title'   => 'Allocation Status',
+                'title'   => 'Estado de la asignación',
                 'entries' => [
-                    'date-to-placeholder' => 'No Limit',
-                    'allocation'          => 'Number of Day(s)',
-                    'allocation-value'    => ':days number of days',
-                    'state'               => 'State',
+                    'date-to-placeholder' => 'Sin límite',
+                    'allocation'          => 'Número de día(s)',
+                    'allocation-value'    => ':days número de días',
+                    'state'               => 'Estado',
                 ],
             ],
         ],

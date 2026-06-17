@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'title' => 'Tasks',
+    'title' => 'Tareas',
 
     'navigation' => [
-        'title' => 'Tasks',
-        'group' => 'Project',
+        'title' => 'Tareas',
+        'group' => 'Proyecto',
     ],
 
     'global-search' => [
-        'project'   => 'Project',
-        'customer'  => 'Customer',
-        'milestone' => 'Milestone',
+        'project'   => 'Proyecto',
+        'customer'  => 'Cliente',
+        'milestone' => 'Hito',
     ],
 
     'form' => [
@@ -20,37 +20,37 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'title'             => 'Title',
-                    'title-placeholder' => 'Task Title...',
-                    'tags'              => 'Tags',
-                    'name'              => 'Name',
+                    'title'             => 'Título',
+                    'title-placeholder' => 'Título de la tarea...',
+                    'tags'              => 'Etiquetas',
+                    'name'              => 'Nombre',
                     'color'             => 'Color',
-                    'description'       => 'Description',
-                    'project'           => 'Project',
-                    'status'            => 'Status',
-                    'start_date'        => 'Start Date',
-                    'end_date'          => 'End Date',
+                    'description'       => 'Descripción',
+                    'project'           => 'Proyecto',
+                    'status'            => 'Estado',
+                    'start_date'        => 'Fecha de inicio',
+                    'end_date'          => 'Fecha de fin',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'Configuración',
 
                 'fields' => [
-                    'project'                     => 'Project',
-                    'milestone'                   => 'Milestone',
-                    'milestone-hint-text'         => 'Automatically deliver your services upon reaching a milestone by linking it to a sales order item.',
-                    'name'                        => 'Name',
-                    'deadline'                    => 'Deadline',
-                    'is-completed'                => 'Is Completed',
-                    'customer'                    => 'Customer',
-                    'assignees'                   => 'Assignees',
-                    'allocated-hours'             => 'Allocated Hours',
-                    'allocated-hours-helper-text' => 'In hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+                    'project'                     => 'Proyecto',
+                    'milestone'                   => 'Hito',
+                    'milestone-hint-text'         => 'Entregar automáticamente los servicios al alcanzar un hito vinculándolo a una línea de pedido de venta.',
+                    'name'                        => 'Nombre',
+                    'deadline'                    => 'Fecha límite',
+                    'is-completed'                => 'Completada',
+                    'customer'                    => 'Cliente',
+                    'assignees'                   => 'Asignados',
+                    'allocated-hours'             => 'Horas asignadas',
+                    'allocated-hours-helper-text' => 'En horas (Ej. 1,5 horas significa 1 hora 30 minutos)',
                 ],
             ],
         ],
@@ -59,78 +59,78 @@ return [
     'table' => [
         'columns' => [
             'id'                  => 'ID',
-            'priority'            => 'Priority',
-            'state'               => 'State',
-            'new-state'           => 'New State',
-            'update-state'        => 'Update State',
-            'title'               => 'Title',
-            'project'             => 'Project',
-            'project-placeholder' => 'Private Task',
-            'milestone'           => 'Milestone',
-            'customer'            => 'Customer',
-            'assignees'           => 'Assignees',
-            'allocated-time'      => 'Allocated Time',
-            'time-spent'          => 'Time Spent',
-            'time-remaining'      => 'Time Remaining',
-            'progress'            => 'Progress',
-            'deadline'            => 'Deadline',
-            'tags'                => 'Tags',
-            'stage'               => 'Stage',
+            'priority'            => 'Prioridad',
+            'state'               => 'Estado',
+            'new-state'           => 'Nuevo estado',
+            'update-state'        => 'Actualizar estado',
+            'title'               => 'Título',
+            'project'             => 'Proyecto',
+            'project-placeholder' => 'Tarea privada',
+            'milestone'           => 'Hito',
+            'customer'            => 'Cliente',
+            'assignees'           => 'Asignados',
+            'allocated-time'      => 'Tiempo asignado',
+            'time-spent'          => 'Tiempo dedicado',
+            'time-remaining'      => 'Tiempo restante',
+            'progress'            => 'Progreso',
+            'deadline'            => 'Fecha límite',
+            'tags'                => 'Etiquetas',
+            'stage'               => 'Etapa',
         ],
 
         'groups' => [
-            'state'      => 'State',
-            'project'    => 'Project',
-            'milestone'  => 'Milestone',
-            'customer'   => 'Customer',
-            'deadline'   => 'Deadline',
-            'stage'      => 'Stage',
-            'created-at' => 'Created At',
+            'state'      => 'Estado',
+            'project'    => 'Proyecto',
+            'milestone'  => 'Hito',
+            'customer'   => 'Cliente',
+            'deadline'   => 'Fecha límite',
+            'stage'      => 'Etapa',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'title'             => 'Title',
-            'priority'          => 'Priority',
-            'low'               => 'Low',
-            'high'              => 'High',
-            'state'             => 'State',
-            'tags'              => 'Tags',
-            'allocated-hours'   => 'Allocated Hours',
-            'total-hours-spent' => 'Total Hours Spent',
-            'remaining-hours'   => 'Remaining Hours',
-            'overtime'          => 'Overtime',
-            'progress'          => 'Progress',
-            'deadline'          => 'Deadline',
-            'created-at'        => 'Created At',
-            'updated-at'        => 'Updated At',
-            'assignees'         => 'Assignees',
-            'customer'          => 'Customer',
-            'project'           => 'Project',
-            'stage'             => 'Stage',
-            'milestone'         => 'Milestone',
-            'company'           => 'Company',
-            'creator'           => 'Creator',
+            'title'             => 'Título',
+            'priority'          => 'Prioridad',
+            'low'               => 'Baja',
+            'high'              => 'Alta',
+            'state'             => 'Estado',
+            'tags'              => 'Etiquetas',
+            'allocated-hours'   => 'Horas asignadas',
+            'total-hours-spent' => 'Total de horas dedicadas',
+            'remaining-hours'   => 'Horas restantes',
+            'overtime'          => 'Horas extra',
+            'progress'          => 'Progreso',
+            'deadline'          => 'Fecha límite',
+            'created-at'        => 'Creado el',
+            'updated-at'        => 'Actualizado el',
+            'assignees'         => 'Asignados',
+            'customer'          => 'Cliente',
+            'project'           => 'Proyecto',
+            'stage'             => 'Etapa',
+            'milestone'         => 'Hito',
+            'company'           => 'Empresa',
+            'creator'           => 'Creador',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task restored',
-                    'body'  => 'The task has been restored successfully.',
+                    'title' => 'Tarea restaurada',
+                    'body'  => 'La tarea se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task deleted',
-                    'body'  => 'The task has been deleted successfully.',
+                    'title' => 'Tarea eliminada',
+                    'body'  => 'La tarea se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task force deleted',
-                    'body'  => 'The task has been force deleted successfully.',
+                    'title' => 'Tarea eliminada permanentemente',
+                    'body'  => 'La tarea se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -138,22 +138,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Tasks restored',
-                    'body'  => 'The tasks has been restored successfully.',
+                    'title' => 'Tareas restauradas',
+                    'body'  => 'Las tareas se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tasks deleted',
-                    'body'  => 'The tasks has been deleted successfully.',
+                    'title' => 'Tareas eliminadas',
+                    'body'  => 'Las tareas se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tasks force deleted',
-                    'body'  => 'The tasks has been force deleted successfully.',
+                    'title' => 'Tareas eliminadas permanentemente',
+                    'body'  => 'Las tareas se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -165,60 +165,60 @@ return [
                 'title' => 'General',
 
                 'entries' => [
-                    'title'       => 'Title',
-                    'state'       => 'State',
-                    'tags'        => 'Tags',
-                    'priority'    => 'Priority',
-                    'description' => 'Description',
+                    'title'       => 'Título',
+                    'state'       => 'Estado',
+                    'tags'        => 'Etiquetas',
+                    'priority'    => 'Prioridad',
+                    'description' => 'Descripción',
                 ],
             ],
 
             'project-information' => [
-                'title' => 'Project Information',
+                'title' => 'Información del proyecto',
 
                 'entries' => [
-                    'project'   => 'Project',
-                    'milestone' => 'Milestone',
-                    'customer'  => 'Customer',
-                    'assignees' => 'Assignees',
-                    'deadline'  => 'Deadline',
-                    'stage'     => 'Stage',
+                    'project'   => 'Proyecto',
+                    'milestone' => 'Hito',
+                    'customer'  => 'Cliente',
+                    'assignees' => 'Asignados',
+                    'deadline'  => 'Fecha límite',
+                    'stage'     => 'Etapa',
                 ],
             ],
 
             'time-tracking' => [
-                'title' => 'Time Tracking',
+                'title' => 'Seguimiento del tiempo',
 
                 'entries' => [
-                    'allocated-time'        => 'Allocated Time',
-                    'time-spent'            => 'Time Spent',
-                    'time-spent-suffix'     => ' Hours',
-                    'time-remaining'        => 'Time Remaining',
-                    'time-remaining-suffix' => ' Hours',
-                    'progress'              => 'Progress',
+                    'allocated-time'        => 'Tiempo asignado',
+                    'time-spent'            => 'Tiempo dedicado',
+                    'time-spent-suffix'     => ' Horas',
+                    'time-remaining'        => 'Tiempo restante',
+                    'time-remaining-suffix' => ' Horas',
+                    'progress'              => 'Progreso',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'Información adicional',
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'Información del registro',
 
                 'entries' => [
-                    'created-at'   => 'Created At',
-                    'created-by'   => 'Created By',
-                    'last-updated' => 'Last Updated',
+                    'created-at'   => 'Creado el',
+                    'created-by'   => 'Creado por',
+                    'last-updated' => 'Última actualización',
                 ],
             ],
 
             'statistics' => [
-                'title' => 'Statistics',
+                'title' => 'Estadísticas',
 
                 'entries' => [
-                    'sub-tasks'         => 'Sub Tasks',
-                    'timesheet-entries' => 'Timesheet Entries',
+                    'sub-tasks'         => 'Subtareas',
+                    'timesheet-entries' => 'Entradas de parte de horas',
                 ],
             ],
         ],

@@ -3,12 +3,12 @@
 return [
     'header-actions' => [
         'create' => [
-            'title' => 'New Mandatory Day',
+            'title' => 'Nuevo día obligatorio',
 
             'notification' => [
                 'created' => [
-                    'title' => 'Mandatory day created',
-                    'body'  => 'The mandatory day has been created successfully.',
+                    'title' => 'Día obligatorio creado',
+                    'body'  => 'El día obligatorio se ha creado correctamente.',
                 ],
             ],
         ],

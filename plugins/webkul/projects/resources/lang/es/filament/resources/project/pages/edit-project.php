@@ -2,17 +2,17 @@
 
 return [
     'notification' => [
-        'title' => 'Project updated',
-        'body'  => 'The project has been updated successfully.',
+        'title' => 'Proyecto actualizado',
+        'body'  => 'El proyecto se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
-            'label' => 'New Project',
+            'label' => 'Nuevo proyecto',
 
             'notification' => [
-                'title' => 'Project updated',
-                'body'  => 'The project has been updated successfully.',
+                'title' => 'Proyecto actualizado',
+                'body'  => 'El proyecto se ha actualizado correctamente.',
             ],
         ],
     ],

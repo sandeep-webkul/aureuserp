@@ -1,23 +1,23 @@
 <?php
 
 return [
-    'title' => 'Tags',
+    'title' => 'Etiquetas',
 
     'navigation' => [
-        'title' => 'Tags',
-        'group' => 'Employee',
+        'title' => 'Etiquetas',
+        'group' => 'Empleado',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'Estado',
+        'created-by' => 'Creado por',
+        'created-at' => 'Creado el',
+        'updated-at' => 'Actualizado el',
     ],
 
     'form' => [
         'fields' => [
-            'name'  => 'Name',
+            'name'  => 'Nombre',
             'color' => 'Color',
         ],
     ],
@@ -25,42 +25,42 @@ return [
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
+            'name'       => 'Nombre',
             'color'      => 'Color',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'updated-by' => 'Updated By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
+            'updated-by' => 'Actualizado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'job-position' => 'Job Position',
+            'name'         => 'Nombre',
+            'job-position' => 'Puesto de trabajo',
             'color'        => 'Color',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'created-by'   => 'Creado por',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tag updated',
-                    'body'  => 'The tag has been updated successfully.',
+                    'title' => 'Etiqueta actualizada',
+                    'body'  => 'La etiqueta se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tag deleted',
-                    'body'  => 'The tag has been deleted successfully.',
+                    'title' => 'Etiqueta eliminada',
+                    'body'  => 'La etiqueta se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -68,8 +68,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'Etiquetas eliminadas',
+                    'body'  => 'Las etiquetas se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -77,15 +77,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tag created',
-                    'body'  => 'The tag has been created successfully.',
+                    'title' => 'Etiqueta creada',
+                    'body'  => 'La etiqueta se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'  => 'Name',
+        'name'  => 'Nombre',
         'color' => 'Color',
     ],
 ];

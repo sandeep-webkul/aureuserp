@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Allocation Deleted',
-                'body'  => 'The allocation has been deleted successfully.',
+                'title' => 'Asignación eliminada',
+                'body'  => 'La asignación se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -2,12 +2,12 @@
 
 return [
     'tabs' => [
-        'archived-departments' => 'Archived Departments',
+        'archived-departments' => 'Departamentos archivados',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Department',
+            'label' => 'Nuevo departamento',
         ],
     ],
 ];

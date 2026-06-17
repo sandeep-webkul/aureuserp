@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'confirm'      => 'To Approve',
-    'refuse'       => 'Refused',
-    'validate_one' => 'Second Approval',
-    'validate_two' => 'Approved',
+    'confirm'      => 'Por aprobar',
+    'refuse'       => 'Rechazado',
+    'validate_one' => 'Segunda aprobación',
+    'validate_two' => 'Aprobado',
 ];

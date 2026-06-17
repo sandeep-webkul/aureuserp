@@ -2,39 +2,39 @@
 
 return [
     'notification' => [
-        'title' => 'Allocation updated',
-        'body'  => 'The allocation has been updated successfully.',
+        'title' => 'Asignación actualizada',
+        'body'  => 'La asignación se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Allocation deleted',
-                'body'  => 'The allocation has been deleted successfully.',
+                'title' => 'Asignación eliminada',
+                'body'  => 'La asignación se ha eliminado correctamente.',
             ],
         ],
         'approved' => [
-            'title' => 'Approved',
+            'title' => 'Aprobado',
 
             'notification' => [
-                'title' => 'Allocation approved',
-                'body'  => 'The allocation has been approved successfully.',
+                'title' => 'Asignación aprobada',
+                'body'  => 'La asignación se ha aprobado correctamente.',
             ],
         ],
         'refuse' => [
-            'title' => 'Refuse',
+            'title' => 'Rechazar',
 
             'notification' => [
-                'title' => 'Allocation refused',
-                'body'  => 'The allocation has been refused successfully.',
+                'title' => 'Asignación rechazada',
+                'body'  => 'La asignación se ha rechazado correctamente.',
             ],
         ],
         'mark-as-ready-to-confirm' => [
-            'title' => 'Mark as Ready to Confirm',
+            'title' => 'Marcar como lista para confirmar',
 
             'notification' => [
-                'title' => 'Marked as ready to confirm',
-                'body'  => 'The allocation has been marked as ready to confirm successfully.',
+                'title' => 'Marcada como lista para confirmar',
+                'body'  => 'La asignación se ha marcado como lista para confirmar correctamente.',
             ],
         ],
     ],

@@ -1,61 +1,61 @@
 <?php
 
 return [
-    'title' => 'Employment Types',
+    'title' => 'Tipos de empleo',
 
     'navigation' => [
-        'title' => 'Employment Types',
-        'group' => 'Recruitment',
+        'title' => 'Tipos de empleo',
+        'group' => 'Reclutamiento',
     ],
 
     'form' => [
         'fields' => [
-            'name'    => 'Employment Type',
-            'code'    => 'Code',
-            'country' => 'Country',
+            'name'    => 'Tipo de empleo',
+            'code'    => 'Código',
+            'country' => 'País',
         ],
     ],
 
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Employment Type',
-            'code'       => 'Code',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Tipo de empleo',
+            'code'       => 'Código',
+            'country'    => 'País',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Employment Type',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Tipo de empleo',
+            'country'    => 'País',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'groups' => [
-            'name'       => 'Employment Type',
-            'country'    => 'Country',
-            'code'       => 'Code',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Tipo de empleo',
+            'country'    => 'País',
+            'code'       => 'Código',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Employment Type',
-                    'body'  => 'The Employment Type has been edited successfully.',
+                    'title' => 'Tipo de empleo',
+                    'body'  => 'El tipo de empleo se ha editado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Employment Type deleted',
-                    'body'  => 'The Employment Type has been deleted successfully.',
+                    'title' => 'Tipo de empleo eliminado',
+                    'body'  => 'El tipo de empleo se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -63,8 +63,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Employment Types deleted',
-                    'body'  => 'The Employment Types has been deleted successfully.',
+                    'title' => 'Tipos de empleo eliminados',
+                    'body'  => 'Los tipos de empleo se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -72,8 +72,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Employment Types',
-                    'body'  => 'The Employment Types has been created successfully.',
+                    'title' => 'Tipos de empleo',
+                    'body'  => 'Los tipos de empleo se han creado correctamente.',
                 ],
             ],
         ],
@@ -81,9 +81,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'    => 'Employment Type',
-            'code'    => 'Code',
-            'country' => 'Country',
+            'name'    => 'Tipo de empleo',
+            'code'    => 'Código',
+            'country' => 'País',
         ],
     ],
 ];

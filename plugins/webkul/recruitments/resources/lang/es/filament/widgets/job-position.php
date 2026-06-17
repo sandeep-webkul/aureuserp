@@ -2,10 +2,10 @@
 
 return [
     'heading' => [
-        'title' => 'Job Position Overview',
+        'title' => 'Resumen de puestos de trabajo',
     ],
 
-    'active-job-applications' => 'Active Job Applications',
-    'total-applications'      => 'Total Applications',
-    'hired-candidate'         => 'Hired Candidates',
+    'active-job-applications' => 'Candidaturas activas',
+    'total-applications'      => 'Total de candidaturas',
+    'hired-candidate'         => 'Candidatos contratados',
 ];

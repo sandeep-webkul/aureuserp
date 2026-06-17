@@ -2,16 +2,16 @@
 
 return [
     'navigation' => [
-        'title' => 'Project',
-        'group' => 'Dashboard',
+        'title' => 'Proyecto',
+        'group' => 'Panel de control',
     ],
 
     'filters-form' => [
-        'project'    => 'Project',
-        'assignees'  => 'Assignees',
-        'tags'       => 'Tags',
-        'customer'   => 'Customer',
-        'start-date' => 'Start Date',
-        'end-date'   => 'End Date',
+        'project'    => 'Proyecto',
+        'assignees'  => 'Asignados',
+        'tags'       => 'Etiquetas',
+        'customer'   => 'Cliente',
+        'start-date' => 'Fecha de inicio',
+        'end-date'   => 'Fecha de fin',
     ],
 ];

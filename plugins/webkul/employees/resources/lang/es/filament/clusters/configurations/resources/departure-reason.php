@@ -1,55 +1,55 @@
 <?php
 
 return [
-    'title' => 'Departure Reasons',
+    'title' => 'Motivos de baja',
 
     'navigation' => [
-        'title' => 'Departure Reasons',
-        'group' => 'Employee',
+        'title' => 'Motivos de baja',
+        'group' => 'Empleado',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'Estado',
+        'created-by' => 'Creado por',
+        'created-at' => 'Creado el',
+        'updated-at' => 'Actualizado el',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Name',
+            'name' => 'Nombre',
         ],
     ],
 
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'employee'   => 'Empleado',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Departure reason updated',
-                    'body'  => 'The departure reason has been updated successfully.',
+                    'title' => 'Motivo de baja actualizado',
+                    'body'  => 'El motivo de baja se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Departure reason deleted',
-                    'body'  => 'The departure reason has been deleted successfully.',
+                    'title' => 'Motivo de baja eliminado',
+                    'body'  => 'El motivo de baja se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -57,8 +57,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Departure reasons deleted',
-                    'body'  => 'The departure reasons has been deleted successfully.',
+                    'title' => 'Motivos de baja eliminados',
+                    'body'  => 'Los motivos de baja se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -66,14 +66,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Departure reason created',
-                    'body'  => 'The departure reason has been created successfully.',
+                    'title' => 'Motivo de baja creado',
+                    'body'  => 'El motivo de baja se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'Nombre',
     ],
 ];

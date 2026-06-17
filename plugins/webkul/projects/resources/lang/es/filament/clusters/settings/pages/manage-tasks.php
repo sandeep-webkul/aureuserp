@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'title' => 'Manage Tasks',
+    'title' => 'Gestionar tareas',
 
     'form' => [
-        'enable-project-stages'             => 'Enable Project Stages',
-        'enable-project-stages-helper-text' => 'Track the progress of your projects',
-        'configure-stages'                  => 'Configure Stages',
-        'enable-milestones'                 => 'Enable Milestones',
-        'enable-milestones-helper-text'     => 'Track major progress points that must be reached to achieve success',
+        'enable-project-stages'             => 'Habilitar etapas de proyecto',
+        'enable-project-stages-helper-text' => 'Realizar el seguimiento del progreso de los proyectos',
+        'configure-stages'                  => 'Configurar etapas',
+        'enable-milestones'                 => 'Habilitar hitos',
+        'enable-milestones-helper-text'     => 'Realizar el seguimiento de los puntos de progreso importantes que deben alcanzarse para lograr el éxito',
     ],
 ];

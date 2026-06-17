@@ -2,42 +2,42 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Overview',
+        'title' => 'Resumen de ausencias',
     ],
 
     'modal-actions' => [
         'edit' => [
-            'title'        => 'Edit',
+            'title'        => 'Editar',
             'notification' => [
-                'title' => 'Time Off Updated',
-                'body'  => 'Time off request has been updated successfully.',
+                'title' => 'Ausencia actualizada',
+                'body'  => 'La solicitud de ausencia se ha actualizado correctamente.',
             ],
         ],
 
         'delete' => [
-            'title' => 'Delete',
+            'title' => 'Eliminar',
         ],
     ],
 
     'view-action' => [
-        'title'       => 'View',
-        'description' => 'View Time Off Request',
+        'title'       => 'Ver',
+        'description' => 'Ver solicitud de ausencia',
     ],
 
     'header-actions' => [
         'create' => [
-            'title'       => 'New Time Off',
-            'description' => 'Create Time Off Request',
+            'title'       => 'Nueva ausencia',
+            'description' => 'Crear solicitud de ausencia',
 
             'notification' => [
-                'title' => 'Time Off Created',
-                'body'  => 'Time off request has been created successfully.',
+                'title' => 'Ausencia creada',
+                'body'  => 'La solicitud de ausencia se ha creado correctamente.',
             ],
 
             'employee-not-found' => [
                 'notification' => [
-                    'title' => 'Employee Not Found',
-                    'body'  => 'Please add an employee to your profile before creating a time off request.',
+                    'title' => 'Empleado no encontrado',
+                    'body'  => 'Agregue un empleado a su perfil antes de crear una solicitud de ausencia.',
                 ],
             ],
         ],
@@ -45,25 +45,25 @@ return [
 
     'form' => [
         'fields' => [
-            'time-off-type'     => 'Time Off Type',
-            'request-date-from' => 'Request Date From',
-            'request-date-to'   => 'Request Date To',
-            'period'            => 'Period',
-            'half-day'          => 'Half Day',
-            'requested-days'    => 'Requested (Days/Hours)',
-            'description'       => 'Description',
+            'time-off-type'     => 'Tipo de ausencia',
+            'request-date-from' => 'Fecha de solicitud desde',
+            'request-date-to'   => 'Fecha de solicitud hasta',
+            'period'            => 'Período',
+            'half-day'          => 'Medio día',
+            'requested-days'    => 'Solicitado (días/horas)',
+            'description'       => 'Descripción',
         ],
     ],
 
     'infolist' => [
         'entries' => [
-            'time-off-type'           => 'Time Off Type',
-            'request-date-from'       => 'Request Date From',
-            'request-date-to'         => 'Request Date To',
-            'description'             => 'Description',
-            'description-placeholder' => 'No description provided',
-            'duration'                => 'Duration',
-            'status'                  => 'Status',
+            'time-off-type'           => 'Tipo de ausencia',
+            'request-date-from'       => 'Fecha de solicitud desde',
+            'request-date-to'         => 'Fecha de solicitud hasta',
+            'description'             => 'Descripción',
+            'description-placeholder' => 'Sin descripción proporcionada',
+            'duration'                => 'Duración',
+            'status'                  => 'Estado',
         ],
     ],
 ];

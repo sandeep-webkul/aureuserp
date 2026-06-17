@@ -2,62 +2,62 @@
 
 return [
     'navigation' => [
-        'title' => 'Task Stages',
+        'title' => 'Etapas de tarea',
     ],
 
     'form' => [
-        'name'    => 'Name',
-        'project' => 'Project',
+        'name'    => 'Nombre',
+        'project' => 'Proyecto',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'project'    => 'Project',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'project'    => 'Proyecto',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'groups' => [
-            'project'    => 'Project',
-            'created-at' => 'Created At',
+            'project'    => 'Proyecto',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'project' => 'Project',
+            'project' => 'Proyecto',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Task stage updated',
-                    'body'  => 'The task stage has been updated successfully.',
+                    'title' => 'Etapa de tarea actualizada',
+                    'body'  => 'La etapa de tarea se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Task stage restored',
-                    'body'  => 'The task stage has been restored successfully.',
+                    'title' => 'Etapa de tarea restaurada',
+                    'body'  => 'La etapa de tarea se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task stage deleted',
-                    'body'  => 'The task stage has been deleted successfully.',
+                    'title' => 'Etapa de tarea eliminada',
+                    'body'  => 'La etapa de tarea se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Task stage force deleted',
-                        'body'  => 'The Task stage has been force deleted successfully.',
+                        'title' => 'Etapa de tarea eliminada permanentemente',
+                        'body'  => 'La etapa de tarea se ha eliminado permanentemente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Task stage could not be deleted',
-                        'body'  => 'The Task stage cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar la etapa de tarea',
+                        'body'  => 'La etapa de tarea no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -66,22 +66,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task stages restored',
-                    'body'  => 'The task stages has been restored successfully.',
+                    'title' => 'Etapas de tarea restauradas',
+                    'body'  => 'Las etapas de tarea se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task stages deleted',
-                    'body'  => 'The task stages has been deleted successfully.',
+                    'title' => 'Etapas de tarea eliminadas',
+                    'body'  => 'Las etapas de tarea se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task stages force deleted',
-                    'body'  => 'The task stages has been force deleted successfully.',
+                    'title' => 'Etapas de tarea eliminadas permanentemente',
+                    'body'  => 'Las etapas de tarea se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],

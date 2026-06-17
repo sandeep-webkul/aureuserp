@@ -1,86 +1,86 @@
 <?php
 
 return [
-    'title' => 'Time off',
+    'title' => 'Ausencias',
 
-    'model-label' => 'Time off',
+    'model-label' => 'Ausencias',
 
     'navigation' => [
-        'title' => 'Time off',
+        'title' => 'Ausencias',
     ],
 
     'global-search' => [
-        'employee'      => 'Employee',
-        'time-off-type' => 'Time Off Type',
-        'date-from'     => 'Date From',
-        'date-to'       => 'Date To',
+        'employee'      => 'Empleado',
+        'time-off-type' => 'Tipo de ausencia',
+        'date-from'     => 'Fecha desde',
+        'date-to'       => 'Fecha hasta',
     ],
 
     'form' => [
         'fields' => [
-            'employee-name'     => 'Employee Name',
-            'department-name'   => 'Department Name',
-            'time-off-type'     => 'Time off Type',
-            'date'              => 'Date',
-            'dates'             => 'Dates',
-            'request-date-from' => 'Request Date From',
-            'request-date-to'   => 'Request Date To',
-            'description'       => 'Description',
-            'period'            => 'Period',
-            'half-day'          => 'Half Day',
-            'requested-days'    => 'Requested (Days/Hours)',
-            'description'       => 'Description',
-            'attachment'        => 'Attachment',
-            'day'               => ':day day',
-            'days'              => ':days day(s)',
+            'employee-name'     => 'Nombre del empleado',
+            'department-name'   => 'Nombre del departamento',
+            'time-off-type'     => 'Tipo de ausencia',
+            'date'              => 'Fecha',
+            'dates'             => 'Fechas',
+            'request-date-from' => 'Fecha de solicitud desde',
+            'request-date-to'   => 'Fecha de solicitud hasta',
+            'description'       => 'Descripción',
+            'period'            => 'Período',
+            'half-day'          => 'Medio día',
+            'requested-days'    => 'Solicitado (días/horas)',
+            'description'       => 'Descripción',
+            'attachment'        => 'Adjunto',
+            'day'               => ':day día',
+            'days'              => ':days día(s)',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'employee-name'  => 'Employee',
-            'time-off-type'  => 'Time Off Type',
-            'description'    => 'Description',
-            'date-from'      => 'Date From',
-            'date-to'        => 'Date To',
-            'duration'       => 'Duration',
-            'status'         => 'Status',
+            'employee-name'  => 'Empleado',
+            'time-off-type'  => 'Tipo de ausencia',
+            'description'    => 'Descripción',
+            'date-from'      => 'Fecha desde',
+            'date-to'        => 'Fecha hasta',
+            'duration'       => 'Duración',
+            'status'         => 'Estado',
         ],
 
         'groups' => [
-            'employee-name' => 'Employee',
-            'time-off-type' => 'Time Off Type',
-            'status'        => 'Status',
-            'start-date'    => 'Start Date',
-            'start-to'      => 'End Date',
-            'updated-at'    => 'Updated At',
-            'created-at'    => 'Created At',
+            'employee-name' => 'Empleado',
+            'time-off-type' => 'Tipo de ausencia',
+            'status'        => 'Estado',
+            'start-date'    => 'Fecha de inicio',
+            'start-to'      => 'Fecha de fin',
+            'updated-at'    => 'Actualizado el',
+            'created-at'    => 'Creado el',
         ],
 
         'actions' => [
             'approve' => [
                 'title' => [
-                    'validate' => 'Validate',
-                    'approve'  => 'Approve',
+                    'validate' => 'Validar',
+                    'approve'  => 'Aprobar',
                 ],
                 'notification' => [
-                    'title' => 'Time Off approved',
-                    'body'  => 'The time off has been approved successfully.',
+                    'title' => 'Ausencia aprobada',
+                    'body'  => 'La ausencia se ha aprobado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Time Off deleted',
-                    'body'  => 'The time off has been deleted successfully.',
+                    'title' => 'Ausencia eliminada',
+                    'body'  => 'La ausencia se ha eliminado correctamente.',
                 ],
             ],
 
             'refused' => [
-                'title'        => 'Refuse',
+                'title'        => 'Rechazar',
                 'notification' => [
-                    'title' => 'Time Off refused',
-                    'body'  => 'The time off has been refused successfully.',
+                    'title' => 'Ausencia rechazada',
+                    'body'  => 'La ausencia se ha rechazado correctamente.',
                 ],
             ],
         ],
@@ -88,8 +88,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Time Off deleted',
-                    'body'  => 'The time off has been deleted successfully.',
+                    'title' => 'Ausencia eliminada',
+                    'body'  => 'La ausencia se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -97,23 +97,23 @@ return [
 
     'infolist' => [
         'entries' => [
-            'employee-name'     => 'Employee Name',
-            'department-name'   => 'Department Name',
-            'time-off-type'     => 'Time off Type',
-            'date'              => 'Date',
-            'dates'             => 'Dates',
-            'request-date-from' => 'Request Date From',
-            'request-date-to'   => 'Request Date To',
-            'description'       => 'Description',
-            'period'            => 'Period',
-            'half-day'          => 'Half Day',
-            'requested-days'    => 'Requested (Days/Hours)',
-            'attachment'        => 'Attachment',
-            'day'               => ':day day',
-            'days'              => ':days day(s)',
-            'date-from'         => 'Date From',
-            'date-to'           => 'Date To',
-            'status'            => 'Status',
+            'employee-name'     => 'Nombre del empleado',
+            'department-name'   => 'Nombre del departamento',
+            'time-off-type'     => 'Tipo de ausencia',
+            'date'              => 'Fecha',
+            'dates'             => 'Fechas',
+            'request-date-from' => 'Fecha de solicitud desde',
+            'request-date-to'   => 'Fecha de solicitud hasta',
+            'description'       => 'Descripción',
+            'period'            => 'Período',
+            'half-day'          => 'Medio día',
+            'requested-days'    => 'Solicitado (días/horas)',
+            'attachment'        => 'Adjunto',
+            'day'               => ':day día',
+            'days'              => ':days día(s)',
+            'date-from'         => 'Fecha desde',
+            'date-to'           => 'Fecha hasta',
+            'status'            => 'Estado',
         ],
     ],
 ];

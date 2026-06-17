@@ -4,68 +4,68 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'title'        => 'Title',
-                'type'         => 'Type',
-                'name'         => 'Name',
-                'type'         => 'Type',
-                'create-type'  => 'Create Type',
-                'duration'     => 'Duration',
-                'start-date'   => 'Start Date',
-                'end-date'     => 'End Date',
-                'display-type' => 'Display Type',
-                'description'  => 'Description',
+                'title'        => 'Título',
+                'type'         => 'Tipo',
+                'name'         => 'Nombre',
+                'type'         => 'Tipo',
+                'create-type'  => 'Crear tipo',
+                'duration'     => 'Duración',
+                'start-date'   => 'Fecha de inicio',
+                'end-date'     => 'Fecha de fin',
+                'display-type' => 'Tipo de visualización',
+                'description'  => 'Descripción',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'title'        => 'Title',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
-            'display-type' => 'Display Type',
-            'description'  => 'Description',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'title'        => 'Título',
+            'start-date'   => 'Fecha de inicio',
+            'end-date'     => 'Fecha de fin',
+            'display-type' => 'Tipo de visualización',
+            'description'  => 'Descripción',
+            'created-by'   => 'Creado por',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'groups' => [
-            'group-by-type'         => 'Group By Type',
-            'group-by-display-type' => 'Group By Display Type',
+            'group-by-type'         => 'Agrupar por tipo',
+            'group-by-display-type' => 'Agrupar por tipo de visualización',
         ],
 
         'header-actions' => [
-            'add-resume' => 'Add Resume',
+            'add-resume' => 'Añadir currículum',
         ],
 
         'filters' => [
-            'type'            => 'Type',
-            'start-date-from' => 'Start Date From',
-            'start-date-to'   => 'Start Date To',
-            'created-from'    => 'Created From',
-            'created-to'      => 'Created To',
+            'type'            => 'Tipo',
+            'start-date-from' => 'Fecha de inicio desde',
+            'start-date-to'   => 'Fecha de inicio hasta',
+            'created-from'    => 'Creado desde',
+            'created-to'      => 'Creado hasta',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'Nivel de competencia actualizado',
+                    'body'  => 'El nivel de competencia se ha actualizado correctamente.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'Nivel de competencia creado',
+                    'body'  => 'El nivel de competencia se ha creado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'Nivel de competencia eliminado',
+                    'body'  => 'El nivel de competencia se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -73,8 +73,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'Competencias eliminadas',
+                    'body'  => 'Las competencias se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -82,13 +82,13 @@ return [
 
     'infolist' => [
         'entries' => [
-            'title'        => 'Title',
-            'display-type' => 'Display Type',
-            'type'         => 'Type',
-            'description'  => 'Description',
-            'duration'     => 'Duration',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'title'        => 'Título',
+            'display-type' => 'Tipo de visualización',
+            'type'         => 'Tipo',
+            'description'  => 'Descripción',
+            'duration'     => 'Duración',
+            'start-date'   => 'Fecha de inicio',
+            'end-date'     => 'Fecha de fin',
         ],
     ],
 ];

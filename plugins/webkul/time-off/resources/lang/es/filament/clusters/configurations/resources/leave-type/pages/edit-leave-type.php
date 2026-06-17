@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Leave Type updated',
-        'body'  => 'The leave type has been updated successfully.',
+        'title' => 'Tipo de ausencia actualizado',
+        'body'  => 'El tipo de ausencia se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Leave Type deleted',
-                'body'  => 'The leave type has been deleted successfully.',
+                'title' => 'Tipo de ausencia eliminado',
+                'body'  => 'El tipo de ausencia se ha eliminado correctamente.',
             ],
         ],
     ],

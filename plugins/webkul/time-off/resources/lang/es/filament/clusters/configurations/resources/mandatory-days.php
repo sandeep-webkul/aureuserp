@@ -1,60 +1,60 @@
 <?php
 
 return [
-    'title' => 'Mandatory Days',
+    'title' => 'Días obligatorios',
 
-    'model-label' => 'Mandatory Day',
+    'model-label' => 'Día obligatorio',
 
     'navigation' => [
-        'title' => 'Mandatory Holidays',
+        'title' => 'Días festivos obligatorios',
     ],
 
     'form' => [
         'fields' => [
-            'name'       => 'Name',
-            'start-date' => 'Start Date',
-            'end-date'   => 'End Date',
+            'name'       => 'Nombre',
+            'start-date' => 'Fecha de inicio',
+            'end-date'   => 'Fecha de fin',
             'color'      => 'Color',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'created-by'   => 'Creado por',
+            'start-date'   => 'Fecha de inicio',
+            'end-date'     => 'Fecha de fin',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'created-by'   => 'Creado por',
+            'start-date'   => 'Fecha de inicio',
+            'end-date'     => 'Fecha de fin',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'created-by'   => 'Creado por',
+            'start-date'   => 'Fecha de inicio',
+            'end-date'     => 'Fecha de fin',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Mandatory day updated',
-                    'body'  => 'The mandatory day has been restored successfully.',
+                    'title' => 'Día obligatorio actualizado',
+                    'body'  => 'El día obligatorio se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Mandatory day deleted',
-                    'body'  => 'The mandatory day has been deleted successfully.',
+                    'title' => 'Día obligatorio eliminado',
+                    'body'  => 'El día obligatorio se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -62,8 +62,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Mandatory days deleted',
-                    'body'  => 'The mandatory days has been deleted successfully.',
+                    'title' => 'Días obligatorios eliminados',
+                    'body'  => 'Los días obligatorios se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -71,9 +71,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'       => 'Name',
-            'start-date' => 'Start Date',
-            'end-date'   => 'End Date',
+            'name'       => 'Nombre',
+            'start-date' => 'Fecha de inicio',
+            'end-date'   => 'Fecha de fin',
             'color'      => 'Color',
         ],
     ],

@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'By Type',
+        'title' => 'Por tipo',
     ],
 ];

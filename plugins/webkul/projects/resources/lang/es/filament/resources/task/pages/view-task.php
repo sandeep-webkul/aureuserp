@@ -3,7 +3,7 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Task',
+            'label' => 'Nueva tarea',
         ],
     ],
 ];

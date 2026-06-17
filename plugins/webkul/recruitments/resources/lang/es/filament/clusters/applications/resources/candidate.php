@@ -1,66 +1,66 @@
 <?php
 
 return [
-    'title' => 'Candidate',
+    'title' => 'Candidato',
 
     'navigation' => [
-        'title' => 'Candidates',
+        'title' => 'Candidatos',
     ],
 
     'global-search' => [
-        'email-from' => 'Email From',
-        'phone'      => 'Phone',
-        'company'    => 'Company',
-        'degree'     => 'Degree',
+        'email-from' => 'Correo de',
+        'phone'      => 'Teléfono',
+        'company'    => 'Empresa',
+        'degree'     => 'Titulación',
     ],
 
     'form' => [
         'sections' => [
             'basic-information' => [
-                'title' => 'Basic Information',
+                'title' => 'Información básica',
 
                 'fields' => [
-                    'full-name' => 'Full Name',
-                    'email'     => 'Email Address',
-                    'phone'     => 'Phone Number',
-                    'linkedin'  => 'LinkedIn Profile',
-                    'contact'   => 'Contact',
+                    'full-name' => 'Nombre completo',
+                    'email'     => 'Dirección de correo',
+                    'phone'     => 'Número de teléfono',
+                    'linkedin'  => 'Perfil de LinkedIn',
+                    'contact'   => 'Contacto',
                 ],
             ],
 
             'additional-details' => [
-                'title' => 'Additional Details',
+                'title' => 'Detalles adicionales',
 
                 'fields' => [
-                    'company'           => 'Company',
-                    'degree'            => 'Degree',
-                    'tags'              => 'Tags',
-                    'manager'           => 'Manager',
-                    'availability-date' => 'Availability Date',
+                    'company'           => 'Empresa',
+                    'degree'            => 'Titulación',
+                    'tags'              => 'Etiquetas',
+                    'manager'           => 'Responsable',
+                    'availability-date' => 'Fecha de disponibilidad',
 
                     'priority-options' => [
-                        'low'    => 'Low',
-                        'medium' => 'Medium',
-                        'high'   => 'High',
+                        'low'    => 'Baja',
+                        'medium' => 'Media',
+                        'high'   => 'Alta',
                     ],
                 ],
             ],
 
             'status-and-evaluation' => [
-                'title' => 'Status',
+                'title' => 'Estado',
 
                 'fields' => [
-                    'active'     => 'Active',
-                    'evaluation' => 'Evaluation',
+                    'active'     => 'Activo',
+                    'evaluation' => 'Evaluación',
                 ],
             ],
 
             'communication' => [
-                'title' => 'Communication',
+                'title' => 'Comunicación',
 
                 'fields' => [
-                    'cc-email'      => 'CC Email',
-                    'email-bounced' => 'Email Bounced',
+                    'cc-email'      => 'Correo CC',
+                    'email-bounced' => 'Correo rebotado',
                 ],
             ],
         ],
@@ -68,35 +68,35 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Full Name',
-            'tags'       => 'Tags',
-            'evaluation' => 'Evaluation',
+            'name'       => 'Nombre completo',
+            'tags'       => 'Etiquetas',
+            'evaluation' => 'Evaluación',
         ],
 
         'filters' => [
-            'company'      => 'Company',
-            'partner-name' => 'Contact',
-            'degree'       => 'Degree',
-            'manager-name' => 'Manager',
+            'company'      => 'Empresa',
+            'partner-name' => 'Contacto',
+            'degree'       => 'Titulación',
+            'manager-name' => 'Responsable',
         ],
 
         'groups' => [
-            'manager-name' => 'Manager',
+            'manager-name' => 'Responsable',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Candidate Deleted',
-                    'body'  => 'The candidates has been deleted successfully.',
+                    'title' => 'Candidato eliminado',
+                    'body'  => 'Los candidatos se han eliminado correctamente.',
                 ],
             ],
 
             'empty-state-actions' => [
                 'create' => [
                     'notification' => [
-                        'title' => 'Candidate Created',
-                        'body'  => 'The candidates has been created successfully.',
+                        'title' => 'Candidato creado',
+                        'body'  => 'Los candidatos se han creado correctamente.',
                     ],
                 ],
             ],
@@ -105,8 +105,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Candidates Deleted',
-                    'body'  => 'The candidates has been deleted successfully.',
+                    'title' => 'Candidatos eliminados',
+                    'body'  => 'Los candidatos se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -115,50 +115,50 @@ return [
     'infolist' => [
         'sections' => [
             'basic-information' => [
-                'title' => 'Basic Information',
+                'title' => 'Información básica',
 
                 'entries' => [
-                    'full-name' => 'Full Name',
-                    'email'     => 'Email Address',
-                    'phone'     => 'Phone Number',
-                    'linkedin'  => 'LinkedIn Profile',
-                    'contact'   => 'Contact',
+                    'full-name' => 'Nombre completo',
+                    'email'     => 'Dirección de correo',
+                    'phone'     => 'Número de teléfono',
+                    'linkedin'  => 'Perfil de LinkedIn',
+                    'contact'   => 'Contacto',
                 ],
             ],
 
             'additional-details' => [
-                'title' => 'Additional Details',
+                'title' => 'Detalles adicionales',
 
                 'entries' => [
-                    'company'           => 'Company',
-                    'degree'            => 'Degree',
-                    'tags'              => 'Tags',
-                    'manager'           => 'Manager',
-                    'availability-date' => 'Availability Date',
+                    'company'           => 'Empresa',
+                    'degree'            => 'Titulación',
+                    'tags'              => 'Etiquetas',
+                    'manager'           => 'Responsable',
+                    'availability-date' => 'Fecha de disponibilidad',
 
                     'priority-options' => [
-                        'low'    => 'Low',
-                        'medium' => 'Medium',
-                        'high'   => 'High',
+                        'low'    => 'Baja',
+                        'medium' => 'Media',
+                        'high'   => 'Alta',
                     ],
                 ],
             ],
 
             'status-and-evaluation' => [
-                'title' => 'Status',
+                'title' => 'Estado',
 
                 'entries' => [
-                    'active'     => 'Active',
-                    'evaluation' => 'Evaluation',
+                    'active'     => 'Activo',
+                    'evaluation' => 'Evaluación',
                 ],
             ],
 
             'communication' => [
-                'title' => 'Communication',
+                'title' => 'Comunicación',
 
                 'entries' => [
-                    'cc-email'      => 'CC Email',
-                    'email-bounced' => 'Email Bounced',
+                    'cc-email'      => 'Correo CC',
+                    'email-bounced' => 'Correo rebotado',
                 ],
             ],
         ],

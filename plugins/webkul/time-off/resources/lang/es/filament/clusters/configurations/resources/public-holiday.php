@@ -1,65 +1,65 @@
 <?php
 
 return [
-    'title' => 'Public Holidays',
+    'title' => 'Días festivos',
 
-    'model-label' => 'Public holiday',
+    'model-label' => 'Día festivo',
 
     'navigation' => [
-        'title' => 'Public Holidays',
+        'title' => 'Días festivos',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the public holiday',
-            'date-from'        => 'Start Date',
-            'date-to'          => 'End Date',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Introduzca el nombre del día festivo',
+            'date-from'        => 'Fecha de inicio',
+            'date-to'          => 'Fecha de fin',
             'color'            => 'Color',
-            'calendar'         => 'Calendar',
+            'calendar'         => 'Calendario',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'calendar'     => 'Calendar',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'calendar'     => 'Calendario',
+            'created-by'   => 'Creado por',
+            'date-from'    => 'Fecha de inicio',
+            'date-to'      => 'Fecha de fin',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'created-by'   => 'Creado por',
+            'date-from'    => 'Fecha de inicio',
+            'date-to'      => 'Fecha de fin',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
+            'name'         => 'Nombre',
+            'company-name' => 'Nombre de la empresa',
+            'created-by'   => 'Creado por',
+            'date-from'    => 'Fecha de inicio',
+            'date-to'      => 'Fecha de fin',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Public holiday updated',
-                    'body'  => 'The public holiday has been restored successfully.',
+                    'title' => 'Día festivo actualizado',
+                    'body'  => 'El día festivo se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Public holiday deleted',
-                    'body'  => 'The public holiday has been deleted successfully.',
+                    'title' => 'Día festivo eliminado',
+                    'body'  => 'El día festivo se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -67,8 +67,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Public holidays deleted',
-                    'body'  => 'The public holidays has been deleted successfully.',
+                    'title' => 'Días festivos eliminados',
+                    'body'  => 'Los días festivos se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -76,9 +76,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'      => 'Name',
-            'date-from' => 'Start Date',
-            'date-to'   => 'End Date',
+            'name'      => 'Nombre',
+            'date-from' => 'Fecha de inicio',
+            'date-to'   => 'Fecha de fin',
             'color'     => 'Color',
         ],
     ],

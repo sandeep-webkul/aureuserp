@@ -2,15 +2,15 @@
 
 return [
     'tabs' => [
-        'my-applicants'          => 'My Applicants',
-        'un-assigned'            => 'Un Assigned',
-        'in-progress'            => 'In Progress',
-        'hired'                  => 'Hired',
-        'refused'                => 'Refused',
-        'archived'               => 'Archived',
-        'blocked'                => 'Blocked',
-        'directly-available'     => 'Directly Available',
-        'created-recently'       => 'Created Recently',
-        'stage-updated-recently' => 'Stage Updated Recently',
+        'my-applicants'          => 'Mis candidatos',
+        'un-assigned'            => 'Sin asignar',
+        'in-progress'            => 'En curso',
+        'hired'                  => 'Contratados',
+        'refused'                => 'Rechazados',
+        'archived'               => 'Archivados',
+        'blocked'                => 'Bloqueados',
+        'directly-available'     => 'Disponibles inmediatamente',
+        'created-recently'       => 'Creados recientemente',
+        'stage-updated-recently' => 'Etapa actualizada recientemente',
     ],
 ];

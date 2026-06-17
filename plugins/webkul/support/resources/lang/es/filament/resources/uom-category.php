@@ -2,8 +2,8 @@
 
 return [
     'navigation' => [
-        'group' => 'Settings',
-        'title' => 'UOM Categories',
+        'group' => 'Configuración',
+        'title' => 'Categorías de unidad de medida',
     ],
 
     'form' => [
@@ -12,23 +12,23 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'name' => 'Name',
+                    'name' => 'Nombre',
                 ],
             ],
 
             'uoms' => [
-                'title' => 'Units of Measure',
+                'title' => 'Unidades de medida',
 
                 'fields' => [
-                    'uoms'     => 'Units',
-                    'type'     => 'Type',
-                    'name'     => 'Name',
+                    'uoms'     => 'Unidades',
+                    'type'     => 'Tipo',
+                    'name'     => 'Nombre',
                     'factor'   => 'Factor',
-                    'rounding' => 'Rounding Precision',
+                    'rounding' => 'Precisión de redondeo',
                 ],
 
                 'actions' => [
-                    'add' => 'Add Unit',
+                    'add' => 'Añadir unidad',
                 ],
             ],
         ],
@@ -36,28 +36,28 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'uoms-count' => 'Units',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'uoms'       => 'Unidades de medida',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'UOM Category updated',
-                    'body'  => 'The UOM category has been updated successfully.',
+                    'title' => 'Categoría de unidad de medida actualizada',
+                    'body'  => 'La categoría de unidad de medida se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'UOM Category deleted',
-                    'body'  => 'The UOM category has been deleted successfully.',
+                    'title' => 'Categoría de unidad de medida eliminada',
+                    'body'  => 'La categoría de unidad de medida se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -65,8 +65,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'UOM Categories deleted',
-                    'body'  => 'The UOM categories has been deleted successfully.',
+                    'title' => 'Categorías de unidad de medida eliminadas',
+                    'body'  => 'Las categorías de unidad de medida se han eliminado correctamente.',
                 ],
             ],
         ],

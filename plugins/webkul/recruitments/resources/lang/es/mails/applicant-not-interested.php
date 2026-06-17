@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'breadcrumb'        => 'Your Applicant :applicant',
-    'greeting'          => 'Dear Applicant,',
-    'thank-you-message' => 'We would like to thank you for your interest and the time you have invested.',
-    'future-endeavors'  => 'We wish you all the best in your future endeavors.',
-    'best-regards'      => 'Best regards,',
-    'mistakes-note'     => 'Please note that recruiting is hard, and we can make mistakes. Do not hesitate to reply to this email if you think we made a mistake or if you want more information about our decision.',
-    'resume-on-record'  => 'We will, however, keep your resume on record and get in touch with you about future opportunities that may be a better fit for your skills and experience.',
+    'breadcrumb'        => 'Su candidato :applicant',
+    'greeting'          => 'Estimado candidato:',
+    'thank-you-message' => 'Queremos agradecerle su interés y el tiempo que ha invertido.',
+    'future-endeavors'  => 'Le deseamos mucho éxito en sus proyectos futuros.',
+    'best-regards'      => 'Atentamente,',
+    'mistakes-note'     => 'Tenga en cuenta que el reclutamiento es difícil y que podemos cometer errores. No dude en responder a este correo electrónico si cree que hemos cometido un error o si desea más información sobre nuestra decisión.',
+    'resume-on-record'  => 'No obstante, conservaremos su currículum en nuestros registros y nos pondremos en contacto con usted en relación con futuras oportunidades que puedan adaptarse mejor a sus competencias y experiencia.',
     'admin-details'     => [
         'name'  => ':name',
-        'email' => 'Email: :email',
+        'email' => 'Correo electrónico: :email',
     ],
 ];

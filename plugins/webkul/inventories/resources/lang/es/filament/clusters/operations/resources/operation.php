@@ -188,14 +188,15 @@ return [
     ],
 
     'tabs' => [
-        'todo'     => 'Por hacer',
-        'my'       => 'Mis transferencias',
-        'starred'  => 'Destacados',
-        'draft'    => 'Borrador',
-        'waiting'  => 'En espera',
-        'ready'    => 'Listo',
-        'done'     => 'Realizado',
-        'canceled' => 'Cancelado',
+        'todo'        => 'Por hacer',
+        'my'          => 'Mis transferencias',
+        'starred'     => 'Destacados',
+        'draft'       => 'Borrador',
+        'waiting'     => 'En espera',
+        'ready'       => 'Listo',
+        'done'        => 'Realizado',
+        'canceled'    => 'Cancelado',
+        'back-orders' => 'Pedidos pendientes',
     ],
 
     'notifications' => [

@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Milestone',
+            'label' => 'Nuevo hito',
 
             'notification' => [
-                'title' => 'Milestone created',
-                'body'  => 'The milestone has been created successfully.',
+                'title' => 'Hito creado',
+                'body'  => 'El hito se ha creado correctamente.',
             ],
         ],
     ],

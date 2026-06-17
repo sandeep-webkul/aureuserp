@@ -1,83 +1,83 @@
 <?php
 
 return [
-    'title' => 'Departments',
+    'title' => 'Departamentos',
 
     'navigation' => [
-        'title' => 'Departments',
-        'group' => 'Employees',
+        'title' => 'Departamentos',
+        'group' => 'Empleados',
     ],
 
     'global-search' => [
-        'department-manager' => 'Manager',
-        'company'            => 'Company',
+        'department-manager' => 'Responsable',
+        'company'            => 'Empresa',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'Información general',
 
                 'fields' => [
-                    'name'                => 'Name',
-                    'manager'             => 'Manager',
-                    'parent-department'   => 'Parent Department',
-                    'manager-placeholder' => 'Select Manager',
-                    'company'             => 'Company',
-                    'company-placeholder' => 'Select Company',
+                    'name'                => 'Nombre',
+                    'manager'             => 'Responsable',
+                    'parent-department'   => 'Departamento superior',
+                    'manager-placeholder' => 'Seleccionar responsable',
+                    'company'             => 'Empresa',
+                    'company-placeholder' => 'Seleccionar empresa',
                     'color'               => 'Color',
                 ],
             ],
 
             'additional' => [
-                'title'       => 'Additional Information',
-                'description' => 'Additional information about this department.',
+                'title'       => 'Información adicional',
+                'description' => 'Información adicional sobre este departamento.',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
+            'name'         => 'Nombre',
+            'manager-name' => 'Responsable',
+            'company-name' => 'Empresa',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'manager'    => 'Manager',
-            'company'    => 'Company',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'manager'    => 'Responsable',
+            'company'    => 'Empresa',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
-            'updated-at'   => 'Updated At',
-            'created-at'   => 'Created At',
+            'name'         => 'Nombre',
+            'manager-name' => 'Responsable',
+            'company-name' => 'Empresa',
+            'updated-at'   => 'Actualizado el',
+            'created-at'   => 'Creado el',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Department restored',
-                    'body'  => 'The department has been restored successfully.',
+                    'title' => 'Departamento restaurado',
+                    'body'  => 'El departamento se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Department deleted',
-                    'body'  => 'The department has been deleted successfully.',
+                    'title' => 'Departamento eliminado',
+                    'body'  => 'El departamento se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Department force deleted',
-                    'body'  => 'The department has been force deleted successfully.',
+                    'title' => 'Departamento eliminado permanentemente',
+                    'body'  => 'El departamento se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -85,22 +85,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Departments restored',
-                    'body'  => 'The departments has been restored successfully.',
+                    'title' => 'Departamentos restaurados',
+                    'body'  => 'Los departamentos se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Departments deleted',
-                    'body'  => 'The departments has been deleted successfully.',
+                    'title' => 'Departamentos eliminados',
+                    'body'  => 'Los departamentos se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Departments force deleted',
-                    'body'  => 'The departments has been force deleted successfully.',
+                    'title' => 'Departamentos eliminados permanentemente',
+                    'body'  => 'Los departamentos se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -112,11 +112,11 @@ return [
                 'title' => 'General',
 
                 'entries' => [
-                    'name'            => 'Name',
-                    'manager'         => 'Manager',
-                    'company'         => 'Company',
+                    'name'            => 'Nombre',
+                    'manager'         => 'Responsable',
+                    'company'         => 'Empresa',
                     'color'           => 'Color',
-                    'hierarchy-title' => 'Department Organization',
+                    'hierarchy-title' => 'Organización del departamento',
                 ],
             ],
         ],

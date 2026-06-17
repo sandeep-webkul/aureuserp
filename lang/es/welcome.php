@@ -1,71 +1,71 @@
 <?php
 
 return [
-    'title'            => 'AureusERP - Enterprise Resource Planning',
-    'meta_description' => 'AureusERP - Modern Enterprise Resource Planning System',
+    'title'            => 'AureusERP - Planificación de recursos empresariales',
+    'meta_description' => 'AureusERP - Sistema moderno de planificación de recursos empresariales',
 
     'nav' => [
-        'dashboard' => 'Dashboard',
-        'login'     => 'Log in',
-        'register'  => 'Register',
+        'dashboard' => 'Panel',
+        'login'     => 'Iniciar sesión',
+        'register'  => 'Registrarse',
     ],
 
     'hero' => [
-        'title'         => 'Welcome to AureusERP',
-        'subtitle'      => 'A Modern Enterprise Resource Planning Solution',
-        'description'   => 'Streamline your business operations with our comprehensive ERP system. Manage sales, purchases, inventory, accounting, and more from a single platform.',
-        'cta_primary'   => 'Get Started',
-        'cta_secondary' => 'Learn More',
+        'title'         => 'Bienvenido a AureusERP',
+        'subtitle'      => 'Una solución moderna de planificación de recursos empresariales',
+        'description'   => 'Optimice las operaciones de su negocio con nuestro completo sistema ERP. Gestione ventas, compras, inventario, contabilidad y mucho más desde una única plataforma.',
+        'cta_primary'   => 'Comenzar',
+        'cta_secondary' => 'Más información',
     ],
 
     'features' => [
-        'title' => 'Features',
+        'title' => 'Funcionalidades',
         'sales' => [
-            'title'       => 'Sales Management',
-            'description' => 'Manage your sales pipeline, quotations, and orders efficiently. Track customer relationships and boost your revenue.',
+            'title'       => 'Gestión de ventas',
+            'description' => 'Gestione su flujo de ventas, presupuestos y pedidos de forma eficiente. Haga seguimiento de las relaciones con los clientes e impulse sus ingresos.',
         ],
         'purchases' => [
-            'title'       => 'Purchase Management',
-            'description' => 'Streamline your procurement process. Manage vendors, purchase orders, and supplier relationships seamlessly.',
+            'title'       => 'Gestión de compras',
+            'description' => 'Optimice su proceso de adquisición. Gestione proveedores, pedidos de compra y relaciones con proveedores sin complicaciones.',
         ],
         'inventory' => [
-            'title'       => 'Inventory Control',
-            'description' => 'Keep track of your stock levels, manage warehouses, and optimize your supply chain operations.',
+            'title'       => 'Control de inventario',
+            'description' => 'Controle sus niveles de existencias, gestione almacenes y optimice las operaciones de su cadena de suministro.',
         ],
         'accounting' => [
-            'title'       => 'Financial Accounting',
-            'description' => 'Comprehensive accounting module for invoicing, payments, and financial reporting.',
+            'title'       => 'Contabilidad financiera',
+            'description' => 'Módulo de contabilidad completo para facturación, pagos e informes financieros.',
         ],
         'hr' => [
-            'title'       => 'Human Resources',
-            'description' => 'Manage employees, attendance, time-off requests, and recruitment processes efficiently.',
+            'title'       => 'Recursos humanos',
+            'description' => 'Gestione empleados, asistencia, solicitudes de ausencia y procesos de reclutamiento de forma eficiente.',
         ],
         'projects' => [
-            'title'       => 'Project Management',
-            'description' => 'Plan, track, and deliver projects on time with our integrated project management tools.',
+            'title'       => 'Gestión de proyectos',
+            'description' => 'Planifique, haga seguimiento y entregue proyectos a tiempo con nuestras herramientas integradas de gestión de proyectos.',
         ],
     ],
 
     'stats' => [
-        'modules'      => 'Integrated Modules',
-        'users'        => 'Active Users',
-        'transactions' => 'Daily Transactions',
-        'uptime'       => 'System Uptime',
+        'modules'      => 'Módulos integrados',
+        'users'        => 'Usuarios activos',
+        'transactions' => 'Transacciones diarias',
+        'uptime'       => 'Tiempo de actividad del sistema',
     ],
 
     'cta' => [
-        'title'       => 'Ready to Transform Your Business?',
-        'description' => 'Join thousands of businesses that trust AureusERP for their daily operations.',
-        'button'      => 'Start Free Trial',
+        'title'       => '¿Listo para transformar su negocio?',
+        'description' => 'Únase a miles de empresas que confían en AureusERP para sus operaciones diarias.',
+        'button'      => 'Iniciar prueba gratuita',
     ],
 
     'footer' => [
-        'copyright'  => 'All rights reserved.',
-        'powered_by' => 'Powered by Laravel',
+        'copyright'  => 'Todos los derechos reservados.',
+        'powered_by' => 'Desarrollado con Laravel',
         'links'      => [
-            'privacy' => 'Privacy Policy',
-            'terms'   => 'Terms of Service',
-            'contact' => 'Contact Us',
+            'privacy' => 'Política de privacidad',
+            'terms'   => 'Términos del servicio',
+            'contact' => 'Contáctanos',
         ],
     ],
 ];

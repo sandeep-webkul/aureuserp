@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'title' => 'Tags',
+    'title' => 'Etiquetas',
 
     'navigation' => [
-        'title' => 'Tags',
-        'group' => 'Applications',
+        'title' => 'Etiquetas',
+        'group' => 'Candidaturas',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the tags',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Introducir el nombre de las etiquetas',
             'color'            => 'Color',
         ],
     ],
@@ -19,33 +19,33 @@ return [
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
+            'name'       => 'Nombre',
             'color'      => 'Color',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'employee'   => 'Empleado',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tags updated',
-                    'body'  => 'The tags has been updated successfully.',
+                    'title' => 'Etiquetas actualizadas',
+                    'body'  => 'Las etiquetas se han actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'Etiquetas eliminadas',
+                    'body'  => 'Las etiquetas se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -53,8 +53,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Applicant Categories deleted',
-                    'body'  => 'The applicant Categories has been deleted successfully.',
+                    'title' => 'Categorías de candidato eliminadas',
+                    'body'  => 'Las categorías de candidato se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -62,15 +62,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tags created',
-                    'body'  => 'The tags has been created successfully.',
+                    'title' => 'Etiquetas creadas',
+                    'body'  => 'Las etiquetas se han creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'  => 'Name',
+        'name'  => 'Nombre',
         'color' => 'Color',
     ],
 ];

@@ -1,55 +1,55 @@
 <?php
 
 return [
-    'title' => 'Refuse Reason',
+    'title' => 'Motivo de rechazo',
 
     'navigation' => [
-        'title' => 'Refuse Reasons',
-        'group' => 'Applications',
+        'title' => 'Motivos de rechazo',
+        'group' => 'Candidaturas',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
+            'name'             => 'Nombre',
             'template'         => [
-                'title'                    => 'Template',
-                'applicant-refuse'         => 'Applicant Refuse',
-                'applicant-not-interested' => 'Applicant Not Interested',
+                'title'                    => 'Plantilla',
+                'applicant-refuse'         => 'Candidato rechazado',
+                'applicant-not-interested' => 'Candidato no interesado',
             ],
-            'name-placeholder' => 'Enter the name of the refuse reason',
+            'name-placeholder' => 'Introducir el nombre del motivo de rechazo',
         ],
     ],
 
     'table' => [
         'columns' => [
             'id'         => 'ID',
-            'name'       => 'Name',
-            'template'   => 'Template',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'template'   => 'Plantilla',
+            'created-by' => 'Creado por',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'employee'   => 'Empleado',
+            'created-by' => 'Creado por',
+            'updated-at' => 'Actualizado el',
+            'created-at' => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Refuse reason updated',
-                    'body'  => 'The refuse reason has been updated successfully.',
+                    'title' => 'Motivo de rechazo actualizado',
+                    'body'  => 'El motivo de rechazo se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Refuse reason deleted',
-                    'body'  => 'The refuse reason has been deleted successfully.',
+                    'title' => 'Motivo de rechazo eliminado',
+                    'body'  => 'El motivo de rechazo se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -57,8 +57,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Refuse reasons deleted',
-                    'body'  => 'The refuse reasons has been deleted successfully.',
+                    'title' => 'Motivos de rechazo eliminados',
+                    'body'  => 'Los motivos de rechazo se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -66,15 +66,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Refuse reason created',
-                    'body'  => 'The refuse reason has been created successfully.',
+                    'title' => 'Motivo de rechazo creado',
+                    'body'  => 'El motivo de rechazo se ha creado correctamente.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'       => 'Name',
-        'template'   => 'Template',
+        'name'       => 'Nombre',
+        'template'   => 'Plantilla',
     ],
 ];

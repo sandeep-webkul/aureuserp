@@ -2,54 +2,54 @@
 
 return [
     'form' => [
-        'name'          => 'Name',
-        'level'         => 'Level',
-        'default-level' => 'Default Level',
+        'name'          => 'Nombre',
+        'level'         => 'Nivel',
+        'default-level' => 'Nivel predeterminado',
     ],
 
     'table' => [
         'columns' => [
-            'name'          => 'Name',
-            'level'         => 'Level',
-            'default-level' => 'Default Level',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'name'          => 'Nombre',
+            'level'         => 'Nivel',
+            'default-level' => 'Nivel predeterminado',
+            'created-at'    => 'Creado el',
+            'updated-at'    => 'Actualizado el',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'deleted-records' => 'Deleted Records',
+            'deleted-records' => 'Registros eliminados',
         ],
 
         'actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'Nivel de competencia creado',
+                    'body'  => 'El nivel de competencia se ha creado correctamente.',
                 ],
             ],
 
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'Nivel de competencia actualizado',
+                    'body'  => 'El nivel de competencia se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Level restored',
-                    'body'  => 'The skill level has been restored successfully.',
+                    'title' => 'Nivel de competencia restaurado',
+                    'body'  => 'El nivel de competencia se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'Nivel de competencia eliminado',
+                    'body'  => 'El nivel de competencia se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -57,22 +57,22 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Levels deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'Niveles de competencia eliminados',
+                    'body'  => 'Las competencias se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Skill Levels force deleted',
-                    'body'  => 'The skills has been force deleted successfully.',
+                    'title' => 'Niveles de competencia eliminados permanentemente',
+                    'body'  => 'Las competencias se han eliminado permanentemente correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Levels force restored',
-                    'body'  => 'The skills has been force restored successfully.',
+                    'title' => 'Niveles de competencia restaurados',
+                    'body'  => 'Las competencias se han restaurado correctamente.',
                 ],
             ],
         ],
@@ -80,9 +80,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'          => 'Name',
-            'level'         => 'Level',
-            'default-level' => 'Default Level',
+            'name'          => 'Nombre',
+            'level'         => 'Nivel',
+            'default-level' => 'Nivel predeterminado',
         ],
     ],
 ];

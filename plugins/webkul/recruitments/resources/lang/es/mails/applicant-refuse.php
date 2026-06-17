@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'breadcrumb'        => 'Application Status for :applicant',
-    'greeting'          => 'Hello,',
-    'thank-you-message' => 'Thank you for your interest in joining the <b>:company</b> team.',
-    'future-endeavors'  => 'We wanted to let you know that, although your resume is competitive, our hiring team reviewed your application and <b>did not select it for further consideration</b>.',
+    'breadcrumb'        => 'Estado de la candidatura de :applicant',
+    'greeting'          => 'Hola:',
+    'thank-you-message' => 'Gracias por su interés en unirse al equipo de <b>:company</b>.',
+    'future-endeavors'  => 'Queremos informarle de que, aunque su currículum es competitivo, nuestro equipo de contratación ha revisado su candidatura y <b>no la ha seleccionado para continuar con el proceso</b>.',
     'admin-details'     => [
         'name'  => '-- <br><strong>:name</strong>',
-        'email' => 'Email: :email',
-        'phone' => 'Phone: :phone',
+        'email' => 'Correo electrónico: :email',
+        'phone' => 'Teléfono: :phone',
     ],
 ];

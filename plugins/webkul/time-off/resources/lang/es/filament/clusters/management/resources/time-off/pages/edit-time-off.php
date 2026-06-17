@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Time Off updated',
-        'body'  => 'The time off has been updated successfully.',
+        'title' => 'Ausencia actualizada',
+        'body'  => 'La ausencia se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Time Off deleted',
-                'body'  => 'The time off has been deleted successfully.',
+                'title' => 'Ausencia eliminada',
+                'body'  => 'La ausencia se ha eliminado correctamente.',
             ],
         ],
     ],

@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Allocation updated',
-        'body'  => 'The allocation has been updated successfully.',
+        'title' => 'Asignación actualizada',
+        'body'  => 'La asignación se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Allocation deleted',
-                'body'  => 'The allocation has been deleted successfully.',
+                'title' => 'Asignación eliminada',
+                'body'  => 'La asignación se ha eliminado correctamente.',
             ],
         ],
     ],

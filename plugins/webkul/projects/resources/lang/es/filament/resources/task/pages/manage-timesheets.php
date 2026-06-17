@@ -1,50 +1,50 @@
 <?php
 
 return [
-    'title' => 'Timesheets',
+    'title' => 'Partes de horas',
 
     'form' => [
-        'date'                   => 'Date',
-        'employee'               => 'Employee',
-        'description'            => 'Description',
-        'time-spent'             => 'Time Spent',
-        'time-spent-helper-text' => 'Time spent in hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+        'date'                   => 'Fecha',
+        'employee'               => 'Empleado',
+        'description'            => 'Descripción',
+        'time-spent'             => 'Tiempo dedicado',
+        'time-spent-helper-text' => 'Tiempo dedicado en horas (ej. 1.5 horas significa 1 hora 30 minutos)',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Timesheet',
+                'label' => 'Añadir parte de horas',
 
                 'notification' => [
-                    'title' => 'Timesheet created',
-                    'body'  => 'The timesheet has been created successfully.',
+                    'title' => 'Parte de horas creado',
+                    'body'  => 'El parte de horas se ha creado correctamente.',
                 ],
             ],
         ],
 
         'columns' => [
-            'date'                   => 'Date',
-            'employee'               => 'Employee',
-            'description'            => 'Description',
-            'time-spent'             => 'Time Spent',
-            'time-spent-on-subtasks' => 'Time Spent on Subtasks',
-            'total-time-spent'       => 'Total Time Spent',
-            'remaining-time'         => 'Remaining Time',
+            'date'                   => 'Fecha',
+            'employee'               => 'Empleado',
+            'description'            => 'Descripción',
+            'time-spent'             => 'Tiempo dedicado',
+            'time-spent-on-subtasks' => 'Tiempo dedicado en subtareas',
+            'total-time-spent'       => 'Tiempo total dedicado',
+            'remaining-time'         => 'Tiempo restante',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Timesheet updated',
-                    'body'  => 'The timesheet has been updated successfully.',
+                    'title' => 'Parte de horas actualizado',
+                    'body'  => 'El parte de horas se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheet deleted',
-                    'body'  => 'The timesheet has been deleted successfully.',
+                    'title' => 'Parte de horas eliminado',
+                    'body'  => 'El parte de horas se ha eliminado correctamente.',
                 ],
             ],
         ],

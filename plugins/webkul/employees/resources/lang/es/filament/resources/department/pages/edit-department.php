@@ -4,15 +4,15 @@ return [
     'update' => [
         'success' => [
             'notification' => [
-                'title' => 'Department updated',
-                'body'  => 'The department has been updated successfully.',
+                'title' => 'Departamento actualizado',
+                'body'  => 'El departamento se ha actualizado correctamente.',
             ],
         ],
 
         'error' => [
             'notification' => [
-                'title' => 'Department update failed',
-                'body'  => 'There was an error updating the department.',
+                'title' => 'Error al actualizar el departamento',
+                'body'  => 'Se produjo un error al actualizar el departamento.',
             ],
         ],
     ],
@@ -20,8 +20,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Department deleted',
-                'body'  => 'The department has been deleted successfully.',
+                'title' => 'Departamento eliminado',
+                'body'  => 'El departamento se ha eliminado correctamente.',
             ],
         ],
     ],

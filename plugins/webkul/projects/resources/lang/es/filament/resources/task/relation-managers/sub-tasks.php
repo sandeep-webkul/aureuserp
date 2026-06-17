@@ -4,11 +4,11 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Sub Task',
+                'label' => 'Añadir subtarea',
 
                 'notification' => [
-                    'title' => 'Task created',
-                    'body'  => 'The task has been created successfully.',
+                    'title' => 'Tarea creada',
+                    'body'  => 'La tarea se ha creado correctamente.',
                 ],
             ],
         ],
@@ -16,22 +16,22 @@ return [
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task restored',
-                    'body'  => 'The task has been restored successfully.',
+                    'title' => 'Tarea restaurada',
+                    'body'  => 'La tarea se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task deleted',
-                    'body'  => 'The task has been deleted successfully.',
+                    'title' => 'Tarea eliminada',
+                    'body'  => 'La tarea se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task force deleted',
-                    'body'  => 'The task has been force deleted successfully.',
+                    'title' => 'Tarea eliminada permanentemente',
+                    'body'  => 'La tarea se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],

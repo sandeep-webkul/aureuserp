@@ -2,43 +2,43 @@
 
 return [
     'form' => [
-        'name' => 'Name',
+        'name' => 'Nombre',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'deleted-records' => 'Deleted Records',
+            'deleted-records' => 'Registros eliminados',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill updated',
-                    'body'  => 'The skill has been updated successfully.',
+                    'title' => 'Competencia actualizada',
+                    'body'  => 'La competencia se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill restored',
-                    'body'  => 'The skill has been restored successfully.',
+                    'title' => 'Competencia restaurada',
+                    'body'  => 'La competencia se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill deleted',
-                    'body'  => 'The skill has been deleted successfully.',
+                    'title' => 'Competencia eliminada',
+                    'body'  => 'La competencia se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -46,22 +46,22 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'Competencias eliminadas',
+                    'body'  => 'Las competencias se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Skills force deleted',
-                    'body'  => 'The skills has been force deleted successfully.',
+                    'title' => 'Competencias eliminadas permanentemente',
+                    'body'  => 'Las competencias se han eliminado permanentemente correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skills force restored',
-                    'body'  => 'The skills has been force restored successfully.',
+                    'title' => 'Competencias restauradas',
+                    'body'  => 'Las competencias se han restaurado correctamente.',
                 ],
             ],
         ],
@@ -69,7 +69,7 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
+            'name' => 'Nombre',
         ],
     ],
 ];

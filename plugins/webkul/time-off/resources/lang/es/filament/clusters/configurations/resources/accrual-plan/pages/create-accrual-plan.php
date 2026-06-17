@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Accrual Plan Created',
-        'body'  => 'The accrual plan has been created successfully.',
+        'title' => 'Plan de acumulación creado',
+        'body'  => 'El plan de acumulación se ha creado correctamente.',
     ],
 ];

@@ -1,70 +1,70 @@
 <?php
 
 return [
-    'title' => 'Timesheets',
+    'title' => 'Partes de horas',
 
     'navigation' => [
-        'title' => 'Timesheets',
-        'group' => 'Project',
+        'title' => 'Partes de horas',
+        'group' => 'Proyecto',
     ],
 
     'global-search' => [
-        'project' => 'Project',
-        'task'    => 'Task',
-        'date'    => 'Date',
+        'project' => 'Proyecto',
+        'task'    => 'Tarea',
+        'date'    => 'Fecha',
     ],
 
     'form' => [
-        'date'                   => 'Date',
-        'employee'               => 'Employee',
-        'project'                => 'Project',
-        'task'                   => 'Task',
-        'description'            => 'Description',
-        'time-spent'             => 'Time Spent',
-        'time-spent-helper-text' => 'Time spent in hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+        'date'                   => 'Fecha',
+        'employee'               => 'Empleado',
+        'project'                => 'Proyecto',
+        'task'                   => 'Tarea',
+        'description'            => 'Descripción',
+        'time-spent'             => 'Tiempo dedicado',
+        'time-spent-helper-text' => 'Tiempo dedicado en horas (ej. 1.5 horas significa 1 hora 30 minutos)',
     ],
 
     'table' => [
         'columns' => [
-            'date'        => 'Date',
-            'employee'    => 'Employee',
-            'project'     => 'Project',
-            'task'        => 'Task',
-            'description' => 'Description',
-            'time-spent'  => 'Time Spent',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
+            'date'        => 'Fecha',
+            'employee'    => 'Empleado',
+            'project'     => 'Proyecto',
+            'task'        => 'Tarea',
+            'description' => 'Descripción',
+            'time-spent'  => 'Tiempo dedicado',
+            'created-at'  => 'Creado el',
+            'updated-at'  => 'Actualizado el',
         ],
 
         'groups' => [
-            'date'       => 'Date',
-            'employee'   => 'Employee',
-            'project'    => 'Project',
-            'task'       => 'Task',
-            'creator'    => 'Creator',
+            'date'       => 'Fecha',
+            'employee'   => 'Empleado',
+            'project'    => 'Proyecto',
+            'task'       => 'Tarea',
+            'creator'    => 'Creador',
         ],
 
         'filters' => [
-            'date-from'  => 'Date From',
-            'date-until' => 'Date Until',
-            'employee'   => 'Employee',
-            'project'    => 'Project',
-            'task'       => 'Task',
-            'creator'    => 'Creator',
+            'date-from'  => 'Fecha desde',
+            'date-until' => 'Fecha hasta',
+            'employee'   => 'Empleado',
+            'project'    => 'Proyecto',
+            'task'       => 'Tarea',
+            'creator'    => 'Creador',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Timesheet updated',
-                    'body'  => 'The timesheet has been updated successfully.',
+                    'title' => 'Parte de horas actualizado',
+                    'body'  => 'El parte de horas se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheet deleted',
-                    'body'  => 'The timesheet has been deleted successfully.',
+                    'title' => 'Parte de horas eliminado',
+                    'body'  => 'El parte de horas se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -72,8 +72,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheets deleted',
-                    'body'  => 'The timesheets has been deleted successfully.',
+                    'title' => 'Partes de horas eliminados',
+                    'body'  => 'Los partes de horas se han eliminado correctamente.',
                 ],
             ],
         ],

@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Accrual Type updated',
-        'body'  => 'The accrual Type has been updated successfully.',
+        'title' => 'Tipo de acumulación actualizado',
+        'body'  => 'El tipo de acumulación se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Accrual Type deleted',
-                'body'  => 'The accrual type has been deleted successfully.',
+                'title' => 'Tipo de acumulación eliminado',
+                'body'  => 'El tipo de acumulación se ha eliminado correctamente.',
             ],
         ],
     ],

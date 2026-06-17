@@ -3,33 +3,33 @@
 return [
     'notification' => [
         'success' => [
-            'title' => 'Time Off created',
-            'body'  => 'The time off has been created successfully.',
+            'title' => 'Ausencia creada',
+            'body'  => 'La ausencia se ha creado correctamente.',
         ],
 
         'overlap' => [
-            'title' => 'Overlapping Leave Request',
-            'body'  => 'The selected leave dates overlap with an existing request. Please choose different dates.',
+            'title' => 'Solicitud de ausencia superpuesta',
+            'body'  => 'Las fechas de ausencia seleccionadas se superponen con una solicitud existente. Seleccionar fechas diferentes.',
         ],
 
         'warning' => [
-            'title' => 'You don\'t have an employee account',
-            'body'  => 'You don\'t have an employee account. Please contact your administrator.',
+            'title' => 'No tiene una cuenta de empleado',
+            'body'  => 'No tiene una cuenta de empleado. Contactar con el administrador.',
         ],
 
         'invalid_half_day_leave' => [
-            'title' => 'Invalid Leave Request',
-            'body'  => 'Half-day leave can only be applied for a single day.',
+            'title' => 'Solicitud de ausencia no válida',
+            'body'  => 'La ausencia de medio día solo puede solicitarse para un único día.',
         ],
 
         'leave_request_denied_no_allocation' => [
-            'title' => 'Leave Request Denied',
-            'body'  => 'You do not have any allocated leave for :leaveType.',
+            'title' => 'Solicitud de ausencia denegada',
+            'body'  => 'No tiene ninguna ausencia asignada para :leaveType.',
         ],
 
         'leave_request_denied_insufficient_balance' => [
-            'title' => 'Leave Request Denied',
-            'body'  => 'Insufficient leave balance. You have :available_balance day(s) available. Requested: :requested_days day(s).',
+            'title' => 'Solicitud de ausencia denegada',
+            'body'  => 'Saldo de ausencias insuficiente. Tiene :available_balance día(s) disponible(s). Solicitado: :requested_days día(s).',
         ],
     ],
 ];

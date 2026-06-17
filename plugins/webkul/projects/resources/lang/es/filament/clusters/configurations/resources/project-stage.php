@@ -2,64 +2,64 @@
 
 return [
     'navigation' => [
-        'title' => 'Project Stages',
+        'title' => 'Etapas de proyecto',
     ],
 
     'form' => [
-        'name' => 'Name',
+        'name' => 'Nombre',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'created-at'   => 'Created At',
+            'name'         => 'Nombre',
+            'is-completed' => 'Está completada',
+            'project'      => 'Proyecto',
+            'created-at'   => 'Creado el',
         ],
 
         'filters' => [
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
+            'is-completed' => 'Está completada',
+            'project'      => 'Proyecto',
+            'creator'      => 'Creador',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Project stage updated',
-                    'body'  => 'The project stage has been updated successfully.',
+                    'title' => 'Etapa de proyecto actualizada',
+                    'body'  => 'La etapa de proyecto se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Project stage restored',
-                    'body'  => 'The project stage has been restored successfully.',
+                    'title' => 'Etapa de proyecto restaurada',
+                    'body'  => 'La etapa de proyecto se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project stage deleted',
-                    'body'  => 'The project stage has been deleted successfully.',
+                    'title' => 'Etapa de proyecto eliminada',
+                    'body'  => 'La etapa de proyecto se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Project stage force deleted',
-                        'body'  => 'The project stage has been force deleted successfully.',
+                        'title' => 'Etapa de proyecto eliminada permanentemente',
+                        'body'  => 'La etapa de proyecto se ha eliminado permanentemente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Project Stage  could not be deleted',
-                        'body'  => 'The Project Stage  cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar la etapa de proyecto',
+                        'body'  => 'La etapa de proyecto no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -68,22 +68,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Project stages restored',
-                    'body'  => 'The project stages has been restored successfully.',
+                    'title' => 'Etapas de proyecto restauradas',
+                    'body'  => 'Las etapas de proyecto se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project stages deleted',
-                    'body'  => 'The project stages has been deleted successfully.',
+                    'title' => 'Etapas de proyecto eliminadas',
+                    'body'  => 'Las etapas de proyecto se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Project stages force deleted',
-                    'body'  => 'The project stages has been force deleted successfully.',
+                    'title' => 'Etapas de proyecto eliminadas permanentemente',
+                    'body'  => 'Las etapas de proyecto se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
