@@ -3,7 +3,6 @@
 namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
-use Exception;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -171,35 +170,53 @@ trait HasChatter
 
     public function chatterMessageOwner(): Model
     {
+        $baseClass = $this->resolveChatterModelClass();
+
+        if ($baseClass === get_class($this)) {
+            return $this;
+        }
+
+        /*
+         * Hydrate the base model in-memory instead of querying for it. A DB
+         * lookup would return null for soft-deleted or globally-scoped
+         * records, silently falling back to the child class and writing
+         * chatter against the wrong morph type. We only need the key and the
+         * morph class for polymorphic reads/writes, so no query is required.
+         */
+        $owner = new $baseClass;
+        $owner->setAttribute($owner->getKeyName(), $this->getKey());
+        $owner->exists = true;
+        $owner->syncOriginal();
+
+        return $owner;
+    }
+
+    /**
+     * Resolve the first application model in the inheritance chain (the class
+     * whose parent is Laravel's base Model). Chatter must always read and
+     * write against this class so records survive being re-managed through a
+     * sibling resource (e.g. Quotation -> Order, Bill -> Move).
+     */
+    public function resolveChatterModelClass(): string
+    {
         $class = get_class($this);
 
-        $parentWebkulClass = null;
-
-        while (($parent = get_parent_class($class)) !== false) {
-            if (str_starts_with($parent, 'Webkul\\')) {
-                $parentWebkulClass = $parent;
-
-                $class = $parent;
-
-                continue;
-            }
-
-            break;
+        while (
+            ($parent = get_parent_class($class)) !== false
+            && str_starts_with($parent, 'Webkul\\')
+        ) {
+            $class = $parent;
         }
 
-        if ($parentWebkulClass && $parentWebkulClass !== get_class($this)) {
-            try {
-                $parentModel = new $parentWebkulClass;
+        return $class;
+    }
 
-                $parentInstance = $parentModel->newQuery()->find($this->getKey());
-
-                return $parentInstance ?? $this;
-            } catch (Exception) {
-                return $this;
-            }
-        }
-
-        return $this;
+    /**
+     * The morph class chatter records are stored against.
+     */
+    public function getChatterMorphClass(): string
+    {
+        return $this->resolveChatterMessageOwner()->getMorphClass();
     }
 
     public function replyToMessage(Message $parentMessage, array $data): Message
@@ -218,8 +235,8 @@ trait HasChatter
         $owner = $this->resolveChatterMessageOwner();
 
         if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
+            $message->messageable_id !== $owner->getKey()
+            || $message->messageable_type !== $owner->getMorphClass()
         ) {
             return false;
         }
@@ -232,8 +249,8 @@ trait HasChatter
         $owner = $this->resolveChatterMessageOwner();
 
         if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
+            $message->messageable_id !== $owner->getKey()
+            || $message->messageable_type !== $owner->getMorphClass()
         ) {
             return false;
         }
@@ -248,8 +265,8 @@ trait HasChatter
         $owner = $this->resolveChatterMessageOwner();
 
         if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
+            $message->messageable_id !== $owner->getKey()
+            || $message->messageable_type !== $owner->getMorphClass()
         ) {
             return false;
         }
@@ -321,10 +338,12 @@ trait HasChatter
     {
         $attachment = $this->attachments()->find($attachmentId);
 
+        $owner = $this->resolveChatterMessageOwner();
+
         if (
             ! $attachment ||
-            $attachment->messageable_id !== $this->id ||
-            $attachment->messageable_type !== get_class($this)
+            $attachment->messageable_id !== $owner->getKey() ||
+            $attachment->messageable_type !== $owner->getMorphClass()
         ) {
             return false;
         }

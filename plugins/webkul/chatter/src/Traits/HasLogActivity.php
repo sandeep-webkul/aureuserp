@@ -49,12 +49,16 @@ trait HasLogActivity
                 return null;
             }
 
+            $owner = method_exists($this, 'resolveChatterMessageOwner')
+                ? $this->resolveChatterMessageOwner()
+                : $this;
+
             return $this->addMessage([
                 'type'             => 'notification',
                 'log_name'         => 'default',
                 'body'             => $this->generateActivityDescription($event),
-                'messageable_type' => $this->getMorphClass(),
-                'messageable_id'   => $this->getKey(),
+                'messageable_type' => $owner->getMorphClass(),
+                'messageable_id'   => $owner->getKey(),
                 'causer_type'      => $user?->getMorphClass(),
                 'causer_id'        => $user?->id,
                 'event'            => $event,

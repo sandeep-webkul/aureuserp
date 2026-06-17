@@ -12,7 +12,6 @@ use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Incoterm;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Chatter\Models\Message;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -199,25 +198,6 @@ class Order extends Model
     public function procurementGroup(): BelongsTo
     {
         return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
-    }
-
-    public function addMessage(array $data): Message
-    {
-        $message = new Message;
-
-        $user = Auth::user();
-
-        $message->fill(array_merge([
-            'creator_id'       => $user?->id,
-            'date_deadline'    => $data['date_deadline'] ?? now(),
-            'company_id'       => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
-            'messageable_type' => Order::class,
-            'messageable_id'   => $this->id,
-        ], $data));
-
-        $message->save();
-
-        return $message;
     }
 
     protected static function boot()
