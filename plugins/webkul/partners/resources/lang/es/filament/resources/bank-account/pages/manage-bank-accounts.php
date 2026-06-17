@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Bank Account',
+            'label' => 'Nueva cuenta bancaria',
 
             'notification' => [
-                'title' => 'Bank Account created',
-                'body'  => 'The bank account has been created successfully.',
+                'title' => 'Cuenta bancaria creada',
+                'body'  => 'La cuenta bancaria se ha creado correctamente.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Todos',
+        'archived' => 'Archivados',
     ],
 ];

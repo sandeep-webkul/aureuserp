@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'label' => 'Add New',
+    'label' => 'Añadir nuevo',
 
     'form' => [
-        'name'                  => 'Name',
+        'name'                  => 'Nombre',
         'color'                 => 'Color',
-        'icon'                  => 'Icon',
-        'add-to-favorites'      => 'Add To Favorites',
-        'add-to-favorites-help' => 'Add this filter to your favorites',
-        'make-public'           => 'Make Public',
-        'make-public-help'      => 'Make this filter available to all users',
+        'icon'                  => 'Icono',
+        'add-to-favorites'      => 'Añadir a favoritos',
+        'add-to-favorites-help' => 'Añadir este filtro a sus favoritos',
+        'make-public'           => 'Hacer público',
+        'make-public-help'      => 'Hacer este filtro disponible para todos los usuarios',
         'options'               => [
-            'danger'  => 'Danger',
-            'gray'    => 'Gray',
-            'info'    => 'Information',
-            'success' => 'Success',
-            'warning' => 'Warning',
+            'danger'  => 'Peligro',
+            'gray'    => 'Gris',
+            'info'    => 'Información',
+            'success' => 'Éxito',
+            'warning' => 'Advertencia',
         ],
 
         'notification' => [
-            'created' => 'View created successfully',
+            'created' => 'Vista creada correctamente',
         ],
 
         'modal' => [
-            'title' => 'Save View',
+            'title' => 'Guardar vista',
         ],
     ],
 ];

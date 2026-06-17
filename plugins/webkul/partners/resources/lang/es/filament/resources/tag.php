@@ -2,44 +2,44 @@
 
 return [
     'form' => [
-        'name'  => 'Name',
+        'name'  => 'Nombre',
         'color' => 'Color',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
+            'name'       => 'Nombre',
             'color'      => 'Color',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tag updated',
-                    'body'  => 'The tag has been updated successfully.',
+                    'title' => 'Etiqueta actualizada',
+                    'body'  => 'La etiqueta se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Tag restored',
-                    'body'  => 'The tag has been restored successfully.',
+                    'title' => 'Etiqueta restaurada',
+                    'body'  => 'La etiqueta se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tag deleted',
-                    'body'  => 'The tag has been deleted successfully.',
+                    'title' => 'Etiqueta eliminada',
+                    'body'  => 'La etiqueta se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tag force deleted',
-                    'body'  => 'The tag has been force deleted successfully.',
+                    'title' => 'Etiqueta eliminada permanentemente',
+                    'body'  => 'La etiqueta se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -47,22 +47,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Tags restored',
-                    'body'  => 'The tags has been restored successfully.',
+                    'title' => 'Etiquetas restauradas',
+                    'body'  => 'Las etiquetas se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'Etiquetas eliminadas',
+                    'body'  => 'Las etiquetas se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tags force deleted',
-                    'body'  => 'The tags has been force deleted successfully.',
+                    'title' => 'Etiquetas eliminadas permanentemente',
+                    'body'  => 'Las etiquetas se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],

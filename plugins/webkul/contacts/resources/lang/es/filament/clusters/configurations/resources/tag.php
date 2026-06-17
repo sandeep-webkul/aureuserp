@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Tags',
+        'title' => 'Etiquetas',
     ],
 ];

@@ -2,67 +2,67 @@
 
 return [
     'navigation' => [
-        'group' => 'Banks',
-        'title' => 'Bank Accounts',
+        'group' => 'Bancos',
+        'title' => 'Cuentas bancarias',
     ],
 
     'form' => [
-        'account-number'     => 'Account Number',
-        'bank'               => 'Bank',
-        'account-holder'     => 'Account Holder',
-        'can-send-money'     => 'Can Send Money',
+        'account-number'     => 'Número de cuenta',
+        'bank'               => 'Banco',
+        'account-holder'     => 'Titular de la cuenta',
+        'can-send-money'     => 'Puede enviar dinero',
     ],
 
     'table' => [
         'columns' => [
-            'account-number' => 'Account Number',
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'send-money'     => 'Can Send Money',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
-            'deleted-at'     => 'Deleted At',
+            'account-number' => 'Número de cuenta',
+            'bank'           => 'Banco',
+            'account-holder' => 'Titular de la cuenta',
+            'send-money'     => 'Puede enviar dinero',
+            'created-at'     => 'Creado el',
+            'updated-at'     => 'Actualizado el',
+            'deleted-at'     => 'Eliminado el',
         ],
 
         'filters' => [
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'creator'        => 'Creator',
-            'can-send-money' => 'Can Send Money',
+            'bank'           => 'Banco',
+            'account-holder' => 'Titular de la cuenta',
+            'creator'        => 'Creador',
+            'can-send-money' => 'Puede enviar dinero',
         ],
 
         'groups' => [
-            'bank'               => 'Bank',
-            'can-send-money'     => 'Can Send Money',
-            'created-at'         => 'Created At',
+            'bank'               => 'Banco',
+            'can-send-money'     => 'Puede enviar dinero',
+            'created-at'         => 'Creado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Bank account updated',
-                    'body'  => 'The bank account has been updated successfully.',
+                    'title' => 'Cuenta bancaria actualizada',
+                    'body'  => 'La cuenta bancaria se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank account restored',
-                    'body'  => 'The bank account has been restored successfully.',
+                    'title' => 'Cuenta bancaria restaurada',
+                    'body'  => 'La cuenta bancaria se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank account deleted',
-                    'body'  => 'The bank account has been deleted successfully.',
+                    'title' => 'Cuenta bancaria eliminada',
+                    'body'  => 'La cuenta bancaria se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank account force deleted',
-                    'body'  => 'The bank account has been force deleted successfully.',
+                    'title' => 'Cuenta bancaria eliminada permanentemente',
+                    'body'  => 'La cuenta bancaria se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -70,22 +70,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank accounts restored',
-                    'body'  => 'The bank accounts has been restored successfully.',
+                    'title' => 'Cuentas bancarias restauradas',
+                    'body'  => 'Las cuentas bancarias se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts deleted',
-                    'body'  => 'The bank accounts has been deleted successfully.',
+                    'title' => 'Cuentas bancarias eliminadas',
+                    'body'  => 'Las cuentas bancarias se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts force deleted',
-                    'body'  => 'The bank accounts has been force deleted successfully.',
+                    'title' => 'Cuentas bancarias eliminadas permanentemente',
+                    'body'  => 'Las cuentas bancarias se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],

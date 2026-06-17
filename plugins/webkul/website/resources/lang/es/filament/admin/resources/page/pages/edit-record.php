@@ -2,33 +2,33 @@
 
 return [
     'notification' => [
-        'title' => 'Page updated',
-        'body'  => 'The page has been updated successfully.',
+        'title' => 'Página actualizada',
+        'body'  => 'La página se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'draft' => [
-            'label' => 'Set as Draft',
+            'label' => 'Marcar como borrador',
 
             'notification' => [
-                'title' => 'Page set as draft',
-                'body'  => 'The page has been set as draft successfully.',
+                'title' => 'Página marcada como borrador',
+                'body'  => 'La página se ha marcado como borrador correctamente.',
             ],
         ],
 
         'publish' => [
-            'label' => 'Publish',
+            'label' => 'Publicar',
 
             'notification' => [
-                'title' => 'Page published',
-                'body'  => 'The page has been published successfully.',
+                'title' => 'Página publicada',
+                'body'  => 'La página se ha publicado correctamente.',
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Page deleted',
-                'body'  => 'The page has been deleted successfully.',
+                'title' => 'Página eliminada',
+                'body'  => 'La página se ha eliminado correctamente.',
             ],
         ],
     ],

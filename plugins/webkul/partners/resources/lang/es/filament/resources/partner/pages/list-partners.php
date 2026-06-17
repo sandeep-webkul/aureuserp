@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Contacts',
+    'title' => 'Contactos',
 
     'header-actions' => [
         'create' => [
-            'label' => 'Create Contact',
+            'label' => 'Crear contacto',
         ],
     ],
 
     'tabs' => [
-        'individuals' => 'Individuals',
-        'companies'   => 'Companies',
-        'employees'   => 'Employees',
-        'archived'    => 'Archived',
+        'individuals' => 'Particulares',
+        'companies'   => 'Empresas',
+        'employees'   => 'Empleados',
+        'archived'    => 'Archivados',
     ],
 ];

@@ -2,18 +2,18 @@
 
 return [
     'setup' => [
-        'title'   => 'Attachments',
-        'tooltip' => 'Upload Attachments',
+        'title'   => 'Adjuntos',
+        'tooltip' => 'Subir adjuntos',
 
         'form' => [
             'fields' => [
-                'files'                  => 'Files',
-                'attachment-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'files'                  => 'Archivos',
+                'attachment-helper-text' => 'Tamaño máximo de archivo: 10 MB. Tipos permitidos: imágenes, PDF, Word, Excel, texto',
 
                 'actions' => [
                     'delete' => [
-                        'title' => 'File deleted',
-                        'body'  => 'File has been deleted successfully.',
+                        'title' => 'Archivo eliminado',
+                        'body'  => 'El archivo se ha eliminado correctamente.',
                     ],
                 ],
             ],
@@ -22,18 +22,18 @@ return [
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Attachments Uploaded',
-                    'body'  => 'Attachments uploaded successfully.',
+                    'title' => 'Adjuntos subidos',
+                    'body'  => 'Los adjuntos se han subido correctamente.',
                 ],
 
                 'warning'  => [
-                    'title' => 'No new files',
-                    'body'  => 'All files have already been uploaded.',
+                    'title' => 'No hay archivos nuevos',
+                    'body'  => 'Todos los archivos ya se han subido.',
                 ],
 
                 'error' => [
-                    'title' => 'Attachment upload error',
-                    'body'  => 'Failed to upload attachments ',
+                    'title' => 'Error al subir el adjunto',
+                    'body'  => 'No se pudieron subir los adjuntos ',
                 ],
             ],
         ],

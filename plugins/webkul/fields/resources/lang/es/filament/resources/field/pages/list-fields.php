@@ -2,13 +2,13 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Todos',
+        'archived' => 'Archivados',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'Create Field',
+            'label' => 'Crear campo',
         ],
     ],
 ];

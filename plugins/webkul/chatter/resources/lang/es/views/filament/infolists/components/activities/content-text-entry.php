@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'activity'         => 'Activity',
-    'created-by'       => 'Created By',
-    'summary'          => 'Summary',
-    'due-date'         => 'Due date',
-    'assigned-to'      => 'Assigned To',
-    'due-in-days'      => 'Due in :days days',
-    'today'            => 'Today',
-    'tomorrow'         => 'Tomorrow',
-    'one-day-overdue'  => '1 Day Overdue',
-    'days-overdue'     => ':days days overdue',
+    'activity'         => 'Actividad',
+    'created-by'       => 'Creado por',
+    'summary'          => 'Resumen',
+    'due-date'         => 'Fecha de vencimiento',
+    'assigned-to'      => 'Asignado a',
+    'due-in-days'      => 'Vence en :days días',
+    'today'            => 'Hoy',
+    'tomorrow'         => 'Mañana',
+    'one-day-overdue'  => '1 día de retraso',
+    'days-overdue'     => ':days días de retraso',
 ];

@@ -2,11 +2,11 @@
 
 return [
     'navigation' => [
-        'title' => 'Our Latest Posts',
+        'title' => 'Nuestras últimas publicaciones',
     ],
 
     'empty' => [
-        'title'       => 'No blog posts found',
-        'description' => 'Check back later for new content.',
+        'title'       => 'No se encontraron publicaciones del blog',
+        'description' => 'Vuelve más tarde para ver contenido nuevo.',
     ],
 ];

@@ -2,33 +2,33 @@
 
 return [
     'notification' => [
-        'title' => 'Post updated',
-        'body'  => 'The post has been updated successfully.',
+        'title' => 'Publicación actualizada',
+        'body'  => 'La publicación se ha actualizado correctamente.',
     ],
 
     'header-actions' => [
         'draft' => [
-            'label' => 'Set as Draft',
+            'label' => 'Marcar como borrador',
 
             'notification' => [
-                'title' => 'Post set as draft',
-                'body'  => 'The post has been set as draft successfully.',
+                'title' => 'Publicación marcada como borrador',
+                'body'  => 'La publicación se ha marcado como borrador correctamente.',
             ],
         ],
 
         'publish' => [
-            'label' => 'Publish',
+            'label' => 'Publicar',
 
             'notification' => [
-                'title' => 'Post published',
-                'body'  => 'The post has been published successfully.',
+                'title' => 'Publicación publicada',
+                'body'  => 'La publicación se ha publicado correctamente.',
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Post deleted',
-                'body'  => 'The post has been deleted successfully.',
+                'title' => 'Publicación eliminada',
+                'body'  => 'La publicación se ha eliminado correctamente.',
             ],
         ],
     ],

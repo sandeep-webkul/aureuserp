@@ -2,29 +2,29 @@
 
 return [
     'setup' => [
-        'title'        => 'Log Note',
-        'submit-title' => 'Log',
+        'title'        => 'Registrar nota',
+        'submit-title' => 'Registrar',
 
         'form' => [
             'fields' => [
-                'hide-subject'            => 'Hide Subject',
-                'add-subject'             => 'Add Subject',
-                'subject'                 => 'Subject',
-                'write-message-here'      => 'Write your message here',
-                'attachments-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'hide-subject'            => 'Ocultar asunto',
+                'add-subject'             => 'Añadir asunto',
+                'subject'                 => 'Asunto',
+                'write-message-here'      => 'Escriba su mensaje aquí',
+                'attachments-helper-text' => 'Tamaño máximo de archivo: 10 MB. Tipos permitidos: imágenes, PDF, Word, Excel, texto',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Log Note added',
-                    'body'  => 'Your log note added successfully.',
+                    'title' => 'Nota registrada',
+                    'body'  => 'Su nota se ha registrado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Log add error',
-                    'body'  => 'Failed to add your log note',
+                    'title' => 'Error al registrar la nota',
+                    'body'  => 'No se pudo registrar su nota',
                 ],
             ],
         ],

@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Manage Contacts',
+    'title' => 'Gestionar contactos',
 
     'form' => [
         'sections' => [
             'contacts' => [
-                'title' => 'Contacts',
+                'title' => 'Contactos',
 
                 'fields' => [
-                    'email' => 'Email',
-                    'phone' => 'Phone',
+                    'email' => 'Correo electrónico',
+                    'phone' => 'Teléfono',
                 ],
             ],
 
             'social-links' => [
-                'title' => 'Social Links',
+                'title' => 'Redes sociales',
 
                 'fields' => [
                     'twitter'   => 'Twitter',

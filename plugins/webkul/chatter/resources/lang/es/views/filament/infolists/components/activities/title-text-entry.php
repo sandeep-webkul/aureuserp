@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'more-action-tooltip' => 'More Actions',
+    'more-action-tooltip' => 'Más acciones',
 ];

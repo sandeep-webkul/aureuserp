@@ -2,8 +2,8 @@
 
 return [
     'global-search' => [
-        'email' => 'Email',
-        'phone' => 'Phone',
+        'email' => 'Correo electrónico',
+        'phone' => 'Teléfono',
     ],
 
     'form' => [
@@ -12,33 +12,33 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'company'    => 'Company',
+                    'company'    => 'Empresa',
                     'avatar'     => 'Avatar',
                     'tax-id'     => 'Tax ID',
-                    'job-title'  => 'Job Title',
-                    'phone'      => 'Phone',
-                    'mobile'     => 'Mobile',
-                    'email'      => 'Email',
-                    'website'    => 'Website',
-                    'title'      => 'Title',
-                    'name'       => 'Name',
-                    'short-name' => 'Short Name',
-                    'tags'       => 'Tags',
+                    'job-title'  => 'Puesto de trabajo',
+                    'phone'      => 'Teléfono',
+                    'mobile'     => 'Móvil',
+                    'email'      => 'Correo electrónico',
+                    'website'    => 'Sitio web',
+                    'title'      => 'Tratamiento',
+                    'name'       => 'Nombre',
+                    'short-name' => 'Nombre corto',
+                    'tags'       => 'Etiquetas',
                     'color'      => 'Color',
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'Dirección',
 
                     'fields' => [
-                        'street1'  => 'Street 1',
-                        'street2'  => 'Street 2',
-                        'city'     => 'City',
-                        'zip'      => 'ZIP',
-                        'state'    => 'State',
-                        'country'  => 'Country',
-                        'name'     => 'Name',
-                        'code'     => 'Code',
+                        'street1'  => 'Calle 1',
+                        'street2'  => 'Calle 2',
+                        'city'     => 'Ciudad',
+                        'zip'      => 'Código postal',
+                        'state'    => 'Provincia',
+                        'country'  => 'País',
+                        'name'     => 'Nombre',
+                        'code'     => 'Código',
                     ],
                 ],
             ],
@@ -46,15 +46,15 @@ return [
 
         'tabs' => [
             'sales-purchase' => [
-                'title' => 'Sales and Purchases',
+                'title' => 'Ventas y compras',
 
                 'fields' => [
-                    'responsible'           => 'Responsible',
-                    'responsible-hint-text' => 'This is internal salesperson responsible for this customer',
-                    'company-id'            => 'Company ID',
-                    'company-id-hint-text'  => 'The company\'s registry number, used if different from the Tax ID. It must be unique among all partners within the same country.',
-                    'reference'             => 'Reference',
-                    'industry'              => 'Industry',
+                    'responsible'           => 'Responsable',
+                    'responsible-hint-text' => 'Este es el comercial interno responsable de este cliente',
+                    'company-id'            => 'ID de empresa',
+                    'company-id-hint-text'  => 'El número de registro de la empresa, usado si es diferente del Tax ID. Debe ser único entre todos los contactos dentro del mismo país.',
+                    'reference'             => 'Referencia',
+                    'industry'              => 'Sector',
                 ],
             ],
         ],
@@ -62,70 +62,70 @@ return [
 
     'table' => [
         'columns' => [
-            'parent'     => 'Parent',
+            'parent'     => 'Contacto principal',
         ],
 
         'groups' => [
-            'account-type' => 'Account Type',
-            'parent'       => 'Parent',
-            'title'        => 'Title',
-            'job-title'    => 'Job Title',
-            'industry'     => 'Industry',
+            'account-type' => 'Tipo de cuenta',
+            'parent'       => 'Contacto principal',
+            'title'        => 'Tratamiento',
+            'job-title'    => 'Puesto de trabajo',
+            'industry'     => 'Sector',
         ],
 
         'filters' => [
-            'account-type'     => 'Account Type',
-            'name'             => 'Name',
-            'email'            => 'Email',
-            'parent'           => 'Parent',
-            'title'            => 'Title',
+            'account-type'     => 'Tipo de cuenta',
+            'name'             => 'Nombre',
+            'email'            => 'Correo electrónico',
+            'parent'           => 'Contacto principal',
+            'title'            => 'Tratamiento',
             'tax-id'           => 'Tax ID',
-            'phone'            => 'Phone',
-            'mobile'           => 'Mobile',
-            'job-title'        => 'Job Title',
-            'website'          => 'Website',
-            'company-registry' => 'Company Registry',
-            'responsible'      => 'Responsible',
-            'reference'        => 'Reference',
-            'parent'           => 'Parent',
-            'creator'          => 'Creator',
-            'company'          => 'Company',
-            'industry'         => 'Industry',
-            'industry'         => 'Industry',
+            'phone'            => 'Teléfono',
+            'mobile'           => 'Móvil',
+            'job-title'        => 'Puesto de trabajo',
+            'website'          => 'Sitio web',
+            'company-registry' => 'Registro mercantil',
+            'responsible'      => 'Responsable',
+            'reference'        => 'Referencia',
+            'parent'           => 'Contacto principal',
+            'creator'          => 'Creador',
+            'company'          => 'Empresa',
+            'industry'         => 'Sector',
+            'industry'         => 'Sector',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Contact updated',
-                    'body'  => 'The contact has been updated successfully.',
+                    'title' => 'Contacto actualizado',
+                    'body'  => 'El contacto se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Contact restored',
-                    'body'  => 'The contact has been restored successfully.',
+                    'title' => 'Contacto restaurado',
+                    'body'  => 'El contacto se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Contact deleted',
-                    'body'  => 'The contact has been deleted successfully.',
+                    'title' => 'Contacto eliminado',
+                    'body'  => 'El contacto se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Contact force deleted',
-                        'body'  => 'The contact has been force deleted successfully.',
+                        'title' => 'Contacto eliminado de forma permanente',
+                        'body'  => 'El contacto se ha eliminado de forma permanente correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Contact could not be deleted',
-                        'body'  => 'The contact cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el contacto',
+                        'body'  => 'El contacto no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
@@ -134,28 +134,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Contacts restored',
-                    'body'  => 'The contacts has been restored successfully.',
+                    'title' => 'Contactos restaurados',
+                    'body'  => 'Los contactos se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Contacts deleted',
-                    'body'  => 'The contacts has been deleted successfully.',
+                    'title' => 'Contactos eliminados',
+                    'body'  => 'Los contactos se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Contacts force deleted',
-                        'body'  => 'The contacts has been force deleted successfully.',
+                        'title' => 'Contactos eliminados de forma permanente',
+                        'body'  => 'Los contactos se han eliminado de forma permanente correctamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Contacts could not be deleted',
-                        'body'  => 'The contacts cannot be deleted because they are currently in use.',
+                        'title' => 'No se pudieron eliminar los contactos',
+                        'body'  => 'Los contactos no se pueden eliminar porque están actualmente en uso.',
                     ],
                 ],
             ],
@@ -168,32 +168,32 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'company'    => 'Company',
+                    'company'    => 'Empresa',
                     'avatar'     => 'Avatar',
                     'tax-id'     => 'Tax ID',
-                    'job-title'  => 'Job Title',
-                    'phone'      => 'Phone',
-                    'mobile'     => 'Mobile',
-                    'email'      => 'Email',
-                    'website'    => 'Website',
-                    'title'      => 'Title',
-                    'name'       => 'Name',
-                    'short-name' => 'Short Name',
-                    'tags'       => 'Tags',
+                    'job-title'  => 'Puesto de trabajo',
+                    'phone'      => 'Teléfono',
+                    'mobile'     => 'Móvil',
+                    'email'      => 'Correo electrónico',
+                    'website'    => 'Sitio web',
+                    'title'      => 'Tratamiento',
+                    'name'       => 'Nombre',
+                    'short-name' => 'Nombre corto',
+                    'tags'       => 'Etiquetas',
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'Dirección',
 
                     'fields' => [
-                        'street1'  => 'Street 1',
-                        'street2'  => 'Street 2',
-                        'city'     => 'City',
-                        'zip'      => 'ZIP',
-                        'state'    => 'State',
-                        'country'  => 'Country',
-                        'name'     => 'Name',
-                        'code'     => 'Code',
+                        'street1'  => 'Calle 1',
+                        'street2'  => 'Calle 2',
+                        'city'     => 'Ciudad',
+                        'zip'      => 'Código postal',
+                        'state'    => 'Provincia',
+                        'country'  => 'País',
+                        'name'     => 'Nombre',
+                        'code'     => 'Código',
                     ],
                 ],
             ],
@@ -201,15 +201,15 @@ return [
 
         'tabs' => [
             'sales-purchase' => [
-                'title' => 'Sales and Purchases',
+                'title' => 'Ventas y compras',
 
                 'fields' => [
-                    'responsible'           => 'Responsible',
-                    'responsible-hint-text' => 'This is internal salesperson responsible for this customer',
-                    'company-id'            => 'Company ID',
-                    'company-id-hint-text'  => 'The registry number of the company. Use it if it is different from the Tax ID. It must be unique across all partners of a same country',
-                    'reference'             => 'Reference',
-                    'industry'              => 'Industry',
+                    'responsible'           => 'Responsable',
+                    'responsible-hint-text' => 'Este es el comercial interno responsable de este cliente',
+                    'company-id'            => 'ID de empresa',
+                    'company-id-hint-text'  => 'El número de registro de la empresa. Úselo si es diferente del Tax ID. Debe ser único entre todos los contactos de un mismo país',
+                    'reference'             => 'Referencia',
+                    'industry'              => 'Sector',
                 ],
             ],
         ],

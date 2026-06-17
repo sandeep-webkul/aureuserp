@@ -1,33 +1,33 @@
 <?php
 
 return [
-    'top-10-authors-count-by-blog-count' => 'Top 10 Authors by Blog Counts',
+    'top-10-authors-count-by-blog-count' => 'Top 10 autores por cantidad de blogs',
 
-    'published-blogs-by-month' => 'Published Blogs by Month',
+    'published-blogs-by-month' => 'Blogs publicados por mes',
 
-    'blogs-published-vs-draft' => 'Blogs: Published vs Draft',
+    'blogs-published-vs-draft' => 'Blogs: publicados vs borrador',
 
-    'blogs-by-category' => 'Blogs by Category',
+    'blogs-by-category' => 'Blogs por categoría',
 
-    'recent-10-blogs' => 'Recent 10 Blogs',
+    'recent-10-blogs' => 'Últimos 10 blogs',
 
-    'top-5-categories-with-most-blogs' => 'Top 5 Categories with Most Blogs',
+    'top-5-categories-with-most-blogs' => 'Top 5 categorías con más blogs',
 
-    'published' => 'Published',
+    'published' => 'Publicado',
 
-    'draft' => 'Draft',
+    'draft' => 'Borrador',
 
-    'title' => 'Title',
+    'title' => 'Título',
 
-    'author' => 'Author',
+    'author' => 'Autor',
 
-    'status' => 'Status',
+    'status' => 'Estado',
 
-    'created-at' => 'Created At',
+    'created-at' => 'Creado el',
 
-    'category' => 'Category',
+    'category' => 'Categoría',
 
-    'number-of-blogs' => 'Number of Blogs',
+    'number-of-blogs' => 'Número de blogs',
 
-    'no-data-available' => 'No data available',
+    'no-data-available' => 'No hay datos disponibles',
 ];

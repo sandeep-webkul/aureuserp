@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'title'         => 'Reset password',
-    'heading'       => 'Reset password',
+    'title'         => 'Restablecer contraseña',
+    'heading'       => 'Restablecer contraseña',
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'Demasiados intentos. Vuelva a intentarlo en :seconds segundos.',
+            'body'  => 'Espere :seconds segundos (:minutes minutos) antes de volver a intentarlo.',
         ],
     ],
     'form' => [
         'email' => [
-            'label' => 'Email address',
+            'label' => 'Correo electrónico',
         ],
         'password' => [
-            'label'                => 'New password',
-            'validation_attribute' => 'password',
+            'label'                => 'Nueva contraseña',
+            'validation_attribute' => 'contraseña',
         ],
         'password_confirmation' => [
-            'label' => 'Confirm new password',
+            'label' => 'Confirmar nueva contraseña',
         ],
         'actions' => [
             'reset' => [
-                'label' => 'Reset password',
+                'label' => 'Restablecer contraseña',
             ],
         ],
     ],

@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'stats-overview' => 'Stats Overview',
+    'stats-overview' => 'Resumen de estadísticas',
 
-    'from-date' => 'From Date',
+    'from-date' => 'Fecha de inicio',
 
-    'to-date' => 'To Date',
+    'to-date' => 'Fecha de fin',
 
-    'author' => 'Author',
+    'author' => 'Autor',
 
-    'all-author' => 'All Author',
+    'all-author' => 'Todos los autores',
 ];

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Page created',
-        'body'  => 'The page has been created successfully.',
+        'title' => 'Página creada',
+        'body'  => 'La página se ha creado correctamente.',
     ],
 ];

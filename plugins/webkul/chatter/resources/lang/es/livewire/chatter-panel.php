@@ -4,69 +4,69 @@ return [
     'heading' => 'Chatter',
 
     'placeholders' => [
-        'no-record-found' => 'No record found.',
-        'loading'         => 'Loading Chatter...',
+        'no-record-found' => 'No se encontró ningún registro.',
+        'loading'         => 'Cargando Chatter...',
     ],
 
     'activity-infolist' => [
-        'title' => 'Activities',
+        'title' => 'Actividades',
     ],
 
     'cancel-activity-plan-action' => [
-        'title' => 'Cancel Activity',
+        'title' => 'Cancelar actividad',
     ],
 
     'delete-message-action' => [
-        'title' => 'Delete Message',
+        'title' => 'Eliminar mensaje',
     ],
 
     'edit-activity' => [
-        'title' => 'Edit Activity',
+        'title' => 'Editar actividad',
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'Activity Plan',
-                'plan-date'     => 'Plan Date',
-                'plan-summary'  => 'Plan Summary',
-                'activity-type' => 'Activity Type',
-                'due-date'      => 'Due Date',
-                'summary'       => 'Summary',
-                'assigned-to'   => 'Assigned To',
+                'activity-plan' => 'Plan de actividad',
+                'plan-date'     => 'Fecha del plan',
+                'plan-summary'  => 'Resumen del plan',
+                'activity-type' => 'Tipo de actividad',
+                'due-date'      => 'Fecha de vencimiento',
+                'summary'       => 'Resumen',
+                'assigned-to'   => 'Asignado a',
             ],
         ],
 
         'action' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Activity updated',
-                    'body'  => 'The activity has been updated successfully.',
+                    'title' => 'Actividad actualizada',
+                    'body'  => 'La actividad se ha actualizado correctamente.',
                 ],
             ],
         ],
     ],
 
     'process-message' => [
-        'original-note' => '<br><div><span class="font-bold">Original Note</span>: :body</div>',
-        'original-note' => '<br><div><span class="font-bold">Original Note</span>: :body</div>',
-        'feedback'      => '<div><span class="font-bold">Feedback</span>: <p>:feedback</p></div>',
+        'original-note' => '<br><div><span class="font-bold">Nota original</span>: :body</div>',
+        'original-note' => '<br><div><span class="font-bold">Nota original</span>: :body</div>',
+        'feedback'      => '<div><span class="font-bold">Comentarios</span>: <p>:feedback</p></div>',
     ],
 
     'mark-as-done' => [
-        'title' => 'Mark as done',
+        'title' => 'Marcar como hecho',
         'form'  => [
             'fields' => [
-                'feedback' => 'Feedback',
+                'feedback' => 'Comentarios',
             ],
         ],
 
         'footer-actions' => [
-            'label' => 'Done & Schedule Next',
+            'label' => 'Hecho y programar siguiente',
 
             'actions' => [
                 'notification' => [
                     'mark-as-done' => [
-                        'title' => 'Activity mark as done',
-                        'body'  => 'The activity mark as done successfully.',
+                        'title' => 'Actividad marcada como hecha',
+                        'body'  => 'La actividad se ha marcado como hecha correctamente.',
                     ],
                 ],
             ],

@@ -2,39 +2,39 @@
 
     return [
         'setup' => [
-            'title'               => 'Followers',
-            'submit-action-title' => 'Add Follower',
-            'tooltip'             => 'Add Follower',
+            'title'               => 'Seguidores',
+            'submit-action-title' => 'Añadir seguidor',
+            'tooltip'             => 'Añadir seguidor',
 
             'form' => [
                 'fields' => [
-                    'recipients'  => 'Recipients',
-                    'notify-user' => 'Notify User',
-                    'add-a-note'  => 'Add a note',
+                    'recipients'  => 'Destinatarios',
+                    'notify-user' => 'Notificar al usuario',
+                    'add-a-note'  => 'Añadir una nota',
                 ],
             ],
 
             'actions' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Follower Added',
-                        'body'  => 'Follower has been added Successfully.',
+                        'title' => 'Seguidor añadido',
+                        'body'  => 'El seguidor se ha añadido correctamente.',
                     ],
 
                     'partial_message' => [
-                        'title'    => 'Message sent with a notice',
-                        'single'   => ':count follower was not notified due to missing email: :names',
-                        'multiple' => ':count followers were not notified due to missing emails: :names',
+                        'title'    => 'Mensaje enviado con un aviso',
+                        'single'   => 'No se notificó a :count seguidor por falta de correo electrónico: :names',
+                        'multiple' => 'No se notificó a :count seguidores por falta de correos electrónicos: :names',
                     ],
 
                     'error' => [
-                        'title' => 'Follower added error',
-                        'body'  => 'Failed to ":partner" as follower',
+                        'title' => 'Error al añadir el seguidor',
+                        'body'  => 'No se pudo añadir ":partner" como seguidor',
                     ],
                 ],
 
                 'mail' => [
-                    'subject' => 'Invitation to follow :model: :department',
+                    'subject' => 'Invitación para seguir :model: :department',
                 ],
             ],
         ],

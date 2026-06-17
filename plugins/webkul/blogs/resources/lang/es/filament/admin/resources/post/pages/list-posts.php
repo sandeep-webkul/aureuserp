@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'my-posts' => 'My Posts',
-        'archived' => 'Archived',
+        'my-posts' => 'Mis publicaciones',
+        'archived' => 'Archivadas',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Post',
+            'label' => 'Nueva publicación',
 
             'notification' => [
-                'title' => 'Post created',
-                'body'  => 'The post has been created successfully.',
+                'title' => 'Publicación creada',
+                'body'  => 'La publicación se ha creado correctamente.',
             ],
         ],
     ],

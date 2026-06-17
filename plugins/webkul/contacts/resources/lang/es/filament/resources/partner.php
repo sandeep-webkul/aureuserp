@@ -2,12 +2,12 @@
 
 return [
     'navigation' => [
-        'title' => 'Contacts',
-        'group' => 'Contact',
+        'title' => 'Contactos',
+        'group' => 'Contacto',
     ],
 
     'global-search' => [
-        'project-manager' => 'Project Manager',
-        'customer'        => 'Customer',
+        'project-manager' => 'Gestor de proyecto',
+        'customer'        => 'Cliente',
     ],
 ];

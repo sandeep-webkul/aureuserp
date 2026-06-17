@@ -2,44 +2,44 @@
 
 return [
     'form' => [
-        'name'      => 'Name',
-        'full-name' => 'Full Name',
+        'name'      => 'Nombre',
+        'full-name' => 'Nombre completo',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'full-name'  => 'Full Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'full-name'  => 'Nombre completo',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Industry updated',
-                    'body'  => 'The industry has been updated successfully.',
+                    'title' => 'Sector actualizado',
+                    'body'  => 'El sector se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Industry restored',
-                    'body'  => 'The industry has been restored successfully.',
+                    'title' => 'Sector restaurado',
+                    'body'  => 'El sector se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Industry deleted',
-                    'body'  => 'The industry has been deleted successfully.',
+                    'title' => 'Sector eliminado',
+                    'body'  => 'El sector se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Industry force deleted',
-                    'body'  => 'The industry has been force deleted successfully.',
+                    'title' => 'Sector eliminado permanentemente',
+                    'body'  => 'El sector se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -47,22 +47,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Industries restored',
-                    'body'  => 'The industries has been restored successfully.',
+                    'title' => 'Sectores restaurados',
+                    'body'  => 'Los sectores se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Industries deleted',
-                    'body'  => 'The industries has been deleted successfully.',
+                    'title' => 'Sectores eliminados',
+                    'body'  => 'Los sectores se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Industries force deleted',
-                    'body'  => 'The industries has been force deleted successfully.',
+                    'title' => 'Sectores eliminados permanentemente',
+                    'body'  => 'Los sectores se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],

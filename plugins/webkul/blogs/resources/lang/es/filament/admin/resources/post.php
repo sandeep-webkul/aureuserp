@@ -2,12 +2,12 @@
 
 return [
     'navigation' => [
-        'title' => 'Blog Posts',
-        'group' => 'Website',
+        'title' => 'Publicaciones del blog',
+        'group' => 'Sitio web',
     ],
 
     'global-search' => [
-        'author' => 'Author',
+        'author' => 'Autor',
     ],
 
     'form' => [
@@ -16,11 +16,11 @@ return [
                 'title' => 'General',
 
                 'fields' => [
-                    'title'             => 'Title',
-                    'sub-title'         => 'Sub Title',
-                    'title-placeholder' => 'Post title ...',
+                    'title'             => 'Título',
+                    'sub-title'         => 'Subtítulo',
+                    'title-placeholder' => 'Título de la publicación ...',
                     'slug'              => 'Slug',
-                    'content'           => 'Content',
+                    'content'           => 'Contenido',
                     'banner'            => 'Banner',
                 ],
             ],
@@ -29,21 +29,21 @@ return [
                 'title' => 'SEO',
 
                 'fields' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palabras clave',
+                    'meta-description' => 'Meta descripción',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'Configuración',
 
                 'fields' => [
-                    'category'     => 'Category',
-                    'tags'         => 'Tags',
-                    'name'         => 'Name',
+                    'category'     => 'Categoría',
+                    'tags'         => 'Etiquetas',
+                    'name'         => 'Nombre',
                     'color'        => 'Color',
-                    'is-published' => 'Is Published',
+                    'is-published' => 'Publicado',
                 ],
             ],
         ],
@@ -51,56 +51,56 @@ return [
 
     'table' => [
         'columns' => [
-            'title'        => 'Title',
+            'title'        => 'Título',
             'slug'         => 'Slug',
-            'author'       => 'Author',
-            'category'     => 'Category',
-            'creator'      => 'Created By',
-            'is-published' => 'Is Published',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'author'       => 'Autor',
+            'category'     => 'Categoría',
+            'creator'      => 'Creado por',
+            'is-published' => 'Publicado',
+            'created-at'   => 'Creado el',
+            'updated-at'   => 'Actualizado el',
         ],
 
         'groups' => [
-            'category'   => 'Category',
-            'author'     => 'Author',
-            'created-at' => 'Created At',
+            'category'   => 'Categoría',
+            'author'     => 'Autor',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'is-published' => 'Is Published',
-            'author'       => 'Author',
-            'creator'      => 'Created By',
-            'category'     => 'Category',
-            'tags'         => 'Tags',
+            'is-published' => 'Publicado',
+            'author'       => 'Autor',
+            'creator'      => 'Creado por',
+            'category'     => 'Categoría',
+            'tags'         => 'Etiquetas',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Post updated',
-                    'body'  => 'The post has been updated successfully.',
+                    'title' => 'Publicación actualizada',
+                    'body'  => 'La publicación se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Post restored',
-                    'body'  => 'The post has been restored successfully.',
+                    'title' => 'Publicación restaurada',
+                    'body'  => 'La publicación se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Post deleted',
-                    'body'  => 'The post has been deleted successfully.',
+                    'title' => 'Publicación eliminada',
+                    'body'  => 'La publicación se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Post force deleted',
-                    'body'  => 'The post has been force deleted successfully.',
+                    'title' => 'Publicación eliminada permanentemente',
+                    'body'  => 'La publicación se ha eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -108,22 +108,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Posts restored',
-                    'body'  => 'The posts has been restored successfully.',
+                    'title' => 'Publicaciones restauradas',
+                    'body'  => 'Las publicaciones se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Posts deleted',
-                    'body'  => 'The posts has been deleted successfully.',
+                    'title' => 'Publicaciones eliminadas',
+                    'body'  => 'Las publicaciones se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Posts force deleted',
-                    'body'  => 'The posts has been force deleted successfully.',
+                    'title' => 'Publicaciones eliminadas permanentemente',
+                    'body'  => 'Las publicaciones se han eliminado permanentemente correctamente.',
                 ],
             ],
         ],
@@ -135,9 +135,9 @@ return [
                 'title' => 'General',
 
                 'entries' => [
-                    'title'   => 'Title',
+                    'title'   => 'Título',
                     'slug'    => 'Slug',
-                    'content' => 'Content',
+                    'content' => 'Contenido',
                     'banner'  => 'Banner',
                 ],
             ],
@@ -146,34 +146,34 @@ return [
                 'title' => 'SEO',
 
                 'entries' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palabras clave',
+                    'meta-description' => 'Meta descripción',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'Información del registro',
 
                 'entries' => [
-                    'author'          => 'Author',
-                    'created-by'      => 'Created By',
-                    'published-at'    => 'Published At',
-                    'last-updated-by' => 'Last Updated By',
-                    'last-updated'    => 'Last Updated At',
-                    'created-at'      => 'Created At',
+                    'author'          => 'Autor',
+                    'created-by'      => 'Creado por',
+                    'published-at'    => 'Publicado el',
+                    'last-updated-by' => 'Última actualización por',
+                    'last-updated'    => 'Última actualización el',
+                    'created-at'      => 'Creado el',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'Configuración',
 
                 'entries' => [
-                    'category'     => 'Category',
-                    'tags'         => 'Tags',
-                    'name'         => 'Name',
+                    'category'     => 'Categoría',
+                    'tags'         => 'Etiquetas',
+                    'name'         => 'Nombre',
                     'color'        => 'Color',
-                    'is-published' => 'Is Published',
+                    'is-published' => 'Publicado',
                 ],
             ],
         ],

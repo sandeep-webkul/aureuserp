@@ -6,28 +6,28 @@ return [
     ],
 
     'tabs' => [
-        'apps'          => 'Apps',
+        'apps'          => 'Aplicaciones',
         'extra'         => 'Extra',
-        'installed'     => 'Installed',
-        'not-installed' => 'Not Installed',
+        'installed'     => 'Instalados',
+        'not-installed' => 'No instalados',
     ],
 
     'header-actions' => [
         'sync' => [
-            'label'                     => 'Sync Available Plugins',
-            'modal-heading'             => 'Sync Plugins',
-            'modal-description'         => 'This will scan and register any new plugins found.',
-            'modal-submit-action-label' => 'Sync Plugins',
+            'label'                     => 'Sincronizar plugins disponibles',
+            'modal-heading'             => 'Sincronizar plugins',
+            'modal-description'         => 'Esto buscará y registrará cualquier plugin nuevo encontrado.',
+            'modal-submit-action-label' => 'Sincronizar plugins',
 
             'notification' => [
                 'success' => [
-                    'title' => 'Plugins Synced Successfully',
-                    'body'  => 'Found and synced :count new plugin(s).',
+                    'title' => 'Plugins sincronizados correctamente',
+                    'body'  => 'Se encontraron y sincronizaron :count plugin(s) nuevo(s).',
                 ],
 
                 'error' => [
-                    'title' => 'Plugin Sync Failed',
-                    'body'  => 'An error (:error) occurred while syncing plugins. Please try again.',
+                    'title' => 'Error al sincronizar plugins',
+                    'body'  => 'Se produjo un error (:error) al sincronizar los plugins. Vuelva a intentarlo.',
                 ],
             ],
         ],

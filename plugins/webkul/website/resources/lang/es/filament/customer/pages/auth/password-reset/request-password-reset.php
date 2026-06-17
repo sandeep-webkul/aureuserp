@@ -1,27 +1,27 @@
 <?php
 
 return [
-    'title'         => 'Forgot password',
-    'heading'       => 'Forgot password',
+    'title'         => 'Olvidé mi contraseña',
+    'heading'       => 'Olvidé mi contraseña',
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'Demasiados intentos. Vuelva a intentarlo en :seconds segundos.',
+            'body'  => 'Espere :seconds segundos (:minutes minutos) antes de volver a intentarlo.',
         ],
     ],
     'form' => [
         'email' => [
-            'label' => 'Email address',
+            'label' => 'Correo electrónico',
         ],
         'actions' => [
             'request' => [
-                'label' => 'Send reset link',
+                'label' => 'Enviar enlace de restablecimiento',
             ],
         ],
     ],
     'actions' => [
         'login' => [
-            'label' => 'Back to login',
+            'label' => 'Volver a iniciar sesión',
         ],
     ],
 ];

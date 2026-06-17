@@ -2,34 +2,34 @@
 
 return [
     'form' => [
-        'name'       => 'Name',
-        'short-name' => 'Short Name',
+        'name'       => 'Nombre',
+        'short-name' => 'Nombre corto',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'short-name' => 'Short Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nombre',
+            'short-name' => 'Nombre corto',
+            'created-at' => 'Creado el',
+            'updated-at' => 'Actualizado el',
         ],
 
         'filters' => [
-            'creator' => 'Creator',
+            'creator' => 'Creador',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Title updated',
-                    'body'  => 'The Title has been updated successfully.',
+                    'title' => 'Tratamiento actualizado',
+                    'body'  => 'El tratamiento se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Title deleted',
-                    'body'  => 'The title has been deleted successfully.',
+                    'title' => 'Tratamiento eliminado',
+                    'body'  => 'El tratamiento se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -37,8 +37,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Titles deleted',
-                    'body'  => 'The titles has been deleted successfully.',
+                    'title' => 'Tratamientos eliminados',
+                    'body'  => 'Los tratamientos se han eliminado correctamente.',
                 ],
             ],
         ],

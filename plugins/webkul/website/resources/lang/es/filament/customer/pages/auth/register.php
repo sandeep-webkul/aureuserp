@@ -1,38 +1,38 @@
 <?php
 
 return [
-    'title'         => 'Register',
-    'heading'       => 'Register',
+    'title'         => 'Registrarse',
+    'heading'       => 'Registrarse',
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'Demasiados intentos. Vuelva a intentarlo en :seconds segundos.',
+            'body'  => 'Espere :seconds segundos (:minutes minutos) antes de volver a intentarlo.',
         ],
     ],
     'form' => [
         'name' => [
-            'label' => 'Name',
+            'label' => 'Nombre',
         ],
         'email' => [
-            'label' => 'Email address',
+            'label' => 'Correo electrónico',
         ],
         'password' => [
-            'label'                => 'Password',
-            'validation_attribute' => 'password',
+            'label'                => 'Contraseña',
+            'validation_attribute' => 'contraseña',
         ],
         'password_confirmation' => [
-            'label' => 'Confirm password',
+            'label' => 'Confirmar contraseña',
         ],
         'actions' => [
             'register' => [
-                'label' => 'Create account',
+                'label' => 'Crear cuenta',
             ],
         ],
     ],
     'actions' => [
         'login' => [
-            'before' => 'Already have an account?',
-            'label'  => 'Log in',
+            'before' => '¿Ya tiene una cuenta?',
+            'label'  => 'Iniciar sesión',
         ],
     ],
 ];

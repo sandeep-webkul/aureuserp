@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Post created',
-        'body'  => 'The post has been created successfully.',
+        'title' => 'Publicación creada',
+        'body'  => 'La publicación se ha creado correctamente.',
     ],
 ];

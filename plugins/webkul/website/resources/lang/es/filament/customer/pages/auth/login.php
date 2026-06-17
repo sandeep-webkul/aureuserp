@@ -1,40 +1,40 @@
 <?php
 
 return [
-    'title'    => 'Login',
-    'heading'  => 'Login',
+    'title'    => 'Iniciar sesión',
+    'heading'  => 'Iniciar sesión',
     'messages' => [
-        'failed' => 'These credentials do not match our records.',
+        'failed' => 'Estas credenciales no coinciden con nuestros registros.',
     ],
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'Demasiados intentos. Inténtalo de nuevo en :seconds segundos.',
+            'body'  => 'Espera :seconds segundos (:minutes minutos) antes de volver a intentarlo.',
         ],
     ],
     'form' => [
         'email' => [
-            'label' => 'Email address',
+            'label' => 'Correo electrónico',
         ],
         'password' => [
-            'label' => 'Password',
+            'label' => 'Contraseña',
         ],
         'remember' => [
-            'label' => 'Remember me',
+            'label' => 'Recordarme',
         ],
         'actions' => [
             'authenticate' => [
-                'label' => 'Sign in',
+                'label' => 'Iniciar sesión',
             ],
         ],
     ],
     'actions' => [
         'register' => [
-            'before' => 'Don\'t have an account?',
-            'label'  => 'Create account',
+            'before' => '¿No tienes una cuenta?',
+            'label'  => 'Crear cuenta',
         ],
         'request_password_reset' => [
-            'label' => 'Forgot password?',
+            'label' => '¿Olvidaste tu contraseña?',
         ],
     ],
 ];

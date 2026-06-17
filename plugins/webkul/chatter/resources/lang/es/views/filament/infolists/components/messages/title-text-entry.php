@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'pinned' => 'Pinned',
-    'pin'    => 'Pin',
-    'unpin'  => 'Unpin',
+    'pinned' => 'Fijado',
+    'pin'    => 'Fijar',
+    'unpin'  => 'Desfijar',
 ];

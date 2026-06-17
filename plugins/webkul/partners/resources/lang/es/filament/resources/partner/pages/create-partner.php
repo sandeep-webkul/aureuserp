@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Contact',
+    'title' => 'Crear contacto',
 
     'notification' => [
-        'title' => 'Contact created',
-        'body'  => 'The contact has been created successfully.',
+        'title' => 'Contacto creado',
+        'body'  => 'El contacto se ha creado correctamente.',
     ],
 ];

@@ -2,58 +2,58 @@
 
 return [
     'form' => [
-        'partner' => 'Partner',
-        'name'    => 'Name',
-        'email'   => 'Email',
-        'phone'   => 'Phone',
-        'mobile'  => 'Mobile',
-        'type'    => 'Type',
-        'address' => 'Address',
-        'city'    => 'City',
-        'street1' => 'Street 1',
-        'street2' => 'Street 2',
-        'state'   => 'State',
-        'zip'     => 'Zip',
-        'code'    => 'Code',
-        'country' => 'Country',
+        'partner' => 'Contacto',
+        'name'    => 'Nombre',
+        'email'   => 'Correo electrónico',
+        'phone'   => 'Teléfono',
+        'mobile'  => 'Móvil',
+        'type'    => 'Tipo',
+        'address' => 'Dirección',
+        'city'    => 'Ciudad',
+        'street1' => 'Calle 1',
+        'street2' => 'Calle 2',
+        'state'   => 'Provincia',
+        'zip'     => 'Código postal',
+        'code'    => 'Código',
+        'country' => 'País',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Address',
+                'label' => 'Añadir dirección',
 
                 'notification' => [
-                    'title' => 'Address created',
-                    'body'  => 'The address has been created successfully.',
+                    'title' => 'Dirección creada',
+                    'body'  => 'La dirección se ha creado correctamente.',
                 ],
             ],
         ],
 
         'columns' => [
-            'type'    => 'Type',
-            'name'    => 'Contact Name',
-            'address' => 'Address',
-            'city'    => 'City',
-            'street1' => 'Street 1',
-            'street2' => 'Street 2',
-            'state'   => 'State',
-            'zip'     => 'Zip',
-            'country' => 'Country',
+            'type'    => 'Tipo',
+            'name'    => 'Nombre de contacto',
+            'address' => 'Dirección',
+            'city'    => 'Ciudad',
+            'street1' => 'Calle 1',
+            'street2' => 'Calle 2',
+            'state'   => 'Provincia',
+            'zip'     => 'Código postal',
+            'country' => 'País',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Address updated',
-                    'body'  => 'The address has been updated successfully.',
+                    'title' => 'Dirección actualizada',
+                    'body'  => 'La dirección se ha actualizado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Address deleted',
-                    'body'  => 'The address has been deleted successfully.',
+                    'title' => 'Dirección eliminada',
+                    'body'  => 'La dirección se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -61,8 +61,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Addresses deleted',
-                    'body'  => 'The addresses has been deleted successfully.',
+                    'title' => 'Direcciones eliminadas',
+                    'body'  => 'Las direcciones se han eliminado correctamente.',
                 ],
             ],
         ],

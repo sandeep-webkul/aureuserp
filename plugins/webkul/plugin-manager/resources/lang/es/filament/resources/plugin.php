@@ -9,83 +9,83 @@ return [
     'title' => 'Plugin',
 
     'table' => [
-        'version'             => 'Version',
-        'dependencies'        => 'Dependencies',
-        'dependencies_suffix' => ' Dependencies',
+        'version'             => 'Versión',
+        'dependencies'        => 'Dependencias',
+        'dependencies_suffix' => ' Dependencias',
     ],
 
     'status' => [
-        'installed'     => 'Installed',
-        'not_installed' => 'Not Installed',
+        'installed'     => 'Instalado',
+        'not_installed' => 'No instalado',
     ],
 
     'filters' => [
-        'installation_status' => 'Installation Status',
-        'all_plugins'         => 'All Plugins',
-        'installed'           => 'Installed',
-        'not_installed'       => 'Not Installed',
-        'active_status'       => 'Active Status',
-        'author'              => 'Author',
+        'installation_status' => 'Estado de instalación',
+        'all_plugins'         => 'Todos los plugins',
+        'installed'           => 'Instalado',
+        'not_installed'       => 'No instalado',
+        'active_status'       => 'Estado activo',
+        'author'              => 'Autor',
         'webkul'              => 'Webkul',
-        'third_party'         => 'Third Party',
+        'third_party'         => 'Terceros',
     ],
 
     'actions' => [
         'install' => [
-            'title'       => 'Install',
-            'heading'     => 'Install Plugin :name',
-            'description' => "Are you sure you want to install the ':name' plugin? This will run migrations and seeders.",
-            'submit'      => 'Install Plugin',
+            'title'       => 'Instalar',
+            'heading'     => 'Instalar plugin :name',
+            'description' => "¿Está seguro de que desea instalar el plugin ':name'? Esto ejecutará migraciones y seeders.",
+            'submit'      => 'Instalar plugin',
         ],
         'uninstall' => [
-            'title'      => 'Uninstall',
-            'heading'    => 'Uninstall Plugin',
-            'submit'     => 'Uninstall Plugin',
+            'title'      => 'Desinstalar',
+            'heading'    => 'Desinstalar plugin',
+            'submit'     => 'Desinstalar plugin',
         ],
     ],
 
     'notifications' => [
         'installed' => [
-            'title' => 'Plugin Installed Successfully',
-            'body'  => "The ':name' plugin has been installed.",
+            'title' => 'Plugin instalado correctamente',
+            'body'  => "El plugin ':name' se ha instalado.",
         ],
         'installed-failed' => [
-            'title' => 'Installation Failed',
+            'title' => 'Error en la instalación',
         ],
         'uninstalled' => [
-            'title' => 'Plugin Uninstalled Successfully',
-            'body'  => "The ':name' plugin has been uninstalled.",
+            'title' => 'Plugin desinstalado correctamente',
+            'body'  => "El plugin ':name' se ha desinstalado.",
         ],
         'uninstalled-failed' => [
-            'title' => 'Uninstallation Failed',
+            'title' => 'Error en la desinstalación',
         ],
     ],
 
     'infolist' => [
         'section'  => [
-            'plugin'       => ' Plugin Information',
-            'dependencies' => 'Dependencies',
+            'plugin'       => ' Información del plugin',
+            'dependencies' => 'Dependencias',
         ],
-        'name'         => 'Plugin Name',
-        'version'      => 'Version',
-        'dependencies' => 'Required Plugins',
-        'dependents'   => 'Plugins That Depend On This',
-        'is_installed' => 'Installation Status',
-        'license'      => 'License',
-        'summary'      => 'Description',
+        'name'         => 'Nombre del plugin',
+        'version'      => 'Versión',
+        'dependencies' => 'Plugins requeridos',
+        'dependents'   => 'Plugins que dependen de este',
+        'is_installed' => 'Estado de instalación',
+        'license'      => 'Licencia',
+        'summary'      => 'Descripción',
 
         'dependencies-repeater' => [
-            'title'        => 'Required Plugins',
-            'name'         => 'Plugin Name',
-            'is_installed' => 'Installed',
-            'placeholder'  => 'No dependencies required',
+            'title'        => 'Plugins requeridos',
+            'name'         => 'Nombre del plugin',
+            'is_installed' => 'Instalado',
+            'placeholder'  => 'No se requieren dependencias',
         ],
 
         'dependents-repeater' => [
-            'title'        => 'Plugins That Depend On This',
-            'name'         => 'Plugin Name',
-            'is_installed' => 'Installed',
-            'placeholder'  => 'No dependents',
+            'title'        => 'Plugins que dependen de este',
+            'name'         => 'Nombre del plugin',
+            'is_installed' => 'Instalado',
+            'placeholder'  => 'Sin dependientes',
         ],
 
     ],

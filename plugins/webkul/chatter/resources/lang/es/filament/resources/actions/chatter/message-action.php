@@ -2,29 +2,29 @@
 
 return [
     'setup' => [
-        'title'        => 'Send Message',
-        'submit-title' => 'Send',
+        'title'        => 'Enviar mensaje',
+        'submit-title' => 'Enviar',
 
         'form' => [
             'fields' => [
-                'hide-subject'            => 'Hide Subject',
-                'add-subject'             => 'Add Subject',
-                'subject'                 => 'Subject',
-                'write-message-here'      => 'Write your message here',
-                'attachments-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'hide-subject'            => 'Ocultar asunto',
+                'add-subject'             => 'Añadir asunto',
+                'subject'                 => 'Asunto',
+                'write-message-here'      => 'Escriba su mensaje aquí',
+                'attachments-helper-text' => 'Tamaño máximo de archivo: 10 MB. Tipos permitidos: imágenes, PDF, Word, Excel, texto',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Message sent',
-                    'body'  => 'Your message has been send successfully.',
+                    'title' => 'Mensaje enviado',
+                    'body'  => 'Su mensaje se ha enviado correctamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Message sent error',
-                    'body'  => 'Failed to send your message',
+                    'title' => 'Error al enviar el mensaje',
+                    'body'  => 'No se pudo enviar su mensaje',
                 ],
             ],
 

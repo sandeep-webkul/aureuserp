@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Title',
+            'label' => 'Nuevo tratamiento',
 
             'notification' => [
-                'title' => 'Title created',
-                'body'  => 'The title has been created successfully.',
+                'title' => 'Tratamiento creado',
+                'body'  => 'El tratamiento se ha creado correctamente.',
             ],
         ],
     ],

@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'subject' => 'New Message from :app',
+    'subject' => 'Nuevo mensaje de :app',
 ];

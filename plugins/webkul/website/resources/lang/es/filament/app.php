@@ -3,21 +3,21 @@
 return [
     'navigation' => [
         'settings' => [
-            'label' => 'Settings',
-            'group' => 'Website',
+            'label' => 'Configuración',
+            'group' => 'Sitio web',
         ],
 
         'account' => [
-            'label' => 'My Account',
+            'label' => 'Mi cuenta',
         ],
 
         'top' => [
-            'login'    => 'Login',
-            'register' => 'Register',
+            'login'    => 'Iniciar sesión',
+            'register' => 'Registrarse',
         ],
 
         'footer' => [
-            'home' => 'Home',
+            'home' => 'Inicio',
         ],
 
         'social' => [
@@ -35,35 +35,35 @@ return [
     ],
 
     'homepage' => [
-        'title'            => 'Homepage',
-        'navigation_label' => 'Home',
+        'title'            => 'Página de inicio',
+        'navigation_label' => 'Inicio',
     ],
 
     'footer' => [
-        'description'   => 'Designed to optimize and streamline business operations, Aureus ERP is suitable for enterprises of all sizes.',
-        'description_2' => 'The platform emphasizes reporting for insights, security, localization flexibility, and integration with CRMs, BI tools, and APIs.',
-        'useful_links'  => 'Useful Links',
-        'contact_us'    => 'Contact Us',
-        'follow_us'     => 'Follow Us',
-        'copyright'     => 'Copyright',
-        'powered_by'    => 'Powered by',
+        'description'   => 'Diseñado para optimizar y agilizar las operaciones empresariales, Aureus ERP es adecuado para empresas de todos los tamaños.',
+        'description_2' => 'La plataforma pone énfasis en los informes para obtener información, la seguridad, la flexibilidad de localización y la integración con CRM, herramientas de BI y API.',
+        'useful_links'  => 'Enlaces útiles',
+        'contact_us'    => 'Contáctanos',
+        'follow_us'     => 'Síguenos',
+        'copyright'     => 'Derechos de autor',
+        'powered_by'    => 'Desarrollado por',
     ],
 
     'pages' => [
         'about_us' => [
-            'title'      => 'About Us',
-            'meta_title' => 'About Us',
+            'title'      => 'Sobre nosotros',
+            'meta_title' => 'Sobre nosotros',
         ],
     ],
 
     'page_titles' => [
-        'home'             => 'Home',
-        'about-us'         => 'About Us',
-        'privacy-policy'   => 'Privacy Policy',
-        'terms-conditions' => 'Terms & Conditions',
+        'home'             => 'Inicio',
+        'about-us'         => 'Sobre nosotros',
+        'privacy-policy'   => 'Política de privacidad',
+        'terms-conditions' => 'Términos y condiciones',
         'blog'             => 'Blog',
         'blogs'            => 'Blogs',
-        'contact'          => 'Contact',
-        'contact-us'       => 'Contact Us',
+        'contact'          => 'Contacto',
+        'contact-us'       => 'Contáctanos',
     ],
 ];

@@ -1,41 +1,41 @@
 <?php
 
 return [
-    'stats-overview' => 'Stats Overview',
+    'stats-overview' => 'Resumen de estadísticas',
 
     'total-pages' => [
-        'title' => 'Total Pages',
+        'title' => 'Total de páginas',
 
-        'description' => 'Total number of pages in the system',
+        'description' => 'Número total de páginas en el sistema',
     ],
 
     'total-pages-publish' => [
-        'title' => 'Total Publish Pages',
+        'title' => 'Total de páginas publicadas',
 
-        'description' => 'Total number of publish pages in the system',
+        'description' => 'Número total de páginas publicadas en el sistema',
     ],
 
     'total-pages-draft' => [
-        'title' => 'Total Draft Pages',
+        'title' => 'Total de páginas en borrador',
 
-        'description' => 'Total number of draft pages in the system',
+        'description' => 'Número total de páginas en borrador en el sistema',
     ],
 
     'total-blogs' => [
-        'title' => 'Total Blogs',
+        'title' => 'Total de blogs',
 
-        'description' => 'Total number of blogs in the system',
+        'description' => 'Número total de blogs en el sistema',
     ],
 
     'total-blogs-publish' => [
-        'title' => 'Total Publish Blogs',
+        'title' => 'Total de blogs publicados',
 
-        'description' => 'Total number of publish blogs in the system',
+        'description' => 'Número total de blogs publicados en el sistema',
     ],
 
     'total-blogs-draft' => [
-        'title' => 'Total Draft Blogs',
+        'title' => 'Total de blogs en borrador',
 
-        'description' => 'Total number of draft blogs in the system',
+        'description' => 'Número total de blogs en borrador en el sistema',
     ],
 ];

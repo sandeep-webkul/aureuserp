@@ -2,10 +2,10 @@
 
 return [
     'navigation' => [
-        'title' => 'Posts',
+        'title' => 'Publicaciones',
     ],
 
     'global-search' => [
-        'category' => 'Category',
+        'category' => 'Categoría',
     ],
 ];

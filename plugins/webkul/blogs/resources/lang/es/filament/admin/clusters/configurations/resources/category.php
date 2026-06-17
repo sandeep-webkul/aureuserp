@@ -2,104 +2,104 @@
 
 return [
     'navigation' => [
-        'title' => 'Categories',
+        'title' => 'Categorías',
         'group' => 'Blog',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Category title ...',
-            'sub-title'        => 'Sub Title',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Título de la categoría ...',
+            'sub-title'        => 'Subtítulo',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'name',
-            'sub-title'  => 'Sub Title',
-            'posts'      => 'Posts',
-            'created-at' => 'Created At',
+            'name'       => 'Nombre',
+            'sub-title'  => 'Subtítulo',
+            'posts'      => 'Publicaciones',
+            'created-at' => 'Creado el',
         ],
 
         'filters' => [
-            'is-published' => 'Is Published',
-            'author'       => 'Author',
-            'creator'      => 'Created By',
-            'category'     => 'Category',
+            'is-published' => 'Está publicado',
+            'author'       => 'Autor',
+            'creator'      => 'Creado por',
+            'category'     => 'Categoría',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Category updated',
-                    'body'  => 'The category has been updated successfully.',
+                    'title' => 'Categoría actualizada',
+                    'body'  => 'La categoría se ha actualizado correctamente.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Category restored',
-                    'body'  => 'The category has been restored successfully.',
+                    'title' => 'Categoría restaurada',
+                    'body'  => 'La categoría se ha restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Category deleted',
-                    'body'  => 'The category has been deleted successfully.',
+                    'title' => 'Categoría eliminada',
+                    'body'  => 'La categoría se ha eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Category force deleted',
-                        'body'  => 'The Category has been force deleted successfully.',
+                        'title' => 'Categoría eliminada definitivamente',
+                        'body'  => 'La categoría se ha eliminado definitivamente correctamente.',
                     ],
                     'error' => [
-                        'title' => 'Category  could not be deleted',
-                        'body'  => 'The Category  cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar la categoría',
+                        'body'  => 'La categoría no se puede eliminar porque está actualmente en uso.',
                     ],
                 ],
             ],
 
             'force-delete-error' => [
                 'notification' => [
-                    'title' => 'Cannot delete category',
-                    'body'  => 'You cannot delete this category as it is associated with some posts.',
+                    'title' => 'No se puede eliminar la categoría',
+                    'body'  => 'No puede eliminar esta categoría porque está asociada a algunas publicaciones.',
                 ],
 
-                'exception' => 'You cannot force delete this category as it is associated with some posts.',
+                'exception' => 'No puede eliminar definitivamente esta categoría porque está asociada a algunas publicaciones.',
             ],
         ],
 
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Categories restored',
-                    'body'  => 'The categories has been restored successfully.',
+                    'title' => 'Categorías restauradas',
+                    'body'  => 'Las categorías se han restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Categories deleted',
-                    'body'  => 'The categories has been deleted successfully.',
+                    'title' => 'Categorías eliminadas',
+                    'body'  => 'Las categorías se han eliminado correctamente.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Categories force deleted',
-                    'body'  => 'The categories has been force deleted successfully.',
+                    'title' => 'Categorías eliminadas definitivamente',
+                    'body'  => 'Las categorías se han eliminado definitivamente correctamente.',
                 ],
             ],
 
             'force-delete-error' => [
                 'notification' => [
-                    'title' => 'Cannot delete category',
-                    'body'  => 'You cannot delete this category as it is associated with some posts.',
+                    'title' => 'No se puede eliminar la categoría',
+                    'body'  => 'No puede eliminar esta categoría porque está asociada a algunas publicaciones.',
                 ],
             ],
         ],
