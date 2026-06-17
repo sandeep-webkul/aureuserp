@@ -219,6 +219,14 @@ trait HasChatter
         return $this->resolveChatterMessageOwner()->getMorphClass();
     }
 
+    protected function ownsChatterRecord(Model $record): bool
+    {
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $record->messageable_id === $owner->getKey()
+            && $record->messageable_type === $owner->getMorphClass();
+    }
+
     public function replyToMessage(Message $parentMessage, array $data): Message
     {
         return $this->addMessage(array_merge($data, [
@@ -232,12 +240,7 @@ trait HasChatter
     {
         $message = $this->{$type}()->find($messageId);
 
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->getKey()
-            || $message->messageable_type !== $owner->getMorphClass()
-        ) {
+        if (! $message || ! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -246,12 +249,7 @@ trait HasChatter
 
     public function pinMessage(Message $message): bool
     {
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->getKey()
-            || $message->messageable_type !== $owner->getMorphClass()
-        ) {
+        if (! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -262,12 +260,7 @@ trait HasChatter
 
     public function unpinMessage(Message $message): bool
     {
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->getKey()
-            || $message->messageable_type !== $owner->getMorphClass()
-        ) {
+        if (! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -338,13 +331,7 @@ trait HasChatter
     {
         $attachment = $this->attachments()->find($attachmentId);
 
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            ! $attachment ||
-            $attachment->messageable_id !== $owner->getKey() ||
-            $attachment->messageable_type !== $owner->getMorphClass()
-        ) {
+        if (! $attachment || ! $this->ownsChatterRecord($attachment)) {
             return false;
         }
 
