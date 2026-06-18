@@ -107,14 +107,14 @@ class LotResource extends Resource
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->where('tracking', ProductTracking::LOT)->whereNull('is_configurable'),
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->where('tracking', ProductTracking::LOT)->whereNull('is_configurable'),
                                     )
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        if ($record?->trashed()) {
-                                            return trim(($record->name ?? '—').' (Deleted Product)');
-                                        }
 
-                                        return $record->name ?? '—';
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
                                     })
                                     ->required()
                                     ->searchable()
@@ -154,13 +154,8 @@ class LotResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.product'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(function ($state, $record) {
-                        // If the related product is soft deleted, show "(Deleted Product)"
-                        if ($record->product?->trashed()) {
-                            return trim(($record->product?->name ?? '—').' (Deleted Product)');
-                        }
-
-                        return $state ?? '—';
+                    ->formatStateUsing(function ($record) {
+                        return $record->product->name.($record->product->trashed() ? ' (Deleted)' : '');
                     }),
                 TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.reference'))
