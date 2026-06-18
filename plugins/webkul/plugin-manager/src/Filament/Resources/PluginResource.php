@@ -302,7 +302,7 @@ class PluginResource extends Resource
                         self::repeatableEntry('dependencies', 'warning', 'dependencies-repeater'),
                         self::repeatableEntry('dependents', 'info', 'dependents-repeater'),
                     ]),
-            ]),
+            ])->columnSpanFull(),
         ]);
     }
 
