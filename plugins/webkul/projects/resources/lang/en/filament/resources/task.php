@@ -78,6 +78,12 @@ return [
             'stage'               => 'Stage',
         ],
 
+        'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Update Task State',
+            ],
+        ],
+
         'groups' => [
             'state'      => 'State',
             'project'    => 'Project',

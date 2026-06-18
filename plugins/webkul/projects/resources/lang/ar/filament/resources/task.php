@@ -78,6 +78,12 @@ return [
             'stage'               => 'المرحلة',
         ],
 
+        'actions' => [
+            'update-state' => [
+                'modal-heading' => 'تحديث حالة المهمة',
+            ],
+        ],
+
         'groups' => [
             'state'      => 'الحالة',
             'project'    => 'المشروع',

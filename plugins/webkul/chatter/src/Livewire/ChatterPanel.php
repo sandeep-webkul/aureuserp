@@ -477,7 +477,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                     }),
                 Action::make('done')
                     ->icon('heroicon-o-check-circle')
-                    ->label('Done')
+                    ->label(__('chatter::livewire/chatter-panel.mark-as-done.actions.done.label'))
                     ->modalIcon('heroicon-o-check-circle')
                     ->action(function (array $data) use ($arguments) {
                         $this->processMessage($arguments['id'], $this->mountedActions[0]['data']['feedback'] ?? null);
