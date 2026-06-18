@@ -26,6 +26,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
@@ -81,7 +82,7 @@ class PluginResource extends Resource
                                 ->weight('semibold')
                                 ->searchable()
                                 ->size(TextSize::Large)
-                                ->formatStateUsing(fn (string $state) => ucfirst($state))
+                                ->formatStateUsing(fn (string $state) => self::localize('names', $state, ucfirst($state)))
                                 ->grow(false),
 
                             TextColumn::make('latest_version')
@@ -94,7 +95,8 @@ class PluginResource extends Resource
                         TextColumn::make('summary')
                             ->color('gray')
                             ->limit(80)
-                            ->wrap(),
+                            ->wrap()
+                            ->formatStateUsing(fn ($state, $record) => self::localize('summaries', $record->name, $state)),
 
                         Split::make([
                             TextColumn::make('is_installed')
@@ -257,7 +259,7 @@ class PluginResource extends Resource
                         ->schema([
                             TextEntry::make('name')
                                 ->label(__('plugin-manager::filament/resources/plugin.infolist.name'))
-                                ->formatStateUsing(fn ($state) => ucfirst($state))
+                                ->formatStateUsing(fn ($state) => self::localize('names', $state, ucfirst($state)))
                                 ->weight('bold')
                                 ->size('lg'),
 
@@ -290,6 +292,7 @@ class PluginResource extends Resource
 
                     TextEntry::make('summary')
                         ->label(__('plugin-manager::filament/resources/plugin.infolist.summary'))
+                        ->formatStateUsing(fn ($state, $record) => self::localize('summaries', $record->name, $state))
                         ->columnSpanFull(),
                 ]),
 
@@ -403,6 +406,13 @@ class PluginResource extends Resource
 
             DB::table('migrations')->where('migration', $migration)->delete();
         }
+    }
+
+    protected static function localize(string $group, string $name, ?string $fallback = null): string
+    {
+        $key = "plugin-manager::filament/resources/plugin.{$group}.{$name}";
+
+        return Lang::has($key) ? __($key) : ($fallback ?? $name);
     }
 
     public static function getPages(): array
