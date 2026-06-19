@@ -592,7 +592,7 @@ class OperationForm
                         TableColumn::make('quantity_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from'))
                             ->markAsRequired()
-                            ->visible($move->sourceLocation->type == LocationType::INTERNAL),
+                            ->visible($move->sourceLocation->type == LocationType::INTERNAL && $move->product->is_storable),
                         TableColumn::make('lot_name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
                             ->markAsRequired()
