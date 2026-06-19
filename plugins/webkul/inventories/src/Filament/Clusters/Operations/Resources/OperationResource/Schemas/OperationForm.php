@@ -7,9 +7,11 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -20,6 +22,7 @@ use Filament\Support\View\Components\InputComponent\WrapperComponent\IconCompone
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\View\ComponentAttributeBag;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Inventory\Enums;
@@ -29,9 +32,9 @@ use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
+use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
@@ -488,6 +491,99 @@ class OperationForm
             ->modalSubmitActionLabel('Save')
             ->visible(OperationResource::getWarehouseSettings()->enable_locations)
             ->schema([
+                Actions::make([
+                    Action::make('generateLots')
+                        ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.actions.generate'))
+                        ->icon('heroicon-m-cog-6-tooth')
+                        ->link()
+                        ->schema([
+                            TextInput::make('first_lot')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.first-lot'))
+                                ->required(),
+                            TextInput::make('quantity_per_lot')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.quantity-per-lot'))
+                                ->numeric()
+                                ->minValue(1)
+                                ->default(fn () => $move->product->tracking == ProductTracking::SERIAL ? 1 : (int) ceil((float) ($move->product_uom_qty ?? 1)))
+                                ->disabled($move->product->tracking == ProductTracking::SERIAL)
+                                ->dehydrated(),
+                            TextInput::make('quantity_received')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.quantity-received'))
+                                ->numeric()
+                                ->minValue(1)
+                                ->default(fn () => (int) ceil((float) ($move->product_uom_qty ?? 0)))
+                                ->required(),
+                            Toggle::make('keep_current_lines')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.keep-current-lines'))
+                                ->default(false),
+                        ])
+                        ->action(function (array $data, Get $get, Set $set) use ($move) {
+                            $isSerial = $move->product->tracking == ProductTracking::SERIAL;
+
+                            $perLot = $isSerial ? 1.0 : max(1.0, (float) ($data['quantity_per_lot'] ?? 1));
+
+                            $total = (float) ($data['quantity_received'] ?? 0);
+
+                            $count = $isSerial ? (int) $total : (int) ceil($total / $perLot);
+
+                            if ($count < 1) {
+                                return;
+                            }
+
+                            $names = array_column((new Lot)->generateLotNames($data['first_lot'], $count), 'lot_name');
+
+                            $rows = static::buildGeneratedLineRows($move, $names, $perLot, $total);
+
+                            if (! empty($data['keep_current_lines'])) {
+                                $rows = ($get('lines') ?? []) + $rows;
+                            }
+
+                            $set('lines', $rows);
+                        }),
+                    Action::make('importLots')
+                        ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.actions.import'))
+                        ->icon('heroicon-m-arrow-up-tray')
+                        ->link()
+                        ->schema([
+                            Textarea::make('serials')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.serials'))
+                                ->helperText(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.serials-helper'))
+                                ->rows(6)
+                                ->required(),
+                            Toggle::make('keep_current_lines')
+                                ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.keep-current-lines'))
+                                ->default(false),
+                        ])
+                        ->action(function (array $data, Get $get, Set $set) use ($move) {
+                            $names = collect(preg_split('/\r\n|\r|\n/', (string) $data['serials']))
+                                ->map(fn ($name) => trim($name))
+                                ->filter()
+                                ->values()
+                                ->all();
+
+                            if (empty($names)) {
+                                return;
+                            }
+
+                            $rows = static::buildGeneratedLineRows($move, $names, 1.0, (float) count($names));
+
+                            if (! empty($data['keep_current_lines'])) {
+                                $rows = ($get('lines') ?? []) + $rows;
+                            }
+
+                            $set('lines', $rows);
+                        }),
+                ])
+                    ->visible(
+                        OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers
+                            && (
+                                $move->product->tracking == ProductTracking::LOT
+                                || $move->product->tracking == ProductTracking::SERIAL
+                            )
+                            && $move->sourceLocation->type == LocationType::SUPPLIER
+                            && $move->operationType->use_create_lots
+                            && ! in_array($move->state, [MoveState::DONE, MoveState::CANCELED])
+                    ),
                 Repeater::make('lines')
                     ->hiddenLabel()
                     ->compact()
@@ -497,7 +593,7 @@ class OperationForm
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from'))
                             ->markAsRequired()
                             ->visible($move->sourceLocation->type == LocationType::INTERNAL),
-                        TableColumn::make('lot_id')
+                        TableColumn::make('lot_name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
                             ->markAsRequired()
                             ->visible(
@@ -507,6 +603,10 @@ class OperationForm
                                         || $move->product->tracking == ProductTracking::SERIAL
                                     )
                                     && $move->sourceLocation->type == LocationType::SUPPLIER
+                                    && (
+                                        $move->operationType->use_create_lots
+                                        || $move->operationType->use_existing_lots
+                                    )
                             ),
                         TableColumn::make('destination_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.location'))
@@ -593,26 +693,30 @@ class OperationForm
                             })
                             ->visible($move->sourceLocation->type == LocationType::INTERNAL)
                             ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
-                        Select::make('lot_id')
+                        Select::make('lot_name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
-                            ->relationship(
-                                name: 'lot',
-                                titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->where('product_id', $move->product_id),
-                            )
+                            ->options(fn (): array => $move->operationType->use_existing_lots
+                                ? Lot::query()
+                                    ->where('product_id', $move->product_id)
+                                    ->orderBy('name')
+                                    ->pluck('name', 'name')
+                                    ->all()
+                                : [])
                             ->searchable()
-                            ->preload()
+                            ->getOptionLabelUsing(fn ($value): ?string => $value)
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
+                                    ->required(),
+                            ])
+                            ->createOptionUsing(fn (array $data): string => $data['name'])
+                            ->createOptionAction(fn (Action $action) => $action->visible($move->operationType->use_create_lots))
                             ->required()
                             ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
-                            ->disableOptionWhen(fn (string $value, Get $get): bool => ! $move->operationType->use_existing_lots && (string) $get('lot_id') !== $value)
-                            ->createOptionForm(fn (Schema $schema): Schema => LotResource::form($schema))
-                            ->createOptionAction(function (Action $action) use ($move) {
-                                $action->visible($move->operationType->use_create_lots)
-                                    ->mutateDataUsing(function (array $data) use ($move) {
-                                        $data['product_id'] = $move->product_id;
-
-                                        return $data;
-                                    });
+                            ->afterStateHydrated(function (Select $component, $state, $record) {
+                                if (blank($state) && $record?->lot_id) {
+                                    $component->state($record->lot?->name);
+                                }
                             })
                             ->visible(
                                 OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers
@@ -621,6 +725,10 @@ class OperationForm
                                         || $move->product->tracking == ProductTracking::SERIAL
                                     )
                                     && $move->sourceLocation->type == LocationType::SUPPLIER
+                                    && (
+                                        $move->operationType->use_create_lots
+                                        || $move->operationType->use_existing_lots
+                                    )
                             ),
                         Select::make('destination_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.location'))
@@ -731,6 +839,38 @@ class OperationForm
 
                 $set('quantity', $move->quantity);
             });
+    }
+
+    protected static function buildGeneratedLineRows(Move $move, array $names, float $qtyPerLot, float $qtyTotal): array
+    {
+        $isSerial = $move->product->tracking == ProductTracking::SERIAL;
+
+        $names = array_values($names);
+
+        $count = count($names);
+
+        $rows = [];
+
+        foreach ($names as $i => $name) {
+            if ($isSerial) {
+                $qty = 1.0;
+            } elseif ($i === $count - 1) {
+                $qty = $qtyTotal - ($qtyPerLot * ($count - 1));
+            } else {
+                $qty = $qtyPerLot;
+            }
+
+            $rows[(string) Str::uuid()] = [
+                'quantity_id'             => null,
+                'lot_name'                => $name,
+                'lot_id'                  => null,
+                'destination_location_id' => $move->destination_location_id,
+                'result_package_id'       => null,
+                'qty'                     => $qty,
+            ];
+        }
+
+        return $rows;
     }
 
     private static function afterProductUpdated(Set $set, Get $get): void

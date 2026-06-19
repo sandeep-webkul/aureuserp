@@ -909,9 +909,9 @@ class InventoryManager
         foreach ($moveLineIdsToCheck as $key => $moveLineIds) {
             [$productId, $companyId] = explode('_', $key);
 
-            $moveLines = MoveLine::whereIn('id', $moveLineIds)->get();
+            $lines = MoveLine::whereIn('id', $moveLineIds)->get();
 
-            $lotNames = $moveLines->pluck('lot_name')->filter()->all();
+            $lotNames = $lines->pluck('lot_name')->filter()->all();
 
             $lots = Lot::where(function ($q) use ($companyId) {
                 $q->whereNull('company_id')->orWhere('company_id', $companyId);
@@ -921,7 +921,7 @@ class InventoryManager
                 ->get()
                 ->keyBy('name');
 
-            foreach ($moveLines as $moveLine) {
+            foreach ($lines as $moveLine) {
                 $lot = $lots->get($moveLine->lot_name);
 
                 if ($lot) {
@@ -962,7 +962,10 @@ class InventoryManager
             extraFilters: [['lot_id', 'in', $moveLinesTodo->pluck('lot_id')->filter()->all()], ['lot_id', '=', null]],
         );
 
+
         foreach ($moveLinesTodo as $moveLine) {
+            $moveLine->refresh();
+            
             $moveLine->setContext([
                 'quantity_cache' => $quantityCache,
             ]);
