@@ -482,31 +482,6 @@ class OperationForm
 
     public static function getMoveLinesAction(Move $move): Action
     {
-        $columns = 2;
-
-        if (
-            OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers
-            && (
-                $move->product->tracking == ProductTracking::LOT
-                || $move->product->tracking == ProductTracking::SERIAL
-            )
-            && $move->sourceLocation->type == LocationType::SUPPLIER
-        ) {
-            $columns++;
-        }
-
-        if ($move->sourceLocation->type == LocationType::INTERNAL) {
-            $columns++;
-        }
-
-        if ($move->destinationLocation->type != LocationType::INTERNAL) {
-            $columns--;
-        }
-
-        if (OperationResource::getOperationSettings()->enable_packages) {
-            $columns++;
-        }
-
         return Action::make('manageLines')
             ->icon('heroicon-m-bars-4')
             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.modal-heading'))
@@ -515,7 +490,34 @@ class OperationForm
             ->schema([
                 Repeater::make('lines')
                     ->hiddenLabel()
+                    ->compact()
                     ->relationship('lines')
+                    ->table(fn () => [
+                        TableColumn::make('quantity_id')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from'))
+                            ->markAsRequired()
+                            ->visible($move->sourceLocation->type == LocationType::INTERNAL),
+                        TableColumn::make('lot_id')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
+                            ->markAsRequired()
+                            ->visible(
+                                OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers
+                                    && (
+                                        $move->product->tracking == ProductTracking::LOT
+                                        || $move->product->tracking == ProductTracking::SERIAL
+                                    )
+                                    && $move->sourceLocation->type == LocationType::SUPPLIER
+                            ),
+                        TableColumn::make('destination_location_id')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.location'))
+                            ->markAsRequired(),
+                        TableColumn::make('result_package_id')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
+                            ->visible(OperationResource::getOperationSettings()->enable_packages),
+                        TableColumn::make('qty')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.quantity'))
+                            ->markAsRequired(),
+                    ])
                     ->schema([
                         Select::make('quantity_id')
                             ->label(__(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from')))
@@ -602,7 +604,7 @@ class OperationForm
                             ->preload()
                             ->required()
                             ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
-                            ->disableOptionWhen(fn () => ! $move->operationType->use_existing_lots)
+                            ->disableOptionWhen(fn (string $value, Get $get): bool => ! $move->operationType->use_existing_lots && (string) $get('lot_id') !== $value)
                             ->createOptionForm(fn (Schema $schema): Schema => LotResource::form($schema))
                             ->createOptionAction(function (Action $action) use ($move) {
                                 $action->visible($move->operationType->use_create_lots)
@@ -681,7 +683,6 @@ class OperationForm
                     ])
                     ->defaultItems(0)
                     ->addActionLabel(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.add-line'))
-                    ->columns($columns)
                     ->mutateRelationshipDataBeforeCreateUsing(function (array $data, Move $move): array {
                         if (isset($data['quantity_id'])) {
                             $productQuantity = ProductQuantity::find($data['quantity_id']);
