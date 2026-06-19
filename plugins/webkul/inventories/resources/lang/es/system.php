@@ -49,6 +49,7 @@ return [
         'quantity-rounding-mismatch' => 'La cantidad realizada para el producto :product no respeta la precisión de redondeo definida en la unidad de medida :unit. Cambie la cantidad realizada o la precisión de redondeo de su unidad de medida.',
         'split-done-or-cancel'       => 'No se puede dividir un movimiento de existencias que se ha marcado como \'Hecho\' o \'Cancelado\'.',
         'split-draft'                => 'No se puede dividir un movimiento en borrador. Primero debe confirmarse.',
+        'serial-already-assigned'    => 'El número de serie ya se ha asignado al producto: :product, número de serie: :serial_number',
     ],
 
     'rule' => [
