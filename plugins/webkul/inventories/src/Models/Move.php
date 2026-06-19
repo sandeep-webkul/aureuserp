@@ -1353,7 +1353,7 @@ class Move extends Model
 
         foreach ($groups as $group) {
             if (float_compare(abs($group->qty), 1, precisionRounding: $group->product->uom->rounding) > 0) {
-                throw new \Exception(__('The serial number has already been assigned: \n Product: :product, Serial Number: :serial_number', [
+                throw new \Exception(__('inventories::system.move.serial-already-assigned', [
                     'product'       => $group->product->name,
                     'serial_number' => $group->lot->name,
                 ]));
