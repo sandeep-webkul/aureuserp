@@ -739,7 +739,7 @@ class InventoryManager
         }
 
         if ($movesTodo->isNotEmpty()) {
-            $this->checkQuantity($movesTodo);
+            $movesTodo->each(fn ($move) => $move->checkQuantity());
         }
 
         return $movesTodo;
@@ -2556,8 +2556,6 @@ class InventoryManager
 
         return $result;
     }
-
-    public function checkQuantity($moves) {}
 
     public function checkForEntirePack($operation)
     {

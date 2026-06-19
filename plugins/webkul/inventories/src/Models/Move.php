@@ -1319,4 +1319,45 @@ class Move extends Model
             $forecastExpectedDate,
         ];
     }
+
+    public function checkQuantity()
+    {
+        $locationIds = $this->destinationLocation->getInternalChildLocations()->pluck('id')->unique()->all();
+
+        $quantities = ProductQuantity::where('product_id', $this->product_id)
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $this->lines->pluck('lot_id')->unique()->filter()->all())
+            ->get();
+        
+        $serialNumberQuantities = $quantities->filter(
+            fn ($quantity) => $quantity->product->tracking === ProductTracking::SERIAL
+                && $quantity->location->type !== LocationType::INVENTORY
+                && $quantity->lot_id
+        );
+
+        if ($serialNumberQuantities->isEmpty()) {
+            return;
+        }
+
+        $locationIds = $serialNumberQuantities->flatMap(
+            fn ($quantity) => $quantity->location->getInternalChildLocations()->pluck('id')
+        )->unique()->all();
+
+        $groups = ProductQuantity::whereIn('product_id', $serialNumberQuantities->pluck('product_id')->unique()->all())
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $serialNumberQuantities->pluck('lot_id')->unique()->filter()->all())
+            ->groupBy('product_id', 'location_id', 'lot_id')
+            ->selectRaw('product_id, location_id, lot_id, SUM(quantity) as qty')
+            ->with(['product', 'lot'])
+            ->get();
+
+        foreach ($groups as $group) {
+            if (float_compare(abs($group->qty), 1, precisionRounding: $group->product->uom->rounding) > 0) {
+                throw new \Exception(__('The serial number has already been assigned: \n Product: :product, Serial Number: :serial_number', [
+                    'product'       => $group->product->name,
+                    'serial_number' => $group->lot->name,
+                ]));
+            }
+        }
+    }
 }
