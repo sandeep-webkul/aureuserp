@@ -35,14 +35,31 @@ class ChatterMentions
         }
 
         try {
-            return RichContentRenderer::make($body)
+            $html = RichContentRenderer::make($body)
                 ->mentions([static::provider()])
                 ->toHtml();
+
+            return static::styleMentions($html);
         } catch (Throwable $e) {
             report($e);
 
             return (string) str($body)->sanitizeHtml();
         }
+    }
+
+    protected static function styleMentions(string $html): string
+    {
+        return preg_replace_callback(
+            '/<(a|span)\b([^>]*\bdata-type=["\']mention["\'][^>]*)>/i',
+            function (array $match): string {
+                if (str_contains($match[2], 'style=')) {
+                    return $match[0];
+                }
+
+                return '<'.$match[1].$match[2].' style="color:var(--primary-500);font-weight:500">';
+            },
+            $html,
+        ) ?? $html;
     }
 
     protected static function userUrl(string $id): ?string

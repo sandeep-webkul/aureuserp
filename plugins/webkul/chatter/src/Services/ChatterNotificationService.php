@@ -20,6 +20,13 @@ class ChatterNotificationService
 
     public function notifyFollowers(Message $message): void
     {
+        $this->viaDatabase($message);
+
+        $this->viaEmail($message);
+    }
+
+    protected function viaEmail(Message $message): void
+    {
         $record = $message->messageable;
 
         if (! $record || ! method_exists($record, 'followers')) {
@@ -74,7 +81,7 @@ class ChatterNotificationService
         }
     }
 
-    public function notifyDatabase(Message $message): void
+    protected function viaDatabase(Message $message): void
     {
         $record = $message->messageable;
 
