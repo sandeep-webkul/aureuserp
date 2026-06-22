@@ -282,8 +282,6 @@ class Operation extends Model
 
         static::saving(function ($operation) {
             $operation->updateName();
-
-            $operation->autoConfirm();
         });
 
         static::saved(function ($operation) {
@@ -305,9 +303,14 @@ class Operation extends Model
             return;
         }
 
-        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT);
+        if ($this->moves->some(fn ($move) => $move->additional)) {
+            InventoryFacade::confirmTransfer($this);
+        }
+
+        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT && $move->quantity);
 
         InventoryFacade::confirmMoves($movesToConfirm);
+
     }
 
     public function updateName()

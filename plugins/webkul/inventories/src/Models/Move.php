@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
@@ -48,6 +49,7 @@ class Move extends Model
         'is_picked',
         'is_scraped',
         'is_inventory',
+        'additional',
         'is_refund',
         'deadline',
         'reservation_date',
@@ -84,6 +86,7 @@ class Move extends Model
         'is_picked'        => 'boolean',
         'is_scraped'       => 'boolean',
         'is_inventory'     => 'boolean',
+        'additional'       => 'boolean',
         'is_refund'        => 'boolean',
         'reservation_date' => 'date',
         'scheduled_at'     => 'datetime',
@@ -317,6 +320,18 @@ class Move extends Model
             $move->company_id ??= $move->operation?->company_id ?? $move->operationType?->company_id;
 
             $move->state ??= MoveState::DRAFT;
+
+            if (! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])) {
+                $move->additional = true;
+            }
+        });
+
+        static::created(function ($move) {
+            if (! $move->additional) {
+                return;
+            }
+
+            $move->operation->autoConfirm();
         });
 
         static::saving(function ($move) {
