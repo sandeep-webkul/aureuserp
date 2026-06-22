@@ -13,6 +13,7 @@ use Throwable;
 use Webkul\Chatter\Models\Attachment;
 use Webkul\Chatter\Models\Follower;
 use Webkul\Chatter\Models\Message;
+use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
@@ -23,6 +24,7 @@ trait HasChatter
     {
         static::created(function (Model $model): void {
             $model->addDefaultChatterFollowers();
+            $model->notifyResponsibleOnCreate();
         });
 
         static::updated(function (Model $model): void {
@@ -39,11 +41,38 @@ trait HasChatter
         }
 
         try {
-            $partnerId = User::whereKey($this->getAttribute($column))->value('partner_id');
+            $assignee = User::find($this->getAttribute($column));
 
-            if ($partnerId && $partner = Partner::find($partnerId)) {
+            if (! $assignee) {
+                return;
+            }
+
+            if ($assignee->partner_id && $partner = Partner::find($assignee->partner_id)) {
                 $this->addFollower($partner);
             }
+
+            app(ChatterNotificationService::class)->notifyAssignment($this, $assignee, Auth::id());
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    public function notifyResponsibleOnCreate(): void
+    {
+        $column = $this->getChatterResponsibleColumn();
+
+        if (! $column) {
+            return;
+        }
+
+        try {
+            $assignee = User::find($this->getAttribute($column));
+
+            if (! $assignee) {
+                return;
+            }
+
+            app(ChatterNotificationService::class)->notifyAssignment($this, $assignee, Auth::id());
         } catch (Throwable $e) {
             report($e);
         }

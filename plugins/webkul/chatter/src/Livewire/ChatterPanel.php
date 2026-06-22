@@ -28,6 +28,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Webkul\Chatter\Support\ChatterMentions;
 use Throwable;
 use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
@@ -611,6 +612,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                                 ])->columns(2),
                             RichEditor::make('body')
                                 ->hiddenLabel()
+                                ->mentions([ChatterMentions::provider()])
                                 ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))?->category == 'meeting' : false)
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                 ->label(__('chatter::app.filament.actions.chatter.activity.form.type-your-message-here'))
