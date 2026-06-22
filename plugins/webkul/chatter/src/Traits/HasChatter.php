@@ -13,7 +13,6 @@ use Throwable;
 use Webkul\Chatter\Models\Attachment;
 use Webkul\Chatter\Models\Follower;
 use Webkul\Chatter\Models\Message;
-use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
@@ -24,7 +23,6 @@ trait HasChatter
     {
         static::created(function (Model $model): void {
             $model->addDefaultChatterFollowers();
-            $model->notifyResponsibleOnCreate();
         });
 
         static::updated(function (Model $model): void {
@@ -41,38 +39,11 @@ trait HasChatter
         }
 
         try {
-            $assignee = User::find($this->getAttribute($column));
+            $partnerId = User::whereKey($this->getAttribute($column))->value('partner_id');
 
-            if (! $assignee) {
-                return;
-            }
-
-            if ($assignee->partner_id && $partner = Partner::find($assignee->partner_id)) {
+            if ($partnerId && $partner = Partner::find($partnerId)) {
                 $this->addFollower($partner);
             }
-
-            app(ChatterNotificationService::class)->notifyAssignment($this, $assignee, Auth::id());
-        } catch (Throwable $e) {
-            report($e);
-        }
-    }
-
-    public function notifyResponsibleOnCreate(): void
-    {
-        $column = $this->getChatterResponsibleColumn();
-
-        if (! $column) {
-            return;
-        }
-
-        try {
-            $assignee = User::find($this->getAttribute($column));
-
-            if (! $assignee) {
-                return;
-            }
-
-            app(ChatterNotificationService::class)->notifyAssignment($this, $assignee, Auth::id());
         } catch (Throwable $e) {
             report($e);
         }
@@ -81,6 +52,20 @@ trait HasChatter
     public function getChatterResponsibleColumn(): ?string
     {
         return 'user_id';
+    }
+
+    public function getChatterResponsibleLabel(): ?string
+    {
+        $column = $this->getChatterResponsibleColumn();
+
+        if (! $column || ! method_exists($this, 'getLogAttributeLabels')) {
+            return null;
+        }
+
+        $labels = $this->getLogAttributeLabels();
+        $relation = str_ends_with($column, '_id') ? substr($column, 0, -3) : $column;
+
+        return $labels[$relation.'.name'] ?? $labels[$column] ?? null;
     }
 
     public function getChatterFollowerUserIds(): array

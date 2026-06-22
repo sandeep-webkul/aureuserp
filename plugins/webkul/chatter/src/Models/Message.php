@@ -93,8 +93,8 @@ class Message extends Model
         }
 
         static::created(function (Message $message) {
-            app(ChatterNotificationService::class)->notifyFollowers($message);
             app(ChatterNotificationService::class)->notifyDatabase($message);
+            app(ChatterNotificationService::class)->notifyFollowers($message);
         });
     }
 

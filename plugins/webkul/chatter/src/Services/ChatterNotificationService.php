@@ -18,8 +18,6 @@ class ChatterNotificationService
 {
     protected string $mailView = 'chatter::mail.message-mail';
 
-    protected static array $assignedRecipients = [];
-
     public function notifyFollowers(Message $message): void
     {
         $record = $message->messageable;
@@ -99,11 +97,13 @@ class ChatterNotificationService
 
         [$titleKey, $icon, $color] = $this->resolveTypeMeta($message);
 
-        $excludedIds = array_merge(
-            [$causerUserId],
-            $mentionedUserIds,
-            static::$assignedRecipients[$this->recordKey($record)] ?? [],
-        );
+        $assignedUserId = $this->resolveAssignedUserId($message, $record);
+
+        if ($assignedUserId && $assignedUserId !== $causerUserId && ! in_array($assignedUserId, $mentionedUserIds, true)) {
+            $this->sendAssignedNotification($assignedUserId, $causerName, $recordName, $recordUrl);
+        }
+
+        $excludedIds = array_merge([$causerUserId, $assignedUserId], $mentionedUserIds);
 
         $recipients = $this->resolveFollowerUsers($record, $excludedIds);
 
@@ -122,15 +122,36 @@ class ChatterNotificationService
         }
     }
 
-    public function notifyAssignment(Model $record, User $assignee, ?int $causerUserId = null): void
+    protected function resolveAssignedUserId(Message $message, Model $record): ?int
     {
-        if ($causerUserId && (int) $assignee->id === (int) $causerUserId) {
-            return;
+        if ($message->type !== 'notification' || ! method_exists($record, 'getChatterResponsibleColumn')) {
+            return null;
         }
 
-        $recordName = $record->name ?? (string) $record->getKey();
-        $recordUrl = $this->resolveRecordUrl($record);
-        $causerName = (Filament::auth()->user()?->name) ?? 'Someone';
+        $column = $record->getChatterResponsibleColumn();
+
+        if (! $column) {
+            return null;
+        }
+
+        $label = method_exists($record, 'getChatterResponsibleLabel') ? $record->getChatterResponsibleLabel() : null;
+
+        $properties = is_array($message->properties) ? $message->properties : [];
+
+        if (! $label || ! array_key_exists($label, $properties)) {
+            return null;
+        }
+
+        return (int) $record->getAttribute($column) ?: null;
+    }
+
+    protected function sendAssignedNotification(int $assigneeId, string $causerName, string $recordName, string $recordUrl): void
+    {
+        $assignee = User::find($assigneeId);
+
+        if (! $assignee) {
+            return;
+        }
 
         $assignee->notify(new ChatterDatabaseNotification(
             __('chatter::notifications.database.assigned.title', ['causer' => $causerName, 'record' => $recordName]),
@@ -139,13 +160,6 @@ class ChatterNotificationService
             'info',
             $recordUrl,
         ));
-
-        static::$assignedRecipients[$this->recordKey($record)][] = (int) $assignee->id;
-    }
-
-    protected function recordKey(Model $record): string
-    {
-        return $record->getMorphClass().':'.$record->getKey();
     }
 
     protected function summarizeChanges(Message $message): ?string

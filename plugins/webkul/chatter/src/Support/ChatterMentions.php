@@ -34,9 +34,15 @@ class ChatterMentions
             return '';
         }
 
-        return RichContentRenderer::make($body)
-            ->mentions([static::provider()])
-            ->toHtml();
+        try {
+            return RichContentRenderer::make($body)
+                ->mentions([static::provider()])
+                ->toHtml();
+        } catch (Throwable $e) {
+            report($e);
+
+            return (string) str($body)->sanitizeHtml();
+        }
     }
 
     protected static function userUrl(string $id): ?string
