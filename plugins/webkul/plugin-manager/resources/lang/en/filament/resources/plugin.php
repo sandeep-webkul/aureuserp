@@ -67,6 +67,7 @@ return [
             'dependencies' => 'Dependencies',
         ],
         'name'         => 'Plugin Name',
+        'author'       => 'Author',
         'version'      => 'Version',
         'dependencies' => 'Required Plugins',
         'dependents'   => 'Plugins That Depend On This',

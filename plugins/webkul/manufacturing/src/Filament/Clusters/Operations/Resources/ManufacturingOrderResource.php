@@ -1168,7 +1168,7 @@ class ManufacturingOrderResource extends Resource
             ->compact()
             ->extraItemActions([
                 Action::make('openWorkOrder')
-                    ->tooltip(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.work-orders.actions.open-work-order.tooltip'))
+                    ->tooltip(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.open-work-order.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => filled($get("workOrders.{$arguments['item']}.id"))
                         ? WorkOrderResource::getUrl('view', [
@@ -1379,7 +1379,7 @@ class ManufacturingOrderResource extends Resource
                             }),
                         Action::make('button_done')
                             ->icon('heroicon-m-check-circle')
-                            ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.work-orders.actions.done.label'))
+                            ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.done.label'))
                             ->color('primary')
                             ->size(Size::ExtraLarge)
                             ->databaseTransaction()

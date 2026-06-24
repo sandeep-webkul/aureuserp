@@ -78,12 +78,6 @@ return [
             'stage'               => 'Stage',
         ],
 
-        'actions' => [
-            'update-state' => [
-                'modal-heading' => 'Update Task State',
-            ],
-        ],
-
         'groups' => [
             'state'      => 'State',
             'project'    => 'Project',
@@ -119,6 +113,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Update Task State',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Task restored',
