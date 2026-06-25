@@ -13,6 +13,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
@@ -24,6 +25,7 @@ use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
+use Throwable;
 
 class Operation extends Model
 {
@@ -84,6 +86,15 @@ class Operation extends Model
     public function getModelTitle(): string
     {
         return __('inventories::models/operation.title');
+    }
+
+    public function getChatterResourceUrl(): string
+    {
+        try {
+            return OperationResource::getUrl('view', ['record' => $this], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     protected function getLogAttributeLabels(): array
@@ -271,8 +282,6 @@ class Operation extends Model
 
         static::saving(function ($operation) {
             $operation->updateName();
-
-            $operation->autoConfirm();
         });
 
         static::saved(function ($operation) {
@@ -294,9 +303,14 @@ class Operation extends Model
             return;
         }
 
-        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT);
+        if ($this->moves->some(fn ($move) => $move->additional)) {
+            InventoryFacade::confirmTransfer($this);
+        }
+
+        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT && $move->quantity);
 
         InventoryFacade::confirmMoves($movesToConfirm);
+
     }
 
     public function updateName()

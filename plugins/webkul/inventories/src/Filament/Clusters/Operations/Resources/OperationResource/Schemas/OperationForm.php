@@ -430,9 +430,9 @@ class OperationForm
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->visible(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT)
-                    ->disabled(fn (?Move $record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
-                    ->suffixAction(fn (Move $record) => static::getMoveLinesAction($record)),
+                    ->visible(fn (?Move $record): bool => ! $record?->id || $record?->state !== MoveState::DRAFT)
+                    ->disabled(fn (?Move $record): bool => ! $record?->id || in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
+                    ->suffixAction(fn (?Move $record) => $record?->id ? static::getMoveLinesAction($record) : null),
                 Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
                     ->relationship(
@@ -592,7 +592,7 @@ class OperationForm
                         TableColumn::make('quantity_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from'))
                             ->markAsRequired()
-                            ->visible($move->sourceLocation->type == LocationType::INTERNAL),
+                            ->visible($move->sourceLocation->type == LocationType::INTERNAL && $move->product->is_storable),
                         TableColumn::make('lot_name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
                             ->markAsRequired()
