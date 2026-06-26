@@ -84,6 +84,12 @@ return [
                                 'body'  => 'Los productos no se pueden eliminar de un pedido de compra confirmado.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Abrir producto',
+                            ],
+                        ],
                     ],
 
                     'section' => [
@@ -196,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'Impuesto',
     ],
 
     'infolist' => [

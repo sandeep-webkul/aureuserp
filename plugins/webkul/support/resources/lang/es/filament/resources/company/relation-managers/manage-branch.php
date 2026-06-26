@@ -196,6 +196,7 @@ return [
                         'entries' => [
                             'company-name'                => 'Nombre de la empresa',
                             'registration-number'         => 'Número de registro',
+                            'tax-id'                      => 'NIF',
                             'registration-number-tooltip' => 'El NIF es un identificador único de su empresa.',
                             'color'                       => 'Color',
                         ],

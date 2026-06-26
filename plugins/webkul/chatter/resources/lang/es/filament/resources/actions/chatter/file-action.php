@@ -5,6 +5,8 @@ return [
         'title'   => 'Adjuntos',
         'tooltip' => 'Subir adjuntos',
 
+        'modal-submit-action-label' => 'Subir',
+
         'form' => [
             'fields' => [
                 'files'                  => 'Archivos',

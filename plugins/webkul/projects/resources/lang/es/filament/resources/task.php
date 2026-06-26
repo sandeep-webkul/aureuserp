@@ -113,6 +113,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Actualizar estado de la tarea',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Tarea restaurada',

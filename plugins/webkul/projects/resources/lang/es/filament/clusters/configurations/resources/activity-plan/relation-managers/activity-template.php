@@ -67,6 +67,15 @@ return [
             'has-delay'       => 'Tiene retraso',
         ],
 
+        'header-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'Plantilla de plan de actividad creada',
+                    'body'  => 'La plantilla de plan de actividad se ha creado correctamente.',
+                ],
+            ],
+        ],
+
         'actions' => [
             'edit' => [
                 'notification' => [

@@ -53,6 +53,11 @@ return [
 
     'mark-as-done' => [
         'title' => 'Marcar como hecho',
+        'actions' => [
+            'done' => [
+                'label' => 'Hecho',
+            ],
+        ],
         'form'  => [
             'fields' => [
                 'feedback' => 'Comentarios',

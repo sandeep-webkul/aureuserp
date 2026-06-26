@@ -13,4 +13,33 @@ return [
         'draft-state-required' => 'Solo se pueden confirmar las facturas en estado borrador.',
         'journal-archived'     => 'No se puede confirmar una factura con un diario archivado.',
     ],
+
+    'documents' => [
+        'titles' => [
+            'invoice'     => 'ID de factura n.º :name',
+            'bill'        => 'ID de factura de proveedor n.º :name',
+            'refund'      => 'ID de reembolso n.º :name',
+            'credit-note' => 'ID de nota de crédito n.º :name',
+        ],
+
+        'labels' => [
+            'invoice-date'          => 'Fecha de factura',
+            'bill-date'             => 'Fecha',
+            'refund-date'           => 'Fecha de reembolso',
+            'credit-note-date'      => 'Fecha de nota de crédito',
+            'source'                => 'Origen',
+            'due-date'              => 'Fecha de vencimiento',
+            'product'               => 'Producto',
+            'quantity'              => 'Cantidad',
+            'unit'                  => 'Unidad',
+            'unit-price'            => 'Precio unitario',
+            'subtotal'              => 'Subtotal',
+            'tax'                   => 'Impuesto',
+            'discount'              => 'Descuento',
+            'grand-total'           => 'Total general',
+            'payment-information'   => 'Información de pago',
+            'payment-communication' => 'Comunicación de pago',
+            'account-details'       => 'en estos detalles de la cuenta:',
+        ],
+    ],
 ];

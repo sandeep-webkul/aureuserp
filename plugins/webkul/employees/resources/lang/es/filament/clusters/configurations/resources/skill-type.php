@@ -11,9 +11,10 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'       => 'Nombre',
-                'color'      => 'Color',
-                'status'     => 'Estado',
+                'name'             => 'Nombre',
+                'name-placeholder' => 'Introducir el nombre del tipo de competencia',
+                'color'            => 'Color',
+                'status'           => 'Estado',
             ],
         ],
     ],

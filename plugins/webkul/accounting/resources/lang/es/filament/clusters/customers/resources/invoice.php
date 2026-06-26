@@ -13,4 +13,20 @@ return [
         'due-date' => 'Fecha de vencimiento',
         'amount'   => 'Importe',
     ],
+
+    'form' => [
+        'tabs' => [
+            'invoice-lines' => [
+                'repeater' => [
+                    'products' => [
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Abrir producto',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];

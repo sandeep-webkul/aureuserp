@@ -27,6 +27,7 @@ return [
             'accrual-validity-type'       => 'Tipo de validez de la acumulación',
             'advanced-accrual-settings'   => 'Configuración avanzada de acumulación',
             'after-allocation-start'      => 'Después de la fecha de inicio de la asignación',
+            'to-date'                     => 'Hasta la fecha',
         ],
     ],
 

@@ -56,8 +56,9 @@ return [
                 'title' => 'Precios',
 
                 'fields' => [
-                    'price' => 'Precio',
-                    'cost'  => 'Costo',
+                    'price'           => 'Precio',
+                    'cost'            => 'Costo',
+                    'uom-placeholder' => 'UdM',
                 ],
             ],
 

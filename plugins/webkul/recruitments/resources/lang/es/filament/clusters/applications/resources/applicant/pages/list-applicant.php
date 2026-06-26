@@ -24,6 +24,12 @@ return [
             'label' => 'Nuevo candidato',
 
             'modal-title' => 'Crear candidato',
+
+            'form' => [
+                'fields' => [
+                    'candidate' => 'Candidato',
+                ],
+            ],
         ],
     ],
 ];

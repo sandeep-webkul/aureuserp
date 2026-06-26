@@ -17,8 +17,9 @@ return [
 
     'form' => [
         'fields' => [
-            'name'  => 'Nombre',
-            'color' => 'Color',
+            'name'             => 'Nombre',
+            'name-placeholder' => 'Introducir el nombre de la etiqueta',
+            'color'            => 'Color',
         ],
     ],
 

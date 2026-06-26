@@ -25,6 +25,12 @@ return [
 
         'refuse' => [
             'title'        => 'Motivo de rechazo',
+            'form'         => [
+                'fields' => [
+                    'notify'   => 'Notificar',
+                    'email-to' => 'Enviar correo a',
+                ],
+            ],
             'notification' => [
                 'title' => 'Candidato rechazado',
                 'body'  => 'El candidato se ha rechazado correctamente.',

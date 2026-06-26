@@ -45,6 +45,12 @@ return [
                     'picked'                     => 'Recogido',
                 ],
 
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'Abrir producto',
+                    ],
+                ],
+
                 'fields' => [
                     'product'        => 'Producto',
                     'final-location' => 'Ubicación final',
@@ -59,6 +65,7 @@ return [
 
                     'lines' => [
                         'modal-heading' => 'Gestionar movimientos de existencias',
+                        'modal-submit-action-label' => 'Guardar',
                         'add-line'      => 'Agregar línea',
 
                         'actions' => [

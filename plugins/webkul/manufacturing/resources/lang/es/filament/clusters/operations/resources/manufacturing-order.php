@@ -20,6 +20,7 @@ return [
                     'responsible'            => 'Responsable',
                     'to-produce'             => 'A producir',
                     'to-produce-placeholder' => 'Vista previa de imagen',
+                    'uom-placeholder'        => 'UoM',
                 ],
             ],
         ],
@@ -54,6 +55,15 @@ return [
                     'real-duration'      => 'Duración real',
                     'status'             => 'Estado',
                     'lot-serial'         => 'Lote/Serie',
+                ],
+                'actions'      => [
+                    'open-work-order' => [
+                        'tooltip' => 'Abrir orden de trabajo',
+                    ],
+
+                    'done' => [
+                        'label' => 'Hecho',
+                    ],
                 ],
             ],
             'by-products' => [

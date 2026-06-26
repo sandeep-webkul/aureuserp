@@ -9,6 +9,13 @@ return [
     'header-actions' => [
         'confirm' => [
             'label' => 'Confirmar',
+
+            'notification' => [
+                'unable' => [
+                    'title' => 'No se puede confirmar el acuerdo de compra',
+                    'body'  => 'Agregar al menos una línea de producto antes de confirmar este acuerdo de compra.',
+                ],
+            ],
         ],
 
         'close' => [

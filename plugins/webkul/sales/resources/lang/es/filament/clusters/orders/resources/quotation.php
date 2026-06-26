@@ -90,6 +90,12 @@ return [
                                 'body'  => 'No se pueden eliminar productos de un pedido de venta confirmado.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Abrir producto',
+                            ],
+                        ],
                     ],
 
                     'product-optional' => [
@@ -208,6 +214,12 @@ return [
             'amount-tax'         => 'Importe de impuestos',
             'amount-total'       => 'Importe total',
             'customer-reference' => 'Referencia del cliente',
+        ],
+
+        'summarizers' => [
+            'total'        => 'Total',
+            'taxes'        => 'Impuestos',
+            'total-amount' => 'Importe total',
         ],
 
         'filters' => [

@@ -10,6 +10,13 @@ return [
         ],
 
         'refuse' => [
+            'title'        => 'Motivo del rechazo',
+            'form'         => [
+                'fields' => [
+                    'notify'   => 'Notificar',
+                    'email-to' => 'Enviar correo a',
+                ],
+            ],
             'notification' => [
                 'title' => 'Candidato rechazado',
                 'body'  => 'El candidato se ha rechazado correctamente.',
@@ -17,6 +24,7 @@ return [
         ],
 
         'reopen' => [
+            'title'        => 'Restaurar candidato del rechazo',
             'notification' => [
                 'title' => 'Candidato reabierto',
                 'body'  => 'El candidato se ha reabierto correctamente.',
