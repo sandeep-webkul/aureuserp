@@ -45,6 +45,12 @@ return [
                     'picked'                     => 'تم الانتقاء',
                 ],
 
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'فتح المنتج',
+                    ],
+                ],
+
                 'fields' => [
                     'product'        => 'المنتج',
                     'final-location' => 'الموقع النهائي',
@@ -59,6 +65,7 @@ return [
 
                     'lines' => [
                         'modal-heading' => 'إدارة حركات المخزون',
+                        'modal-submit-action-label' => 'حفظ',
                         'add-line'      => 'إضافة سطر',
 
                         'actions' => [

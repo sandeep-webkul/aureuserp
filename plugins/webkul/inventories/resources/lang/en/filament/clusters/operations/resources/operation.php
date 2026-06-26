@@ -45,6 +45,12 @@ return [
                     'picked'                     => 'Picked',
                 ],
 
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'Open product',
+                    ],
+                ],
+
                 'fields' => [
                     'product'        => 'Product',
                     'final-location' => 'Final Location',
@@ -59,6 +65,7 @@ return [
 
                     'lines' => [
                         'modal-heading' => 'Manage Stock Moves',
+                        'modal-submit-action-label' => 'Save',
                         'add-line'      => 'Add Line',
 
                         'actions' => [
