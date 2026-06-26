@@ -67,6 +67,7 @@ return [
             'dependencies' => 'التبعيات',
         ],
         'name'         => 'اسم الإضافة',
+        'author'       => 'المؤلف',
         'version'      => 'الإصدار',
         'dependencies' => 'الإضافات المطلوبة',
         'dependents'   => 'الإضافات التي تعتمد على هذه',
