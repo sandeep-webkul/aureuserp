@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\ApplyBrandSettings;
 use App\Http\Middleware\SetLocale;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Actions\Action;
@@ -50,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation()
             ->maxContentWidth(Width::Full)
             ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->userMenuItems([
                 'profile' => Action::make('profile')
                     ->label(fn () => Auth::user()?->name)
@@ -99,6 +101,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn (): string => __('admin.navigation.website'))
                     ->icon('icon-website'),
                 NavigationGroup::make()
+                    ->label(fn (): string => __('admin.navigation.barcode'))
+                    ->icon('icon-barcode'),
+                NavigationGroup::make()
+                    ->label(__('admin.navigation.plugin'))
                     ->label(fn (): string => __('admin.navigation.plugin'))
                     ->icon('icon-plugin'),
                 NavigationGroup::make()
@@ -141,6 +147,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 SetLocale::class,
+                ApplyBrandSettings::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

@@ -691,10 +691,7 @@ class InventoryManager
 
         foreach ($resultPackages as $resultPackage) {
             $locationCount = $resultPackage->quantities
-                ->filter(fn ($quantity) => ! float_is_zero(
-                    abs($quantity->quantity) + abs($quantity->reserved_quantity),
-                    precisionRounding: $quantity->uom->rounding
-                ))
+                ->filter(fn($quantity) => float_compare($quantity->quantity, 0.0, precisionRounding: $quantity->uom->rounding) > 0)
                 ->pluck('location_id')
                 ->unique()
                 ->count();
@@ -742,7 +739,7 @@ class InventoryManager
         }
 
         if ($movesTodo->isNotEmpty()) {
-            $this->checkQuantity($movesTodo);
+            $movesTodo->each(fn ($move) => $move->checkQuantity());
         }
 
         return $movesTodo;
@@ -912,9 +909,9 @@ class InventoryManager
         foreach ($moveLineIdsToCheck as $key => $moveLineIds) {
             [$productId, $companyId] = explode('_', $key);
 
-            $moveLines = MoveLine::whereIn('id', $moveLineIds)->get();
+            $lines = MoveLine::whereIn('id', $moveLineIds)->get();
 
-            $lotNames = $moveLines->pluck('lot_name')->filter()->all();
+            $lotNames = $lines->pluck('lot_name')->filter()->all();
 
             $lots = Lot::where(function ($q) use ($companyId) {
                 $q->whereNull('company_id')->orWhere('company_id', $companyId);
@@ -924,7 +921,7 @@ class InventoryManager
                 ->get()
                 ->keyBy('name');
 
-            foreach ($moveLines as $moveLine) {
+            foreach ($lines as $moveLine) {
                 $lot = $lots->get($moveLine->lot_name);
 
                 if ($lot) {
@@ -965,7 +962,10 @@ class InventoryManager
             extraFilters: [['lot_id', 'in', $moveLinesTodo->pluck('lot_id')->filter()->all()], ['lot_id', '=', null]],
         );
 
+
         foreach ($moveLinesTodo as $moveLine) {
+            $moveLine->refresh();
+            
             $moveLine->setContext([
                 'quantity_cache' => $quantityCache,
             ]);
@@ -2557,10 +2557,12 @@ class InventoryManager
         return $result;
     }
 
-    public function checkQuantity($moves) {}
-
     public function checkForEntirePack($operation)
     {
+        if (! $operation) {
+            return;
+        }
+
         $groupedByPackage = $operation->moveLines->groupBy('package_id');
 
         foreach ($groupedByPackage as $packageId => $packageMoveLines) {
