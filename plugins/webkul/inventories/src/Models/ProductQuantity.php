@@ -160,6 +160,8 @@ class ProductQuantity extends Model
 
                 $productQuantity->computePackageLocationCompany();
             }
+
+            static::deleteZeroQuantities();
         });
     }
 
