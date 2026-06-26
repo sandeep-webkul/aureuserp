@@ -2559,6 +2559,10 @@ class InventoryManager
 
     public function checkForEntirePack($operation)
     {
+        if (! $operation) {
+            return;
+        }
+
         $groupedByPackage = $operation->moveLines->groupBy('package_id');
 
         foreach ($groupedByPackage as $packageId => $packageMoveLines) {
