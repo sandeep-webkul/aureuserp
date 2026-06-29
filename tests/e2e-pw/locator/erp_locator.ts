@@ -239,6 +239,7 @@ export class ErpLocators {
     readonly inventoryOperationCheckAvailabilityButton: Locator;
     readonly inventoryOperationValidateButton: Locator;
     readonly inventoryOperationNoBackorderButton: Locator;
+    readonly inventoryOperationNextTransferButton: Locator;
     readonly inventoryOperationStateBadge: Locator;
     readonly inventoryOperationTable: Locator;
     readonly inventoryOperationRowActions: Locator;
@@ -259,6 +260,19 @@ export class ErpLocators {
     readonly inventoryTableRows: Locator;
     readonly inventoryPageHeading: Locator;
     readonly inventorySelectPanel: Locator;
+
+    /**
+     * Inventory - Traceability (product lot/serial tracking)
+     */
+
+    readonly inventoryProductTrackingSelect: Locator;
+    readonly inventoryMoveManageLinesAction: Locator;
+    readonly inventoryMoveLinesModal: Locator;
+    readonly inventoryMoveGenerateLotsAction: Locator;
+    readonly inventoryMoveLinesFirstLotInput: Locator;
+    readonly inventoryMoveLinesQuantityReceivedInput: Locator;
+    readonly inventoryMoveLinesGenerateSubmit: Locator;
+    readonly inventoryMoveLinesModalSaveButton: Locator;
 
    /**
     * Purchases - Vendors, Products, Quotations, Agreements 
@@ -662,6 +676,7 @@ export class ErpLocators {
         this.inventoryOperationCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
         this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' });
         this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
+        this.inventoryOperationNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
         this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();
@@ -682,6 +697,21 @@ export class ErpLocators {
         this.inventoryTableRows = page.locator("table tbody tr");
         this.inventoryPageHeading = page.locator("h1").first();
         this.inventorySelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
+
+        /**
+         * Inventory - Traceability (product lot/serial tracking)
+         */
+
+        this.inventoryProductTrackingSelect = page.locator('select[id="form.tracking"]').first();
+        // "Manage Stock Moves" lot/serial detail flow, reached from the suffix
+        // action on a confirmed move's quantity field.
+        this.inventoryMoveManageLinesAction = page.locator('button[wire\\:click*="manageLines"]');
+        this.inventoryMoveLinesModal = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).first();
+        this.inventoryMoveGenerateLotsAction = page.getByRole("button", { name: /Generate Serials\/Lots/i }).first();
+        this.inventoryMoveLinesFirstLotInput = page.getByLabel(/First Lot Number/i).first();
+        this.inventoryMoveLinesQuantityReceivedInput = page.getByLabel(/Quantity Received/i).first();
+        this.inventoryMoveLinesGenerateSubmit = page.locator('.fi-modal-window:visible').last().locator('button[type="submit"], .fi-modal-footer-actions button').first();
+        this.inventoryMoveLinesModalSaveButton = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).getByRole("button", { name: /^Save$/i }).first();
         
         /* 
          * Purchases - Vendors, Products, Quotations, Agreements

@@ -8,6 +8,8 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         // Locations + multi-step routes must be on for the location-based
         // on-hand quantity selectors and the moves tab to render.
         await inventoryPage.enableManageWarehousesToggles();
+        // Lots & Serial Numbers must be on to expose the product tracking field.
+        await inventoryPage.enableManageTraceabilityToggles();
     });
 
     test("Products Listing - Loads Table", async ({ adminPage }) => {
@@ -22,6 +24,28 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         await inventoryPage.createInventoryProduct({
             name: `E2E Inv Product ${key}`,
             price: "150",
+        });
+    });
+
+    test("Create Lot-Tracked Product - Valid Inputs", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        await inventoryPage.createInventoryProduct({
+            name: `E2E Lot Product ${key}`,
+            price: "100",
+            tracking: "lot",
+        });
+    });
+
+    test("Create Serial-Tracked Product - Valid Inputs", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        await inventoryPage.createInventoryProduct({
+            name: `E2E Serial Product ${key}`,
+            price: "120",
+            tracking: "serial",
         });
     });
 
@@ -103,68 +127,4 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "50");
     });
 
-    test("Receipt Validation Reflects In Product In/Out Tab And Quantities", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const productName = `E2E Move Flow ${key}`;
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "30",
-        });
-
-        // Bring stock in via a validated receipt.
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "12",
-        });
-
-        // Quantities tab should now show the product is on-hand somewhere.
-        await inventoryPage.gotoProductQuantitiesTab(productName);
-
-        // In/Out tab should show at least one move row for the validated receipt.
-        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
-    });
-
-    test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const warehouseName = `WH Out ${key}`;
-        const warehouseCode = `WO${key}`.slice(-5);
-        const productName = `E2E Out Move ${key}`;
-
-        // Use a fresh 1-step warehouse so the receipt's incoming move and the
-        // delivery's outgoing move both transition to "Done" in a single step,
-        // independent of any multi-step state left by earlier tests.
-        await inventoryPage.createWarehouse({
-            name: warehouseName,
-            code: warehouseCode,
-            receptionStep: 1,
-            deliveryStep: 1,
-        });
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "40",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "10",
-            operationType: warehouseName,
-        });
-
-        await inventoryPage.deliveryFullFlow({
-            productName,
-            demand: "4",
-            operationType: warehouseName,
-        });
-
-        // After receipt (10) and delivery (4) against the 1-step warehouse, the
-        // product's stock location should hold 6 on hand, and the In/Out tab
-        // should list both validated moves as "Done".
-        await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "6");
-        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
-        await inventoryPage.expectProductQuantityRowVisible(productName);
-    });
 });

@@ -12,6 +12,7 @@ export type WarehouseData = {
 export type InventoryProductData = {
     name: string;
     price?: string;
+    tracking?: "lot" | "serial";
 };
 
 export type ReceiptData = {
@@ -31,8 +32,18 @@ export type DeliveryData = {
 export type InternalTransferData = {
     productName: string;
     demand: string;
-    sourceLocation?: string;
-    destinationLocation?: string;
+    operationType?: string;
+    operationTypeName?: string;
+};
+
+/**
+ * One move line of an operation. `lotName` marks a lot/serial-tracked product
+ * whose lot/serials are generated during the flow.
+ */
+export type MoveLineInput = {
+    productName: string;
+    demand: string;
+    lotName?: string;
 };
 
 export class InventoriesManagementPage {
@@ -432,6 +443,10 @@ export class InventoriesManagementPage {
             await this.setToggleOn(this.erpLocators.inventoryProductIsStorableToggle);
         }
 
+        if (product.tracking) {
+            await this.erpLocators.inventoryProductTrackingSelect.selectOption(product.tracking, { timeout: 15000 });
+        }
+
         await this.erpLocators.inventoryProductSaveButton.click();
         await expect(this.page).not.toHaveURL(/products\/create/);
         await this.page.waitForLoadState("networkidle");
@@ -678,7 +693,7 @@ export class InventoriesManagementPage {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
         }
 
-        await this.addOrReuseMoveLine(data.productName, data.demand);
+        await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
@@ -689,6 +704,118 @@ export class InventoriesManagementPage {
     async receiptFullFlow(data: ReceiptData) {
         await this.createReceipt(data);
         await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * Follow the auto-generated onward transfers via the "Next Transfer" button,
+     * validating each, until the chain ends (Input -> [QC ->] Stock for a
+     * multi-step receipt). The onward transfers are created automatically when an
+     * operation created through the warehouse's operation type is validated.
+     */
+    async chainNextTransfers(maxSteps = 4) {
+        const nextBtn = this.erpLocators.inventoryOperationNextTransferButton;
+
+        for (let step = 0; step < maxSteps; step++) {
+            // Reload so the header reflects show_next_operations after the last validate.
+            await this.page.reload().catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+
+            if (!(await nextBtn.isVisible().catch(() => false))) {
+                break;
+            }
+            await nextBtn.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+            await this.confirmAndValidateOperation();
+        }
+    }
+
+    /**
+     * Receive against a multi-step warehouse (via its operation type) and chain
+     * the product all the way to its stock location using "Next Transfer".
+     */
+    async receiptChainFullFlow(data: ReceiptData) {
+        await this.receiptFullFlow(data);
+        await this.chainNextTransfers();
+    }
+
+    /**
+     * Create a receipt with one or more move lines and return its reference.
+     */
+    async createReceiptLines(lines: MoveLineInput[], operationType?: string): Promise<string> {
+        await this.gotoReceiptsPage();
+        await this.erpLocators.inventoryOperationCreateButton.click();
+        await expect(this.page).toHaveURL(/receipts\/create/);
+
+        if (operationType) {
+            await this.selectOperationTypeForWarehouse(operationType, "Receipts");
+        }
+
+        await this.addMoveLines(lines);
+
+        await this.erpLocators.inventoryOperationSaveButton.click();
+        await this.expectSuccessToast();
+
+        return this.readOperationReference();
+    }
+
+    /**
+     * Receive one or more move lines and validate. Lot/serial-tracked lines (a
+     * `lotName` present) get their lot/serials generated once the receipt is
+     * confirmed; quantity-tracked lines need nothing extra.
+     */
+    async receiptLinesFullFlow(lines: MoveLineInput[], operationType?: string) {
+        await this.createReceiptLines(lines, operationType);
+
+        const tracked = lines
+            .map((line, index) => ({ ...line, index }))
+            .filter((line) => line.lotName);
+
+        if (tracked.length > 0) {
+            // The lot detail only appears once the moves leave the Draft state.
+            await this.clickMarkAsTodoIfVisible();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+
+            for (const line of tracked) {
+                await this.generateLotOnMove(line.lotName!, line.demand, line.index);
+            }
+        }
+
+        await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * Receive a single lot/serial-tracked product, generating its lot/serials.
+     */
+    async receiptWithLotFlow(data: ReceiptData, lotName: string) {
+        await this.receiptLinesFullFlow(
+            [{ productName: data.productName, demand: data.demand, lotName }],
+            data.operationType
+        );
+    }
+
+    /**
+     * Open the "Manage Stock Moves" modal on the move at `rowIndex` and generate
+     * the lot/serials covering the received quantity.
+     */
+    private async generateLotOnMove(lotName: string, quantity: string, rowIndex = 0) {
+        const l = this.erpLocators;
+
+        await l.inventoryMoveManageLinesAction.nth(rowIndex).click({ timeout: 15000 });
+        await expect(l.inventoryMoveLinesModal).toBeVisible();
+
+        await l.inventoryMoveGenerateLotsAction.click({ timeout: 15000 });
+        await l.inventoryMoveLinesFirstLotInput.fill(lotName);
+        await l.inventoryMoveLinesQuantityReceivedInput.fill(quantity);
+        await l.inventoryMoveLinesGenerateSubmit.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(500);
+
+        await l.inventoryMoveLinesModalSaveButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(500);
     }
 
     /**
@@ -716,7 +843,7 @@ export class InventoriesManagementPage {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
         }
 
-        await this.addOrReuseMoveLine(data.productName, data.demand);
+        await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
@@ -746,21 +873,13 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/internals\/create/);
 
-        if (data.sourceLocation) {
-            await this.selectBySearch(
-                this.erpLocators.inventoryOperationSourceLocationSelect,
-                data.sourceLocation
-            );
+        // Picking the warehouse's chain operation type (e.g. "Pick") sets the
+        // route-linked source/destination.
+        if (data.operationType && data.operationTypeName) {
+            await this.selectOperationTypeForWarehouse(data.operationType, data.operationTypeName);
         }
 
-        if (data.destinationLocation) {
-            await this.selectBySearch(
-                this.erpLocators.inventoryOperationDestinationLocationSelect,
-                data.destinationLocation
-            );
-        }
-
-        await this.addOrReuseMoveLine(data.productName, data.demand);
+        await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
@@ -830,21 +949,25 @@ export class InventoriesManagementPage {
     }
 
     /**
-     * Add one move line, reusing the repeater's pre-added empty row and only adding when it's empty.
+     * Add the given move lines, reusing the repeater's pre-added empty first row
+     * and adding a new line for each subsequent product.
      */
-    private async addOrReuseMoveLine(productName: string, demand: string) {
+    private async addMoveLines(lines: MoveLineInput[]) {
         const productSelects = this.erpLocators.inventoryOperationMoveProductSelect;
+        const demandInputs = this.erpLocators.inventoryOperationMoveDemandInput;
 
+        // Let any pending repeater re-render (from an operation-type change) settle.
         await this.page.waitForTimeout(500);
 
-        if ((await productSelects.count()) === 0) {
-            await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
-            await this.erpLocators.inventoryOperationAddMoveButton.click();
-            await expect(productSelects.first()).toBeVisible();
+        for (let i = 0; i < lines.length; i++) {
+            if ((await productSelects.count()) < i + 1) {
+                await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
+                await this.erpLocators.inventoryOperationAddMoveButton.click();
+                await expect(productSelects.nth(i)).toBeVisible();
+            }
+            await this.selectBySearch(productSelects.nth(i), lines[i].productName);
+            await demandInputs.nth(i).fill(lines[i].demand);
         }
-
-        await this.selectBySearch(productSelects.first(), productName);
-        await this.erpLocators.inventoryOperationMoveDemandInput.first().fill(demand);
     }
 
     /**
