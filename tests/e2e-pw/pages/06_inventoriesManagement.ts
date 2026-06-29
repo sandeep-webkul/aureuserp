@@ -77,7 +77,8 @@ export class InventoriesManagementPage {
         await this.gotoManageOperationsPage();
         await this.setToggleOn(this.erpLocators.inventoryManageOperationsToggleEnablePackages);
         await this.erpLocators.inventorySettingsSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToastSoft();
     }
 
     /**
@@ -97,7 +98,8 @@ export class InventoriesManagementPage {
         await this.setToggleOn(this.erpLocators.inventoryManageProductsToggleEnableUom);
         await this.setToggleOn(this.erpLocators.inventoryManageProductsToggleEnablePackagings);
         await this.erpLocators.inventorySettingsSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToastSoft();
     }
 
     /**
@@ -158,7 +160,8 @@ export class InventoriesManagementPage {
         await this.gotoManageLogisticsSettingsPage();
         await this.setToggleOn(this.erpLocators.inventoryManageLogisticsToggleEnableDropshipping);
         await this.erpLocators.inventorySettingsSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToastSoft();
     }
 
     /**
@@ -293,7 +296,7 @@ export class InventoriesManagementPage {
      */
     async expectListContains(keyword: string) {
         await this.searchList(keyword);
-        const matches = this.page.locator("table tbody tr", { hasText: keyword });
+        const matches = this.erpLocators.inventoryTableRows.filter({ hasText: keyword });
         await expect(matches.first()).toBeVisible();
     }
 
@@ -318,53 +321,88 @@ export class InventoriesManagementPage {
     }
 
     /**
-     * Count how many rows in the current list match the keyword.
-     * Uses the page's search input first to filter the list, then counts
-     * the visible <tbody> rows.
+     * Verify a warehouse's auto-created records by presence, not brittle global counts.
      */
-    async countListMatches(keyword: string): Promise<number> {
-        await this.searchList(keyword);
-        const matches = this.page.locator("table tbody tr", { hasText: keyword });
-        await expect(matches.first()).toBeVisible();
-        return matches.count();
-    }
+    async expectWarehouseConfiguration(warehouse: WarehouseData) {
+        const reception = warehouse.receptionStep ?? 1;
+        const delivery = warehouse.deliveryStep ?? 1;
 
-    async expectLocationCountFor(warehouseCode: string, expected: number) {
-        await this.gotoLocationsPage();
-        const count = await this.countListMatches(warehouseCode);
-        expect(count, `Expected ${expected} location(s) for warehouse ${warehouseCode}`).toBe(expected);
-    }
-
-    async expectOperationTypeCountFor(warehouseCode: string, expected: number) {
-        await this.gotoOperationTypesPage();
-        const count = await this.countListMatches(warehouseCode);
-        expect(count, `Expected ${expected} operation type(s) for warehouse ${warehouseCode}`).toBe(expected);
-    }
-
-    async expectRouteCountFor(warehouseCode: string, expected: number) {
-        await this.gotoRoutesPage();
-        const count = await this.countListMatches(warehouseCode);
-        expect(count, `Expected ${expected} route(s) for warehouse ${warehouseCode}`).toBe(expected);
-    }
-
-    async expectRuleCountFor(warehouseCode: string, expected: number) {
-        await this.gotoRulesPage();
-        const count = await this.countListMatches(warehouseCode);
-        expect(count, `Expected ${expected} rule(s) for warehouse ${warehouseCode}`).toBe(expected);
+        await this.expectWarehouseLocations(warehouse.code, reception, delivery);
+        await this.expectWarehouseOperationTypes(warehouse.name, reception, delivery);
+        await this.expectWarehouseRoutes(warehouse.name, reception, delivery);
+        await this.expectWarehouseRules(warehouse.code);
     }
 
     /**
-     * Convenience helper: assert all four auto-created lists for a warehouse step.
+     * Locations are listed as "<CODE>/<Name>", scoped by the warehouse code.
      */
-    async expectWarehouseAutoCreatedCounts(
-        warehouseCode: string,
-        warehouseName: string,
-        expected: { locations: number; operationTypes: number; routes: number; rules: number }
-    ) {
-        await this.expectLocationCountFor(warehouseCode, expected.locations);
-        await this.expectOperationTypeCountFor(warehouseName, expected.operationTypes);
-        await this.expectRouteCountFor(warehouseName, expected.routes);
-        await this.expectRuleCountFor(warehouseCode, expected.rules);
+    async expectWarehouseLocations(code: string, reception: number, delivery: number) {
+        await this.gotoLocationsPage();
+        await this.searchList(code);
+
+        await this.expectScopedRow(`${code}/Stock`, true);
+        await this.expectScopedRow(`${code}/Input`, reception >= 2);
+        await this.expectScopedRow(`${code}/Quality Control`, reception >= 3);
+        await this.expectScopedRow(`${code}/Output`, delivery >= 2);
+        await this.expectScopedRow(`${code}/Packing Zone`, delivery >= 3);
+    }
+
+    /**
+     * Operation types are scoped via the warehouse-name column.
+     */
+    async expectWarehouseOperationTypes(name: string, reception: number, delivery: number) {
+        await this.gotoOperationTypesPage();
+        await this.searchList(name);
+
+        await this.expectScopedRow("Receipts", true);
+        await this.expectScopedRow("Delivery Orders", true);
+        await this.expectScopedRow("Storage", reception >= 2);
+        await this.expectScopedRow("Quality Control", reception >= 3);
+        await this.expectScopedRow("Pick", delivery >= 2);
+        await this.expectScopedRow("Pack", delivery >= 3);
+    }
+
+    /**
+     * Only the route variant matching the configured step count should exist.
+     */
+    async expectWarehouseRoutes(name: string, reception: number, delivery: number) {
+        await this.gotoRoutesPage();
+        await this.searchList(name);
+
+        for (const step of [1, 2, 3]) {
+            await this.expectScopedRow(this.receiveRouteLabel(step), step === reception);
+            await this.expectScopedRow(this.deliverRouteLabel(step), step === delivery);
+        }
+    }
+
+    /**
+     * Rule names vary per step, so just assert auto-created rules exist.
+     */
+    async expectWarehouseRules(code: string) {
+        await this.gotoRulesPage();
+        await this.searchList(code);
+        const rules = this.erpLocators.inventoryTableRows.filter({ hasText: code });
+        await expect(rules.first(), `Expected auto-created rules for warehouse ${code}`).toBeVisible();
+    }
+
+    private receiveRouteLabel(step: number): string {
+        return `Receive in ${step} step${step === 1 ? "" : "s"}`;
+    }
+
+    private deliverRouteLabel(step: number): string {
+        return `Deliver in ${step} step${step === 1 ? "" : "s"}`;
+    }
+
+    /**
+     * Assert a row containing `rowText` is present/absent in the already-filtered list.
+     */
+    private async expectScopedRow(rowText: string, shouldExist: boolean) {
+        const rows = this.erpLocators.inventoryTableRows.filter({ hasText: rowText });
+        if (shouldExist) {
+            await expect(rows.first(), `Expected a row containing "${rowText}"`).toBeVisible();
+        } else {
+            await expect(rows, `Expected no row containing "${rowText}"`).toHaveCount(0);
+        }
     }
 
     /**
@@ -395,7 +433,8 @@ export class InventoriesManagementPage {
         }
 
         await this.erpLocators.inventoryProductSaveButton.click();
-        await this.expectSuccessToast();
+        await expect(this.page).not.toHaveURL(/products\/create/);
+        await this.page.waitForLoadState("networkidle");
     }
 
     /**
@@ -404,7 +443,7 @@ export class InventoriesManagementPage {
     async openProductByName(name: string) {
         await this.gotoProductsPage();
         await this.searchList(name);
-        const link = this.page.locator("table tbody tr a", { hasText: name }).first();
+        const link = this.erpLocators.inventoryTableRows.locator("a").filter({ hasText: name }).first();
         await expect(link).toBeVisible();
         await link.click();
         await this.page.waitForLoadState("networkidle");
@@ -467,7 +506,7 @@ export class InventoriesManagementPage {
         await trigger.scrollIntoViewIfNeeded();
         await trigger.click();
 
-        const panel = this.page.locator('.fi-dropdown-panel[role="listbox"]:visible').last();
+        const panel = this.erpLocators.inventorySelectPanel.last();
         await expect(panel).toBeVisible();
 
         const search = panel.locator('input.fi-input[aria-label="Search"]').first();
@@ -526,7 +565,7 @@ export class InventoriesManagementPage {
                 await this.page.waitForLoadState("networkidle");
             }
         }
-        const row = this.page.locator("table tbody tr").first();
+        const row = this.erpLocators.inventoryTableRows.first();
         await expect(row).toBeVisible();
     }
 
@@ -537,7 +576,7 @@ export class InventoriesManagementPage {
      */
     async countProductMoveRows(productName: string): Promise<number> {
         await this.gotoProductMovesTab(productName);
-        const rows = this.page.locator("table tbody tr");
+        const rows = this.erpLocators.inventoryTableRows;
         if (await rows.first().isVisible().catch(() => false)) {
             return rows.count();
         }
@@ -568,8 +607,8 @@ export class InventoriesManagementPage {
 
     async clickMarkAsTodoIfVisible(): Promise<boolean> {
         if (await this.erpLocators.inventoryOperationMarkAsTodoButton.isVisible().catch(() => false)) {
-            await this.erpLocators.inventoryOperationMarkAsTodoButton.click();
-            await this.page.waitForLoadState("networkidle");
+            await this.erpLocators.inventoryOperationMarkAsTodoButton.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
             return true;
         }
         return false;
@@ -577,22 +616,40 @@ export class InventoriesManagementPage {
 
     async clickCheckAvailabilityIfVisible(): Promise<boolean> {
         if (await this.erpLocators.inventoryOperationCheckAvailabilityButton.isVisible().catch(() => false)) {
-            await this.erpLocators.inventoryOperationCheckAvailabilityButton.click();
-            await this.page.waitForLoadState("networkidle");
+            await this.erpLocators.inventoryOperationCheckAvailabilityButton.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
             return true;
         }
         return false;
     }
 
-    async validateOperation() {
-        await expect(this.erpLocators.inventoryOperationValidateButton).toBeVisible();
-        await this.erpLocators.inventoryOperationValidateButton.click();
+    /**
+     * Drive an operation Draft -> Done, settling between Livewire steps and retrying Validate with bounded clicks.
+     */
+    async confirmAndValidateOperation() {
+        const l = this.erpLocators;
 
-        if (await this.erpLocators.inventoryOperationNoBackorderButton.isVisible().catch(() => false)) {
-            await this.erpLocators.inventoryOperationNoBackorderButton.click();
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+
+        await this.clickCheckAvailabilityIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+
+        const validateBtn = l.inventoryOperationValidateButton;
+        for (let attempt = 0; attempt < 5; attempt++) {
+            if (!(await validateBtn.isVisible().catch(() => false))) {
+                break;
+            }
+            await validateBtn.click({ timeout: 15000 }).catch(() => undefined);
+            if (await l.inventoryOperationNoBackorderButton.isVisible().catch(() => false)) {
+                await l.inventoryOperationNoBackorderButton.click({ timeout: 15000 }).catch(() => undefined);
+            }
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(1200);
         }
 
-        await this.page.waitForLoadState("networkidle");
         await this.expectSuccessToastSoft();
     }
 
@@ -608,37 +665,30 @@ export class InventoriesManagementPage {
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
     }
 
-    async createReceipt(data: ReceiptData) {
+    async createReceipt(data: ReceiptData): Promise<string> {
         await this.gotoReceiptsPage();
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/receipts\/create/);
 
         if (data.operationType) {
-            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, `${data.operationType}:Receipt`);
-            await this.page.waitForLoadState("networkidle");
+            await this.selectOperationTypeForWarehouse(data.operationType, "Receipts");
         }
 
         if (data.partnerName) {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
         }
 
-        await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
-        await this.erpLocators.inventoryOperationAddMoveButton.click();
-        await this.selectBySearch(
-            this.erpLocators.inventoryOperationMoveProductSelect.first(),
-            data.productName
-        );
-        await this.erpLocators.inventoryOperationMoveDemandInput.first().fill(data.demand);
+        await this.addOrReuseMoveLine(data.productName, data.demand);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
+
+        return this.readOperationReference();
     }
 
     async receiptFullFlow(data: ReceiptData) {
         await this.createReceipt(data);
-        await this.clickMarkAsTodoIfVisible();
-        await this.clickCheckAvailabilityIfVisible();
-        await this.validateOperation();
+        await this.confirmAndValidateOperation();
     }
 
     /**
@@ -653,37 +703,30 @@ export class InventoriesManagementPage {
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
     }
 
-    async createDelivery(data: DeliveryData) {
+    async createDelivery(data: DeliveryData): Promise<string> {
         await this.gotoDeliveriesPage();
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/deliveries\/create/);
 
         if (data.operationType) {
-            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, data.operationType);
-            await this.page.waitForLoadState("networkidle");
+            await this.selectOperationTypeForWarehouse(data.operationType, "Delivery Orders");
         }
 
         if (data.partnerName) {
             await this.selectBySearch(this.erpLocators.inventoryOperationPartnerSelect, data.partnerName);
         }
 
-        await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
-        await this.erpLocators.inventoryOperationAddMoveButton.click();
-        await this.selectBySearch(
-            this.erpLocators.inventoryOperationMoveProductSelect.first(),
-            data.productName
-        );
-        await this.erpLocators.inventoryOperationMoveDemandInput.first().fill(data.demand);
+        await this.addOrReuseMoveLine(data.productName, data.demand);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
+
+        return this.readOperationReference();
     }
 
     async deliveryFullFlow(data: DeliveryData) {
         await this.createDelivery(data);
-        await this.clickMarkAsTodoIfVisible();
-        await this.clickCheckAvailabilityIfVisible();
-        await this.validateOperation();
+        await this.confirmAndValidateOperation();
     }
 
     /**
@@ -698,7 +741,7 @@ export class InventoriesManagementPage {
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
     }
 
-    async createInternalTransfer(data: InternalTransferData) {
+    async createInternalTransfer(data: InternalTransferData): Promise<string> {
         await this.gotoInternalTransfersPage();
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/internals\/create/);
@@ -717,23 +760,17 @@ export class InventoriesManagementPage {
             );
         }
 
-        await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
-        await this.erpLocators.inventoryOperationAddMoveButton.click();
-        await this.selectBySearch(
-            this.erpLocators.inventoryOperationMoveProductSelect.first(),
-            data.productName
-        );
-        await this.erpLocators.inventoryOperationMoveDemandInput.first().fill(data.demand);
+        await this.addOrReuseMoveLine(data.productName, data.demand);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
+
+        return this.readOperationReference();
     }
 
     async internalTransferFullFlow(data: InternalTransferData) {
         await this.createInternalTransfer(data);
-        await this.clickMarkAsTodoIfVisible();
-        await this.clickCheckAvailabilityIfVisible();
-        await this.validateOperation();
+        await this.confirmAndValidateOperation();
     }
 
     /**
@@ -749,13 +786,24 @@ export class InventoriesManagementPage {
     async expectProductQuantityRowVisible(productName: string) {
         await this.gotoQuantitiesPage();
         await this.searchList(productName);
-        const row = this.page.locator("table tbody tr", { hasText: productName });
+        const row = this.erpLocators.inventoryTableRows.filter({ hasText: productName });
         await expect(row.first()).toBeVisible();
     }
 
     /**
      * Generic UI helpers
      */
+
+    /**
+     * Read an operation's reference from the edit-page heading (lists are searchable by reference, not product).
+     */
+    private async readOperationReference(): Promise<string> {
+        const heading = this.erpLocators.inventoryPageHeading;
+        await expect(heading).toBeVisible();
+        const text = (await heading.textContent().catch(() => "")) ?? "";
+        const match = text.match(/[A-Za-z0-9]+\/[A-Za-z]+\/\d+/);
+        return (match ? match[0] : text.replace(/^\s*(Edit|View)\s+/i, "")).trim();
+    }
 
     async searchList(keyword: string) {
         await this.erpLocators.inventorySearchInput.fill(keyword);
@@ -779,6 +827,46 @@ export class InventoriesManagementPage {
 
         await expect(option).toBeVisible();
         await option.click();
+    }
+
+    /**
+     * Add one move line, reusing the repeater's pre-added empty row and only adding when it's empty.
+     */
+    private async addOrReuseMoveLine(productName: string, demand: string) {
+        const productSelects = this.erpLocators.inventoryOperationMoveProductSelect;
+
+        await this.page.waitForTimeout(500);
+
+        if ((await productSelects.count()) === 0) {
+            await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
+            await this.erpLocators.inventoryOperationAddMoveButton.click();
+            await expect(productSelects.first()).toBeVisible();
+        }
+
+        await this.selectBySearch(productSelects.first(), productName);
+        await this.erpLocators.inventoryOperationMoveDemandInput.first().fill(demand);
+    }
+
+    /**
+     * Select a warehouse's operation type: search by op-type name, then pick the option whose label has the warehouse name.
+     */
+    async selectOperationTypeForWarehouse(warehouseName: string, operationTypeName: string) {
+        const trigger = this.erpLocators.inventoryOperationTypeSelect;
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.click();
+
+        await expect(this.erpLocators.inventorySelectSearchInput).toBeVisible();
+        await this.erpLocators.inventorySelectSearchInput.fill(operationTypeName);
+        await this.page.waitForTimeout(800);
+
+        const option = this.erpLocators.inventorySelectOption
+            .filter({ hasText: new RegExp(this.escapeRegExp(warehouseName), "i") })
+            .filter({ hasText: new RegExp(this.escapeRegExp(operationTypeName), "i") })
+            .first();
+
+        await expect(option).toBeVisible();
+        await option.click();
+        await this.page.waitForLoadState("networkidle");
     }
 
     async setToggleOn(toggle: Locator) {

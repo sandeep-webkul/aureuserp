@@ -116,14 +116,15 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             price: "15",
         });
 
-        await inventoryPage.createReceipt({
+        const reference = await inventoryPage.createReceipt({
             productName,
             demand: "7",
         });
 
-        // Draft receipt should now be searchable on the receipts listing.
+        // The receipts listing exposes the reference (not the product) as a
+        // searchable column, so look the draft up by its generated reference.
         await inventoryPage.gotoReceiptsPage();
-        await inventoryPage.expectListContains(productName);
+        await inventoryPage.expectListContains(reference);
     });
 
     test("Two Sequential Receipts - Both Reflect On Product Moves Tab", async ({ adminPage }) => {
@@ -242,13 +243,13 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             price: "12",
         });
 
-        await inventoryPage.createDelivery({
+        const reference = await inventoryPage.createDelivery({
             productName,
             demand: "3",
         });
 
         await inventoryPage.gotoDeliveriesPage();
-        await inventoryPage.expectListContains(productName);
+        await inventoryPage.expectListContains(reference);
     });
 
     test("Saved Internal Transfer Draft - Appears In Internal Transfers List", async ({ adminPage }) => {
@@ -261,12 +262,12 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             price: "14",
         });
 
-        await inventoryPage.createInternalTransfer({
+        const reference = await inventoryPage.createInternalTransfer({
             productName,
             demand: "2",
         });
 
         await inventoryPage.gotoInternalTransfersPage();
-        await inventoryPage.expectListContains(productName);
+        await inventoryPage.expectListContains(reference);
     });
 });

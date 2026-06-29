@@ -27,10 +27,10 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
         });
 
         // 2) Verify auto-created locations, operation types, routes, rules.
-        await inventoryPage.expectLocationCreatedFor(warehouseName);
+        await inventoryPage.expectLocationCreatedFor(warehouseCode);
         await inventoryPage.expectOperationTypeCreatedFor(warehouseName);
         await inventoryPage.expectRouteCreatedFor(warehouseName);
-        await inventoryPage.expectRuleCreatedFor(warehouseName);
+        await inventoryPage.expectRuleCreatedFor(warehouseCode);
 
         // 3) Create a storable product.
         await inventoryPage.createInventoryProduct({
@@ -84,7 +84,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
         });
 
         // 2) Verify auto-created configs exist for the new warehouse.
-        await inventoryPage.expectLocationCreatedFor(warehouseName);
+        await inventoryPage.expectLocationCreatedFor(warehouseCode);
         await inventoryPage.expectOperationTypeCreatedFor(warehouseName);
 
         // 3) Create a storable product.
@@ -124,7 +124,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
             deliveryStep: 1,
         });
 
-        await inventoryPage.expectLocationCreatedFor(warehouseName);
+        await inventoryPage.expectLocationCreatedFor(warehouseCode);
         await inventoryPage.expectOperationTypeCreatedFor(warehouseName);
         await inventoryPage.expectRouteCreatedFor(warehouseName);
 

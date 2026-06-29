@@ -256,6 +256,9 @@ export class ErpLocators {
     readonly inventoryErrorToast: Locator;
     readonly inventoryValidationMessage: Locator;
     readonly inventoryConfirmDialogButton: Locator;
+    readonly inventoryTableRows: Locator;
+    readonly inventoryPageHeading: Locator;
+    readonly inventorySelectPanel: Locator;
 
    /**
     * Purchases - Vendors, Products, Quotations, Agreements 
@@ -676,6 +679,9 @@ export class ErpLocators {
         this.inventoryErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.inventoryValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
         this.inventoryConfirmDialogButton = page.getByRole("dialog").getByRole("button", { name: /Confirm|Delete|Yes/i }).first();
+        this.inventoryTableRows = page.locator("table tbody tr");
+        this.inventoryPageHeading = page.locator("h1").first();
+        this.inventorySelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
         
         /* 
          * Purchases - Vendors, Products, Quotations, Agreements
