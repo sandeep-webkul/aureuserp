@@ -61,6 +61,12 @@ export type PackageData = {
     location?: string;
 };
 
+export type ScrapData = {
+    productName: string;
+    qty: string;
+    sourceLocation?: string;
+};
+
 export class InventoriesManagementPage {
     readonly page: Page;
     readonly erpLocators: ErpLocators;
@@ -529,6 +535,78 @@ export class InventoriesManagementPage {
         await l.inventoryProductQuantityDialogCreate.click();
         await this.page.waitForLoadState("networkidle");
         await this.expectSuccessToastSoft();
+    }
+
+    /**
+     * Open a product's edit page (the row link lands on the read-only view).
+     */
+    async gotoProductEdit(productName: string) {
+        await this.openProductByName(productName);
+        const id = this.page.url().match(/products\/(\d+)/)?.[1];
+        if (id) {
+            await this.page.goto(`/admin/inventory/products/products/${id}/edit`);
+            await this.page.waitForLoadState("networkidle");
+        }
+    }
+
+    /**
+     * Change a product's "Track By" on its edit page and save. The tracking
+     * field is live, so allow its round-trip to settle before saving.
+     */
+    async editProductTracking(productName: string, tracking: "qty" | "lot" | "serial") {
+        const l = this.erpLocators;
+
+        await this.gotoProductEdit(productName);
+        await l.inventoryProductTrackingSelect.selectOption(tracking, { timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
+        await l.inventoryProductEditSaveButton.click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1500);
+    }
+
+    /**
+     * Assert a product's persisted "Track By" value (read from a fresh edit page).
+     */
+    async expectProductTracking(productName: string, tracking: "qty" | "lot" | "serial") {
+        await this.gotoProductEdit(productName);
+        await expect(this.erpLocators.inventoryProductTrackingSelect).toHaveValue(tracking);
+    }
+
+    /**
+     * Adjust an existing on-hand quantity row inline to a new value.
+     */
+    async adjustOnHandQuantity(productName: string, newQuantity: string) {
+        await this.gotoProductQuantitiesTab(productName);
+        const input = this.erpLocators.inventoryProductQuantityEditableInput;
+        await input.fill(newQuantity);
+        await input.press("Enter");
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+    }
+
+    /**
+     * Inventory-adjust a product's stock to zero via Operations > Adjustments >
+     * Quantities: set the counted quantity to 0 and apply.
+     */
+    async clearStockViaAdjustment(productName: string) {
+        await this.page.goto("/admin/inventory/operations/quantities");
+        await expect(this.page).toHaveURL(/operations\/quantities/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
+
+        await this.searchList(productName);
+        await this.page.waitForTimeout(500);
+
+        const counted = this.erpLocators.inventoryQuantityCountedInput;
+        await counted.fill("0");
+        await counted.press("Enter");
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+
+        await this.erpLocators.inventoryQuantityApplyAction.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     /**
@@ -1099,6 +1177,61 @@ export class InventoriesManagementPage {
 
         const link = this.erpLocators.inventoryTableRows.locator("a").filter({ hasText: packageName });
         await expect(link).toHaveCount(0);
+    }
+
+    /**
+     * Operations - Scrap
+     */
+
+    async gotoScrapsPage() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.goto("/admin/inventory/operations/scraps");
+        await expect(this.page).toHaveURL(/operations\/scraps/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
+    }
+
+    /**
+     * Create a scrap for a product; selecting the product auto-fills its unit.
+     */
+    async createScrap(data: ScrapData) {
+        await this.gotoScrapsPage();
+        await this.erpLocators.inventoryScrapCreateButton.click();
+        await expect(this.page).toHaveURL(/scraps\/create/);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await this.selectBySearch(this.erpLocators.inventoryScrapProductSelect, data.productName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await this.erpLocators.inventoryScrapQtyInput.fill(data.qty);
+        if (data.sourceLocation) {
+            await this.selectFromFilamentDropdown(this.erpLocators.inventoryScrapSourceLocationSelect, data.sourceLocation);
+        }
+
+        await this.erpLocators.inventoryOperationSaveButton.click();
+        await expect(this.page).not.toHaveURL(/scraps\/create/);
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Validate the open scrap, moving its quantity to the scrap location.
+     */
+    async validateScrap() {
+        const btn = this.erpLocators.inventoryOperationValidateButton;
+        await btn.waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
+        if (await btn.isVisible().catch(() => false)) {
+            await btn.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+        }
+    }
+
+    /**
+     * Create and validate a scrap in one flow.
+     */
+    async scrapFlow(data: ScrapData) {
+        await this.createScrap(data);
+        await this.validateScrap();
     }
 
     /**

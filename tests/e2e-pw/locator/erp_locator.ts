@@ -201,6 +201,8 @@ export class ErpLocators {
     readonly inventoryProductNameInput: Locator;
     readonly inventoryProductPriceInput: Locator;
     readonly inventoryProductSaveButton: Locator;
+    readonly inventoryProductEditSaveButton: Locator;
+    readonly inventoryProductQuantityEditableInput: Locator;
     readonly inventoryProductTable: Locator;
     readonly inventoryProductRowActions: Locator;
     readonly inventoryProductEditAction: Locator;
@@ -296,6 +298,14 @@ export class ErpLocators {
     readonly inventoryPackageSaveButton: Locator;
     readonly inventoryPackageTable: Locator;
     readonly inventoryPackageDeleteAction: Locator;
+
+    readonly inventoryScrapCreateButton: Locator;
+    readonly inventoryScrapProductSelect: Locator;
+    readonly inventoryScrapQtyInput: Locator;
+    readonly inventoryScrapSourceLocationSelect: Locator;
+
+    readonly inventoryQuantityCountedInput: Locator;
+    readonly inventoryQuantityApplyAction: Locator;
 
    /**
     * Purchases - Vendors, Products, Quotations, Agreements 
@@ -636,6 +646,8 @@ export class ErpLocators {
         this.inventoryProductNameInput = page.locator('input[id="form.name"]').first();
         this.inventoryProductPriceInput = page.locator('input[id="form.price"]').first();
         this.inventoryProductSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryProductEditSaveButton = page.getByRole("button", { name: /Save changes/i }).first();
+        this.inventoryProductQuantityEditableInput = page.locator('table tbody tr input:not([type="hidden"])').first();
         this.inventoryProductTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryProductRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryProductEditAction = page.getByRole("link", { name: /Edit/i }).first();
@@ -768,6 +780,14 @@ export class ErpLocators {
         this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
         this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+
+        this.inventoryScrapCreateButton = page.locator("a,button").filter({ hasText: /new scrap|create/i }).first();
+        this.inventoryScrapProductSelect = page.locator('[wire\\:key$="form.product_id"] button.fi-select-input-btn').first();
+        this.inventoryScrapQtyInput = page.locator('input[id="form.qty"]').first();
+        this.inventoryScrapSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
+
+        this.inventoryQuantityCountedInput = page.locator('table tbody tr input:not([type="hidden"])').first();
+        this.inventoryQuantityApplyAction = page.getByRole("button", { name: /^Apply$/i }).first();
 
         /* 
          * Purchases - Vendors, Products, Quotations, Agreements

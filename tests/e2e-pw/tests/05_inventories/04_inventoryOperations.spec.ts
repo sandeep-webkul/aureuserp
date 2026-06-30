@@ -5,30 +5,38 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.ensureBaseDependentPluginsInstalled();
-        // Ensure at minimum: locations + multi-step routes for the source/dest
-        // location selectors to render on the operation form.
         await inventoryPage.enableManageWarehousesToggles();
-        // Lots & Serial Numbers must be on for the lot-tracked receipt flow.
         await inventoryPage.enableManageTraceabilityToggles();
-        // Packages must be on for the destination-package move flows.
         await inventoryPage.enableManageOperationsToggles();
     });
 
+    /**
+     * The receipts listing table renders.
+     */
     test("Receipts Listing - Loads Table", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.gotoReceiptsPage();
     });
 
+    /**
+     * The deliveries listing table renders.
+     */
     test("Deliveries Listing - Loads Table", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.gotoDeliveriesPage();
     });
 
+    /**
+     * The internal transfers listing table renders.
+     */
     test("Internal Transfers Listing - Loads Table", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.gotoInternalTransfersPage();
     });
 
+    /**
+     * A validated receipt brings stock on hand.
+     */
     test("Receipt Full Flow - Create, Validate, Stock Increases", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -47,6 +55,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 
+    /**
+     * A validated delivery ships stock out after a receipt.
+     */
     test("Delivery Full Flow - Create, Validate, Stock Decreases", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -57,7 +68,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             price: "30",
         });
 
-        // Bring stock in first so the delivery has something to ship.
         await inventoryPage.receiptFullFlow({
             productName,
             demand: "20",
@@ -71,6 +81,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 
+    /**
+     * A validated internal transfer moves stock between locations.
+     */
     test("Internal Transfer - Create And Validate Move", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -94,6 +107,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 
+    /**
+     * Two receipts each add a row to the product moves tab.
+     */
     test("Two Sequential Receipts - Both Reflect On Product Moves Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -123,6 +139,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         }
     });
 
+    /**
+     * A delivery after a receipt adds an outgoing move row.
+     */
     test("Delivery After Receipt - Outgoing Move Row Visible", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -152,6 +171,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         }
     });
 
+    /**
+     * An internal transfer adds a move row to the product moves tab.
+     */
     test("Internal Transfer - Move Row Adds To Product Moves Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -181,6 +203,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         }
     });
 
+    /**
+     * A validated receipt shows on the product quantities and moves tabs.
+     */
     test("Receipt Validation Reflects In Product In/Out Tab And Quantities", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -191,19 +216,19 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             price: "30",
         });
 
-        // Bring stock in via a validated receipt.
         await inventoryPage.receiptFullFlow({
             productName,
             demand: "12",
         });
 
-        // Quantities tab should now show the product is on-hand somewhere.
         await inventoryPage.gotoProductQuantitiesTab(productName);
 
-        // In/Out tab should show at least one move row for the validated receipt.
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
     });
 
+    /**
+     * A delivery reduces on-hand and adds a done outgoing move row.
+     */
     test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -211,9 +236,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         const warehouseCode = `WO${key}`.slice(-5);
         const productName = `E2E Out Move ${key}`;
 
-        // Use a fresh 1-step warehouse so the receipt's incoming move and the
-        // delivery's outgoing move both transition to "Done" in a single step,
-        // independent of any multi-step state left by earlier tests.
         await inventoryPage.createWarehouse({
             name: warehouseName,
             code: warehouseCode,
@@ -238,14 +260,14 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             operationType: warehouseName,
         });
 
-        // After receipt (10) and delivery (4) against the 1-step warehouse, the
-        // product's stock location should hold 6 on hand, and the In/Out tab
-        // should list both validated moves as "Done".
         await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "6");
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
         await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 
+    /**
+     * A lot-tracked receipt generates its lot and validates.
+     */
     test("Receipt With Lot - Generate Lot And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -258,14 +280,15 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             tracking: "lot",
         });
 
-        // Receive the lot-tracked product, generating the lot during validation.
         await inventoryPage.receiptWithLotFlow({ productName, demand: "8" }, lotName);
 
-        // The validated lot receipt should put the product on-hand and log a Done move.
         await inventoryPage.expectProductQuantityRowVisible(productName);
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
     });
 
+    /**
+     * A serial-tracked receipt generates its serials and validates.
+     */
     test("Receipt With Serial - Generate Serials And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -278,14 +301,15 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
             tracking: "serial",
         });
 
-        // Receiving 3 units of a serial-tracked product generates 3 serials
-        // (one unit each) during validation.
         await inventoryPage.receiptWithLotFlow({ productName, demand: "3" }, serialPrefix);
 
         await inventoryPage.expectProductQuantityRowVisible(productName);
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
     });
 
+    /**
+     * A 2-step warehouse receipt reaches stock via Next Transfer.
+     */
     test("Receipt flow - 2-step to stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -301,8 +325,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         });
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
 
-        // Receive via the warehouse's operation type; validating auto-generates the
-        // onward transfer (Input -> Stock), which "Next Transfer" follows to Stock.
         await inventoryPage.receiptChainFullFlow({
             productName,
             demand: "10",
@@ -312,6 +334,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectOnHandQuantityRow(productName, `${warehouseCode}/Stock`, "10");
     });
 
+    /**
+     * A 3-step warehouse receipt reaches stock via Next Transfer.
+     */
     test("Receipt flow - 3-step to stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -327,8 +352,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         });
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
 
-        // Receive via the warehouse's operation type; validating auto-generates the
-        // onward transfers (Input -> QC -> Stock), followed with "Next Transfer".
         await inventoryPage.receiptChainFullFlow({
             productName,
             demand: "10",
@@ -338,6 +361,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectOnHandQuantityRow(productName, `${warehouseCode}/Stock`, "10");
     });
 
+    /**
+     * A 3-step delivery ships out through Pick, Pack and Ship.
+     */
     test("Delivery flow - 3-step pick, pack, ship", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -345,7 +371,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         const warehouseCode = `D3${key}`.slice(-5);
         const productName = `E2E 3Step Delivery ${key}`;
 
-        // 1-step reception (straight to Stock) + 3-step delivery (Pick, Pack, Ship).
         await inventoryPage.createWarehouse({
             name: warehouseName,
             code: warehouseCode,
@@ -354,16 +379,12 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         });
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
 
-        // Bring stock straight to Stock (1-step reception).
         await inventoryPage.receiptFullFlow({
             productName,
             demand: "10",
             operationType: warehouseName,
         });
 
-        // Start the outgoing chain with a Pick (Stock -> Packing Zone); validating
-        // it auto-generates Pack then Ship, which "Next Transfer" follows until
-        // the product ships out to the customer.
         await inventoryPage.internalTransferFullFlow({
             productName,
             demand: "10",
@@ -375,6 +396,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
     });
 
+    /**
+     * A single receipt with multiple product lines validates.
+     */
     test("Receipt - multiple products", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -393,6 +417,9 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(productB);
     });
 
+    /**
+     * One receipt mixes lot, serial and quantity-tracked lines.
+     */
     test("Receipt - mixed lot, serial & quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
@@ -404,8 +431,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createInventoryProduct({ name: serialProduct, price: "12", tracking: "serial" });
         await inventoryPage.createInventoryProduct({ name: qtyProduct, price: "8" });
 
-        // One receipt with a lot, a serial and a quantity-tracked line; lot and
-        // serials are generated, the quantity line needs nothing extra.
         await inventoryPage.receiptLinesFullFlow([
             { productName: lotProduct, demand: "4", lotName: `LOT-${key}` },
             { productName: serialProduct, demand: "2", lotName: `SN-${key}` },
@@ -429,10 +454,8 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
         await inventoryPage.createPackage({ name: packageName });
 
-        // Receive 8 units routed into the package.
         await inventoryPage.receiptIntoPackageFlow({ productName, demand: "8" }, packageName);
 
-        // The package's Products tab should now hold the received product.
         await inventoryPage.expectPackageContainsProduct(packageName, productName, "8");
     });
 
@@ -448,19 +471,15 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
         await inventoryPage.createPackage({ name: packageName });
 
-        // Stock 10 units inside the package at the default stock location.
         await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "10", packageName);
 
-        // Deliver all 10 — the package leaves its internal location for the customer.
         await inventoryPage.deliveryFullFlow({ productName, demand: "10" });
 
-        // The package no longer appears among internal-location packages.
         await inventoryPage.expectPackageNotListed(packageName);
     });
 
     /**
-     * A package travels a 3-step warehouse end to end: received into stock through
-     * Input/QC/Storage, then shipped out through Pick/Pack/Ship.
+     * A package travels a 3-step warehouse from receipt to delivery.
      */
     test("3-step warehouse - package receipt to delivery", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
@@ -479,16 +498,13 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
         await inventoryPage.createPackage({ name: packageName });
 
-        // Receive into the package and follow Input -> QC -> Stock.
         await inventoryPage.receiptIntoPackageChainFlow(
             { productName, demand: "6", operationType: warehouseName },
             packageName
         );
 
-        // The package now sits in stock holding the product.
         await inventoryPage.expectPackageContainsProduct(packageName, productName, "6");
 
-        // Ship it out through Pick -> Pack -> Ship.
         await inventoryPage.internalTransferFullFlow({
             productName,
             demand: "6",
@@ -497,13 +513,11 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         });
         await inventoryPage.chainNextTransfers();
 
-        // The package has left internal stock.
         await inventoryPage.expectPackageNotListed(packageName);
     });
 
     /**
-     * Two packages: one delivered in full leaves stock, one delivered in part
-     * keeps its remainder.
+     * One package is delivered in full, another only in part.
      */
     test("Package move - full vs partial delivery", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
@@ -518,16 +532,72 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createPackage({ name: fullPackage });
         await inventoryPage.createPackage({ name: partialPackage });
 
-        // Stock 10 units in each package at the default stock location.
         await inventoryPage.addOnHandQuantity(fullProduct, "WH/Stock", "10", fullPackage);
         await inventoryPage.addOnHandQuantity(partialProduct, "WH/Stock", "10", partialPackage);
 
-        // Ship one package out entirely, the other only partly.
         await inventoryPage.deliveryFullFlow({ productName: fullProduct, demand: "10" });
         await inventoryPage.deliveryFullFlow({ productName: partialProduct, demand: "4" });
 
-        // The fully-delivered package left stock; the partial one keeps 6 of 10.
         await inventoryPage.expectPackageNotListed(fullPackage);
         await inventoryPage.expectPackageContainsProduct(partialPackage, partialProduct, "6");
+    });
+
+    /**
+     * The Scraps listing table renders.
+     */
+    test("Scraps list loads", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        await inventoryPage.gotoScrapsPage();
+    });
+
+    /**
+     * Validating a scrap reduces the product's on-hand stock by the scrapped amount.
+     */
+    test("Scrap reduces on-hand stock", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Scrap Product ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+
+        await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "10");
+
+        await inventoryPage.scrapFlow({ productName, qty: "3", sourceLocation: "WH/Stock" });
+
+        await inventoryPage.expectOnHandQuantityRow(productName, "WH/Stock", "7");
+    });
+
+    /**
+     * An on-hand quantity can be adjusted inline to a new value.
+     */
+    test("Adjust on-hand quantity", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Adjust Qty ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+        await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "10");
+
+        await inventoryPage.adjustOnHandQuantity(productName, "15");
+        await inventoryPage.expectOnHandQuantityRow(productName, "WH/Stock", "15");
+    });
+
+    /**
+     * Tracking is locked while stock is on hand and switches once it is adjusted away.
+     */
+    test("Tracking change allowed after clearing stock", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Track Adjust ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+        await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "10");
+
+        await inventoryPage.editProductTracking(productName, "lot");
+        await inventoryPage.expectProductTracking(productName, "qty");
+
+        await inventoryPage.clearStockViaAdjustment(productName);
+        await inventoryPage.editProductTracking(productName, "lot");
+        await inventoryPage.expectProductTracking(productName, "lot");
     });
 });
