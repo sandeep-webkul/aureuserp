@@ -10,6 +10,8 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.enableManageWarehousesToggles();
         // Lots & Serial Numbers must be on for the lot-tracked receipt flow.
         await inventoryPage.enableManageTraceabilityToggles();
+        // Packages must be on for the destination-package move flows.
+        await inventoryPage.enableManageOperationsToggles();
     });
 
     test("Receipts Listing - Loads Table", async ({ adminPage }) => {
@@ -413,5 +415,119 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(lotProduct);
         await inventoryPage.expectProductQuantityRowVisible(serialProduct);
         await inventoryPage.expectProductQuantityRowVisible(qtyProduct);
+    });
+
+    /**
+     * Receiving into a destination package leaves the stock held in that package.
+     */
+    test("Receipt into package", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Rcpt Pkg Product ${key}`;
+        const packageName = `E2E Rcpt Package ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+        await inventoryPage.createPackage({ name: packageName });
+
+        // Receive 8 units routed into the package.
+        await inventoryPage.receiptIntoPackageFlow({ productName, demand: "8" }, packageName);
+
+        // The package's Products tab should now hold the received product.
+        await inventoryPage.expectPackageContainsProduct(packageName, productName, "8");
+    });
+
+    /**
+     * Delivering a package's stock moves the package out of internal stock.
+     */
+    test("Delivery moves package out", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Dlv Pkg Product ${key}`;
+        const packageName = `E2E Dlv Package ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+        await inventoryPage.createPackage({ name: packageName });
+
+        // Stock 10 units inside the package at the default stock location.
+        await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "10", packageName);
+
+        // Deliver all 10 — the package leaves its internal location for the customer.
+        await inventoryPage.deliveryFullFlow({ productName, demand: "10" });
+
+        // The package no longer appears among internal-location packages.
+        await inventoryPage.expectPackageNotListed(packageName);
+    });
+
+    /**
+     * A package travels a 3-step warehouse end to end: received into stock through
+     * Input/QC/Storage, then shipped out through Pick/Pack/Ship.
+     */
+    test("3-step warehouse - package receipt to delivery", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouseName = `WH Pkg3 ${key}`;
+        const warehouseCode = `P3${key}`.slice(-5);
+        const productName = `E2E 3S Pkg Product ${key}`;
+        const packageName = `E2E 3S Package ${key}`;
+
+        await inventoryPage.createWarehouse({
+            name: warehouseName,
+            code: warehouseCode,
+            receptionStep: 3,
+            deliveryStep: 3,
+        });
+        await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
+        await inventoryPage.createPackage({ name: packageName });
+
+        // Receive into the package and follow Input -> QC -> Stock.
+        await inventoryPage.receiptIntoPackageChainFlow(
+            { productName, demand: "6", operationType: warehouseName },
+            packageName
+        );
+
+        // The package now sits in stock holding the product.
+        await inventoryPage.expectPackageContainsProduct(packageName, productName, "6");
+
+        // Ship it out through Pick -> Pack -> Ship.
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "6",
+            operationType: warehouseName,
+            operationTypeName: "Pick",
+        });
+        await inventoryPage.chainNextTransfers();
+
+        // The package has left internal stock.
+        await inventoryPage.expectPackageNotListed(packageName);
+    });
+
+    /**
+     * Two packages: one delivered in full leaves stock, one delivered in part
+     * keeps its remainder.
+     */
+    test("Package move - full vs partial delivery", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const fullProduct = `E2E Full Pkg Prod ${key}`;
+        const partialProduct = `E2E Part Pkg Prod ${key}`;
+        const fullPackage = `E2E Full Package ${key}`;
+        const partialPackage = `E2E Partial Package ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: fullProduct, price: "10" });
+        await inventoryPage.createInventoryProduct({ name: partialProduct, price: "10" });
+        await inventoryPage.createPackage({ name: fullPackage });
+        await inventoryPage.createPackage({ name: partialPackage });
+
+        // Stock 10 units in each package at the default stock location.
+        await inventoryPage.addOnHandQuantity(fullProduct, "WH/Stock", "10", fullPackage);
+        await inventoryPage.addOnHandQuantity(partialProduct, "WH/Stock", "10", partialPackage);
+
+        // Ship one package out entirely, the other only partly.
+        await inventoryPage.deliveryFullFlow({ productName: fullProduct, demand: "10" });
+        await inventoryPage.deliveryFullFlow({ productName: partialProduct, demand: "4" });
+
+        // The fully-delivered package left stock; the partial one keeps 6 of 10.
+        await inventoryPage.expectPackageNotListed(fullPackage);
+        await inventoryPage.expectPackageContainsProduct(partialPackage, partialProduct, "6");
     });
 });

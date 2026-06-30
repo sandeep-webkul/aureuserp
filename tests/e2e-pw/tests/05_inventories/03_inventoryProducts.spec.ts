@@ -10,6 +10,8 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         await inventoryPage.enableManageWarehousesToggles();
         // Lots & Serial Numbers must be on to expose the product tracking field.
         await inventoryPage.enableManageTraceabilityToggles();
+        // Packages must be on for the Packages resource to register.
+        await inventoryPage.enableManageOperationsToggles();
     });
 
     test("Products Listing - Loads Table", async ({ adminPage }) => {
@@ -125,6 +127,46 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
         const stockLocation = `${warehouseCode}/Stock`;
         await inventoryPage.addOnHandQuantity(productName, stockLocation, "50");
         await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "50");
+    });
+
+    /**
+     * The Packages listing table renders.
+     */
+    test("Packages list loads", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        await inventoryPage.gotoPackagesPage();
+    });
+
+    /**
+     * A package holds a product quantity added at a location via the quantities tab.
+     */
+    test("Package holds product quantity", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const packageName = `E2E Package ${key}`;
+        const productName = `E2E Pkg Product ${key}`;
+
+        await inventoryPage.createPackage({ name: packageName });
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+
+        // Add 30 on-hand at the default warehouse stock location, inside the package.
+        await inventoryPage.addOnHandQuantity(productName, "WH/Stock", "30", packageName);
+
+        // The package's Products tab should now list the product at quantity 30.
+        await inventoryPage.expectPackageContainsProduct(packageName, productName, "30");
+    });
+
+    /**
+     * A package at an internal location lists and can be deleted from its row actions.
+     */
+    test("Delete package - removes record", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const packageName = `E2E Package Delete ${key}`;
+
+        // The packages list only shows packages at an internal location.
+        await inventoryPage.createPackage({ name: packageName, location: "WH/Stock" });
+        await inventoryPage.deletePackage(packageName);
     });
 
 });

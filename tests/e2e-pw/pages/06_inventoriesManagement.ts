@@ -46,6 +46,21 @@ export type MoveLineInput = {
     lotName?: string;
 };
 
+export type PackageTypeData = {
+    name: string;
+    length?: string;
+    width?: string;
+    height?: string;
+    baseWeight?: string;
+    maxWeight?: string;
+};
+
+export type PackageData = {
+    name: string;
+    packageType?: string;
+    location?: string;
+};
+
 export class InventoriesManagementPage {
     readonly page: Page;
     readonly erpLocators: ErpLocators;
@@ -487,7 +502,7 @@ export class InventoriesManagementPage {
     /**
      * Add an on-hand quantity for the product at a given location.
      */
-    async addOnHandQuantity(productName: string, location: string, quantity: string) {
+    async addOnHandQuantity(productName: string, location: string, quantity: string, packageName?: string) {
         const l = this.erpLocators;
 
         await this.gotoProductQuantitiesTab(productName);
@@ -502,6 +517,11 @@ export class InventoriesManagementPage {
             await this.page.waitForLoadState("networkidle");
         } catch {
             // Location field not rendered (enable_locations toggle off) — proceed without it.
+        }
+
+        if (packageName) {
+            await this.selectFromFilamentDropdown(l.inventoryProductQuantityPackageSelect, packageName);
+            await this.page.waitForLoadState("networkidle");
         }
 
         await expect(l.inventoryProductQuantityInput).toBeVisible();
@@ -653,16 +673,22 @@ export class InventoriesManagementPage {
         await this.page.waitForTimeout(800);
 
         const validateBtn = l.inventoryOperationValidateButton;
+        // Wait once for Validate to render (it can lag under load). After a
+        // successful validate the button disappears, so the loop breaks on the
+        // next pass without waiting on it again — avoiding a wasteful stall.
+        await validateBtn.waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
         for (let attempt = 0; attempt < 5; attempt++) {
             if (!(await validateBtn.isVisible().catch(() => false))) {
                 break;
             }
             await validateBtn.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForTimeout(800);
             if (await l.inventoryOperationNoBackorderButton.isVisible().catch(() => false)) {
                 await l.inventoryOperationNoBackorderButton.click({ timeout: 15000 }).catch(() => undefined);
+                await this.page.waitForTimeout(500);
             }
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
-            await this.page.waitForTimeout(1200);
+            await this.page.waitForTimeout(600);
         }
 
         await this.expectSuccessToastSoft();
@@ -819,6 +845,50 @@ export class InventoriesManagementPage {
     }
 
     /**
+     * Open the "Manage Stock Moves" modal on the move at `rowIndex` and route the
+     * line's stock into the given destination package.
+     */
+    private async setResultPackageOnMove(packageName: string, rowIndex = 0) {
+        const l = this.erpLocators;
+
+        await l.inventoryMoveManageLinesAction.nth(rowIndex).click({ timeout: 15000 });
+        await expect(l.inventoryMoveLinesModal).toBeVisible();
+
+        await this.selectFromFilamentDropdown(l.inventoryMoveLinesResultPackageSelect, packageName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(400);
+
+        await l.inventoryMoveLinesModalSaveButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(400);
+    }
+
+    /**
+     * Receive a product into a destination package and validate, leaving the
+     * received stock held inside that package at its stock location.
+     */
+    async receiptIntoPackageFlow(data: ReceiptData, packageName: string) {
+        await this.createReceipt(data);
+
+        // The destination package can only be set once the move leaves Draft.
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+
+        await this.setResultPackageOnMove(packageName, 0);
+        await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * Receive into a destination package via a multi-step warehouse and follow the
+     * onward transfers with "Next Transfer" until the package reaches stock.
+     */
+    async receiptIntoPackageChainFlow(data: ReceiptData, packageName: string) {
+        await this.receiptIntoPackageFlow(data, packageName);
+        await this.chainNextTransfers();
+    }
+
+    /**
      * Operations - Deliveries
      */
 
@@ -910,6 +980,128 @@ export class InventoriesManagementPage {
     }
 
     /**
+     * Package Types list. Only registered when packages are enabled.
+     */
+    async gotoPackageTypesPage() {
+        await this.page.goto("/admin/inventory/configurations/package-types");
+        await expect(this.page).toHaveURL(/package-types/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryPackageTypeTable.first()).toBeVisible();
+    }
+
+    /**
+     * Create a package type (dimensions and weights are required).
+     */
+    async createPackageType(data: PackageTypeData) {
+        await this.gotoPackageTypesPage();
+        await this.erpLocators.inventoryPackageTypeCreateButton.click();
+        await expect(this.page).toHaveURL(/package-types\/create/);
+
+        await this.erpLocators.inventoryPackageTypeNameInput.fill(data.name);
+        await this.erpLocators.inventoryPackageTypeLengthInput.fill(data.length ?? "10");
+        await this.erpLocators.inventoryPackageTypeWidthInput.fill(data.width ?? "10");
+        await this.erpLocators.inventoryPackageTypeHeightInput.fill(data.height ?? "10");
+        await this.erpLocators.inventoryPackageTypeBaseWeightInput.fill(data.baseWeight ?? "1");
+        await this.erpLocators.inventoryPackageTypeMaxWeightInput.fill(data.maxWeight ?? "100");
+
+        await this.erpLocators.inventoryPackageTypeSaveButton.click();
+        await expect(this.page).not.toHaveURL(/package-types\/create/);
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Packages list. Only registered when packages are enabled.
+     */
+    async gotoPackagesPage() {
+        await this.page.goto("/admin/inventory/products/packages");
+        await expect(this.page).toHaveURL(/products\/packages/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryPackageTable.first()).toBeVisible();
+    }
+
+    /**
+     * Create a package, optionally of a given package type.
+     */
+    async createPackage(data: PackageData) {
+        await this.gotoPackagesPage();
+        await this.erpLocators.inventoryPackageCreateButton.click();
+        await expect(this.page).toHaveURL(/packages\/create/);
+
+        // Wait for the form to render before filling so the save isn't raced.
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.erpLocators.inventoryPackageNameInput).toBeVisible();
+        await this.erpLocators.inventoryPackageNameInput.fill(data.name);
+        await expect(this.erpLocators.inventoryPackageNameInput).toHaveValue(data.name);
+        if (data.packageType) {
+            await this.selectFromFilamentDropdown(this.erpLocators.inventoryPackageTypeSelect, data.packageType);
+        }
+        if (data.location) {
+            await this.selectFromFilamentDropdown(this.erpLocators.inventoryPackageLocationSelect, data.location);
+        }
+
+        await this.erpLocators.inventoryPackageSaveButton.click();
+        await expect(this.page).not.toHaveURL(/packages\/create/);
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Delete a package via its row actions.
+     */
+    async deletePackage(name: string) {
+        await this.gotoPackagesPage();
+        await this.searchList(name);
+        await this.openRowActions();
+        await this.erpLocators.inventoryPackageDeleteAction.click();
+        await this.erpLocators.inventoryConfirmDialogButton.click();
+        await this.expectSuccessToast();
+    }
+
+    /**
+     * Open a package from the list and land on its "Products" sub-page.
+     */
+    async gotoPackageProductsTab(packageName: string) {
+        await this.gotoPackagesPage();
+        await this.searchList(packageName);
+        const link = this.erpLocators.inventoryTableRows.locator("a").filter({ hasText: packageName }).first();
+        await expect(link).toBeVisible();
+        await link.click();
+        await this.page.waitForLoadState("networkidle");
+
+        // Jump to the package's Products sub-page via its record id.
+        const id = this.page.url().match(/packages\/(\d+)/)?.[1];
+        if (id) {
+            await this.page.goto(`/admin/inventory/products/packages/${id}/products`);
+            await this.page.waitForLoadState("networkidle");
+        }
+    }
+
+    /**
+     * Assert a package holds the given product (optionally at the given quantity).
+     */
+    async expectPackageContainsProduct(packageName: string, productName: string, quantity?: string) {
+        await this.gotoPackageProductsTab(packageName);
+
+        const row = this.erpLocators.inventoryTableRows.filter({ hasText: productName }).first();
+        await expect(row).toBeVisible();
+        if (quantity) {
+            const escaped = quantity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            await expect(row).toContainText(new RegExp(`${escaped}(\\.0+)?`));
+        }
+    }
+
+    /**
+     * Assert a package is no longer in the Packages list (it left its internal
+     * location — e.g. delivered out to a customer).
+     */
+    async expectPackageNotListed(packageName: string) {
+        await this.gotoPackagesPage();
+        await this.searchList(packageName);
+
+        const link = this.erpLocators.inventoryTableRows.locator("a").filter({ hasText: packageName });
+        await expect(link).toHaveCount(0);
+    }
+
+    /**
      * Generic UI helpers
      */
 
@@ -959,6 +1151,10 @@ export class InventoriesManagementPage {
         // Let any pending repeater re-render (from an operation-type change) settle.
         await this.page.waitForTimeout(500);
 
+        // The moves repeater renders one row by default; wait for it so a slow
+        // render isn't mistaken for an empty list, which would add a stray row.
+        await productSelects.first().waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
+
         for (let i = 0; i < lines.length; i++) {
             if ((await productSelects.count()) < i + 1) {
                 await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
@@ -966,6 +1162,13 @@ export class InventoriesManagementPage {
                 await expect(productSelects.nth(i)).toBeVisible();
             }
             await this.selectBySearch(productSelects.nth(i), lines[i].productName);
+
+            // Confirm the product registered; retry once if the option click missed.
+            const trigger = await productSelects.nth(i).innerText().catch(() => "");
+            if (/select an option/i.test(trigger) || trigger.trim() === "") {
+                await this.selectBySearch(productSelects.nth(i), lines[i].productName).catch(() => undefined);
+            }
+
             await demandInputs.nth(i).fill(lines[i].demand);
         }
     }
@@ -1026,10 +1229,10 @@ export class InventoriesManagementPage {
 
     private async expectSuccessToastSoft() {
         try {
-            await expect(this.erpLocators.inventorySuccessToast).toBeVisible({ timeout: 10_000 });
+            await expect(this.erpLocators.inventorySuccessToast).toBeVisible({ timeout: 2_500 });
         } catch {
-            // Some validate flows redirect immediately and the toast might
-            // not be picked up; fall through gracefully.
+            // The success toast is transient (and some validate flows redirect
+            // immediately), so a short, non-blocking check is enough.
         }
     }
 

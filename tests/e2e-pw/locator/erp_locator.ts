@@ -212,6 +212,7 @@ export class ErpLocators {
     readonly inventoryProductQuantityOpenModal: Locator;
     readonly inventoryProductQuantityProductSelect: Locator;
     readonly inventoryProductQuantityLocationSelect: Locator;
+    readonly inventoryProductQuantityPackageSelect: Locator;
     readonly inventoryProductQuantityInput: Locator;
     readonly inventoryProductQuantityDialogCreate: Locator;
     readonly inventoryProductQuantityTableRows: Locator;
@@ -273,6 +274,28 @@ export class ErpLocators {
     readonly inventoryMoveLinesQuantityReceivedInput: Locator;
     readonly inventoryMoveLinesGenerateSubmit: Locator;
     readonly inventoryMoveLinesModalSaveButton: Locator;
+    readonly inventoryMoveLinesResultPackageSelect: Locator;
+
+    /**
+     * Inventory - Packages & Package Types
+     */
+
+    readonly inventoryPackageTypeCreateButton: Locator;
+    readonly inventoryPackageTypeNameInput: Locator;
+    readonly inventoryPackageTypeLengthInput: Locator;
+    readonly inventoryPackageTypeWidthInput: Locator;
+    readonly inventoryPackageTypeHeightInput: Locator;
+    readonly inventoryPackageTypeBaseWeightInput: Locator;
+    readonly inventoryPackageTypeMaxWeightInput: Locator;
+    readonly inventoryPackageTypeSaveButton: Locator;
+    readonly inventoryPackageTypeTable: Locator;
+    readonly inventoryPackageCreateButton: Locator;
+    readonly inventoryPackageNameInput: Locator;
+    readonly inventoryPackageTypeSelect: Locator;
+    readonly inventoryPackageLocationSelect: Locator;
+    readonly inventoryPackageSaveButton: Locator;
+    readonly inventoryPackageTable: Locator;
+    readonly inventoryPackageDeleteAction: Locator;
 
    /**
     * Purchases - Vendors, Products, Quotations, Agreements 
@@ -641,6 +664,13 @@ export class ErpLocators {
             .locator('xpath=ancestor::div[@data-field-wrapper][1]')
             .locator('button.fi-select-input-btn')
             .first();
+        this.inventoryProductQuantityPackageSelect = page
+            .locator('.fi-modal-window:visible, .fi-modal:visible, [role="dialog"]:visible')
+            .last()
+            .locator('label:has-text("Package")')
+            .locator('xpath=ancestor::div[@data-field-wrapper][1]')
+            .locator('button.fi-select-input-btn')
+            .first();
         this.inventoryProductQuantityInput = page
             .locator('.fi-modal-window:visible div.fi-fo-field, .fi-modal-window:visible div[data-field-wrapper]')
             .filter({ has: page.locator('label', { hasText: /On Hand Quantity|Quantity|On-hand/i }) })
@@ -674,7 +704,7 @@ export class ErpLocators {
         this.inventoryOperationConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
         this.inventoryOperationMarkAsTodoButton = page.getByRole("button", { name: /Mark as Todo/i }).first();
         this.inventoryOperationCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
-        this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' });
+        this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' }).first();
         this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
         this.inventoryOperationNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
         this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
@@ -712,7 +742,33 @@ export class ErpLocators {
         this.inventoryMoveLinesQuantityReceivedInput = page.getByLabel(/Quantity Received/i).first();
         this.inventoryMoveLinesGenerateSubmit = page.locator('.fi-modal-window:visible').last().locator('button[type="submit"], .fi-modal-footer-actions button').first();
         this.inventoryMoveLinesModalSaveButton = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).getByRole("button", { name: /^Save$/i }).first();
-        
+        this.inventoryMoveLinesResultPackageSelect = page
+            .locator('.fi-modal-window:visible')
+            .filter({ hasText: /Manage Stock Moves/i })
+            .locator('[wire\\:key*="result_package_id"] button.fi-select-input-btn')
+            .first();
+
+        /**
+         * Inventory - Packages & Package Types
+         */
+
+        this.inventoryPackageTypeCreateButton = page.locator("a,button").filter({ hasText: /new package type|create/i }).first();
+        this.inventoryPackageTypeNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryPackageTypeLengthInput = page.locator('input[id="form.length"]').first();
+        this.inventoryPackageTypeWidthInput = page.locator('input[id="form.width"]').first();
+        this.inventoryPackageTypeHeightInput = page.locator('input[id="form.height"]').first();
+        this.inventoryPackageTypeBaseWeightInput = page.locator('input[id="form.base_weight"]').first();
+        this.inventoryPackageTypeMaxWeightInput = page.locator('input[id="form.max_weight"]').first();
+        this.inventoryPackageTypeSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryPackageTypeTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryPackageCreateButton = page.locator("a,button").filter({ hasText: /new package|create/i }).first();
+        this.inventoryPackageNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryPackageTypeSelect = page.locator('[wire\\:key$="form.package_type_id"] button.fi-select-input-btn').first();
+        this.inventoryPackageLocationSelect = page.locator('[wire\\:key$="form.location_id"] button.fi-select-input-btn').first();
+        this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+
         /* 
          * Purchases - Vendors, Products, Quotations, Agreements
          */
