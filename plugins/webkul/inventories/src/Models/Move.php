@@ -138,7 +138,7 @@ class Move extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -321,7 +321,10 @@ class Move extends Model
 
             $move->state ??= MoveState::DRAFT;
 
-            if (! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])) {
+            if (
+                $move->operation
+                && ! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])
+            ) {
                 $move->additional = true;
             }
         });
