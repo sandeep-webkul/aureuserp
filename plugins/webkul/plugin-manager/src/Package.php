@@ -194,17 +194,21 @@ class Package extends BasePackage
         return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
     }
 
-    public static function isPluginInstalled(string $name): bool
+  public static function isPluginInstalled(string $name): bool
     {
+        static $isLoaded = false; 
+
         try {
-            if (count(static::$plugins) == 0) {
+            if (! $isLoaded) {
                 DB::connection()->getPdo();
 
                 if (Schema::hasTable('plugins') === false) {
+                    $isLoaded = true;
                     return false;
                 }
 
                 static::$plugins = Plugin::all()->keyBy('name');
+                $isLoaded = true;
             }
 
             if (isset(static::$plugins[$name]) && static::$plugins[$name]->is_installed) {
