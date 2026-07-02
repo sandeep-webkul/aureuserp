@@ -282,6 +282,7 @@ class WorkOrderResource extends Resource
         return $table
             ->reorderableColumns()
             ->modifyQueryUsing(fn (Builder $query) => $query
+                ->with('manufacturingOrder')
                 ->orderBy('sort')
                 ->orderBy('calendar_leave_id')
                 ->orderBy('started_at')

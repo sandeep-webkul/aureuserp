@@ -269,6 +269,7 @@ class OperationResource extends Resource
     {
         return $table
             ->reorderableColumns()
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('billOfMaterial'))
             ->columns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.table.columns.name'))
