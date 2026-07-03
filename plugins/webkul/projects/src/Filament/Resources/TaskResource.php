@@ -856,12 +856,12 @@ class TaskResource extends Resource
 
     private static function getTimeSettings(): TimeSettings
     {
-        return once(fn () => app(TimeSettings::class));
+        return settings(TimeSettings::class);
     }
 
     private static function getTaskSettings(): TaskSettings
     {
-        return once(fn () => app(TaskSettings::class));
+        return settings(TaskSettings::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array

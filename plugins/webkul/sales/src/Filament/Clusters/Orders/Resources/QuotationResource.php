@@ -1174,7 +1174,7 @@ class QuotationResource extends Resource
                     ->markAsRequired()
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_uom),
                 TableColumn::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.lead-time'))
                     ->markAsRequired()
@@ -1186,13 +1186,13 @@ class QuotationResource extends Resource
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging-qty'))
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_packagings),
                 TableColumn::make('product_packaging_id')
                     ->toggleable()
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging'))
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_packagings),
                 TableColumn::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.unit-price'))
                     ->markAsRequired()
@@ -1203,13 +1203,13 @@ class QuotationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_margin),
                 TableColumn::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.margin-percentage'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_margin),
                 TableColumn::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.taxes'))
                     ->toggleable()
@@ -1220,7 +1220,7 @@ class QuotationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_discount),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_discount),
                 TableColumn::make('price_subtotal')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.amount'))
                     ->toggleable()
