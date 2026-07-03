@@ -1708,12 +1708,12 @@ class OrderResource extends Resource
 
     public static function getOrderSettings(): OrderSettings
     {
-        return once(fn () => app(OrderSettings::class));
+        return settings(OrderSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getEloquentQuery(): Builder
