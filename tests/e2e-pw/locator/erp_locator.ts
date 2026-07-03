@@ -243,6 +243,11 @@ export class ErpLocators {
     readonly inventoryOperationValidateButton: Locator;
     readonly inventoryOperationNoBackorderButton: Locator;
     readonly inventoryOperationNextTransferButton: Locator;
+    readonly inventoryOperationReturnButton: Locator;
+    readonly inventoryInfolistEntries: Locator;
+    readonly inventoryReturnModal: Locator;
+    readonly inventoryReturnModalQtyInput: Locator;
+    readonly inventoryReturnModalSubmitButton: Locator;
     readonly inventoryOperationStateBadge: Locator;
     readonly inventoryOperationTable: Locator;
     readonly inventoryOperationRowActions: Locator;
@@ -719,6 +724,20 @@ export class ErpLocators {
         this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' }).first();
         this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
         this.inventoryOperationNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
+        // The "Return" header action is only visible once an operation is validated (state DONE).
+        this.inventoryOperationReturnButton = page.getByRole("button", { name: /^Return$/i }).first();
+        // A Filament infolist entry (view page): each `.fi-in-entry` holds both its
+        // label and value, so filtering by the label text reads a field's value.
+        this.inventoryInfolistEntries = page.locator(".fi-in-entry");
+        this.inventoryReturnModal = page.locator(".fi-modal-window:visible").filter({ hasText: /Quantity/i }).first();
+        // Each returnable move renders one editable "Qty" spinbutton in the modal's repeater table.
+        this.inventoryReturnModalQtyInput = page
+            .locator(".fi-modal-window:visible")
+            .getByRole("spinbutton", { name: /Qty/i });
+        this.inventoryReturnModalSubmitButton = page
+            .locator(".fi-modal-window:visible")
+            .getByRole("button", { name: /^Submit$/i })
+            .first();
         this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();

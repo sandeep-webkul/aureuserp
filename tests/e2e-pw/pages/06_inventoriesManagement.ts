@@ -751,9 +751,6 @@ export class InventoriesManagementPage {
         await this.page.waitForTimeout(800);
 
         const validateBtn = l.inventoryOperationValidateButton;
-        // Wait once for Validate to render (it can lag under load). After a
-        // successful validate the button disappears, so the loop breaks on the
-        // next pass without waiting on it again — avoiding a wasteful stall.
         await validateBtn.waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
         for (let attempt = 0; attempt < 5; attempt++) {
             if (!(await validateBtn.isVisible().catch(() => false))) {
@@ -767,8 +764,13 @@ export class InventoriesManagementPage {
             }
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await this.page.waitForTimeout(600);
+
+            if (await l.inventoryOperationReturnButton.isVisible().catch(() => false)) {
+                break;
+            }
         }
 
+        await this.dismissReturnModalIfOpen();
         await this.expectSuccessToastSoft();
     }
 
@@ -1005,6 +1007,187 @@ export class InventoriesManagementPage {
     }
 
     /**
+     * Operations - Returns
+     */
+
+    /**
+     * From the currently-open validated operation, open the Return modal and
+     * submit it, creating the return operation. The modal pre-fills each
+     * returnable move's quantity; pass `quantity` to return a partial amount of
+     * the first move instead. Lands on the new return operation's draft edit page.
+     */
+    async returnCurrentOperation(quantity?: string) {
+        const l = this.erpLocators;
+        const startUrl = this.page.url();
+
+        await l.inventoryOperationReturnButton.waitFor({ state: "visible", timeout: 15000 });
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if (await l.inventoryReturnModal.isVisible().catch(() => false)) {
+                break;
+            }
+            await l.inventoryOperationReturnButton.click({ timeout: 8000 }).catch(() => undefined);
+            await this.page.waitForTimeout(700);
+        }
+        await expect(l.inventoryReturnModal).toBeVisible({ timeout: 10000 });
+        await l.inventoryReturnModalQtyInput.first().waitFor({ state: "visible", timeout: 10000 });
+
+        if (quantity) {
+            await l.inventoryReturnModalQtyInput.first().fill(quantity);
+        }
+
+        await l.inventoryReturnModalSubmitButton.click({ timeout: 15000 });
+
+        await this.page
+            .waitForURL((url) => url.toString() !== startUrl, { timeout: 20000 })
+            .catch(() => undefined);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(l.inventoryReturnModal).toBeHidden({ timeout: 10000 }).catch(() => undefined);
+        await this.page.waitForTimeout(600);
+
+        return this.readOperationReference();
+    }
+
+    /**
+     * Validate the open return operation to Done. Unlike the shared operation
+     * validator this clicks "Validate" exactly once and then waits for the button
+     * to detach — never re-clicking — because on a return the "Return" action
+     * renders in the header slot the "Validate" button vacates, so a retry click
+     * would land on it and pop open the Return modal.
+     */
+    async validateReturnOperation() {
+        const l = this.erpLocators;
+
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(600);
+
+        await this.clickCheckAvailabilityIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(600);
+
+        const validateBtn = l.inventoryOperationValidateButton;
+        if (await validateBtn.isVisible().catch(() => false)) {
+            await validateBtn.click({ timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForTimeout(800);
+
+            if (await l.inventoryOperationNoBackorderButton.isVisible().catch(() => false)) {
+                await l.inventoryOperationNoBackorderButton.click({ timeout: 15000 }).catch(() => undefined);
+                await this.page.waitForTimeout(500);
+            }
+
+            await validateBtn.waitFor({ state: "detached", timeout: 15000 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(500);
+        }
+
+        await this.dismissReturnModalIfOpen();
+        await this.expectSuccessToastSoft();
+    }
+
+    /**
+     * Close the Return modal if it is open (dismisses a stray auto-open).
+     */
+    private async dismissReturnModalIfOpen() {
+        if (await this.erpLocators.inventoryReturnModal.isVisible().catch(() => false)) {
+            await this.page.keyboard.press("Escape").catch(() => undefined);
+            await this.page.waitForTimeout(400);
+        }
+    }
+
+    /**
+     * Return a validated operation and validate the resulting return operation.
+     */
+    async returnAndValidate(quantity?: string) {
+        await this.returnCurrentOperation(quantity);
+        await this.validateReturnOperation();
+    }
+
+    /**
+     * Assert the page is on a return operation (a new operation created under
+     * whichever resource its return type resolves to, opened on view or edit).
+     */
+    async expectOnReturnOperationPage() {
+        await expect(this.page).toHaveURL(/operations\/(receipts|deliveries|internals|dropships)\/\d+\/(edit|view)/);
+    }
+
+    /**
+     * Assert the current operation's view page shows the given source/destination
+     * location. Both entries show on an operation's view page.
+     */
+    async expectOperationLocation(kind: "source" | "destination", locationName: string) {
+        const entry = this.operationLocationEntry(kind);
+        await expect(entry).toBeVisible({ timeout: 15000 });
+        await expect(entry).toContainText(locationName);
+    }
+
+    /**
+     * Read the source/destination location value shown on the current operation's
+     * view page (strips the field label off the entry's text).
+     */
+    async readOperationLocation(kind: "source" | "destination"): Promise<string> {
+        const label = kind === "source" ? "Source Location" : "Destination Location";
+        const entry = this.operationLocationEntry(kind);
+        await expect(entry).toBeVisible({ timeout: 15000 });
+        const text = (await entry.textContent()) ?? "";
+        return text.replace(label, "").replace(/\s+/g, " ").trim();
+    }
+
+    private operationLocationEntry(kind: "source" | "destination"): Locator {
+        const label = kind === "source" ? "Source Location" : "Destination Location";
+        return this.erpLocators.inventoryInfolistEntries.filter({ hasText: label }).first();
+    }
+
+    /**
+     * Navigate to the current operation's read-only view page (its locations
+     * render as text there, unlike the edit form's selects).
+     */
+    async gotoCurrentOperationView() {
+        if (/\/view(\?.*)?$/.test(this.page.url())) {
+            return;
+        }
+        const url = this.page.url().replace(/\/edit(\?.*)?$/, "/view");
+        await this.page.goto(url);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+    }
+
+    /**
+     * Capture the source/destination locations of the current (source) operation,
+     * create its return, and assert the return reverses them: the return's source
+     * is the operation's destination and its destination is the operation's source.
+     */
+    async returnAndExpectReversedLocations() {
+        await this.gotoCurrentOperationView();
+        const sourceLoc = await this.readOperationLocation("source");
+        const destLoc = await this.readOperationLocation("destination");
+
+        await this.returnCurrentOperation();
+
+        await this.gotoCurrentOperationView();
+        await this.expectOperationLocation("source", destLoc);
+        await this.expectOperationLocation("destination", sourceLoc);
+    }
+
+    /**
+     * Assert the current operation lists a move for the product at the given quantity.
+     */
+    async expectCurrentOperationMoveQuantity(productName: string, quantity: string) {
+        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        await expect(row).toBeVisible();
+        const escaped = quantity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        await expect(row).toContainText(new RegExp(`(^|\\s)${escaped}(\\.0+)?(\\s|$)`));
+    }
+
+    /**
+     * Assert the current operation is validated (Done): it no longer offers
+     * "Validate" and instead exposes the "Return" action shown only once done.
+     */
+    async expectOperationDone() {
+        await expect(this.erpLocators.inventoryOperationValidateButton).toBeHidden();
+        await expect(this.erpLocators.inventoryOperationReturnButton).toBeVisible();
+    }
+
+    /**
      * Operations - Internal Transfers
      */
 
@@ -1021,8 +1204,6 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/internals\/create/);
 
-        // Picking the warehouse's chain operation type (e.g. "Pick") sets the
-        // route-linked source/destination.
         if (data.operationType && data.operationTypeName) {
             await this.selectOperationTypeForWarehouse(data.operationType, data.operationTypeName);
         }
@@ -1145,7 +1326,6 @@ export class InventoriesManagementPage {
         await link.click();
         await this.page.waitForLoadState("networkidle");
 
-        // Jump to the package's Products sub-page via its record id.
         const id = this.page.url().match(/packages\/(\d+)/)?.[1];
         if (id) {
             await this.page.goto(`/admin/inventory/products/packages/${id}/products`);
@@ -1281,11 +1461,8 @@ export class InventoriesManagementPage {
         const productSelects = this.erpLocators.inventoryOperationMoveProductSelect;
         const demandInputs = this.erpLocators.inventoryOperationMoveDemandInput;
 
-        // Let any pending repeater re-render (from an operation-type change) settle.
         await this.page.waitForTimeout(500);
 
-        // The moves repeater renders one row by default; wait for it so a slow
-        // render isn't mistaken for an empty list, which would add a stray row.
         await productSelects.first().waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
 
         for (let i = 0; i < lines.length; i++) {
@@ -1296,7 +1473,6 @@ export class InventoriesManagementPage {
             }
             await this.selectBySearch(productSelects.nth(i), lines[i].productName);
 
-            // Confirm the product registered; retry once if the option click missed.
             const trigger = await productSelects.nth(i).innerText().catch(() => "");
             if (/select an option/i.test(trigger) || trigger.trim() === "") {
                 await this.selectBySearch(productSelects.nth(i), lines[i].productName).catch(() => undefined);
@@ -1364,8 +1540,7 @@ export class InventoriesManagementPage {
         try {
             await expect(this.erpLocators.inventorySuccessToast).toBeVisible({ timeout: 2_500 });
         } catch {
-            // The success toast is transient (and some validate flows redirect
-            // immediately), so a short, non-blocking check is enough.
+            // Ignore.
         }
     }
 

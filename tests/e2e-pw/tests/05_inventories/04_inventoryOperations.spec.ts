@@ -600,4 +600,80 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.editProductTracking(productName, "lot");
         await inventoryPage.expectProductTracking(productName, "lot");
     });
+
+    /**
+     * A receipt's return reverses its source and destination locations.
+     */
+    test("Return receipt reverses its locations", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Return Receipt ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+        await inventoryPage.receiptFullFlow({ productName, demand: "10" });
+
+        await inventoryPage.returnAndExpectReversedLocations();
+    });
+
+    /**
+     * A receipt's return operation validates through to Done.
+     */
+    test("Return validates to done", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Return Validate ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+        await inventoryPage.receiptFullFlow({ productName, demand: "10" });
+        await inventoryPage.returnAndExpectReversedLocations();
+        await inventoryPage.returnAndValidate();
+        await inventoryPage.expectOperationDone();
+    });
+
+    /**
+     * A partial return carries only the entered quantity to its return operation.
+     */
+    test("Partial return sets its own quantity", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Return Partial ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+        await inventoryPage.receiptFullFlow({ productName, demand: "10" });
+
+        await inventoryPage.returnCurrentOperation("4");
+        await inventoryPage.returnAndExpectReversedLocations();
+        await inventoryPage.expectOnReturnOperationPage();
+        await inventoryPage.expectCurrentOperationMoveQuantity(productName, "4");
+    });
+
+    /**
+     * A delivery's return reverses its source and destination locations.
+     */
+    test("Return delivery reverses its locations", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Return Delivery ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+        await inventoryPage.receiptFullFlow({ productName, demand: "10" });
+        await inventoryPage.deliveryFullFlow({ productName, demand: "10" });
+
+        await inventoryPage.returnAndExpectReversedLocations();
+    });
+
+    /**
+     * An internal transfer's return reverses its source and destination locations.
+     */
+    test("Return internal transfer reverses its locations", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Return Internal ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+        await inventoryPage.receiptFullFlow({ productName, demand: "10" });
+        await inventoryPage.internalTransferFullFlow({ productName, demand: "10" });
+
+        await inventoryPage.returnAndExpectReversedLocations();
+    });
 });
