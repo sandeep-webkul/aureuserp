@@ -625,7 +625,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
         await inventoryPage.receiptFullFlow({ productName, demand: "10" });
-        await inventoryPage.returnAndExpectReversedLocations();
         await inventoryPage.returnAndValidate();
         await inventoryPage.expectOperationDone();
     });
@@ -641,10 +640,7 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
         await inventoryPage.receiptFullFlow({ productName, demand: "10" });
 
-        await inventoryPage.returnCurrentOperation("4");
-        await inventoryPage.returnAndExpectReversedLocations();
-        await inventoryPage.expectOnReturnOperationPage();
-        await inventoryPage.expectCurrentOperationMoveQuantity(productName, "4");
+        await inventoryPage.partialReturnAndExpectReversedLocations(productName, "4");
     });
 
     /**

@@ -770,7 +770,7 @@ export class InventoriesManagementPage {
             }
         }
 
-        await this.dismissReturnModalIfOpen();
+        await this.settleAfterValidation();
         await this.expectSuccessToastSoft();
     }
 
@@ -1081,15 +1081,40 @@ export class InventoriesManagementPage {
             await this.page.waitForTimeout(500);
         }
 
-        await this.dismissReturnModalIfOpen();
+        await this.settleAfterValidation();
         await this.expectSuccessToastSoft();
     }
 
     /**
-     * Close the Return modal if it is open (dismisses a stray auto-open).
+     * After validating an operation to Done, the "Return" action lands in the
+     * header slot the "Validate" button vacated and Filament can auto-open its
+     * modal. Poll until the page is stable — the Return button is present and no
+     * Return modal is open — dismissing any stray modal as it appears. A single
+     * Escape races the modal's render, so this retries until settled.
+     */
+    private async settleAfterValidation() {
+        const l = this.erpLocators;
+        for (let attempt = 0; attempt < 6; attempt++) {
+            await this.dismissReturnModalIfOpen();
+            const modalOpen = await l.inventoryReturnModal.isVisible().catch(() => false);
+            const returnReady = await l.inventoryOperationReturnButton.isVisible().catch(() => false);
+            if (returnReady && !modalOpen) {
+                return;
+            }
+            await this.page.waitForTimeout(500);
+        }
+    }
+
+    /**
+     * Close the Return modal if it is open (dismisses a stray auto-open),
+     * retrying because a single Escape can fire before the modal has rendered.
      */
     private async dismissReturnModalIfOpen() {
-        if (await this.erpLocators.inventoryReturnModal.isVisible().catch(() => false)) {
+        const modal = this.erpLocators.inventoryReturnModal;
+        for (let attempt = 0; attempt < 4; attempt++) {
+            if (!(await modal.isVisible().catch(() => false))) {
+                return;
+            }
             await this.page.keyboard.press("Escape").catch(() => undefined);
             await this.page.waitForTimeout(400);
         }
@@ -1162,6 +1187,25 @@ export class InventoriesManagementPage {
         const destLoc = await this.readOperationLocation("destination");
 
         await this.returnCurrentOperation();
+
+        await this.gotoCurrentOperationView();
+        await this.expectOperationLocation("source", destLoc);
+        await this.expectOperationLocation("destination", sourceLoc);
+    }
+
+    /**
+     * Create a partial return of the current operation, assert the return carries
+     * the entered quantity, then assert it reverses the operation's locations.
+     */
+    async partialReturnAndExpectReversedLocations(productName: string, quantity: string) {
+        await this.gotoCurrentOperationView();
+        const sourceLoc = await this.readOperationLocation("source");
+        const destLoc = await this.readOperationLocation("destination");
+
+        await this.returnCurrentOperation(quantity);
+
+        await this.expectOnReturnOperationPage();
+        await this.expectCurrentOperationMoveQuantity(productName, quantity);
 
         await this.gotoCurrentOperationView();
         await this.expectOperationLocation("source", destLoc);
