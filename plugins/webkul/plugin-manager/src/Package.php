@@ -254,6 +254,38 @@ class Package extends BasePackage
         return 'php';
     }
 
+    /**
+     * MySQL's AUTO_INCREMENT automatically advances past any explicitly-inserted
+     * id (seeders throughout this codebase insert fixed ids), but PostgreSQL's
+     * serial/bigserial sequences do not — leaving the sequence out of sync with
+     * the table's actual max id, so the next auto-generated insert collides with
+     * an already-seeded row. Re-syncs every table's id sequence to match its
+     * current max(id); a no-op on non-Postgres connections.
+     */
+    public static function syncPostgresSequences(): void
+    {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        $tables = DB::select("
+            SELECT table_name FROM information_schema.columns
+            WHERE table_schema = 'public' AND column_name = 'id'
+        ");
+
+        foreach ($tables as $table) {
+            $sequence = DB::selectOne('SELECT pg_get_serial_sequence(?, ?) as sequence', [$table->table_name, 'id']);
+
+            if (! $sequence?->sequence) {
+                continue;
+            }
+
+            $maxId = DB::table($table->table_name)->max('id');
+
+            DB::statement('SELECT setval(?, ?, ?)', [$sequence->sequence, $maxId ?? 1, $maxId !== null]);
+        }
+    }
+
     public static function isPluginInstalled(string $name): bool
     {
         static $isLoaded = false; 

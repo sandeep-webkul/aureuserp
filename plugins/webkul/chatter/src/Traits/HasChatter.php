@@ -362,10 +362,10 @@ trait HasChatter
             $searchTerm = '%'.$filters['search'].'%';
 
             $query->where(function ($query) use ($searchTerm) {
-                $query->where('subject', 'like', $searchTerm)
-                    ->orWhere('body', 'like', $searchTerm)
-                    ->orWhere('summary', 'like', $searchTerm)
-                    ->orWhere('name', 'like', $searchTerm);
+                $query->whereLike('subject', $searchTerm)
+                    ->orWhereLike('body', $searchTerm)
+                    ->orWhereLike('summary', $searchTerm)
+                    ->orWhereLike('name', $searchTerm);
             });
         }
 

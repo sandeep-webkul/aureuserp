@@ -5,7 +5,6 @@ namespace Webkul\Website\Filament\Admin\Widgets;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Facades\DB;
 use Webkul\Blog\Models\Post;
 
 class BlogChart extends ChartWidget
@@ -25,12 +24,7 @@ class BlogChart extends ChartWidget
     {
         $filters = $this->filters;
 
-        $query = Post::query()
-            ->select(
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month_key'),
-                'is_published',
-                DB::raw('COUNT(*) as count')
-            );
+        $query = Post::query()->select(['created_at', 'is_published']);
 
         if (! empty($filters['from_date'])) {
             $query->whereDate('created_at', '>=', $filters['from_date']);
@@ -44,12 +38,11 @@ class BlogChart extends ChartWidget
             $query->where('author_id', $filters['author_id']);
         }
 
-        $posts = $query
-            ->groupBy('month_key', 'is_published')
-            ->orderBy('month_key')
-            ->get();
+        // Bucketing by month is done in PHP (rather than SQL DATE_FORMAT/to_char)
+        // so the query stays portable across database drivers.
+        $postsByMonth = $query->get()->groupBy(fn (Post $post) => $post->created_at->format('Y-m'));
 
-        $months = $posts->pluck('month_key')->unique()->sort()->values();
+        $months = $postsByMonth->keys()->sort()->values();
 
         $publishedData = [];
         $draftData = [];
@@ -58,19 +51,11 @@ class BlogChart extends ChartWidget
         foreach ($months as $monthKey) {
             $labels[] = Carbon::createFromFormat('Y-m', $monthKey)->format('M Y');
 
-            $publishedCount = $posts
-                ->where('month_key', $monthKey)
-                ->where('is_published', 1)
-                ->sum('count');
+            $monthPosts = $postsByMonth->get($monthKey);
 
-            $draftCount = $posts
-                ->where('month_key', $monthKey)
-                ->where('is_published', 0)
-                ->sum('count');
+            $publishedData[] = $monthPosts->where('is_published', true)->count();
 
-            $publishedData[] = $publishedCount;
-
-            $draftData[] = $draftCount;
+            $draftData[] = $monthPosts->where('is_published', false)->count();
         }
 
         // Return empty data message if no data available

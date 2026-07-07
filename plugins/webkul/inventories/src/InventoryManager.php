@@ -2306,7 +2306,7 @@ class InventoryManager
             'product_qty'             => $move->uom->computeQuantity($quantity, $move->product->uom, roundingMethod: 'HALF-UP'),
             // 'quantity'                => $quantity,
             'quantity'                => 0,
-            'is_picked'               => 0,
+            'is_picked'               => false,
             'uom_id'                  => $move->product->uom_id,
             'operation_id'            => $operation->id,
             'state'                   => MoveState::DRAFT,
