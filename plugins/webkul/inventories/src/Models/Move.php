@@ -1152,7 +1152,7 @@ class Move extends Model
             }
 
             if ($toUpdate && float_compare($quantity, $uomQuantityBackToProductUom, precisionRounding: $rounding) === 0) {
-                $toUpdate->update(['uom_qty' => $toUpdate->uom_qty + $uomQuantity]);
+                $toUpdate->update(['qty' => $toUpdate->qty + $uomQuantity]);
             } else {
                 if (
                     $this->product->tracking === ProductTracking::SERIAL

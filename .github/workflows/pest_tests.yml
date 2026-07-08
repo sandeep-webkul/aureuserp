@@ -65,5 +65,11 @@ jobs:
             --admin-email="admin@example.com" \
             --admin-password="admin123"
 
+      - name: Installing Plugins
+        run: |
+          for plugin in products inventories accounts purchases sales projects; do
+            php artisan "${plugin}:install" --no-interaction
+          done
+
       - name: Running Pest Test
         run: vendor/bin/pest --colors=always
