@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use RuntimeException;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
@@ -102,9 +103,17 @@ class SupportServiceProvider extends PackageServiceProvider
     {
         $this->app->scoped(SettingsRegistry::class);
 
-        $this->app->singleton(DatabaseDialect::class, fn () => match (DB::connection()->getDriverName()) {
-            'pgsql' => new PostgresDialect(),
-            default => new MySqlDialect(),
+        $this->app->singleton(DatabaseDialect::class, function () {
+            $driver = DB::connection()->getDriverName();
+
+            return match ($driver) {
+                'pgsql' => new PostgresDialect,
+                'mysql', 'mariadb' => new MySqlDialect,
+                default => throw new RuntimeException(
+                    "No DatabaseDialect implementation is registered for the [{$driver}] database driver. ".
+                    'Supported drivers: mysql, mariadb, pgsql.'
+                ),
+            };
         });
 
         Panel::configureUsing(function (Panel $panel): void {

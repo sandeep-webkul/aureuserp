@@ -26,9 +26,18 @@ interface DatabaseDialect
      * Change a column's underlying type.
      *
      * @param  string  $blueprintMethod  Fluent `Illuminate\Database\Schema\Blueprint` column method to
-     *                                    use on MySQL (e.g. 'date', 'json', 'text', 'string').
+     *                                   use on MySQL (e.g. 'date', 'json', 'text', 'string').
      * @param  string  $postgresType  Target Postgres column type (e.g. 'date', 'jsonb', 'varchar(255)').
      * @param  string  $postgresUsing  Postgres `USING` cast expression (e.g. 'name::date').
      */
     public function alterColumnType(string $table, string $column, string $blueprintMethod, string $postgresType, string $postgresUsing): void;
+
+    /**
+     * Resync every table's auto-incrementing id sequence to match its current
+     * max(id). Needed because seeders that insert explicit ids leave
+     * PostgreSQL's sequences behind (unlike MySQL's AUTO_INCREMENT, which
+     * advances past explicit inserts automatically). A no-op where the
+     * driver has no equivalent concept (e.g. MySQL).
+     */
+    public function syncSequences(): void;
 }

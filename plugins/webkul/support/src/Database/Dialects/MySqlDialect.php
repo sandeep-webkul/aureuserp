@@ -23,4 +23,9 @@ class MySqlDialect implements DatabaseDialect
             $blueprint->{$blueprintMethod}($column)->change();
         });
     }
+
+    public function syncSequences(): void
+    {
+        // MySQL's AUTO_INCREMENT already advances past explicitly-inserted ids.
+    }
 }

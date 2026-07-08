@@ -20,4 +20,33 @@ class PostgresDialect implements DatabaseDialect
     {
         DB::statement("ALTER TABLE {$table} ALTER COLUMN {$column} TYPE {$postgresType} USING {$postgresUsing}");
     }
+
+    public function syncSequences(): void
+    {
+        DB::statement(<<<'SQL'
+            DO $$
+            DECLARE
+                tbl RECORD;
+                seq text;
+                current_max bigint;
+            BEGIN
+                FOR tbl IN
+                    SELECT table_name FROM information_schema.columns
+                    WHERE table_schema = 'public' AND column_name = 'id'
+                LOOP
+                    seq := pg_get_serial_sequence(format('%I', tbl.table_name), 'id');
+
+                    IF seq IS NOT NULL THEN
+                        EXECUTE format('SELECT COALESCE(max(id), 0) FROM %I', tbl.table_name) INTO current_max;
+
+                        IF current_max > 0 THEN
+                            PERFORM setval(seq, current_max, true);
+                        ELSE
+                            PERFORM setval(seq, 1, false);
+                        END IF;
+                    END IF;
+                END LOOP;
+            END $$;
+            SQL);
+    }
 }

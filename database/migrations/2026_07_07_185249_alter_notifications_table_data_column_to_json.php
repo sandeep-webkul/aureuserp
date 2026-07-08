@@ -1,16 +1,14 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
-// Filament's own notification bell queries data->'format' via Eloquent's
-// JSON path syntax (vendor/filament/notifications/.../DatabaseNotifications.php).
-// Postgres's ->> operator only exists for json/jsonb columns, whereas the stock
-// Laravel notifications migration stub uses text (which happens to work on
-// MySQL, since MySQL's JSON functions parse any string at runtime).
 return new class extends Migration
 {
     public function up(): void
     {
+        DB::table('notifications')->where('data', '')->update(['data' => '{}']);
+
         db_dialect()->alterColumnType('notifications', 'data', 'json', 'jsonb', 'data::jsonb');
     }
 
