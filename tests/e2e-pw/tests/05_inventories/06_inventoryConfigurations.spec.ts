@@ -609,6 +609,79 @@ test.describe("Inventory Operation Type", () => {
     });
 
     /**
+     * At Confirm reservation: confirming the delivery (Mark as Todo) reserves the
+     * stock, shown as Reserved Quantity on the product's Quantities tab.
+     */
+    test("Reservation - At Confirm reserves on confirm", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E Rsv Src ${key}`;
+        const product = `E2E Rsv Product ${key}`;
+        const opType = `E2E Rsv AtConfirm ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.addOnHandQuantity(product, source, "10");
+
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2ERC",
+            type: "outgoing",
+            sourceLocation: source,
+        });
+
+        await inventoryPage.createDelivery({
+            productName: product,
+            demand: "5",
+            operationTypeName: opType,
+        });
+        await inventoryPage.markAsTodo();
+
+        await inventoryPage.expectReservedQuantityRow(product, source, "5");
+    });
+
+    /**
+     * Manual reservation: the Manual radio must persist, confirming reserves
+     * nothing, and only Check Availability reserves the stock. Fails until the
+     * app persists the Manual radio (it currently saves At Confirm).
+     */
+    test("Reservation - Manual reserves on Check Availability", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E Rsv Src ${key}`;
+        const product = `E2E Rsv Product ${key}`;
+        const opType = `E2E Rsv Manual ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.addOnHandQuantity(product, source, "10");
+
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2ERM",
+            type: "outgoing",
+            sourceLocation: source,
+            reservation: "manual",
+        });
+        await inventoryPage.expectInfolistField("Reservation Method", "Manual", 5000);
+
+        await inventoryPage.createDelivery({
+            productName: product,
+            demand: "5",
+            operationTypeName: opType,
+        });
+        const deliveryUrl = adminPage.url();
+
+        await inventoryPage.markAsTodo();
+        await inventoryPage.expectCheckAvailabilityVisible();
+        await inventoryPage.expectReservedQuantityRow(product, source, "0");
+
+        await adminPage.goto(deliveryUrl);
+        await inventoryPage.checkAvailability();
+        await inventoryPage.expectReservedQuantityRow(product, source, "5");
+    });
+
+    /**
      * With dropshipping off, the type field must not offer Dropship (fails until
      * the app gates the option — the type select currently always lists it).
      */

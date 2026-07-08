@@ -740,7 +740,7 @@ export class ErpLocators {
         this.inventoryProductQuantityOnHandInlineInputs = page.locator(
             "td.fi-ta-cell-quantity .fi-ta-text-input input:not([type=hidden])"
         );
-        this.inventoryProductQuantityReservedCells = page.locator("td.fi-ta-cell-reserved_quantity");
+        this.inventoryProductQuantityReservedCells = page.locator("td.fi-ta-cell-reserved-quantity");
 
         /**
          * Inventory - Operations (Receipts, Deliveries, Internals)

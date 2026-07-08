@@ -613,12 +613,12 @@ export class InventoriesManagementPage {
      * Assert an infolist entry (matched by its exact label) shows the given
      * value on a record's view page.
      */
-    async expectInfolistField(label: string, value: string) {
+    async expectInfolistField(label: string, value: string, timeout = 15000) {
         const entry = this.erpLocators.inventoryInfolistEntries
             .filter({ has: this.page.getByText(label, { exact: true }) })
             .first();
         await expect(entry).toBeVisible({ timeout: 15000 });
-        await expect(entry).toContainText(value);
+        await expect(entry).toContainText(value, { timeout });
     }
 
     async deleteStorageCategory(name: string) {
@@ -1420,6 +1420,32 @@ export class InventoriesManagementPage {
     async deliveryFullFlow(data: DeliveryData) {
         await this.createDelivery(data);
         await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * Confirm the open operation (Mark as Todo). An At Confirm operation reserves
+     * its stock here; a Manual one only reserves on Check Availability.
+     */
+    async markAsTodo() {
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
+    }
+
+    /**
+     * Reserve the open operation's stock (Check Availability).
+     */
+    async checkAvailability() {
+        await this.clickCheckAvailabilityIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
+    }
+
+    /**
+     * Assert the open operation offers the "Check Availability" action.
+     */
+    async expectCheckAvailabilityVisible() {
+        await expect(this.erpLocators.inventoryOperationCheckAvailabilityButton).toBeVisible({ timeout: 15000 });
     }
 
     /**
