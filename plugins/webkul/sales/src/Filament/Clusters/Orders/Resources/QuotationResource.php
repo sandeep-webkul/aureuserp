@@ -1287,6 +1287,10 @@ class QuotationResource extends Resource
                             return null;
                         }
 
+                        if ($record && $record?->state !== OrderState::DRAFT) {
+                            return null;
+                        }
+
                         $productId = $get('product_id');
 
                         if (! $productId) {
