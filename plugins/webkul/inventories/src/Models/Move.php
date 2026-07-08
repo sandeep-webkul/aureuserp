@@ -321,11 +321,18 @@ class Move extends Model
 
             $move->state ??= MoveState::DRAFT;
 
-            if (
-                $move->operation
-                && ! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])
-            ) {
-                $move->additional = true;
+            if ($move->operation) {
+                if ($move->operation->state === OperationState::DONE) {
+                    $move->state = MoveState::DONE;
+
+                    $move->additional = true;
+                } elseif (! in_array($move->operation->state, [
+                    OperationState::DRAFT,
+                    OperationState::DONE,
+                    OperationState::CANCELED
+                ])) {
+                    $move->additional = true;
+                }
             }
         });
 
