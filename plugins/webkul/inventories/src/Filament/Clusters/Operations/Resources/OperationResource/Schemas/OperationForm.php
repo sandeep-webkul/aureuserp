@@ -263,6 +263,17 @@ class OperationForm
 
                 return $data;
             })
+            ->mutateRelationshipDataBeforeCreateUsing(function (array $data, $record, $livewire) {
+                Move::$globalContext['skip_additional'] = false;
+
+                $data['source_location_id'] = $livewire->data['source_location_id']
+                    ?? $record->operationType?->source_location_id;
+
+                $data['destination_location_id'] = $livewire->data['destination_location_id']
+                    ?? $record->operationType?->destination_location_id;
+
+                return $data;
+            })
             ->columnManagerColumns(2)
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
