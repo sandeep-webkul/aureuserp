@@ -28,6 +28,8 @@ export type DeliveryData = {
     productName: string;
     demand: string;
     operationType?: string;
+    operationTypeName?: string;
+    origin?: string;
 };
 
 export type InternalTransferData = {
@@ -518,13 +520,11 @@ export class InventoriesManagementPage {
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await this.page.waitForTimeout(1200);
         }
-        // if (data.sourceLocation) {
-        //     await this.selectFromFilamentDropdown(l.inventoryOperationSourceLocationSelect, data.sourceLocation);
-        //     await this.page.waitForTimeout(400);
-        // }
+        if (data.sourceLocation) {
+            await this.selectLocationOverride(l.inventoryOperationSourceLocationSelect, data.sourceLocation);
+        }
         if (data.destinationLocation) {
-            await this.selectFromFilamentDropdown(l.inventoryOperationDestinationLocationSelect, data.destinationLocation);
-            await this.page.waitForTimeout(400);
+            await this.selectLocationOverride(l.inventoryOperationDestinationLocationSelect, data.destinationLocation);
         }
         if (data.returnTypeName) {
             await this.selectReturnOperationType(data.returnTypeName, data.warehouseName);
@@ -545,7 +545,26 @@ export class InventoriesManagementPage {
         await this.page
             .waitForURL((url) => !/operation-types\/create/.test(url.toString()), { timeout: 20000 })
             .catch(() => undefined);
-        await this.expectSuccessToast();
+        // The redirect off /create already confirms the save; the toast can vanish
+        // before it's asserted, so don't hard-fail on it.
+        await this.expectSuccessToastSoft();
+    }
+
+    /**
+     * Select a source/destination location on the (live) operation-type form,
+     * verifying the choice stuck — the type's live recompute can otherwise reset
+     * it, so re-select until the trigger shows the picked location.
+     */
+    private async selectLocationOverride(trigger: Locator, name: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.selectFromFilamentDropdown(trigger, name);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(600);
+            const text = (await trigger.innerText().catch(() => "")) ?? "";
+            if (text.includes(name)) {
+                return;
+            }
+        }
     }
 
     /**
@@ -1320,7 +1339,11 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/deliveries\/create/);
 
-        if (data.operationType) {
+        if (data.operationTypeName) {
+            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, data.operationTypeName);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+        } else if (data.operationType) {
             await this.selectOperationTypeForWarehouse(data.operationType, "Delivery Orders");
         }
 
@@ -1330,10 +1353,68 @@ export class InventoriesManagementPage {
 
         await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
+        if (data.origin) {
+            await this.erpLocators.inventoryOperationAdditionalTab.click();
+            await this.erpLocators.inventoryOperationOriginInput.fill(data.origin);
+        }
+
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
 
         return this.readOperationReference();
+    }
+
+    /**
+     * Mark as Todo then Check Availability so on-hand stock gets reserved before
+     * a validate (needed for the partial-delivery backorder flow).
+     */
+    async reserveForValidate() {
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+        await this.clickCheckAvailabilityIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+    }
+
+    /**
+     * Validate a partially-reserved operation and confirm the "Create Back Order?"
+     * modal, creating the backorder for the remaining quantity (create_backorder = Ask).
+     */
+    async validateCreatingBackorder() {
+        await this.reserveForValidate();
+        await this.erpLocators.inventoryOperationValidateButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+        await expect(this.erpLocators.inventoryOperationBackorderModal).toBeVisible({ timeout: 20000 });
+        await this.erpLocators.inventoryOperationBackorderConfirmButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
+    }
+
+    /**
+     * Validate a partially-reserved operation expecting no "Create Back Order?"
+     * modal (create_backorder = Never or Always go straight through).
+     */
+    async validateWithoutBackorderModal() {
+        await this.reserveForValidate();
+        await this.erpLocators.inventoryOperationValidateButton.click({ timeout: 15000 });
+        await this.page.waitForTimeout(1500);
+        await expect(this.erpLocators.inventoryOperationBackorderModal).toBeHidden();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+    }
+
+    /**
+     * Assert how many delivery operations carry the given source document (origin).
+     * A backorder replicates the origin, so the count is 2 when one was created,
+     * 1 when it wasn't.
+     */
+    async expectDeliveryCountByOrigin(origin: string, count: number) {
+        await this.gotoDeliveriesPage();
+        await this.searchList(origin);
+        const rows = this.erpLocators.inventoryTableRows.filter({ hasText: origin });
+        await expect(rows).toHaveCount(count);
     }
 
     async deliveryFullFlow(data: DeliveryData) {

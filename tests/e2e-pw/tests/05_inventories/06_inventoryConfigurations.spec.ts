@@ -458,6 +458,157 @@ test.describe("Inventory Operation Type", () => {
     });
 
     /**
+     * Returning a validated operation uses the operation type's configured return
+     * type and reverses its locations (source = original destination, destination
+     * = the incoming return type's destination).
+     */
+    test("Return uses the custom return type", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const returnDest = `E2E Ret Dest ${key}`;
+        const mainDest = `E2E Main Dest ${key}`;
+        const returnType = `E2E Ret Type ${key}`;
+        const mainType = `E2E Main Type ${key}`;
+        const product = `E2E Ret Product ${key}`;
+
+        await inventoryPage.createLocation(returnDest);
+        await inventoryPage.createOperationTypeWithFlow({
+            name: returnType,
+            sequenceCode: "E2ERA",
+            type: "incoming",
+            destinationLocation: returnDest,
+        });
+
+        await inventoryPage.createLocation(mainDest);
+        await inventoryPage.createOperationTypeWithFlow({
+            name: mainType,
+            sequenceCode: "E2ERB",
+            type: "incoming",
+            destinationLocation: mainDest,
+            returnTypeName: returnType,
+        });
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.createReceipt({
+            productName: product,
+            demand: "4",
+            operationTypeName: mainType,
+        });
+        await inventoryPage.confirmAndValidateOperation();
+
+        await inventoryPage.returnCurrentOperation();
+        await inventoryPage.gotoCurrentOperationView();
+        await inventoryPage.expectInfolistField("Operation Type", returnType);
+        await inventoryPage.expectInfolistField("Source Location", mainDest);
+        await inventoryPage.expectInfolistField("Destination Location", returnDest);
+    });
+
+    /**
+     * Ask backorder policy: validating a partial delivery opens the modal, and
+     * confirming it creates a backorder for the remaining quantity.
+     */
+    test("Create backorder - Ask creates a backorder", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E BO Src ${key}`;
+        const product = `E2E BO Product ${key}`;
+        const opType = `E2E BO Ask Type ${key}`;
+        const origin = `E2E BO Ask ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.addOnHandQuantity(product, source, "5");
+
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2EBA",
+            type: "outgoing",
+            sourceLocation: source,
+            createBackorder: "ask",
+        });
+
+        await inventoryPage.createDelivery({
+            productName: product,
+            demand: "10",
+            operationTypeName: opType,
+            origin,
+        });
+        await inventoryPage.validateCreatingBackorder();
+
+        await inventoryPage.expectDeliveryCountByOrigin(origin, 2);
+    });
+
+    /**
+     * Never backorder policy: validating a partial delivery shows no modal and
+     * creates no backorder, so only the original delivery exists.
+     */
+    test("Create backorder - Never skips the backorder", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E BO Src ${key}`;
+        const product = `E2E BO Product ${key}`;
+        const opType = `E2E BO Never Type ${key}`;
+        const origin = `E2E BO Never ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.addOnHandQuantity(product, source, "5");
+
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2EBN",
+            type: "outgoing",
+            sourceLocation: source,
+            createBackorder: "never",
+        });
+
+        await inventoryPage.createDelivery({
+            productName: product,
+            demand: "10",
+            operationTypeName: opType,
+            origin,
+        });
+        await inventoryPage.validateWithoutBackorderModal();
+
+        await inventoryPage.expectDeliveryCountByOrigin(origin, 1);
+    });
+
+    /**
+     * Always backorder policy: validating a partial delivery shows no modal and
+     * still creates a backorder for the remaining quantity.
+     */
+    test("Create backorder - Always creates a backorder without asking", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E BO Src ${key}`;
+        const product = `E2E BO Product ${key}`;
+        const opType = `E2E BO Always Type ${key}`;
+        const origin = `E2E BO Always ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.addOnHandQuantity(product, source, "5");
+
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2EBW",
+            type: "outgoing",
+            sourceLocation: source,
+            createBackorder: "always",
+        });
+
+        await inventoryPage.createDelivery({
+            productName: product,
+            demand: "10",
+            operationTypeName: opType,
+            origin,
+        });
+        await inventoryPage.validateWithoutBackorderModal();
+
+        await inventoryPage.expectDeliveryCountByOrigin(origin, 2);
+    });
+
+    /**
      * With dropshipping off, the type field must not offer Dropship (fails until
      * the app gates the option — the type select currently always lists it).
      */

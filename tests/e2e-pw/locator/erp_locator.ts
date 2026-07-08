@@ -259,6 +259,10 @@ export class ErpLocators {
     readonly inventoryOperationCheckAvailabilityButton: Locator;
     readonly inventoryOperationValidateButton: Locator;
     readonly inventoryOperationNoBackorderButton: Locator;
+    readonly inventoryOperationBackorderModal: Locator;
+    readonly inventoryOperationBackorderConfirmButton: Locator;
+    readonly inventoryOperationOriginInput: Locator;
+    readonly inventoryOperationAdditionalTab: Locator;
     readonly inventoryOperationNextTransferButton: Locator;
     readonly inventoryOperationReturnButton: Locator;
     readonly inventoryInfolistEntries: Locator;
@@ -758,6 +762,14 @@ export class ErpLocators {
         this.inventoryOperationCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
         this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' }).first();
         this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
+        this.inventoryOperationBackorderModal = page.getByRole("heading", { name: /Create Back Order/i }).first();
+        this.inventoryOperationBackorderConfirmButton = page
+            .getByRole("dialog")
+            .filter({ hasText: /Create Back Order/i })
+            .getByRole("button", { name: /^Confirm$/i })
+            .first();
+        this.inventoryOperationOriginInput = page.locator('input[id="form.origin"]').first();
+        this.inventoryOperationAdditionalTab = page.getByRole("tab", { name: /Additional/i }).first();
         this.inventoryOperationNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
         // The "Return" header action is only visible once an operation is validated (state DONE).
         this.inventoryOperationReturnButton = page.getByRole("button", { name: /^Return$/i }).first();
