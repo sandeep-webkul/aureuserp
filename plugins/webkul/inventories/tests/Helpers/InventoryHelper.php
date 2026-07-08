@@ -160,6 +160,22 @@ class InventoryHelper
         return $move->refresh();
     }
 
+    public static function operationCount(Warehouse $warehouse): int
+    {
+        return Operation::query()
+            ->whereIn('operation_type_id', array_filter([
+                $warehouse->in_type_id,
+                $warehouse->out_type_id,
+                $warehouse->pick_type_id,
+                $warehouse->pack_type_id,
+                $warehouse->qc_type_id,
+                $warehouse->store_type_id,
+                $warehouse->internal_type_id,
+                $warehouse->xdock_type_id,
+            ]))
+            ->count();
+    }
+
     public static function backorderOf(Operation $operation): ?Operation
     {
         return Operation::query()->where('back_order_id', $operation->id)->first();
