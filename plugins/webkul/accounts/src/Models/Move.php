@@ -760,19 +760,15 @@ class Move extends Model implements Sortable
      * Shared aggregate SELECT expressions for the debit/credit reconciliation
      * queries in computePaymentState(). Aggregate functions over boolean
      * expressions (SUM/COALESCE) are MySQL-lenient but rejected by PostgreSQL's
-     * stricter type system, and MySQL's JSON_ARRAYAGG has no direct PostgreSQL
-     * equivalent (json_agg) — both are branched here by driver, with every
-     * aggregate normalized to a plain integer (0/1) so PHP can cast it to bool
-     * consistently regardless of driver.
+     * stricter type system, so every aggregate is normalized to a plain integer
+     * (0/1) here so PHP can cast it to bool consistently regardless of driver.
+     * The JSON array aggregation itself goes through db_dialect() since MySQL's
+     * JSON_ARRAYAGG has no direct PostgreSQL equivalent (json_agg).
      */
     private function reconciliationAggregateSelects(): array
     {
-        $jsonArrayAgg = DB::connection()->getDriverName() === 'pgsql'
-            ? 'json_agg(opposite_move.move_type)'
-            : 'JSON_ARRAYAGG(opposite_move.move_type)';
-
         return [
-            DB::raw("{$jsonArrayAgg} as opposite_move_types"),
+            DB::raw(db_dialect()->jsonArrayAgg('opposite_move.move_type').' as opposite_move_types'),
             DB::raw('
                 CASE
                     WHEN SUM(CASE WHEN opposite_move.origin_payment_id IS NOT NULL THEN 1 ELSE 0 END) = 0

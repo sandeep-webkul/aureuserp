@@ -24,7 +24,10 @@ class BlogChart extends ChartWidget
     {
         $filters = $this->filters;
 
-        $query = Post::query()->select(['created_at', 'is_published']);
+        $query = Post::query()
+            ->selectRaw(db_dialect()->monthBucket('created_at').' as month_key')
+            ->addSelect('is_published')
+            ->selectRaw('COUNT(*) as count');
 
         if (! empty($filters['from_date'])) {
             $query->whereDate('created_at', '>=', $filters['from_date']);
@@ -38,11 +41,15 @@ class BlogChart extends ChartWidget
             $query->where('author_id', $filters['author_id']);
         }
 
-        // Bucketing by month is done in PHP (rather than SQL DATE_FORMAT/to_char)
-        // so the query stays portable across database drivers.
-        $postsByMonth = $query->get()->groupBy(fn (Post $post) => $post->created_at->format('Y-m'));
+        // Month/published bucketing and counting happens in SQL via the GROUP BY
+        // below, so only one row per (month, is_published) pair is fetched rather
+        // than every individual post.
+        $posts = $query
+            ->groupBy('month_key', 'is_published')
+            ->orderBy('month_key')
+            ->get();
 
-        $months = $postsByMonth->keys()->sort()->values();
+        $months = $posts->pluck('month_key')->unique()->sort()->values();
 
         $publishedData = [];
         $draftData = [];
@@ -51,11 +58,11 @@ class BlogChart extends ChartWidget
         foreach ($months as $monthKey) {
             $labels[] = Carbon::createFromFormat('Y-m', $monthKey)->format('M Y');
 
-            $monthPosts = $postsByMonth->get($monthKey);
+            $monthPosts = $posts->where('month_key', $monthKey);
 
-            $publishedData[] = $monthPosts->where('is_published', true)->count();
+            $publishedData[] = (int) $monthPosts->where('is_published', true)->sum('count');
 
-            $draftData[] = $monthPosts->where('is_published', false)->count();
+            $draftData[] = (int) $monthPosts->where('is_published', false)->sum('count');
         }
 
         // Return empty data message if no data available

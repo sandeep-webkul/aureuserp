@@ -5,6 +5,7 @@ namespace Webkul\Support;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Webkul\PluginManager\Package;
@@ -12,6 +13,9 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Database\Dialects\MySqlDialect;
+use Webkul\Support\Database\Dialects\PostgresDialect;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -97,6 +101,11 @@ class SupportServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->scoped(SettingsRegistry::class);
+
+        $this->app->singleton(DatabaseDialect::class, fn () => match (DB::connection()->getDriverName()) {
+            'pgsql' => new PostgresDialect(),
+            default => new MySqlDialect(),
+        });
 
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());
