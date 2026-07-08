@@ -654,7 +654,7 @@ class OperationForm
                                     ];
                                 }
 
-                                [$quantLocationScope] = $move->product->getLocationFilters();
+                                [$quantityLocationScope] = $move->product->getLocationFilters();
 
                                 return ProductQuantity::with(['location', 'lot', 'package'])
                                     ->where('product_id', $move->product_id)
@@ -662,8 +662,8 @@ class OperationForm
                                         $query->where('id', $move->source_location_id)
                                             ->orWhere('parent_id', $move->source_location_id);
                                     })
-                                    ->where('quantity', '>', 0)
-                                    ->where(fn (Builder $query) => $quantLocationScope($query))
+                                    // ->where('quantity', '>', 0)
+                                    ->where(fn (Builder $query) => $quantityLocationScope($query))
                                     ->get()
                                     ->mapWithKeys(function ($quantity) {
                                         $nameParts = array_filter([
