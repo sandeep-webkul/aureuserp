@@ -20,6 +20,7 @@ export type ReceiptData = {
     productName: string;
     demand: string;
     operationType?: string;
+    operationTypeName?: string;
 };
 
 export type DeliveryData = {
@@ -66,6 +67,15 @@ export type ScrapData = {
     qty: string;
     sourceLocation?: string;
 };
+
+export type LocationTypeValue =
+    | "supplier"
+    | "view"
+    | "internal"
+    | "customer"
+    | "inventory"
+    | "production"
+    | "transit";
 
 export class InventoriesManagementPage {
     readonly page: Page;
@@ -197,6 +207,17 @@ export class InventoriesManagementPage {
     }
 
     /**
+     * Turn the dropshipping feature off.
+     */
+    async disableDropshipping() {
+        await this.gotoManageLogisticsSettingsPage();
+        await this.setToggleOff(this.erpLocators.inventoryManageLogisticsToggleEnableDropshipping);
+        await this.erpLocators.inventorySettingsSaveButton.click();
+        await this.page.waitForLoadState("networkidle");
+        await this.expectSuccessToastSoft();
+    }
+
+    /**
      * Run all settings and enable everything required for the full E2E flow.
      */
     async enableAllInventorySettings() {
@@ -321,6 +342,316 @@ export class InventoriesManagementPage {
         await expect(this.page).toHaveURL(/configurations\/rules/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryRulesTable.first()).toBeVisible();
+    }
+
+    async gotoStorageCategoriesPage() {
+        await this.page.goto("/admin/inventory/configurations/storage-categories");
+        await expect(this.page).toHaveURL(/storage-categories/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryStorageCategoriesTable.first()).toBeVisible();
+    }
+
+    /**
+     * Create a storage category with just a name (its selects default to Mixed / current company).
+     */
+    async createStorageCategory(name: string) {
+        await this.gotoStorageCategoriesPage();
+        await this.erpLocators.inventoryStorageCategoryCreateButton.click();
+        await expect(this.page).toHaveURL(/storage-categories\/create/);
+        await this.fillConfigNameAndSave(name);
+    }
+
+    /**
+     * Create a location with just a name (its type defaults to Internal).
+     */
+    async createLocation(name: string) {
+        await this.gotoLocationsPage();
+        await this.erpLocators.inventoryLocationCreateButton.click();
+        await expect(this.page).toHaveURL(/locations\/create/);
+        await this.fillConfigNameAndSave(name);
+    }
+
+    /**
+     * Open the Location create form and fill its required name.
+     */
+    private async openLocationCreateForm(name: string) {
+        await this.gotoLocationsPage();
+        await this.erpLocators.inventoryLocationCreateButton.click();
+        await expect(this.page).toHaveURL(/locations\/create/);
+        await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible();
+        await this.erpLocators.inventoryConfigNameInput.fill(name);
+    }
+
+    /**
+     * Save the open Location form and wait to land on the record's view page.
+     */
+    private async saveLocationForm() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(500);
+        await this.erpLocators.inventoryConfigSaveButton.click();
+        await this.page
+            .waitForURL((url) => !/locations\/create/.test(url.toString()), { timeout: 20000 })
+            .catch(() => undefined);
+        await this.expectSuccessToast();
+    }
+
+    /**
+     * Create a location of the given type (the type select is native and live).
+     */
+    async createLocationOfType(name: string, type: LocationTypeValue) {
+        await this.openLocationCreateForm(name);
+        await this.erpLocators.inventoryLocationTypeSelect.selectOption(type);
+        await this.saveLocationForm();
+    }
+
+    /**
+     * Create a location nested under an existing parent location.
+     */
+    async createLocationWithParent(name: string, parentName: string) {
+        await this.openLocationCreateForm(name);
+        await this.selectFromFilamentDropdown(this.erpLocators.inventoryLocationParentSelect, parentName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.saveLocationForm();
+    }
+
+    /**
+     * Create an internal scrap location (Is a Scrap Location? = on).
+     */
+    async createScrapLocation(name: string) {
+        await this.openLocationCreateForm(name);
+        await this.setToggleOn(this.erpLocators.inventoryLocationIsScrapToggle);
+        await this.saveLocationForm();
+    }
+
+    /**
+     * Create a route with just a name.
+     */
+    async createRoute(name: string) {
+        await this.gotoRoutesPage();
+        await this.erpLocators.inventoryRouteCreateButton.click();
+        await expect(this.page).toHaveURL(/routes\/create/);
+        await this.fillConfigNameAndSave(name);
+    }
+
+    /**
+     * Create an operation type with a name and sequence prefix (type defaults to
+     * Incoming, so its source/destination locations and backorder policy default).
+     */
+    async createOperationType(name: string, sequenceCode: string) {
+        await this.gotoOperationTypesPage();
+        await this.erpLocators.inventoryOperationTypeCreateButton.click();
+        await expect(this.page).toHaveURL(/operation-types\/create/);
+        await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible();
+        await this.erpLocators.inventoryConfigNameInput.fill(name);
+        await this.erpLocators.inventoryConfigSequenceCodeInput.fill(sequenceCode);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+        await this.erpLocators.inventoryConfigSaveButton.click();
+        await this.page
+            .waitForURL((url) => !/operation-types\/create/.test(url.toString()), { timeout: 20000 })
+            .catch(() => undefined);
+        await this.expectSuccessToast();
+    }
+
+    async deleteOperationType(name: string) {
+        await this.gotoOperationTypesPage();
+        await this.deleteRecordInList(name);
+    }
+
+    /**
+     * Open the operation-type create form by direct navigation (a reliable
+     * landing that doesn't depend on the list's "New" button).
+     */
+    async gotoOperationTypeCreatePage() {
+        await this.page.goto("/admin/inventory/configurations/operation-types/create");
+        await expect(this.page).toHaveURL(/operation-types\/create/);
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible();
+    }
+
+    /**
+     * Assert the type select does not offer the given option value. Waits for the
+     * select itself first so a not-yet-rendered form can't pass falsely, then uses
+     * a short timeout since a present option won't disappear.
+     */
+    async expectOperationTypeOptionAbsent(value: string) {
+        await expect(this.erpLocators.inventoryOperationTypeTypeSelect).toBeVisible();
+        await expect(
+            this.erpLocators.inventoryOperationTypeTypeSelect.locator(`option[value="${value}"]`)
+        ).toHaveCount(0, { timeout: 5000 });
+    }
+
+    /**
+     * Create an operation type driving the type-dependent fields: `type` and
+     * `warehouse` are live and recompute the source/destination locations (allow
+     * that to settle before saving), `returnType` picks another operation type of
+     * the same warehouse, `createBackorder` is a native select, and `reservation`
+     * (Manual) is a radio set by clicking its visible label so Livewire records it.
+     */
+    async createOperationTypeWithFlow(data: {
+        name: string;
+        sequenceCode: string;
+        type?: "incoming" | "outgoing" | "internal" | "dropship" | "manufacture";
+        warehouseName?: string;
+        sourceLocation?: string;
+        destinationLocation?: string;
+        returnTypeName?: string;
+        createBackorder?: "ask" | "always" | "never";
+        reservation?: "manual";
+    }) {
+        const l = this.erpLocators;
+        await this.gotoOperationTypesPage();
+        await l.inventoryOperationTypeCreateButton.click();
+        await expect(this.page).toHaveURL(/operation-types\/create/);
+        await expect(l.inventoryConfigNameInput).toBeVisible();
+
+        await l.inventoryConfigNameInput.fill(data.name);
+        await l.inventoryConfigSequenceCodeInput.fill(data.sequenceCode);
+
+        if (data.type) {
+            await l.inventoryOperationTypeTypeSelect.selectOption(data.type);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(1500);
+        }
+        if (data.warehouseName) {
+            await this.selectFromFilamentDropdown(l.inventoryOperationTypeWarehouseSelect, data.warehouseName);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(1200);
+        }
+        // if (data.sourceLocation) {
+        //     await this.selectFromFilamentDropdown(l.inventoryOperationSourceLocationSelect, data.sourceLocation);
+        //     await this.page.waitForTimeout(400);
+        // }
+        if (data.destinationLocation) {
+            await this.selectFromFilamentDropdown(l.inventoryOperationDestinationLocationSelect, data.destinationLocation);
+            await this.page.waitForTimeout(400);
+        }
+        if (data.returnTypeName) {
+            await this.selectReturnOperationType(data.returnTypeName, data.warehouseName);
+            await this.page.waitForTimeout(400);
+        }
+        if (data.createBackorder) {
+            await l.inventoryOperationTypeBackorderSelect.selectOption(data.createBackorder);
+            await this.page.waitForTimeout(400);
+        }
+        if (data.reservation === "manual") {
+            await l.inventoryOperationTypeReservationGroup.getByText("Manual", { exact: true }).click();
+            await this.page.waitForTimeout(400);
+        }
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(600);
+        await l.inventoryConfigSaveButton.click();
+        await this.page
+            .waitForURL((url) => !/operation-types\/create/.test(url.toString()), { timeout: 20000 })
+            .catch(() => undefined);
+        await this.expectSuccessToast();
+    }
+
+    /**
+     * Select the Return Type by op-type name (optionally disambiguated by the
+     * warehouse shown in the "<warehouse>: <op-type>" option label).
+     */
+    private async selectReturnOperationType(opTypeName: string, warehouseName?: string) {
+        const trigger = this.erpLocators.inventoryOperationTypeReturnSelect;
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.click();
+
+        const panel = this.erpLocators.inventorySelectPanel.last();
+        await expect(panel).toBeVisible();
+
+        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        if (await search.isVisible().catch(() => false)) {
+            await search.fill(opTypeName);
+            await this.page.waitForTimeout(600);
+        }
+
+        let option = panel
+            .locator('[role="option"]')
+            .filter({ hasText: new RegExp(this.escapeRegExp(opTypeName), "i") });
+        if (warehouseName) {
+            option = option.filter({ hasText: new RegExp(this.escapeRegExp(warehouseName), "i") });
+        }
+
+        await expect(option.first()).toBeVisible();
+        await option.first().click();
+    }
+
+    /**
+     * Assert an operation type's saved value on its view page, matching the
+     * infolist entry whose label equals `label` exactly (so "Operation Type"
+     * doesn't collide with "Return Operation Type").
+     */
+    async expectOperationTypeField(label: string, value: string) {
+        const entry = this.erpLocators.inventoryInfolistEntries
+            .filter({ has: this.page.getByText(label, { exact: true }) })
+            .first();
+        await expect(entry).toBeVisible({ timeout: 15000 });
+        await expect(entry).toContainText(value);
+    }
+
+    /**
+     * Assert an infolist entry (matched by its exact label) shows the given
+     * value on a record's view page.
+     */
+    async expectInfolistField(label: string, value: string) {
+        const entry = this.erpLocators.inventoryInfolistEntries
+            .filter({ has: this.page.getByText(label, { exact: true }) })
+            .first();
+        await expect(entry).toBeVisible({ timeout: 15000 });
+        await expect(entry).toContainText(value);
+    }
+
+    async deleteStorageCategory(name: string) {
+        await this.gotoStorageCategoriesPage();
+        await this.deleteRecordInList(name);
+    }
+
+    async deleteLocation(name: string) {
+        await this.gotoLocationsPage();
+        await this.deleteRecordInList(name);
+    }
+
+    /**
+     * Attempt to delete a location that still holds stock and assert the app
+     * blocks it with a "still contain products" validation (record remains).
+     */
+    async deleteLocationExpectingBlocked(name: string) {
+        await this.gotoLocationsPage();
+        await this.searchList(name);
+        const row = this.erpLocators.inventoryTableRows.filter({ hasText: name }).first();
+        await expect(row).toBeVisible();
+        await row.getByRole("button", { name: /^Delete$/i }).first().click();
+        await this.erpLocators.inventoryConfirmDialogButton.click();
+        await expect(this.page.getByText(/still contain products/i)).toBeVisible({ timeout: 15000 });
+    }
+
+    async deleteRoute(name: string) {
+        await this.gotoRoutesPage();
+        await this.deleteRecordInList(name);
+    }
+
+    /**
+     * Fill a config resource's name field and save, expecting a success toast.
+     */
+    private async fillConfigNameAndSave(name: string) {
+        await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible();
+        await this.erpLocators.inventoryConfigNameInput.fill(name);
+        await this.erpLocators.inventoryConfigSaveButton.click();
+        await this.expectSuccessToast();
+    }
+
+    /**
+     * Delete a configuration record by name via its row's inline Delete action.
+     * Assumes the caller is already on the relevant list page.
+     */
+    private async deleteRecordInList(name: string) {
+        await this.searchList(name);
+        const row = this.erpLocators.inventoryTableRows.filter({ hasText: name }).first();
+        await expect(row).toBeVisible();
+        await row.getByRole("button", { name: /^Delete$/i }).first().click();
+        await this.erpLocators.inventoryConfirmDialogButton.click();
+        await this.expectSuccessToast();
     }
 
     /**
@@ -791,7 +1122,11 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryOperationCreateButton.click();
         await expect(this.page).toHaveURL(/receipts\/create/);
 
-        if (data.operationType) {
+        if (data.operationTypeName) {
+            await this.selectBySearch(this.erpLocators.inventoryOperationTypeSelect, data.operationTypeName);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(800);
+        } else if (data.operationType) {
             await this.selectOperationTypeForWarehouse(data.operationType, "Receipts");
         }
 
@@ -1435,6 +1770,27 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryOperationSaveButton.click();
         await expect(this.page).not.toHaveURL(/scraps\/create/);
         await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Create a draft scrap for the product, routing it to the given scrap
+     * (destination) location. Selecting the product auto-fills its unit.
+     */
+    async createScrapAtLocation(productName: string, qty: string, scrapLocationName: string) {
+        await this.gotoScrapsPage();
+        await this.erpLocators.inventoryScrapCreateButton.click();
+        await expect(this.page).toHaveURL(/scraps\/create/);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await this.selectBySearch(this.erpLocators.inventoryScrapProductSelect, productName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await this.erpLocators.inventoryScrapQtyInput.fill(qty);
+        await this.selectFromFilamentDropdown(this.erpLocators.inventoryScrapDestinationLocationSelect, scrapLocationName);
+
+        await this.erpLocators.inventoryOperationSaveButton.click();
+        await expect(this.page).not.toHaveURL(/scraps\/create/);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
     }
 
     /**

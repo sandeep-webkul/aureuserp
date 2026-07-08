@@ -192,6 +192,23 @@ export class ErpLocators {
     readonly inventoryOperationTypesTable: Locator;
     readonly inventoryRoutesTable: Locator;
     readonly inventoryRulesTable: Locator;
+    readonly inventoryStorageCategoriesTable: Locator;
+
+    readonly inventoryStorageCategoryCreateButton: Locator;
+    readonly inventoryLocationCreateButton: Locator;
+    readonly inventoryRouteCreateButton: Locator;
+    readonly inventoryOperationTypeCreateButton: Locator;
+    readonly inventoryOperationTypeTypeSelect: Locator;
+    readonly inventoryOperationTypeBackorderSelect: Locator;
+    readonly inventoryOperationTypeReservationGroup: Locator;
+    readonly inventoryOperationTypeWarehouseSelect: Locator;
+    readonly inventoryOperationTypeReturnSelect: Locator;
+    readonly inventoryLocationTypeSelect: Locator;
+    readonly inventoryLocationParentSelect: Locator;
+    readonly inventoryLocationIsScrapToggle: Locator;
+    readonly inventoryConfigNameInput: Locator;
+    readonly inventoryConfigSequenceCodeInput: Locator;
+    readonly inventoryConfigSaveButton: Locator;
 
     /**
      * Inventory - Products
@@ -308,6 +325,7 @@ export class ErpLocators {
     readonly inventoryScrapProductSelect: Locator;
     readonly inventoryScrapQtyInput: Locator;
     readonly inventoryScrapSourceLocationSelect: Locator;
+    readonly inventoryScrapDestinationLocationSelect: Locator;
 
     readonly inventoryQuantityCountedInput: Locator;
     readonly inventoryQuantityApplyAction: Locator;
@@ -642,6 +660,23 @@ export class ErpLocators {
         this.inventoryOperationTypesTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryRoutesTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryRulesTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryStorageCategoriesTable = page.locator("table, div.fi-ta-empty-state");
+
+        this.inventoryStorageCategoryCreateButton = page.locator("a,button").filter({ hasText: /New Storage Category|create/i }).first();
+        this.inventoryLocationCreateButton = page.locator("a,button").filter({ hasText: /New Location|create/i }).first();
+        this.inventoryRouteCreateButton = page.locator("a,button").filter({ hasText: /New Route|create/i }).first();
+        this.inventoryOperationTypeCreateButton = page.locator("a,button").filter({ hasText: /New Operation Type|create/i }).first();
+        this.inventoryOperationTypeTypeSelect = page.locator('select[id="form.type"]').first();
+        this.inventoryOperationTypeBackorderSelect = page.locator('select[id="form.create_backorder"]').first();
+        this.inventoryOperationTypeWarehouseSelect = page.locator('[wire\\:key$="form.warehouse_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationTypeReturnSelect = page.locator('[wire\\:key$="form.return_operation_type_id"] button.fi-select-input-btn').first();
+        this.inventoryLocationTypeSelect = page.locator('select[id="form.type"]').first();
+        this.inventoryLocationParentSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn').first();
+        this.inventoryLocationIsScrapToggle = page.getByRole("switch", { name: /Scrap Location/i }).first();
+        this.inventoryOperationTypeReservationGroup = page.locator(".fi-fo-radio").filter({ hasText: "Manual" }).first();
+        this.inventoryConfigNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryConfigSequenceCodeInput = page.locator('input[id="form.sequence_code"]').first();
+        this.inventoryConfigSaveButton = page.locator('button[id="key-bindings-1"]').first();
 
         /**
          * Inventory - Products
@@ -804,6 +839,7 @@ export class ErpLocators {
         this.inventoryScrapProductSelect = page.locator('[wire\\:key$="form.product_id"] button.fi-select-input-btn').first();
         this.inventoryScrapQtyInput = page.locator('input[id="form.qty"]').first();
         this.inventoryScrapSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
+        this.inventoryScrapDestinationLocationSelect = page.locator('[wire\\:key$="form.destination_location_id"] button.fi-select-input-btn').first();
 
         this.inventoryQuantityCountedInput = page.locator('table tbody tr input:not([type="hidden"])').first();
         this.inventoryQuantityApplyAction = page.getByRole("button", { name: /^Apply$/i }).first();
