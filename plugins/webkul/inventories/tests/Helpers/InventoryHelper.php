@@ -21,6 +21,8 @@ use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Models\PutawayRule;
+use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Models\StorageCategoryCapacity;
@@ -71,6 +73,78 @@ class InventoryHelper
         ]);
 
         return $warehouse->refresh();
+    }
+
+    public static function inventoryAdjustmentLocation(): Location
+    {
+        return Location::where('type', LocationType::INVENTORY)
+            ->where('is_scrap', false)
+            ->firstOrFail();
+    }
+
+    public static function addProductQuantity(Product $product, Location $location, float $quantity, ?int $lotId = null, ?int $packageId = null): ProductQuantity
+    {
+        return ProductQuantity::factory()->create([
+            'product_id'              => $product->id,
+            'location_id'             => $location->id,
+            'lot_id'                  => $lotId,
+            'package_id'              => $packageId,
+            'quantity'                => $quantity,
+            'inventory_diff_quantity' => $quantity,
+            'company_id'              => static::company()->id,
+        ]);
+    }
+
+    public static function editProductQuantity(ProductQuantity $quant, float $newQuantity): void
+    {
+        $quant->update([
+            'quantity'                => $newQuantity,
+            'inventory_diff_quantity' => $newQuantity - (float) $quant->quantity,
+        ]);
+    }
+
+    public static function applyInventoryAdjustment(ProductQuantity $quant, float $counted): void
+    {
+        $quant->update([
+            'inventory_diff_quantity' => $counted - (float) $quant->quantity,
+            'inventory_quantity_set'  => true,
+        ]);
+
+        $quant->update([
+            'quantity'               => $counted,
+            'inventory_quantity_set' => false,
+        ]);
+    }
+
+    public static function opTypeArchived(?int $id): bool
+    {
+        return $id
+            ? (OperationType::withTrashed()->find($id)?->trashed() ?? true)
+            : true;
+    }
+
+    public static function locationArchived(?int $id): bool
+    {
+        return $id
+            ? (Location::withTrashed()->find($id)?->trashed() ?? true)
+            : true;
+    }
+
+    public static function routeArchived(?int $id): bool
+    {
+        return $id
+            ? (Route::withTrashed()->find($id)?->trashed() ?? true)
+            : true;
+    }
+
+    public static function activeRuleExists(int $sourceId, int $destinationId, int $operationTypeId): bool
+    {
+        return Rule::query()
+            ->where('source_location_id', $sourceId)
+            ->where('destination_location_id', $destinationId)
+            ->where('operation_type_id', $operationTypeId)
+            ->whereNull('deleted_at')
+            ->exists();
     }
 
     public static function scrapLocation(): Location
