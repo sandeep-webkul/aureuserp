@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
@@ -73,7 +74,7 @@ it('routes a one step receipt from the supplier location straight into stock', f
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
 
     expect($operation->operation_type_id)->toBe($this->warehouse->in_type_id)
-        ->and($operation->sourceLocation->type->value)->toBe('supplier')
+        ->and($operation->sourceLocation->type)->toBe(LocationType::SUPPLIER)
         ->and($operation->destination_location_id)->toBe($this->stock->id);
 });
 
@@ -259,7 +260,7 @@ it('returns a receipt back to the supplier and removes the quantity from stock',
     expect($return->return_id)->toBe($operation->id)
         ->and($return->state)->toBe(OperationState::ASSIGNED)
         ->and($return->source_location_id)->toBe($this->stock->id)
-        ->and($return->destinationLocation->type->value)->toBe('supplier');
+        ->and($return->destinationLocation->type)->toBe(LocationType::SUPPLIER);
 
     $returnMove = $return->moves->first();
 

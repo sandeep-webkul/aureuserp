@@ -1,5 +1,6 @@
 <?php
 
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
@@ -144,7 +145,7 @@ it('pushes a ship operation from output to the customer when the pick leg is val
 
     expect($move->operation_type_id)->toBe($this->warehouse->out_type_id)
         ->and($move->source_location_id)->toBe($this->output->id)
-        ->and($move->destinationLocation->type->value)->toBe('customer')
+        ->and($move->destinationLocation->type)->toBe(LocationType::CUSTOMER)
         ->and($move->procure_method)->toBe(ProcureMethod::MAKE_TO_ORDER)
         ->and((float) $move->product_uom_qty)->toBe(10.0);
 });

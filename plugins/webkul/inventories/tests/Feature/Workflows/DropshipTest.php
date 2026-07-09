@@ -1,5 +1,6 @@
 <?php
 
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
@@ -18,8 +19,8 @@ beforeEach(function () {
 it('routes a dropship straight from the supplier to the customer', function () {
     $operation = InventoryHelper::dropship([[$this->product, 10]]);
 
-    expect($operation->sourceLocation->type->value)->toBe('supplier')
-        ->and($operation->destinationLocation->type->value)->toBe('customer')
+    expect($operation->sourceLocation->type)->toBe(LocationType::SUPPLIER)
+        ->and($operation->destinationLocation->type)->toBe(LocationType::CUSTOMER)
         ->and($operation->moves)->toHaveCount(1);
 });
 

@@ -1,5 +1,6 @@
 <?php
 
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\PackageUse;
@@ -67,7 +68,7 @@ it('routes a one step delivery from stock straight to the customer location', fu
 
     expect($operation->operation_type_id)->toBe($this->warehouse->out_type_id)
         ->and($operation->source_location_id)->toBe($this->stock->id)
-        ->and($operation->destinationLocation->type->value)->toBe('customer');
+        ->and($operation->destinationLocation->type)->toBe(LocationType::CUSTOMER);
 });
 
 it('reserves the full demand from stock on confirm when quantity is available', function () {

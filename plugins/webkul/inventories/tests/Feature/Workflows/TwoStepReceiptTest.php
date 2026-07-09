@@ -1,5 +1,6 @@
 <?php
 
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProcureMethod;
@@ -48,7 +49,7 @@ it('routes the receipt leg from the supplier into the input location', function 
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
 
     expect($operation->operation_type_id)->toBe($this->warehouse->in_type_id)
-        ->and($operation->sourceLocation->type->value)->toBe('supplier')
+        ->and($operation->sourceLocation->type)->toBe(LocationType::SUPPLIER)
         ->and($operation->destination_location_id)->toBe($this->input->id);
 });
 
@@ -258,7 +259,7 @@ it('returns the receipt leg back to the supplier and unreserves the storage move
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->source_location_id)->toBe($this->input->id)
-        ->and($return->destinationLocation->type->value)->toBe('supplier');
+        ->and($return->destinationLocation->type)->toBe(LocationType::SUPPLIER);
 
     expect($storageMove->refresh()->state)->not->toBe(MoveState::ASSIGNED)
         ->and((float) $storageMove->quantity)->toBe(0.0);
