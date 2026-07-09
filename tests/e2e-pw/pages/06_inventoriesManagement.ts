@@ -417,6 +417,71 @@ export class InventoriesManagementPage {
     }
 
     /**
+     * Create a sub-location nested under a parent, optionally assigning a storage
+     * category (used by putaway to know where to store arriving product).
+     */
+    async createSubLocation(name: string, parentName: string, storageCategory?: string) {
+        await this.openLocationCreateForm(name);
+        await this.selectFromFilamentDropdown(this.erpLocators.inventoryLocationParentSelect, parentName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        if (storageCategory) {
+            await this.selectFromFilamentDropdown(this.erpLocators.inventoryLocationStorageCategorySelect, storageCategory);
+            await this.page.waitForTimeout(400);
+        }
+        await this.saveLocationForm();
+    }
+
+    /**
+     * Configurations - Putaway Rules (redirect arriving product to a sub-location).
+     */
+    async gotoPutawayRulesPage() {
+        await this.page.goto("/admin/inventory/configurations/putaway-rules");
+        await expect(this.page).toHaveURL(/putaway-rules/);
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Create a putaway rule: product arriving in `inLocation` (a parent stock
+     * location) is redirected on validation to the `outLocation` sub-location.
+     */
+    async createPutawayRule(data: { inLocation: string; outLocation: string; productName: string; storageCategory?: string }) {
+        const l = this.erpLocators;
+        await this.gotoPutawayRulesPage();
+        await l.inventoryPutawayRuleCreateButton.click();
+
+        const modal = this.page.locator(".fi-modal-window:visible").last();
+        await expect(modal).toBeVisible();
+
+        await this.selectFromFilamentDropdown(
+            modal.locator('[wire\\:key$="in_location_id"] button.fi-select-input-btn').first(),
+            data.inLocation,
+        );
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(700);
+        await this.selectFromFilamentDropdown(
+            modal.locator('[wire\\:key$="out_location_id"] button.fi-select-input-btn').first(),
+            data.outLocation,
+        );
+        await this.page.waitForTimeout(500);
+        await this.selectFromFilamentDropdown(
+            modal.locator('[wire\\:key$="product_id"] button.fi-select-input-btn').first(),
+            data.productName,
+        );
+        await this.page.waitForTimeout(500);
+        if (data.storageCategory) {
+            await this.selectFromFilamentDropdown(
+                modal.locator('[wire\\:key$="storage_category_id"] button.fi-select-input-btn').first(),
+                data.storageCategory,
+            );
+            await this.page.waitForTimeout(500);
+        }
+
+        await modal.getByRole("button", { name: /^Create$/i }).first().click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.expectSuccessToastSoft();
+    }
+
+    /**
      * Create an internal scrap location (Is a Scrap Location? = on).
      */
     async createScrapLocation(name: string) {
@@ -1284,6 +1349,26 @@ export class InventoriesManagementPage {
             [{ productName: data.productName, demand: data.demand, lotName }],
             data.operationType
         );
+    }
+
+    /**
+     * Receive a lot/serial-tracked product through a multi-step warehouse
+     * (generating its lot/serials at the receipt) and chain every onward transfer
+     * to the stock location, where a putaway rule can redirect it.
+     */
+    async receiptWithLotChainFlow(data: ReceiptData, lotName: string) {
+        await this.receiptWithLotFlow(data, lotName);
+        await this.chainNextTransfers();
+    }
+
+    /**
+     * Receive several move lines (mixing quantity/lot/serial-tracked products,
+     * lot/serials generated for tracked lines) through a multi-step warehouse and
+     * chain every onward transfer to stock, where putaway rules redirect each.
+     */
+    async receiptLinesChainFlow(lines: MoveLineInput[], operationType?: string) {
+        await this.receiptLinesFullFlow(lines, operationType);
+        await this.chainNextTransfers();
     }
 
     /**

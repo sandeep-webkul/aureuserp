@@ -920,3 +920,207 @@ test.describe("Inventory Operation Type", () => {
         await inventoryPage.expectOperationDone();
     });
 });
+
+/**
+ * Putaway rules redirect a product arriving in a warehouse's Stock to a
+ * configured sub-location. Verified end-to-end through a 3-step reception: the
+ * final Store transfer lands in Stock, the rule fires on validation, and the
+ * product's on-hand quantity ends up in the sub-location.
+ */
+test.describe("Inventory Putaway Rules", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.enableAllInventorySettings();
+    });
+
+    /**
+     * Scenario 1 - a product-specific rule routes a 3-step reception's stock into
+     * a shelf sub-location carrying a storage category.
+     */
+    test("Putaway - product routed to shelf sub-location", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway A ${key}`, code: `WPA${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf A ${key}`;
+        const storageCategory = `E2E StoreCat ${key}`;
+        const product = `E2E Putaway Laptop ${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createStorageCategory(storageCategory);
+        await inventoryPage.createSubLocation(shelf, stock, storageCategory);
+        await inventoryPage.createInventoryProduct({ name: product, price: "100" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product, storageCategory });
+
+        await inventoryPage.receiptChainFullFlow({ operationType: warehouse.name, productName: product, demand: "5" });
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "5");
+    });
+
+    /**
+     * Scenario 2 - a different product and shelf, larger quantity: the rule still
+     * routes the whole received quantity into its sub-location.
+     */
+    test("Putaway - second product routed to its own shelf", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway B ${key}`, code: `WPB${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf B ${key}`;
+        const storageCategory = `E2E StoreCat B ${key}`;
+        const product = `E2E Putaway Monitor ${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createStorageCategory(storageCategory);
+        await inventoryPage.createSubLocation(shelf, stock, storageCategory);
+        await inventoryPage.createInventoryProduct({ name: product, price: "50" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product, storageCategory });
+
+        await inventoryPage.receiptChainFullFlow({ operationType: warehouse.name, productName: product, demand: "12" });
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "12");
+    });
+
+    /**
+     * Scenario 3 - a product-only rule (no storage category on the shelf) still
+     * redirects the arriving product to its sub-location on validation.
+     */
+    test("Putaway - product-only rule without storage category", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway C ${key}`, code: `WPC${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf C ${key}`;
+        const product = `E2E Putaway Keyboard ${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createSubLocation(shelf, stock);
+        await inventoryPage.createInventoryProduct({ name: product, price: "20" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product });
+
+        await inventoryPage.receiptChainFullFlow({ operationType: warehouse.name, productName: product, demand: "8" });
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "8");
+    });
+
+    /**
+     * Scenario 4 - a lot-tracked product: the lot is created at receipt and the
+     * whole lot quantity is put away into the shelf sub-location.
+     */
+    test("Putaway - lot-tracked product routed to shelf", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway L ${key}`, code: `WPL${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf L ${key}`;
+        const storageCategory = `E2E StoreCat L ${key}`;
+        const product = `E2E Putaway LotProd ${key}`;
+        const lot = `LOT-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createStorageCategory(storageCategory);
+        await inventoryPage.createSubLocation(shelf, stock, storageCategory);
+        await inventoryPage.createInventoryProduct({ name: product, price: "40", tracking: "lot" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product, storageCategory });
+
+        await inventoryPage.receiptWithLotChainFlow({ operationType: warehouse.name, productName: product, demand: "6" }, lot);
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "6");
+    });
+
+    /**
+     * Scenario 5 - a serial-tracked product: a serial is created at receipt and
+     * the unit is put away into the shelf sub-location.
+     */
+    test("Putaway - serial-tracked product routed to shelf", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway S ${key}`, code: `WPS${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf S ${key}`;
+        const storageCategory = `E2E StoreCat S ${key}`;
+        const product = `E2E Putaway SerialProd ${key}`;
+        const serial = `SN-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createStorageCategory(storageCategory);
+        await inventoryPage.createSubLocation(shelf, stock, storageCategory);
+        await inventoryPage.createInventoryProduct({ name: product, price: "80", tracking: "serial" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product, storageCategory });
+
+        await inventoryPage.receiptWithLotChainFlow({ operationType: warehouse.name, productName: product, demand: "4" }, serial);
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "1");
+    });
+
+    /**
+     * Scenario 6 - one receipt with three products of different tracking
+     * (quantity, lot, serial), each with its own putaway rule and shelf: every
+     * product ends up in its own sub-location with the expected on-hand.
+     */
+    test("Putaway - multiple products with different tracking", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway M ${key}`, code: `WPM${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelfQty = `Shelf QM ${key}`;
+        const shelfLot = `Shelf LM ${key}`;
+        const shelfSerial = `Shelf SM ${key}`;
+        const productQty = `E2E Multi Qty ${key}`;
+        const productLot = `E2E Multi Lot ${key}`;
+        const productSerial = `E2E Multi Serial ${key}`;
+        const lot = `MLOT-${key}`;
+        const serial = `MSN-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createSubLocation(shelfQty, stock);
+        await inventoryPage.createSubLocation(shelfLot, stock);
+        await inventoryPage.createSubLocation(shelfSerial, stock);
+        await inventoryPage.createInventoryProduct({ name: productQty, price: "10" });
+        await inventoryPage.createInventoryProduct({ name: productLot, price: "20", tracking: "lot" });
+        await inventoryPage.createInventoryProduct({ name: productSerial, price: "30", tracking: "serial" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelfQty, productName: productQty });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelfLot, productName: productLot });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelfSerial, productName: productSerial });
+
+        await inventoryPage.receiptLinesChainFlow(
+            [
+                { productName: productQty, demand: "4" },
+                { productName: productLot, demand: "6", lotName: lot },
+                { productName: productSerial, demand: "1", lotName: serial },
+            ],
+            warehouse.name,
+        );
+
+        await inventoryPage.expectOnHandQuantityRow(productQty, shelfQty, "4");
+        await inventoryPage.expectOnHandQuantityRow(productLot, shelfLot, "6");
+        await inventoryPage.expectOnHandQuantityRow(productSerial, shelfSerial, "1");
+    });
+
+    /**
+     * Scenario 7 - after putaway stores the product in its shelf, a delivery ships
+     * part of it: the delivery reserves from the shelf and the shelf's on-hand
+     * drops by the delivered quantity.
+     */
+    test("Putaway - delivery ships from the shelf", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH Putaway D ${key}`, code: `WPD${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const stock = `${warehouse.code}/Stock`;
+        const shelf = `Shelf D ${key}`;
+        const storageCategory = `E2E StoreCat D ${key}`;
+        const product = `E2E Putaway DlvProd ${key}`;
+        const outType = `E2E Dlv FromShelf ${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createStorageCategory(storageCategory);
+        await inventoryPage.createSubLocation(shelf, stock, storageCategory);
+        await inventoryPage.createInventoryProduct({ name: product, price: "60" });
+        await inventoryPage.createPutawayRule({ inLocation: stock, outLocation: shelf, productName: product, storageCategory });
+
+        await inventoryPage.receiptChainFullFlow({ operationType: warehouse.name, productName: product, demand: "10" });
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "10");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: outType, sequenceCode: "E2EPDL", type: "outgoing", sourceLocation: stock });
+        await inventoryPage.createDelivery({ operationTypeName: outType, productName: product, demand: "4" });
+        await inventoryPage.confirmAndValidateOperation();
+        await inventoryPage.expectOperationDone();
+        await inventoryPage.expectOnHandQuantityRow(product, shelf, "6");
+    });
+});

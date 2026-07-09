@@ -207,7 +207,9 @@ export class ErpLocators {
     readonly inventoryOperationTypeUseExistingLotsToggle: Locator;
     readonly inventoryLocationTypeSelect: Locator;
     readonly inventoryLocationParentSelect: Locator;
+    readonly inventoryLocationStorageCategorySelect: Locator;
     readonly inventoryLocationIsScrapToggle: Locator;
+    readonly inventoryPutawayRuleCreateButton: Locator;
     readonly inventoryConfigNameInput: Locator;
     readonly inventoryConfigSequenceCodeInput: Locator;
     readonly inventoryConfigSaveButton: Locator;
@@ -680,6 +682,8 @@ export class ErpLocators {
         this.inventoryOperationTypeUseExistingLotsToggle = page.locator('[wire\\:key$="form.use_existing_lots"] button[role="switch"]').first();
         this.inventoryLocationTypeSelect = page.locator('select[id="form.type"]').first();
         this.inventoryLocationParentSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn').first();
+        this.inventoryLocationStorageCategorySelect = page.locator('[wire\\:key$="form.storage_category_id"] button.fi-select-input-btn').first();
+        this.inventoryPutawayRuleCreateButton = page.locator("a,button").filter({ hasText: /New Putaway Rule/i }).first();
         this.inventoryLocationIsScrapToggle = page.getByRole("switch", { name: /Scrap Location/i }).first();
         this.inventoryOperationTypeReservationGroup = page.locator(".fi-fo-radio").filter({ hasText: "Manual" }).first();
         this.inventoryConfigNameInput = page.locator('input[id="form.name"]').first();
