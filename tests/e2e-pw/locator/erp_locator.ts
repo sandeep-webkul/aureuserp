@@ -203,6 +203,8 @@ export class ErpLocators {
     readonly inventoryOperationTypeReservationGroup: Locator;
     readonly inventoryOperationTypeWarehouseSelect: Locator;
     readonly inventoryOperationTypeReturnSelect: Locator;
+    readonly inventoryOperationTypeUseCreateLotsToggle: Locator;
+    readonly inventoryOperationTypeUseExistingLotsToggle: Locator;
     readonly inventoryLocationTypeSelect: Locator;
     readonly inventoryLocationParentSelect: Locator;
     readonly inventoryLocationIsScrapToggle: Locator;
@@ -674,6 +676,8 @@ export class ErpLocators {
         this.inventoryOperationTypeBackorderSelect = page.locator('select[id="form.create_backorder"]').first();
         this.inventoryOperationTypeWarehouseSelect = page.locator('[wire\\:key$="form.warehouse_id"] button.fi-select-input-btn').first();
         this.inventoryOperationTypeReturnSelect = page.locator('[wire\\:key$="form.return_operation_type_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationTypeUseCreateLotsToggle = page.locator('[wire\\:key$="form.use_create_lots"] button[role="switch"]').first();
+        this.inventoryOperationTypeUseExistingLotsToggle = page.locator('[wire\\:key$="form.use_existing_lots"] button[role="switch"]').first();
         this.inventoryLocationTypeSelect = page.locator('select[id="form.type"]').first();
         this.inventoryLocationParentSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn').first();
         this.inventoryLocationIsScrapToggle = page.getByRole("switch", { name: /Scrap Location/i }).first();

@@ -282,14 +282,13 @@ test.describe("Inventory Location", () => {
  */
 test.describe("Inventory Operation Type", () => {
     /**
-     * Locations must be enabled for the operation type's source/destination and
-     * dropshipping for the Dropship type.
+     * Locations, dropshipping, and traceability must be enabled for the operation
+     * type's source/destination, the Dropship type, and the Lots/Serial toggles.
      */
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
         await inventoryPage.ensureBaseDependentPluginsInstalled();
-        await inventoryPage.enableManageWarehousesToggles();
-        await inventoryPage.enableManageLogisticsToggles();
+        await inventoryPage.enableAllInventorySettings();
     });
 
     /**
@@ -374,6 +373,50 @@ test.describe("Inventory Operation Type", () => {
             destinationLocation: destination,
         });
         await inventoryPage.expectInfolistField("Operation Type", "Dropship");
+    });
+
+    /**
+     * Lots/Serial - the "Create New" option persists (needs traceability enabled).
+     */
+    test("Lots - Create New persists", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E OpSrc ${key}`;
+        const destination = `E2E OpDst ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createLocation(destination);
+        await inventoryPage.createOperationTypeWithFlow({
+            name: `E2E OpType Lots New ${key}`,
+            sequenceCode: "E2ELN",
+            type: "incoming",
+            sourceLocation: source,
+            destinationLocation: destination,
+            lots: "create",
+        });
+        await inventoryPage.expectOperationTypeLots("create");
+    });
+
+    /**
+     * Lots/Serial - the "Use Existing" option persists (needs traceability enabled).
+     */
+    test("Lots - Use Existing persists", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const source = `E2E OpSrc ${key}`;
+        const destination = `E2E OpDst ${key}`;
+
+        await inventoryPage.createLocation(source);
+        await inventoryPage.createLocation(destination);
+        await inventoryPage.createOperationTypeWithFlow({
+            name: `E2E OpType Lots Existing ${key}`,
+            sequenceCode: "E2ELE",
+            type: "incoming",
+            sourceLocation: source,
+            destinationLocation: destination,
+            lots: "existing",
+        });
+        await inventoryPage.expectOperationTypeLots("existing");
     });
 
     /**
@@ -691,5 +734,189 @@ test.describe("Inventory Operation Type", () => {
         await inventoryPage.disableDropshipping();
         await inventoryPage.gotoOperationTypeCreatePage();
         await inventoryPage.expectOperationTypeOptionAbsent("dropship");
+    });
+
+    /**
+     * The following scenarios exercise the operation type's Lots/Serial toggles
+     * (Create New / Use Existing) on serial-tracked products. They only apply to
+     * receipts (vendor source); deliveries pick an existing serial from stock.
+     */
+
+    /**
+     * Scenario 1 - Receipt, Create New ON / Use Existing OFF: a brand-new serial
+     * is created on receipt and the operation validates.
+     */
+    test("Receipt - Create New serial", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const opType = `E2E Rcpt CreateNew ${key}`;
+        const serial = `SN-CN-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({
+            name: opType,
+            sequenceCode: "E2ESCN",
+            type: "incoming",
+            lots: "create",
+        });
+        await inventoryPage.receiptSerialGenerateNew(opType, product, serial, "1");
+        await inventoryPage.expectOperationDone();
+        await inventoryPage.expectLotListed(serial);
+    });
+
+    /**
+     * Scenario 2 - Receipt, Create New OFF / Use Existing ON: only an existing
+     * serial can be selected; no new serial is created (the serial stays unique).
+     */
+    test("Receipt - Use Existing serial", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const existingType = `E2E Rcpt UseExisting ${key}`;
+        const serial = `SN-EX-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2ESD", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: existingType, sequenceCode: "E2ESE", type: "incoming", lots: "existing" });
+        await inventoryPage.openSerialReceiptLinesModal(existingType, product, "1");
+        await inventoryPage.expectGenerateSerialAction(false);
+        await inventoryPage.expectExistingSerialOption(serial);
+    });
+
+    /**
+     * Scenario 3 - Receipt, Create New ON / Use Existing ON: the move line offers
+     * both paths - the Generate (create-new) action and the existing serial in
+     * the Lot/Serial dropdown.
+     */
+    test("Receipt - Create New and Use Existing both", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const bothType = `E2E Rcpt Both ${key}`;
+        const serial = `SN-BO-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2ESD3", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: bothType, sequenceCode: "E2ESB", type: "incoming", lots: "both" });
+        await inventoryPage.openSerialReceiptLinesModal(bothType, product, "1");
+        await inventoryPage.expectGenerateSerialAction(true);
+        await inventoryPage.expectExistingSerialOption(serial);
+    });
+
+    /**
+     * Scenario 4 - Receipt, Create New OFF / Use Existing OFF: no serial can be
+     * assigned (no lot column, no Generate action). The receipt still validates
+     * to Done and records no lot for the product (the app does not block it).
+     */
+    test("Receipt - No lot options when both off", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const opType = `E2E Rcpt NoLots ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: opType, sequenceCode: "E2ESN", type: "incoming" });
+        await inventoryPage.openSerialReceiptLinesModal(opType, product, "1");
+        await inventoryPage.expectGenerateSerialAction(false);
+        await inventoryPage.expectSerialLotColumnAbsent();
+        await adminPage.keyboard.press("Escape");
+        await inventoryPage.confirmAndValidateOperation();
+        await inventoryPage.expectOperationDone();
+        await inventoryPage.expectNoLotForProduct(product);
+    });
+
+    /**
+     * Scenario 6 - Delivery, Create New OFF / Use Existing ON: an existing serial
+     * from stock is delivered and the operation validates. (Deliveries draw the
+     * serial from stock; the lot toggles do not gate them.)
+     */
+    test("Delivery - Use Existing serial", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const outType = `E2E Dlv UseExisting ${key}`;
+        const serial = `SN-DE-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2EDSD", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: outType, sequenceCode: "E2EDUE", type: "outgoing", lots: "existing" });
+        await inventoryPage.deliverSerialFullFlow(outType, product, "1");
+        await inventoryPage.expectOperationDone();
+    });
+
+    /**
+     * Scenario 5 - Delivery, Create New ON / Use Existing OFF: the delivery still
+     * draws the existing serial from stock (no new serial is created on delivery)
+     * and validates. The Create New toggle has no effect on deliveries.
+     */
+    test("Delivery - Create New does not add serial", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const outType = `E2E Dlv CreateNew ${key}`;
+        const serial = `SN-DC-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2EDSC", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: outType, sequenceCode: "E2EDCN", type: "outgoing", lots: "create" });
+        await inventoryPage.deliverSerialFullFlow(outType, product, "1");
+        await inventoryPage.expectOperationDone();
+        await inventoryPage.expectLotListed(serial);
+    });
+
+    /**
+     * Scenario 7 - Delivery, Create New ON / Use Existing ON: the existing serial
+     * is delivered from stock and validates (both toggles inert on deliveries).
+     */
+    test("Delivery - Both toggles on", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const outType = `E2E Dlv Both ${key}`;
+        const serial = `SN-DB-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2EDSB", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: outType, sequenceCode: "E2EDBO", type: "outgoing", lots: "both" });
+        await inventoryPage.deliverSerialFullFlow(outType, product, "1");
+        await inventoryPage.expectOperationDone();
+    });
+
+    /**
+     * Scenario 8 - Delivery, Create New OFF / Use Existing OFF: the delivery still
+     * draws the existing serial from stock and validates - the lot toggles do not
+     * block a delivery (the serial comes from reserved stock, not the toggles).
+     */
+    test("Delivery - Both toggles off still delivers", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const product = `E2E Serial Prod ${key}`;
+        const seedType = `E2E Rcpt Seed ${key}`;
+        const outType = `E2E Dlv NoLots ${key}`;
+        const serial = `SN-DN-${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: product, price: "10", tracking: "serial" });
+        await inventoryPage.createOperationTypeWithFlow({ name: seedType, sequenceCode: "E2EDSN", type: "incoming", lots: "create" });
+        await inventoryPage.receiptSerialGenerateNew(seedType, product, serial, "1");
+
+        await inventoryPage.createOperationTypeWithFlow({ name: outType, sequenceCode: "E2EDNL", type: "outgoing" });
+        await inventoryPage.deliverSerialFullFlow(outType, product, "1");
+        await inventoryPage.expectOperationDone();
     });
 });

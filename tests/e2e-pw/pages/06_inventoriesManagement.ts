@@ -500,6 +500,7 @@ export class InventoriesManagementPage {
         returnTypeName?: string;
         createBackorder?: "ask" | "always" | "never";
         reservation?: "manual";
+        lots?: "create" | "existing" | "both";
     }) {
         const l = this.erpLocators;
         await this.gotoOperationTypesPage();
@@ -537,6 +538,14 @@ export class InventoriesManagementPage {
         if (data.reservation === "manual") {
             await l.inventoryOperationTypeReservationGroup.getByText("Manual", { exact: true }).click();
             await this.page.waitForTimeout(400);
+        }
+        if (data.lots === "create" || data.lots === "both") {
+            await this.setToggleOn(l.inventoryOperationTypeUseCreateLotsToggle);
+            await this.page.waitForTimeout(300);
+        }
+        if (data.lots === "existing" || data.lots === "both") {
+            await this.setToggleOn(l.inventoryOperationTypeUseExistingLotsToggle);
+            await this.page.waitForTimeout(300);
         }
 
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
@@ -619,6 +628,27 @@ export class InventoriesManagementPage {
             .first();
         await expect(entry).toBeVisible({ timeout: 15000 });
         await expect(entry).toContainText(value, { timeout });
+    }
+
+    /**
+     * From the just-created operation type's view page, open its edit form and
+     * assert the Lots/Serial toggles: `which` is on, the other is off.
+     */
+    async expectOperationTypeLots(which: "create" | "existing") {
+        const l = this.erpLocators;
+        const editUrl = `${this.page.url().replace(/\/$/, "")}/edit`;
+        await this.page.goto(editUrl);
+        await expect(l.inventoryConfigNameInput).toBeVisible({ timeout: 15000 });
+        await expect(l.inventoryOperationTypeUseCreateLotsToggle).toHaveAttribute(
+            "aria-checked",
+            which === "create" ? "true" : "false",
+            { timeout: 10000 },
+        );
+        await expect(l.inventoryOperationTypeUseExistingLotsToggle).toHaveAttribute(
+            "aria-checked",
+            which === "existing" ? "true" : "false",
+            { timeout: 10000 },
+        );
     }
 
     async deleteStorageCategory(name: string) {
@@ -1254,6 +1284,122 @@ export class InventoriesManagementPage {
             [{ productName: data.productName, demand: data.demand, lotName }],
             data.operationType
         );
+    }
+
+    /**
+     * Lots / Serial Numbers listing (Products cluster).
+     */
+    async gotoLotsPage() {
+        await this.page.goto("/admin/inventory/products/lots");
+        await expect(this.page).toHaveURL(/products\/lots/);
+        await this.page.waitForLoadState("networkidle");
+    }
+
+    /**
+     * Assert a lot/serial with the given name exists in the Lots listing.
+     */
+    async expectLotListed(name: string) {
+        await this.gotoLotsPage();
+        await this.searchList(name);
+        await expect(
+            this.erpLocators.inventoryTableRows.filter({ hasText: name }).first(),
+        ).toBeVisible({ timeout: 10000 });
+    }
+
+    /**
+     * Create a receipt for a serial-tracked product via the op-type, mark it
+     * Todo, and open the "Manage Stock Moves" modal (left open so the caller can
+     * assert which lot options the op-type's Create New / Use Existing toggles
+     * expose on the move line).
+     */
+    async openSerialReceiptLinesModal(opTypeName: string, productName: string, demand = "1") {
+        await this.createReceipt({ operationTypeName: opTypeName, productName, demand });
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+        await this.erpLocators.inventoryMoveManageLinesAction.first().click({ timeout: 15000 });
+        await expect(this.erpLocators.inventoryMoveLinesModal).toBeVisible();
+    }
+
+    /**
+     * Assert whether the "Generate Serials/Lots" action (the Create New path) is
+     * offered on the open Manage Stock Moves modal.
+     */
+    async expectGenerateSerialAction(present: boolean) {
+        const action = this.erpLocators.inventoryMoveGenerateLotsAction;
+        if (present) {
+            await expect(action).toBeVisible({ timeout: 10000 });
+        } else {
+            await expect(action).toBeHidden({ timeout: 10000 });
+        }
+    }
+
+    /**
+     * On the open modal, open the line's Lot/Serial dropdown and assert an option
+     * matching `serial` is offered (the Use Existing path lists existing serials).
+     */
+    async expectExistingSerialOption(serial: string) {
+        const modal = this.page.locator(".fi-modal-window:visible").last();
+        const trigger = modal.locator("table tbody tr").first().locator("button.fi-select-input-btn").first();
+        await trigger.click();
+
+        const panel = this.erpLocators.inventorySelectPanel.last();
+        await expect(panel).toBeVisible();
+        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        if (await search.isVisible().catch(() => false)) {
+            await search.fill(serial);
+            await this.page.waitForTimeout(500);
+        }
+        await expect(
+            panel.locator('[role="option"]').filter({ hasText: serial }).first(),
+        ).toBeVisible({ timeout: 8000 });
+        await this.page.keyboard.press("Escape").catch(() => undefined);
+    }
+
+    /**
+     * Deliver a serial-tracked product through a custom outgoing operation type
+     * and validate. The serial is drawn from existing stock (the op-type's lot
+     * toggles do not apply to deliveries), so reservation assigns it on confirm.
+     */
+    async deliverSerialFullFlow(opTypeName: string, productName: string, demand = "1") {
+        await this.createDelivery({ operationTypeName: opTypeName, productName, demand });
+        await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * On the open modal, assert the Lot/Serial column is absent (neither lot
+     * toggle on, so no serial can be assigned on the move line).
+     */
+    async expectSerialLotColumnAbsent() {
+        const modal = this.page.locator(".fi-modal-window:visible").last();
+        await expect(
+            modal.locator("thead").getByText(/Lot\/Serial Number/i),
+        ).toHaveCount(0, { timeout: 8000 });
+    }
+
+    /**
+     * Assert no lot/serial is recorded for the given product in the Lots listing.
+     */
+    async expectNoLotForProduct(productName: string) {
+        await this.gotoLotsPage();
+        await this.searchList(productName);
+        await expect(
+            this.erpLocators.inventoryTableRows.filter({ hasText: productName }),
+        ).toHaveCount(0, { timeout: 10000 });
+    }
+
+    /**
+     * Receive a serial/lot-tracked product through a custom operation type,
+     * generating a brand-new lot/serial via the "Generate Serials/Lots" action.
+     * Requires the op-type's "Create New" lots toggle on and a vendor source.
+     */
+    async receiptSerialGenerateNew(opTypeName: string, productName: string, serial: string, demand = "1") {
+        await this.createReceipt({ operationTypeName: opTypeName, productName, demand });
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+        await this.generateLotOnMove(serial, demand, 0);
+        await this.confirmAndValidateOperation();
     }
 
     /**
