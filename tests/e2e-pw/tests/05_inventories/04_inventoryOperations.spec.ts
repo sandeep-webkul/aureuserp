@@ -1,13 +1,24 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
 
-test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers", () => {
+/**
+ * Enable exactly the inventory settings the operations tests rely on (locations,
+ * traceability for lot/serial, and operations for packages). Each describe calls
+ * this in its own beforeAll so any shard/worker that runs only a subset of the
+ * describes still provisions the settings its tests need — this keeps CI
+ * sharding and fullyParallel runs correct and order-independent.
+ */
+async function enableOperationsSettings(adminPage: import("@playwright/test").Page) {
+    const inventoryPage = new InventoriesManagementPage(adminPage);
+    await inventoryPage.ensureBaseDependentPluginsInstalled();
+    await inventoryPage.enableManageWarehousesToggles();
+    await inventoryPage.enableManageTraceabilityToggles();
+    await inventoryPage.enableManageOperationsToggles();
+}
+
+test.describe("Inventory Operations - Listings", () => {
     test.beforeAll(async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
-        await inventoryPage.enableManageWarehousesToggles();
-        await inventoryPage.enableManageTraceabilityToggles();
-        await inventoryPage.enableManageOperationsToggles();
+        await enableOperationsSettings(adminPage);
     });
 
     /**
@@ -35,6 +46,20 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
     });
 
     /**
+     * The Scraps listing table renders.
+     */
+    test("Scraps list loads", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        await inventoryPage.gotoScrapsPage();
+    });
+});
+
+test.describe("Inventory Operations - Receipts", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
+    });
+
+    /**
      * A validated receipt brings stock on hand.
      */
     test("Receipt Full Flow - Create, Validate, Stock Increases", async ({ adminPage }) => {
@@ -50,58 +75,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.receiptFullFlow({
             productName,
             demand: "10",
-        });
-
-        await inventoryPage.expectProductQuantityRowVisible(productName);
-    });
-
-    /**
-     * A validated delivery ships stock out after a receipt.
-     */
-    test("Delivery Full Flow - Create, Validate, Stock Decreases", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const productName = `E2E Delivery Flow ${key}`;
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "30",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "20",
-        });
-
-        await inventoryPage.deliveryFullFlow({
-            productName,
-            demand: "5",
-        });
-
-        await inventoryPage.expectProductQuantityRowVisible(productName);
-    });
-
-    /**
-     * A validated internal transfer moves stock between locations.
-     */
-    test("Internal Transfer - Create And Validate Move", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const productName = `E2E Internal Flow ${key}`;
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "40",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "15",
-        });
-
-        await inventoryPage.internalTransferFullFlow({
-            productName,
-            demand: "5",
         });
 
         await inventoryPage.expectProductQuantityRowVisible(productName);
@@ -140,70 +113,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
     });
 
     /**
-     * A delivery after a receipt adds an outgoing move row.
-     */
-    test("Delivery After Receipt - Outgoing Move Row Visible", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const productName = `E2E Out Move Op ${key}`;
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "22",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "20",
-        });
-        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
-
-        await inventoryPage.deliveryFullFlow({
-            productName,
-            demand: "6",
-        });
-        const movesAfterDelivery = await inventoryPage.countProductMoveRows(productName);
-
-        if (movesAfterDelivery <= movesAfterReceipt) {
-            throw new Error(
-                `Expected moves count to grow after delivery: ${movesAfterReceipt} -> ${movesAfterDelivery}`
-            );
-        }
-    });
-
-    /**
-     * An internal transfer adds a move row to the product moves tab.
-     */
-    test("Internal Transfer - Move Row Adds To Product Moves Tab", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const productName = `E2E Internal Moves ${key}`;
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "33",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "18",
-        });
-        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
-
-        await inventoryPage.internalTransferFullFlow({
-            productName,
-            demand: "4",
-        });
-        const movesAfterTransfer = await inventoryPage.countProductMoveRows(productName);
-
-        if (movesAfterTransfer <= movesAfterReceipt) {
-            throw new Error(
-                `Expected moves count to grow after internal transfer: ${movesAfterReceipt} -> ${movesAfterTransfer}`
-            );
-        }
-    });
-
-    /**
      * A validated receipt shows on the product quantities and moves tabs.
      */
     test("Receipt Validation Reflects In Product In/Out Tab And Quantities", async ({ adminPage }) => {
@@ -224,45 +133,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.gotoProductQuantitiesTab(productName);
 
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
-    });
-
-    /**
-     * A delivery reduces on-hand and adds a done outgoing move row.
-     */
-    test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const warehouseName = `WH Out ${key}`;
-        const warehouseCode = `WO${key}`.slice(-5);
-        const productName = `E2E Out Move ${key}`;
-
-        await inventoryPage.createWarehouse({
-            name: warehouseName,
-            code: warehouseCode,
-            receptionStep: 1,
-            deliveryStep: 1,
-        });
-
-        await inventoryPage.createInventoryProduct({
-            name: productName,
-            price: "40",
-        });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "10",
-            operationType: warehouseName,
-        });
-
-        await inventoryPage.deliveryFullFlow({
-            productName,
-            demand: "4",
-            operationType: warehouseName,
-        });
-
-        await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "6");
-        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
-        await inventoryPage.expectProductQuantityRowVisible(productName);
     });
 
     /**
@@ -314,7 +184,7 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
         const warehouseName = `WH 2Step ${key}`;
-        const warehouseCode = `R2${key}`.slice(-5);
+        const warehouseCode = `R2${key}`;
         const productName = `E2E 2Step Receipt ${key}`;
 
         await inventoryPage.createWarehouse({
@@ -341,7 +211,7 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
         const warehouseName = `WH 3Step ${key}`;
-        const warehouseCode = `R3${key}`.slice(-5);
+        const warehouseCode = `R3${key}`;
         const productName = `E2E 3Step Receipt ${key}`;
 
         await inventoryPage.createWarehouse({
@@ -359,41 +229,6 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         });
 
         await inventoryPage.expectOnHandQuantityRow(productName, `${warehouseCode}/Stock`, "10");
-    });
-
-    /**
-     * A 3-step delivery ships out through Pick, Pack and Ship.
-     */
-    test("Delivery flow - 3-step pick, pack, ship", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
-        const warehouseName = `WH Out3Step ${key}`;
-        const warehouseCode = `D3${key}`.slice(-5);
-        const productName = `E2E 3Step Delivery ${key}`;
-
-        await inventoryPage.createWarehouse({
-            name: warehouseName,
-            code: warehouseCode,
-            receptionStep: 1,
-            deliveryStep: 3,
-        });
-        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
-
-        await inventoryPage.receiptFullFlow({
-            productName,
-            demand: "10",
-            operationType: warehouseName,
-        });
-
-        await inventoryPage.internalTransferFullFlow({
-            productName,
-            demand: "10",
-            operationType: warehouseName,
-            operationTypeName: "Pick",
-        });
-        await inventoryPage.chainNextTransfers();
-
-        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
     });
 
     /**
@@ -441,6 +276,326 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectProductQuantityRowVisible(serialProduct);
         await inventoryPage.expectProductQuantityRowVisible(qtyProduct);
     });
+});
+
+test.describe("Inventory Operations - Deliveries", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
+    });
+
+    /**
+     * A validated delivery ships stock out after a receipt.
+     */
+    test("Delivery Full Flow - Create, Validate, Stock Decreases", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Delivery Flow ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "30",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "20",
+        });
+
+        await inventoryPage.deliveryFullFlow({
+            productName,
+            demand: "5",
+        });
+
+        await inventoryPage.expectProductQuantityRowVisible(productName);
+    });
+
+    /**
+     * A delivery after a receipt adds an outgoing move row.
+     */
+    test("Delivery After Receipt - Outgoing Move Row Visible", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Out Move Op ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "22",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "20",
+        });
+        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
+
+        await inventoryPage.deliveryFullFlow({
+            productName,
+            demand: "6",
+        });
+        const movesAfterDelivery = await inventoryPage.countProductMoveRows(productName);
+
+        if (movesAfterDelivery <= movesAfterReceipt) {
+            throw new Error(
+                `Expected moves count to grow after delivery: ${movesAfterReceipt} -> ${movesAfterDelivery}`
+            );
+        }
+    });
+
+    /**
+     * A delivery reduces on-hand and adds a done outgoing move row.
+     */
+    test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouseName = `WH Out ${key}`;
+        const warehouseCode = `WO${key}`;
+        const productName = `E2E Out Move ${key}`;
+
+        await inventoryPage.createWarehouse({
+            name: warehouseName,
+            code: warehouseCode,
+            receptionStep: 1,
+            deliveryStep: 1,
+        });
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "40",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "10",
+            operationType: warehouseName,
+        });
+
+        await inventoryPage.deliveryFullFlow({
+            productName,
+            demand: "4",
+            operationType: warehouseName,
+        });
+
+        await inventoryPage.expectOnHandQuantityRow(productName, warehouseCode, "6");
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+        await inventoryPage.expectProductQuantityRowVisible(productName);
+    });
+
+    /**
+     * A 3-step delivery ships out through Pick, Pack and Ship.
+     */
+    test("Delivery flow - 3-step pick, pack, ship", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouseName = `WH Out3Step ${key}`;
+        const warehouseCode = `D3${key}`;
+        const productName = `E2E 3Step Delivery ${key}`;
+
+        await inventoryPage.createWarehouse({
+            name: warehouseName,
+            code: warehouseCode,
+            receptionStep: 1,
+            deliveryStep: 3,
+        });
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "10",
+            operationType: warehouseName,
+        });
+
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "10",
+            operationType: warehouseName,
+            operationTypeName: "Pick",
+        });
+        await inventoryPage.chainNextTransfers();
+
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+    });
+
+    /**
+     * A lot-tracked product is received then delivered, reserving its lot.
+     */
+    test("Delivery With Lot - Reserve Lot And Validate", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Dlv Lot ${key}`;
+        const lotName = `LOT-${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "30",
+            tracking: "lot",
+        });
+
+        await inventoryPage.receiptWithLotFlow({ productName, demand: "8" }, lotName);
+
+        await inventoryPage.deliveryFullFlow({ productName, demand: "5" });
+
+        await inventoryPage.expectOnHandQuantityRow(productName, "WH/Stock", "3");
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+    });
+
+    /**
+     * A serial-tracked product is received then partially delivered, reserving a serial.
+     */
+    test("Delivery With Serial - Reserve Serial And Validate", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Dlv Serial ${key}`;
+        const serialPrefix = `SN-${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "30",
+            tracking: "serial",
+        });
+
+        await inventoryPage.receiptWithLotFlow({ productName, demand: "2" }, serialPrefix);
+
+        await inventoryPage.deliveryFullFlow({ productName, demand: "1" });
+
+        await inventoryPage.expectProductQuantityRowVisible(productName);
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+    });
+
+    /**
+     * A 2-step delivery ships out through Pick then Ship.
+     */
+    test("Delivery flow - 2-step pick, ship", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouseName = `WH Out2Step ${key}`;
+        const warehouseCode = `D2${key}`;
+        const productName = `E2E 2Step Delivery ${key}`;
+
+        await inventoryPage.createWarehouse({
+            name: warehouseName,
+            code: warehouseCode,
+            receptionStep: 1,
+            deliveryStep: 2,
+        });
+        await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "10",
+            operationType: warehouseName,
+        });
+
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "10",
+            operationType: warehouseName,
+            operationTypeName: "Pick",
+        });
+        await inventoryPage.chainNextTransfers();
+
+        await inventoryPage.expectProductMoveRowVisible(productName, "Done");
+    });
+
+    /**
+     * One delivery ships mixed lot, serial and quantity-tracked lines.
+     */
+    test("Delivery - mixed lot, serial & quantity", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const lotProduct = `E2E DlvMix Lot ${key}`;
+        const serialProduct = `E2E DlvMix Serial ${key}`;
+        const qtyProduct = `E2E DlvMix Qty ${key}`;
+
+        await inventoryPage.createInventoryProduct({ name: lotProduct, price: "10", tracking: "lot" });
+        await inventoryPage.createInventoryProduct({ name: serialProduct, price: "12", tracking: "serial" });
+        await inventoryPage.createInventoryProduct({ name: qtyProduct, price: "8" });
+
+        await inventoryPage.receiptLinesFullFlow([
+            { productName: lotProduct, demand: "4", lotName: `LOT-${key}` },
+            { productName: serialProduct, demand: "2", lotName: `SN-${key}` },
+            { productName: qtyProduct, demand: "5" },
+        ]);
+
+        await inventoryPage.deliveryLinesFullFlow([
+            { productName: lotProduct, demand: "2" },
+            { productName: serialProduct, demand: "1" },
+            { productName: qtyProduct, demand: "3" },
+        ]);
+
+        await inventoryPage.expectProductMoveRowVisible(lotProduct, "Done");
+        await inventoryPage.expectProductMoveRowVisible(serialProduct, "Done");
+        await inventoryPage.expectProductMoveRowVisible(qtyProduct, "Done");
+    });
+});
+
+test.describe("Inventory Operations - Internal Transfers", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
+    });
+
+    /**
+     * A validated internal transfer moves stock between locations.
+     */
+    test("Internal Transfer - Create And Validate Move", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Internal Flow ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "40",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "15",
+        });
+
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "5",
+        });
+
+        await inventoryPage.expectProductQuantityRowVisible(productName);
+    });
+
+    /**
+     * An internal transfer adds a move row to the product moves tab.
+     */
+    test("Internal Transfer - Move Row Adds To Product Moves Tab", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const productName = `E2E Internal Moves ${key}`;
+
+        await inventoryPage.createInventoryProduct({
+            name: productName,
+            price: "33",
+        });
+
+        await inventoryPage.receiptFullFlow({
+            productName,
+            demand: "18",
+        });
+        const movesAfterReceipt = await inventoryPage.countProductMoveRows(productName);
+
+        await inventoryPage.internalTransferFullFlow({
+            productName,
+            demand: "4",
+        });
+        const movesAfterTransfer = await inventoryPage.countProductMoveRows(productName);
+
+        if (movesAfterTransfer <= movesAfterReceipt) {
+            throw new Error(
+                `Expected moves count to grow after internal transfer: ${movesAfterReceipt} -> ${movesAfterTransfer}`
+            );
+        }
+    });
+});
+
+test.describe("Inventory Operations - Packages", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
+    });
 
     /**
      * Receiving into a destination package leaves the stock held in that package.
@@ -485,7 +640,7 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         const inventoryPage = new InventoriesManagementPage(adminPage);
         const key = Date.now();
         const warehouseName = `WH Pkg3 ${key}`;
-        const warehouseCode = `P3${key}`.slice(-5);
+        const warehouseCode = `P3${key}`;
         const productName = `E2E 3S Pkg Product ${key}`;
         const packageName = `E2E 3S Package ${key}`;
 
@@ -541,13 +696,11 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.expectPackageNotListed(fullPackage);
         await inventoryPage.expectPackageContainsProduct(partialPackage, partialProduct, "6");
     });
+});
 
-    /**
-     * The Scraps listing table renders.
-     */
-    test("Scraps list loads", async ({ adminPage }) => {
-        const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.gotoScrapsPage();
+test.describe("Inventory Operations - Scrap & Adjustments", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
     });
 
     /**
@@ -599,6 +752,12 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.clearStockViaAdjustment(productName);
         await inventoryPage.editProductTracking(productName, "lot");
         await inventoryPage.expectProductTracking(productName, "lot");
+    });
+});
+
+test.describe("Inventory Operations - Returns", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
     });
 
     /**
@@ -671,5 +830,78 @@ test.describe("Inventory Operations - Receipts, Deliveries, Internal Transfers",
         await inventoryPage.internalTransferFullFlow({ productName, demand: "10" });
 
         await inventoryPage.returnAndExpectReversedLocations();
+    });
+});
+
+/**
+ * Back orders on a 3-step reception warehouse: receiving fewer units than
+ * demanded leaves a remainder, and the operation type's create-backorder policy
+ * decides whether a follow-up (back order) receipt is created for it.
+ */
+test.describe("Inventory Operations - Backorders", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableOperationsSettings(adminPage);
+    });
+
+    /**
+     * Ask (the warehouse default): a partial receipt opens the "Create Back
+     * Order?" modal; confirming it creates a second receipt for the remainder.
+     */
+    test("Backorder - Ask creates a backorder", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH BO Ask ${key}`, code: `BOA${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const product = `E2E BO Ask Prod ${key}`;
+        const origin = `E2E-BO-ASK-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.createReceipt({ operationType: warehouse.name, productName: product, demand: "10", origin });
+
+        await inventoryPage.receivePartialWithBackorder("6", "ask");
+
+        await inventoryPage.expectReceiptCountByOrigin(origin, 2);
+    });
+
+    /**
+     * Never: a partial receipt validates straight through with no modal and no
+     * back order for the remainder.
+     */
+    test("Backorder - Never skips the backorder", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH BO Never ${key}`, code: `BON${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const product = `E2E BO Never Prod ${key}`;
+        const origin = `E2E-BO-NEVER-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.editOperationTypeBackorderForWarehouse(warehouse.name, "never");
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.createReceipt({ operationType: warehouse.name, productName: product, demand: "10", origin });
+
+        await inventoryPage.receivePartialWithBackorder("6", "never");
+
+        await inventoryPage.expectReceiptCountByOrigin(origin, 1);
+    });
+
+    /**
+     * Always: a partial receipt validates with no modal but still creates the
+     * back order for the remainder automatically.
+     */
+    test("Backorder - Always creates a backorder without asking", async ({ adminPage }) => {
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+        const warehouse = { name: `WH BO Always ${key}`, code: `BOL${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
+        const product = `E2E BO Always Prod ${key}`;
+        const origin = `E2E-BO-ALWAYS-${key}`;
+
+        await inventoryPage.createWarehouse(warehouse);
+        await inventoryPage.editOperationTypeBackorderForWarehouse(warehouse.name, "always");
+        await inventoryPage.createInventoryProduct({ name: product, price: "10" });
+        await inventoryPage.createReceipt({ operationType: warehouse.name, productName: product, demand: "10", origin });
+
+        await inventoryPage.receivePartialWithBackorder("6", "always");
+
+        await inventoryPage.expectReceiptCountByOrigin(origin, 2);
     });
 });

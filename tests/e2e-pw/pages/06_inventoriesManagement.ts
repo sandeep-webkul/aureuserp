@@ -21,6 +21,7 @@ export type ReceiptData = {
     demand: string;
     operationType?: string;
     operationTypeName?: string;
+    origin?: string;
 };
 
 export type DeliveryData = {
@@ -1250,6 +1251,11 @@ export class InventoriesManagementPage {
 
         await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
+        if (data.origin) {
+            await this.erpLocators.inventoryOperationAdditionalTab.click();
+            await this.erpLocators.inventoryOperationOriginInput.fill(data.origin);
+        }
+
         await this.erpLocators.inventoryOperationSaveButton.click();
         await this.expectSuccessToast();
 
@@ -1648,8 +1654,131 @@ export class InventoriesManagementPage {
         await expect(rows).toHaveCount(count);
     }
 
+    /**
+     * Assert how many receipt operations carry the given source document (origin).
+     * A backorder replicates the origin, so the count is 2 when one was created,
+     * 1 when it wasn't.
+     */
+    async expectReceiptCountByOrigin(origin: string, count: number) {
+        await this.gotoReceiptsPage();
+        await this.searchList(origin);
+        const rows = this.erpLocators.inventoryTableRows.filter({ hasText: origin });
+        await expect(rows).toHaveCount(count);
+    }
+
+    /**
+     * Set the first move's done quantity to a partial value via the "Manage Stock
+     * Moves" modal (the inline table quantity auto-fills to demand and is not
+     * editable), so a backorder is created for the remainder.
+     */
+    async setMoveDoneQuantity(quantity: string) {
+        const l = this.erpLocators;
+        await l.inventoryMoveManageLinesAction.first().click({ timeout: 15000 });
+        await expect(l.inventoryMoveLinesModal).toBeVisible();
+
+        const modal = this.page.locator(".fi-modal-window:visible").last();
+        const row = modal.locator("table tbody tr").first();
+        const qtyInput = row.locator('input[type="number"]').last();
+        await qtyInput.waitFor({ state: "visible", timeout: 10000 });
+        await qtyInput.fill(quantity);
+        await this.page.waitForTimeout(400);
+
+        await l.inventoryMoveLinesModalSaveButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(600);
+    }
+
+    /**
+     * On an open operation whose demand exceeds the done quantity, mark it to do,
+     * receive only `doneQty`, then validate. For `ask` the "Create Back Order?"
+     * modal must appear and is confirmed (creating the backorder); for `never` /
+     * `always` no modal appears (always still creates one, never does not).
+     */
+    async receivePartialWithBackorder(doneQty: string, policy: "ask" | "never" | "always") {
+        await this.clickMarkAsTodoIfVisible();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(800);
+
+        await this.setMoveDoneQuantity(doneQty);
+
+        await this.erpLocators.inventoryOperationValidateButton.click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+
+        if (policy === "ask") {
+            await expect(this.erpLocators.inventoryOperationBackorderModal).toBeVisible({ timeout: 20000 });
+            await this.erpLocators.inventoryOperationBackorderConfirmButton.click({ timeout: 15000 });
+        } else {
+            await expect(this.erpLocators.inventoryOperationBackorderModal).toBeHidden();
+        }
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
+    }
+
+    /**
+     * Edit a warehouse's Receipts operation type to the given backorder policy
+     * (the warehouse default is Ask). The op-type list is scoped by the unique
+     * warehouse name so the right record is found even with many op-types.
+     */
+    async editOperationTypeBackorderForWarehouse(warehouseName: string, policy: "ask" | "always" | "never") {
+        await this.gotoOperationTypesPage();
+        await this.searchList(warehouseName);
+        const row = this.erpLocators.inventoryTableRows
+            .filter({ hasText: warehouseName })
+            .filter({ hasText: /Receipts/ })
+            .first();
+        await expect(row).toBeVisible({ timeout: 15000 });
+        await row.locator("a").first().click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        const editUrl = `${this.page.url().replace(/\/$/, "")}/edit`;
+        await this.page.goto(editUrl);
+        await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible({ timeout: 15000 });
+
+        await this.erpLocators.inventoryOperationTypeBackorderSelect.selectOption(policy);
+        await this.page.waitForTimeout(400);
+
+        // The edit page's submit is "Save changes" (not the create page's
+        // key-bindings-1), so target it by role.
+        await this.page
+            .getByRole("button", { name: /Save changes|^Save$/i })
+            .first()
+            .click({ timeout: 15000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.expectSuccessToast();
+    }
+
     async deliveryFullFlow(data: DeliveryData) {
         await this.createDelivery(data);
+        await this.confirmAndValidateOperation();
+    }
+
+    /**
+     * Create a delivery with one or more product lines and return its reference.
+     */
+    async createDeliveryLines(lines: MoveLineInput[], operationType?: string): Promise<string> {
+        await this.gotoDeliveriesPage();
+        await this.erpLocators.inventoryOperationCreateButton.click();
+        await expect(this.page).toHaveURL(/deliveries\/create/);
+
+        if (operationType) {
+            await this.selectOperationTypeForWarehouse(operationType, "Delivery Orders");
+        }
+
+        await this.addMoveLines(lines);
+
+        await this.erpLocators.inventoryOperationSaveButton.click();
+        await this.expectSuccessToast();
+
+        return this.readOperationReference();
+    }
+
+    /**
+     * Deliver one or more product lines and validate. Lot/serial-tracked lines
+     * reserve their existing stock on Check Availability (no manual lot pick).
+     */
+    async deliveryLinesFullFlow(lines: MoveLineInput[], operationType?: string) {
+        await this.createDeliveryLines(lines, operationType);
         await this.confirmAndValidateOperation();
     }
 
