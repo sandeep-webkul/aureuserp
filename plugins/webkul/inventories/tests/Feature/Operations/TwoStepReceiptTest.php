@@ -530,3 +530,37 @@ it('applies a product agnostic putaway rule to any product', function () {
     expect($storageLine->destination_location_id)->toBe($shelf->id);
 });
 
+
+it('consolidates goods into a storage category location that has spare capacity', function () {
+    $category = InventoryHelper::storageCategory();
+    $shelf = InventoryHelper::sublocation($this->stock, 'Cat Shelf', $category);
+
+    InventoryHelper::storageCategoryCapacity($category, $this->product, 5);
+
+    InventoryHelper::stockUp($this->product, $shelf, 2);
+
+    InventoryHelper::putawayRule($this->stock, $this->stock, null, $category);
+
+    validatedReceiptLeg($this->warehouse, $this->product, 3);
+
+    $storageLine = storageOperation($this->warehouse)->moves->first()->lines->first();
+
+    expect($storageLine->destination_location_id)->toBe($shelf->id);
+});
+
+it('skips a storage category location when the incoming quantity exceeds its capacity', function () {
+    $category = InventoryHelper::storageCategory();
+    $shelf = InventoryHelper::sublocation($this->stock, 'Cat Shelf', $category);
+
+    InventoryHelper::storageCategoryCapacity($category, $this->product, 5);
+
+    InventoryHelper::stockUp($this->product, $shelf, 2);
+
+    InventoryHelper::putawayRule($this->stock, $this->stock, null, $category);
+
+    validatedReceiptLeg($this->warehouse, $this->product, 4);
+
+    $storageLine = storageOperation($this->warehouse)->moves->first()->lines->first();
+
+    expect($storageLine->destination_location_id)->toBe($this->stock->id);
+});
