@@ -621,3 +621,34 @@ it('packs an entire untyped package into a package level', function () {
         ->and($line->package_level_id)->not->toBeNull()
         ->and($line->result_package_id)->toBe($package->id);
 });
+
+it('releases the reservation when a reserved pick move line is deleted', function () {
+    $operation = confirmedThreeStepPick($this->warehouse, $this->product, 10, 10);
+
+    $move = $operation->moves->first();
+
+    $move->lines->first()->delete();
+
+    $move = $move->refresh();
+
+    expect($move->lines)->toHaveCount(0)
+        ->and($move->state)->toBe(MoveState::CONFIRMED);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+});
+
+it('deletes each intermediate quant as the goods move through pick pack and ship', function () {
+    validatedThreeStepPick($this->warehouse, $this->product, 10, 10);
+
+    expect(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull()
+        ->and((float) InventoryHelper::quantOf($this->product, $this->packing)?->quantity)->toBe(10.0);
+
+    Inventory::doneTransfer(packOperation($this->warehouse)->refresh());
+
+    expect(InventoryHelper::quantOf($this->product, $this->packing))->toBeNull()
+        ->and((float) InventoryHelper::quantOf($this->product, $this->output)?->quantity)->toBe(10.0);
+
+    Inventory::doneTransfer(threeStepShipOperation($this->warehouse)->refresh());
+
+    expect(InventoryHelper::quantOf($this->product, $this->output))->toBeNull();
+});

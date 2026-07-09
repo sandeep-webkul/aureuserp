@@ -441,3 +441,92 @@ it('stores each serial number in stock through the whole chain', function () {
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0)
         ->and(InventoryHelper::onHand($product, $this->input))->toBe(0.0);
 });
+
+it('releases the freed reservation when the storage move line quantity is decreased', function () {
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    $storage = storageOperation($this->warehouse);
+
+    $storage->moves->first()->lines->first()->update(['qty' => 6]);
+
+    $move = $storage->refresh()->moves->first()->refresh();
+
+    expect((float) $move->quantity)->toBe(6.0)
+        ->and($move->state)->toBe(MoveState::PARTIALLY_ASSIGNED);
+
+    expect(InventoryHelper::reserved($this->product, $this->input))->toBe(6.0);
+});
+
+it('releases the reservation when a reserved storage move line is deleted', function () {
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    $storage = storageOperation($this->warehouse);
+
+    $storage->moves->first()->lines->first()->delete();
+
+    $move = $storage->refresh()->moves->first()->refresh();
+
+    expect($move->lines)->toHaveCount(0)
+        ->and($move->state)->toBe(MoveState::CONFIRMED);
+
+    expect(InventoryHelper::reserved($this->product, $this->input))->toBe(0.0);
+});
+
+it('deletes the input quant when the storage leg empties it', function () {
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    Inventory::doneTransfer(storageOperation($this->warehouse)->refresh());
+
+    expect(InventoryHelper::quantOf($this->product, $this->input))->toBeNull()
+        ->and((float) InventoryHelper::quantOf($this->product, $this->stock)?->quantity)->toBe(10.0);
+});
+
+it('redirects the storage move line to the putaway sublocation', function () {
+    $shelf = InventoryHelper::sublocation($this->stock, 'Shelf A');
+
+    InventoryHelper::putawayRule($this->stock, $shelf, $this->product);
+
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    $storageLine = storageOperation($this->warehouse)->moves->first()->lines->first();
+
+    expect($storageLine->destination_location_id)->toBe($shelf->id);
+});
+
+it('lands the stored quantity in the putaway sublocation when validated', function () {
+    $shelf = InventoryHelper::sublocation($this->stock, 'Shelf A');
+
+    InventoryHelper::putawayRule($this->stock, $shelf, $this->product);
+
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    Inventory::doneTransfer(storageOperation($this->warehouse)->refresh());
+
+    expect((float) InventoryHelper::quantOf($this->product, $shelf)?->quantity)->toBe(10.0)
+        ->and(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull();
+});
+
+it('ignores a putaway rule that targets a different product', function () {
+    $shelf = InventoryHelper::sublocation($this->stock, 'Shelf A');
+
+    InventoryHelper::putawayRule($this->stock, $shelf, InventoryHelper::product());
+
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    $storageLine = storageOperation($this->warehouse)->moves->first()->lines->first();
+
+    expect($storageLine->destination_location_id)->toBe($this->stock->id);
+});
+
+it('applies a product agnostic putaway rule to any product', function () {
+    $shelf = InventoryHelper::sublocation($this->stock, 'Shelf A');
+
+    InventoryHelper::putawayRule($this->stock, $shelf);
+
+    validatedReceiptLeg($this->warehouse, $this->product, 10);
+
+    $storageLine = storageOperation($this->warehouse)->moves->first()->lines->first();
+
+    expect($storageLine->destination_location_id)->toBe($shelf->id);
+});
+

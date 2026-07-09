@@ -18,7 +18,7 @@ return new class extends Migration
 
         $uomFactors = [
             'Units'      => 1.0,
-            'Dozens'     => 0.08333333333333333,
+            'Dozens'     => '0.08333333333333333',
             'kg'         => 1.0,
             'g'          => 1000.0,
             't'          => 0.001,
@@ -41,8 +41,8 @@ return new class extends Migration
             'fl oz (US)' => 33.814,
             'qt (US)'    => 1.05669,
             'in³'        => 61.0237,
-            'gal (US)'   => 0.26417217685798894,
-            'ft³'        => 0.035314724827664144,
+            'gal (US)'   => '0.26417217685798894',
+            'ft³'        => '0.035314724827664144',
         ];
 
         foreach ($uomFactors as $name => $factor) {

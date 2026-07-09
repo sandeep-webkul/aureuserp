@@ -19,6 +19,11 @@ use Webkul\Inventory\Models\Package;
 use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Enums\ReservationMethod;
+use Webkul\Inventory\Models\PutawayRule;
+use Webkul\Inventory\Models\Scrap;
+use Webkul\Inventory\Models\StorageCategory;
+use Webkul\Inventory\Models\StorageCategoryCapacity;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -68,15 +73,136 @@ class InventoryHelper
         return $warehouse->refresh();
     }
 
-    public static function sublocation(Location $parent, ?string $name = null): Location
+    public static function scrapLocation(): Location
     {
         return Location::factory()->create([
-            'name'         => $name ?? fake()->unique()->word(),
-            'type'         => LocationType::INTERNAL,
-            'parent_id'    => $parent->id,
-            'warehouse_id' => $parent->warehouse_id,
+            'name'       => 'Scrap',
+            'type'       => LocationType::INVENTORY,
+            'company_id' => static::company()->id,
+        ]);
+    }
+
+    public static function scrap(Product $product, Location $source, Location $destination, float $qty, ?int $lotId = null): Scrap
+    {
+        return Scrap::factory()->create([
+            'product_id'              => $product->id,
+            'uom_id'                  => $product->uom_id,
+            'lot_id'                  => $lotId,
+            'qty'                     => $qty,
+            'source_location_id'      => $source->id,
+            'destination_location_id' => $destination->id,
+            'company_id'              => static::company()->id,
+        ]);
+    }
+
+    public static function dropship(array $lines): Operation
+    {
+        $operation = Operation::factory()->dropship()->create([
+            'state'        => OperationState::DRAFT,
+            'move_type'    => MoveType::DIRECT,
+            'scheduled_at' => now(),
             'company_id'   => static::company()->id,
         ]);
+
+        foreach ($lines as [$product, $demand]) {
+            Move::factory()->demand($demand)->create([
+                'name'                    => $product->name,
+                'state'                   => MoveState::DRAFT,
+                'product_id'              => $product->id,
+                'uom_id'                  => $product->uom_id,
+                'operation_id'            => $operation->id,
+                'operation_type_id'       => $operation->operation_type_id,
+                'source_location_id'      => $operation->source_location_id,
+                'destination_location_id' => $operation->destination_location_id,
+                'company_id'              => static::company()->id,
+            ]);
+        }
+
+        return $operation->refresh();
+    }
+
+    public static function enableLocations(): void
+    {
+        $settings = app(\Webkul\Inventory\Settings\WarehouseSettings::class);
+
+        $settings->enable_locations = true;
+
+        $settings->save();
+    }
+
+    public static function internalTransfer(Warehouse $warehouse, Location $source, Location $destination, array $lines): Operation
+    {
+        $operation = Operation::factory()->create([
+            'operation_type_id'       => $warehouse->internal_type_id,
+            'source_location_id'      => $source->id,
+            'destination_location_id' => $destination->id,
+            'state'                   => OperationState::DRAFT,
+            'move_type'               => MoveType::DIRECT,
+            'scheduled_at'            => now(),
+            'company_id'              => static::company()->id,
+        ]);
+
+        foreach ($lines as [$product, $demand]) {
+            Move::factory()->demand($demand)->create([
+                'name'                    => $product->name,
+                'state'                   => MoveState::DRAFT,
+                'product_id'              => $product->id,
+                'uom_id'                  => $product->uom_id,
+                'operation_id'            => $operation->id,
+                'operation_type_id'       => $warehouse->internal_type_id,
+                'source_location_id'      => $source->id,
+                'destination_location_id' => $destination->id,
+                'company_id'              => static::company()->id,
+            ]);
+        }
+
+        return $operation->refresh();
+    }
+
+    public static function sublocation(Location $parent, ?string $name = null, ?StorageCategory $storageCategory = null): Location
+    {
+        return Location::factory()->create([
+            'name'                => $name ?? fake()->unique()->word(),
+            'type'                => LocationType::INTERNAL,
+            'parent_id'           => $parent->id,
+            'warehouse_id'        => $parent->warehouse_id,
+            'storage_category_id' => $storageCategory?->id,
+            'company_id'          => static::company()->id,
+        ]);
+    }
+
+    public static function putawayRule(Location $in, Location $out, ?Product $product = null, ?StorageCategory $storageCategory = null): PutawayRule
+    {
+        return PutawayRule::factory()->create([
+            'in_location_id'      => $in->id,
+            'out_location_id'     => $out->id,
+            'product_id'          => $product?->id,
+            'storage_category_id' => $storageCategory?->id,
+            'company_id'          => static::company()->id,
+        ]);
+    }
+
+    public static function storageCategory(): StorageCategory
+    {
+        return StorageCategory::factory()->create([
+            'company_id' => static::company()->id,
+        ]);
+    }
+
+    public static function storageCategoryCapacity(StorageCategory $category, Product $product, float $qty): StorageCategoryCapacity
+    {
+        return StorageCategoryCapacity::factory()->create([
+            'storage_category_id' => $category->id,
+            'product_id'          => $product->id,
+            'qty'                 => $qty,
+        ]);
+    }
+
+    public static function setReservationMethod(OperationType $operationType, ReservationMethod $method): OperationType
+    {
+        $operationType->update(['reservation_method' => $method]);
+
+        return $operationType->refresh();
     }
 
     public static function product(array $overrides = []): Product

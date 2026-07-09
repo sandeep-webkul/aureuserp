@@ -821,3 +821,162 @@ it('packs an entire untyped package into a package level', function () {
         ->and($line->package_level_id)->not->toBeNull()
         ->and($line->result_package_id)->toBe($package->id);
 });
+
+it('releases the freed reservation when the delivery move line quantity is decreased', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $operation->moves->first()->lines->first()->update(['qty' => 6]);
+
+    $move = $operation->refresh()->moves->first()->refresh();
+
+    expect((float) $move->quantity)->toBe(6.0)
+        ->and($move->state)->toBe(MoveState::PARTIALLY_ASSIGNED);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(6.0);
+});
+
+it('reserves more when the delivery move line quantity is increased and stock is available', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 4, 10);
+
+    InventoryHelper::quantOf($this->product, $this->stock)->update(['quantity' => 10]);
+
+    $operation->refresh()->moves->first()->lines->first()->update(['qty' => 10]);
+
+    $move = $operation->refresh()->moves->first()->refresh();
+
+    expect((float) $move->quantity)->toBe(10.0)
+        ->and($move->state)->toBe(MoveState::ASSIGNED);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(10.0);
+});
+
+it('refuses to set a negative reserved quantity on the delivery move line', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $operation->moves->first()->lines->first()->update(['qty' => -1]);
+})->throws(Exception::class);
+
+it('releases the reservation when a reserved delivery move line is deleted', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $move = $operation->moves->first();
+
+    $move->lines->first()->delete();
+
+    $move = $move->refresh();
+
+    expect($move->lines)->toHaveCount(0)
+        ->and((float) $move->quantity)->toBe(0.0)
+        ->and($move->state)->toBe(MoveState::CONFIRMED);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+});
+
+it('releases the reservation when a reserved delivery move is deleted', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $operation->moves->first()->delete();
+
+    expect($operation->refresh()->moves)->toHaveCount(0);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+});
+
+it('releases a fractional reservation when a delivery move line is deleted', function () {
+    $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 0.5, 0.5);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.5);
+
+    $operation->moves->first()->lines->first()->delete();
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+});
+
+it('deletes the source quant record when the delivery empties the location', function () {
+    $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    expect($operation->state)->toBe(OperationState::DONE)
+        ->and(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull();
+});
+
+it('keeps the source quant with the remainder after a partial delivery', function () {
+    InventoryHelper::stockUp($this->product, $this->stock, 10);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 4]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    $quant = InventoryHelper::quantOf($this->product, $this->stock);
+
+    expect($quant)->not->toBeNull()
+        ->and((float) $quant->quantity)->toBe(6.0);
+});
+
+it('does not resync reservation when a done move line quantity is edited', function () {
+    $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+
+    $line = $operation->moves->first()->lines->first();
+
+    $line->update(['qty' => 4]);
+
+    expect($operation->refresh()->moves->first()->state)->toBe(MoveState::DONE)
+        ->and(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+});
+
+it('does not auto reserve a delivery when the operation type uses manual reservation', function () {
+    InventoryHelper::setReservationMethod($this->warehouse->outType, \Webkul\Inventory\Enums\ReservationMethod::MANUAL);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    expect($operation->refresh()->moves->first()->state)->toBe(MoveState::CONFIRMED)
+        ->and(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
+
+    Inventory::assignTransfer($operation->refresh());
+
+    expect($operation->refresh()->moves->first()->state)->toBe(MoveState::ASSIGNED)
+        ->and(InventoryHelper::reserved($this->product, $this->stock))->toBe(10.0);
+});
+
+it('delivers more than the demand when the picked quantity is increased', function () {
+    InventoryHelper::stockUp($this->product, $this->stock, 15);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    InventoryHelper::pick($operation->refresh()->moves->first(), 12);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    $customer = $operation->refresh()->destinationLocation;
+
+    expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(3.0)
+        ->and(InventoryHelper::onHand($this->product, $customer))->toBe(12.0);
+});
+
+it('reserves the product uom equivalent when the delivery demand is in dozens', function () {
+    InventoryHelper::stockUp($this->product, $this->stock, 12);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 1, InventoryHelper::dozensUom()]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect((float) $move->product_uom_qty)->toBe(1.0)
+        ->and((float) $move->product_qty)->toBe(12.0);
+
+    expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(12.0);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
+});

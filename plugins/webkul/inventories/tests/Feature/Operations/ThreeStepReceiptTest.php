@@ -565,3 +565,30 @@ it('stores each serial number in stock through the whole three step chain', func
         ->and(InventoryHelper::onHand($product, $this->input))->toBe(0.0)
         ->and(InventoryHelper::onHand($product, $this->quality))->toBe(0.0);
 });
+
+it('releases the reservation when a reserved quality move line is deleted', function () {
+    validatedThreeStepReceiptLeg($this->warehouse, $this->product, 10);
+
+    $quality = qualityOperation($this->warehouse);
+
+    $quality->moves->first()->lines->first()->delete();
+
+    $move = $quality->refresh()->moves->first()->refresh();
+
+    expect($move->lines)->toHaveCount(0)
+        ->and($move->state)->toBe(MoveState::CONFIRMED);
+
+    expect(InventoryHelper::reserved($this->product, $this->input))->toBe(0.0);
+});
+
+it('deletes each intermediate quant as the goods move through receipt quality and storage', function () {
+    validatedThreeStepQuality($this->warehouse, $this->product, 10);
+
+    expect(InventoryHelper::quantOf($this->product, $this->input))->toBeNull()
+        ->and((float) InventoryHelper::quantOf($this->product, $this->quality)?->quantity)->toBe(10.0);
+
+    Inventory::doneTransfer(threeStepStorageOperation($this->warehouse)->refresh());
+
+    expect(InventoryHelper::quantOf($this->product, $this->quality))->toBeNull()
+        ->and((float) InventoryHelper::quantOf($this->product, $this->stock)?->quantity)->toBe(10.0);
+});
