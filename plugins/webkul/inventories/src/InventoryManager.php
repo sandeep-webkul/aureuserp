@@ -1199,7 +1199,7 @@ class InventoryManager
                         product: null,
                         package: $package,
                         excludeMoveLineIds: $excludedMoveLines,
-                        products: $packageMoveLines->pluck('product')->all()
+                        products: $packageMoveLines->pluck('product')->filter()->unique('id')->values()
                     );
 
                 $packageMoveLines->each(function ($moveLine) use ($bestLocation) {

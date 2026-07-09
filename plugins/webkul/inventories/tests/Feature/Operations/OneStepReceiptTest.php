@@ -3,6 +3,7 @@
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -13,10 +14,30 @@ beforeEach(function () {
 
     InventoryHelper::actingAsAdmin();
 
+    Move::$globalContext = [];
+
     $this->warehouse = InventoryHelper::warehouse();
     $this->product = InventoryHelper::product();
     $this->stock = $this->warehouse->lotStockLocation;
 });
+
+afterEach(fn () => Move::$globalContext = []);
+
+function addMoveTo(Operation $operation, $product, float $demand): Move
+{
+    return Move::create([
+        'name'                    => $product->name,
+        'product_id'              => $product->id,
+        'uom_id'                  => $product->uom_id,
+        'product_uom_qty'         => $demand,
+        'quantity'                => 0,
+        'operation_id'            => $operation->id,
+        'operation_type_id'       => $operation->operation_type_id,
+        'source_location_id'      => $operation->source_location_id,
+        'destination_location_id' => $operation->destination_location_id,
+        'company_id'              => $operation->company_id,
+    ]);
+}
 
 function validatedOneStepReceipt($warehouse, $product, float $demand, ?float $picked = null): Operation
 {
@@ -399,4 +420,178 @@ it('does not merge moves for different products', function () {
     Inventory::confirmTransfer($operation);
 
     expect($operation->refresh()->moves)->toHaveCount(2);
+});
+
+it('refuses to validate a lot tracked receipt when no lot name is given', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::doneTransfer($operation->refresh());
+})->throws(Exception::class);
+
+it('creates the lot named on the move line when the receipt is validated', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A']);
+
+    $line = $operation->refresh()->moves->first()->lines->first();
+
+    expect($line->lot_id)->not->toBeNull();
+
+    $quant = InventoryHelper::quantOf($product, $this->stock, $line->lot_id);
+
+    expect($quant)->not->toBeNull()
+        ->and((float) $quant->quantity)->toBe(10.0);
+});
+
+it('reuses an existing lot when the same lot name is received twice', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    foreach ([10, 5] as $qty) {
+        $operation = InventoryHelper::receipt($this->warehouse, [[$product, $qty]]);
+
+        Inventory::confirmTransfer($operation);
+
+        InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
+
+        Inventory::doneTransfer($operation->refresh());
+    }
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(15.0);
+});
+
+it('keeps two different lots of the same product apart in stock', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    foreach (['LOT-A' => 10, 'LOT-B' => 4] as $name => $qty) {
+        $operation = InventoryHelper::receipt($this->warehouse, [[$product, $qty]]);
+
+        Inventory::confirmTransfer($operation);
+
+        InventoryHelper::nameLines($operation->refresh()->moves->first(), [$name]);
+
+        Inventory::doneTransfer($operation->refresh());
+    }
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A', 'LOT-B'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(14.0);
+});
+
+it('creates one move line per unit for a serial tracked receipt', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 3]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect($move->lines)->toHaveCount(3)
+        ->and(InventoryHelper::lineQuantities($move))->toBe([1.0, 1.0, 1.0]);
+});
+
+it('creates one lot per serial number when the receipt is validated', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 3]]);
+
+    Inventory::confirmTransfer($operation);
+
+    InventoryHelper::nameLines($operation->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0);
+});
+
+it('does not explode a serial receipt into unit lines when the operation type tracks no lots', function () {
+    InventoryHelper::trackLots($this->warehouse->inType, create: false, existing: false);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 3]]);
+
+    Inventory::confirmTransfer($operation);
+
+    expect($operation->refresh()->moves->first()->lines)->toHaveCount(1);
+});
+
+it('does not mark a move additional when the engine adds it to a confirmed receipt', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = addMoveTo($operation->refresh(), $this->product, 5);
+
+    expect($move->refresh()->additional)->toBeFalse()
+        ->and($move->state)->toBe(MoveState::DRAFT);
+});
+
+it('marks a move additional and auto confirms it when manually added to a confirmed receipt', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $other = InventoryHelper::product();
+
+    Move::$globalContext['skip_additional'] = false;
+
+    $move = addMoveTo($operation->refresh(), $other, 5);
+
+    expect($move->additional)->toBeTrue()
+        ->and($move->refresh()->state)->not->toBe(MoveState::DRAFT);
+});
+
+it('consumes the manual add context on the first move so a second is not additional', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $firstProduct = InventoryHelper::product();
+    $secondProduct = InventoryHelper::product();
+
+    Move::$globalContext['skip_additional'] = false;
+
+    $first = addMoveTo($operation->refresh(), $firstProduct, 5);
+    $second = addMoveTo($operation->refresh(), $secondProduct, 5);
+
+    expect($first->additional)->toBeTrue()
+        ->and($second->refresh()->additional)->toBeFalse()
+        ->and(Move::$globalContext)->toBe([]);
+});
+
+it('forces a manually added move to done when the receipt is already done', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    Move::$globalContext['skip_additional'] = false;
+
+    $move = addMoveTo($operation->refresh(), $this->product, 5);
+
+    expect($move->additional)->toBeTrue()
+        ->and($move->state)->toBe(MoveState::DONE);
 });

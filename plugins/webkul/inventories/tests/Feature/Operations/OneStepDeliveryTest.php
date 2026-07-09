@@ -2,6 +2,7 @@
 
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\PackageUse;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 
@@ -628,4 +629,195 @@ it('keeps per product reservations separate', function () {
     $byProduct = $operation->refresh()->moves->keyBy('product_id');
 
     expect($byProduct[$other->id]->state)->toBe(MoveState::PARTIALLY_ASSIGNED);
+});
+
+it('reserves a delivery from the lot held in stock', function () {
+    InventoryHelper::trackLots($this->warehouse->outType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+    $lot = InventoryHelper::lot($product, 'LOT-A');
+
+    InventoryHelper::stockUp($product, $this->stock, 10, $lot->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect($move->state)->toBe(MoveState::ASSIGNED)
+        ->and($move->lines)->toHaveCount(1)
+        ->and($move->lines->first()->lot_id)->toBe($lot->id);
+});
+
+it('draws from two lots in receipt order when one lot is not enough', function () {
+    InventoryHelper::trackLots($this->warehouse->outType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+    $first = InventoryHelper::lot($product, 'LOT-A');
+    $second = InventoryHelper::lot($product, 'LOT-B');
+
+    InventoryHelper::stockUp($product, $this->stock, 5, $first->id);
+    InventoryHelper::stockUp($product, $this->stock, 5, $second->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$product, 8]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first()->refresh();
+
+    expect($move->state)->toBe(MoveState::ASSIGNED)
+        ->and($move->lines)->toHaveCount(2)
+        ->and($move->lines->pluck('lot_id')->all())->toBe([$first->id, $second->id])
+        ->and($move->lines->pluck('qty')->map(fn ($qty) => (float) $qty)->all())->toBe([5.0, 3.0]);
+});
+
+it('removes only the delivered lot quantity from stock', function () {
+    InventoryHelper::trackLots($this->warehouse->outType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+    $lot = InventoryHelper::lot($product, 'LOT-A');
+
+    InventoryHelper::stockUp($product, $this->stock, 10, $lot->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$product, 4]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    $quant = InventoryHelper::quantOf($product, $this->stock, $lot->id);
+
+    expect((float) $quant->quantity)->toBe(6.0)
+        ->and((float) $quant->reserved_quantity)->toBe(0.0);
+});
+
+it('creates one move line per serial number on a delivery', function () {
+    InventoryHelper::trackLots($this->warehouse->outType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+    $first = InventoryHelper::lot($product, 'SN-1');
+    $second = InventoryHelper::lot($product, 'SN-2');
+
+    InventoryHelper::stockUp($product, $this->stock, 1, $first->id);
+    InventoryHelper::stockUp($product, $this->stock, 1, $second->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$product, 2]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first()->refresh();
+
+    expect($move->state)->toBe(MoveState::ASSIGNED)
+        ->and($move->lines)->toHaveCount(2)
+        ->and(InventoryHelper::lineQuantities($move))->toBe([1.0, 1.0])
+        ->and($move->lines->pluck('lot_id')->all())->toBe([$first->id, $second->id]);
+});
+
+it('never reserves a fractional quantity of a serial tracked product', function () {
+    InventoryHelper::trackLots($this->warehouse->outType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+    $lot = InventoryHelper::lot($product, 'SN-1');
+
+    InventoryHelper::stockUp($product, $this->stock, 1, $lot->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$product, 0.5]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect((float) $move->quantity)->toBe(0.0)
+        ->and($move->lines)->toHaveCount(0);
+});
+
+it('packs an entire disposable package into a package level on confirm', function () {
+    $package = InventoryHelper::package(PackageUse::DISPOSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh();
+    $line = $operation->moves->first()->lines->first();
+
+    expect($operation->packageLevels)->toHaveCount(1)
+        ->and($line->package_id)->toBe($package->id)
+        ->and($line->package_level_id)->not->toBeNull()
+        ->and($line->result_package_id)->toBe($package->id);
+});
+
+it('packs an entire reusable package without setting a result package', function () {
+    $package = InventoryHelper::package(PackageUse::REUSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh();
+    $line = $operation->moves->first()->lines->first();
+
+    expect($operation->packageLevels)->toHaveCount(1)
+        ->and($line->package_level_id)->not->toBeNull()
+        ->and($line->result_package_id)->toBeNull();
+});
+
+it('does not pack a package when only part of it is moved', function () {
+    $package = InventoryHelper::package(PackageUse::DISPOSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 4]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh();
+    $line = $operation->moves->first()->lines->first();
+
+    expect($operation->packageLevels)->toHaveCount(0)
+        ->and($line->package_id)->toBe($package->id)
+        ->and($line->package_level_id)->toBeNull()
+        ->and($line->result_package_id)->toBeNull();
+});
+
+it('takes the goods out of the package when a partial package is delivered', function () {
+    $package = InventoryHelper::package(PackageUse::DISPOSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 4]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(6.0);
+
+    $customer = $operation->refresh()->destinationLocation;
+
+    expect(InventoryHelper::onHand($this->product, $customer))->toBe(4.0);
+});
+
+it('packs an entire untyped package into a package level', function () {
+    $package = InventoryHelper::package(PackageUse::DISPOSABLE, $this->stock, typed: false);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh();
+    $line = $operation->moves->first()->lines->first();
+
+    expect($package->package_type_id)->toBeNull()
+        ->and($operation->packageLevels)->toHaveCount(1)
+        ->and($line->package_id)->toBe($package->id)
+        ->and($line->package_level_id)->not->toBeNull()
+        ->and($line->result_package_id)->toBe($package->id);
 });

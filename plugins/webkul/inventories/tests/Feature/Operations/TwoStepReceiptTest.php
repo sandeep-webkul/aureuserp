@@ -347,3 +347,97 @@ it('pushes a dozen received as twelve units through to storage', function () {
     expect(InventoryHelper::onHand($this->product, $this->input))->toBe(12.0)
         ->and((float) storageOperation($this->warehouse)->moves->first()->product_qty)->toBe(12.0);
 });
+
+it('creates the lot at the receipt leg and carries it into stock through storage', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A'])
+        ->and(InventoryHelper::onHand($product, $this->input))->toBe(10.0);
+
+    $storage = storageOperation($this->warehouse);
+    $storageLine = $storage->moves->first()->lines->first();
+
+    expect($storageLine->lot_id)->not->toBeNull();
+
+    Inventory::doneTransfer($storage->refresh());
+
+    $stockQuant = InventoryHelper::quantOf($product, $this->stock, $storageLine->lot_id);
+
+    expect(InventoryHelper::onHand($product, $this->input))->toBe(0.0)
+        ->and((float) $stockQuant->quantity)->toBe(10.0);
+});
+
+it('keeps two lots apart as they flow through the storage leg into stock', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::lotTrackedProduct();
+
+    foreach (['LOT-A' => 10, 'LOT-B' => 4] as $name => $qty) {
+        $operation = InventoryHelper::receipt($this->warehouse, [[$product, $qty]]);
+
+        Inventory::confirmTransfer($operation);
+
+        InventoryHelper::nameLines($operation->refresh()->moves->first(), [$name]);
+
+        Inventory::doneTransfer($operation->refresh());
+    }
+
+    Operation::query()
+        ->where('operation_type_id', $this->warehouse->store_type_id)
+        ->get()
+        ->each(fn ($storage) => Inventory::doneTransfer($storage->refresh()));
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A', 'LOT-B'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(14.0)
+        ->and(InventoryHelper::onHand($product, $this->input))->toBe(0.0);
+});
+
+it('explodes a serial tracked receipt leg into one move line per unit', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 3]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect($move->lines)->toHaveCount(3)
+        ->and(InventoryHelper::lineQuantities($move))->toBe([1.0, 1.0, 1.0]);
+});
+
+it('stores each serial number in stock through the whole chain', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+    InventoryHelper::trackLots($this->warehouse->storeType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 3]]);
+
+    Inventory::confirmTransfer($operation);
+
+    InventoryHelper::nameLines($operation->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
+
+    Inventory::doneTransfer($operation->refresh());
+
+    $storage = storageOperation($this->warehouse);
+
+    expect($storage->moves->first()->lines)->toHaveCount(3);
+
+    Inventory::doneTransfer($storage->refresh());
+
+    expect(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0)
+        ->and(InventoryHelper::onHand($product, $this->input))->toBe(0.0);
+});

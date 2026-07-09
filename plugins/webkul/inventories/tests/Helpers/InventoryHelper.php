@@ -6,11 +6,17 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\PackageUse;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Models\Location;
+use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Package;
+use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
@@ -158,6 +164,65 @@ class InventoryHelper
         $move->update(['quantity' => $quantity]);
 
         return $move->refresh();
+    }
+
+    public static function lotTrackedProduct(array $overrides = []): Product
+    {
+        return static::product(array_merge(['tracking' => ProductTracking::LOT], $overrides));
+    }
+
+    public static function serialTrackedProduct(array $overrides = []): Product
+    {
+        return static::product(array_merge(['tracking' => ProductTracking::SERIAL], $overrides));
+    }
+
+    public static function trackLots(OperationType $operationType, bool $create = true, bool $existing = true): OperationType
+    {
+        $operationType->update([
+            'use_create_lots'   => $create,
+            'use_existing_lots' => $existing,
+        ]);
+
+        return $operationType->refresh();
+    }
+
+    public static function lot(Product $product, string $name): Lot
+    {
+        return Lot::create([
+            'name'       => $name,
+            'product_id' => $product->id,
+            'company_id' => static::company()->id,
+        ]);
+    }
+
+    public static function nameLines(Move $move, array $names): void
+    {
+        $move->refresh()->lines->values()->each(function (MoveLine $line, int $index) use ($names) {
+            if (! array_key_exists($index, $names)) {
+                return;
+            }
+
+            $line->update(['lot_name' => $names[$index]]);
+        });
+    }
+
+    public static function package(PackageUse $use = PackageUse::DISPOSABLE, ?Location $location = null, bool $typed = true): Package
+    {
+        return Package::factory()->create([
+            'package_use'     => $use,
+            'location_id'     => $location?->id,
+            'package_type_id' => $typed ? PackageType::factory() : null,
+            'company_id'      => static::company()->id,
+        ]);
+    }
+
+    public static function lotsOf(Product $product): array
+    {
+        return Lot::query()
+            ->where('product_id', $product->id)
+            ->orderBy('id')
+            ->pluck('name')
+            ->all();
     }
 
     public static function operationCount(Warehouse $warehouse): int
