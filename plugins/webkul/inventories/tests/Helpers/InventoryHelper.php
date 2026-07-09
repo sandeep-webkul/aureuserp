@@ -98,7 +98,7 @@ class InventoryHelper
         ?int $lotId = null,
         ?int $packageId = null,
     ): ProductQuantity {
-        return ProductQuantity::create([
+        return ProductQuantity::factory()->create([
             'product_id'        => $product->id,
             'location_id'       => $location->id,
             'lot_id'            => $lotId,
@@ -112,7 +112,7 @@ class InventoryHelper
 
     public static function operation(OperationType $operationType, array $lines): Operation
     {
-        $operation = Operation::create([
+        $operation = Operation::factory()->create([
             'operation_type_id'       => $operationType->id,
             'source_location_id'      => $operationType->source_location_id,
             'destination_location_id' => $operationType->destination_location_id,
@@ -127,13 +127,11 @@ class InventoryHelper
 
             $uom = $line[2] ?? null;
 
-            Move::create([
+            Move::factory()->demand($demand, $uom)->create([
                 'name'                    => $product->name,
                 'state'                   => MoveState::DRAFT,
                 'product_id'              => $product->id,
                 'uom_id'                  => $uom?->id ?? $product->uom_id,
-                'product_uom_qty'         => $demand,
-                'quantity'                => 0,
                 'operation_id'            => $operation->id,
                 'operation_type_id'       => $operationType->id,
                 'source_location_id'      => $operation->source_location_id,
@@ -188,9 +186,10 @@ class InventoryHelper
 
     public static function lot(Product $product, string $name): Lot
     {
-        return Lot::create([
+        return Lot::factory()->create([
             'name'       => $name,
             'product_id' => $product->id,
+            'uom_id'     => $product->uom_id,
             'company_id' => static::company()->id,
         ]);
     }

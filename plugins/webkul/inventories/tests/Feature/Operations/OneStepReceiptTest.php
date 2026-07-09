@@ -25,12 +25,10 @@ afterEach(fn () => Move::$globalContext = []);
 
 function addMoveTo(Operation $operation, $product, float $demand): Move
 {
-    return Move::create([
+    return Move::factory()->demand($demand)->create([
         'name'                    => $product->name,
         'product_id'              => $product->id,
         'uom_id'                  => $product->uom_id,
-        'product_uom_qty'         => $demand,
-        'quantity'                => 0,
         'operation_id'            => $operation->id,
         'operation_type_id'       => $operation->operation_type_id,
         'source_location_id'      => $operation->source_location_id,
