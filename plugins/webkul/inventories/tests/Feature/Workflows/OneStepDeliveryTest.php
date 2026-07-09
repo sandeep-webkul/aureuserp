@@ -365,8 +365,9 @@ it('refuses to unreserve a done move that was never picked', function () {
         ->forceFill(['state' => MoveState::DONE, 'is_picked' => false])
         ->saveQuietly();
 
-    Inventory::unreserveMoves($operation->refresh()->moves);
-})->throws(Exception::class);
+    expect(fn () => Inventory::unreserveMoves($operation->refresh()->moves))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.unreserve-move.already-done'));
+});
 
 it('creates a backorder for the unpicked remainder', function () {
     $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10, 6);
@@ -456,8 +457,9 @@ it('refuses to validate a delivery with no picked quantity', function () {
 
     InventoryHelper::pick($operation->moves->first(), 0);
 
-    Inventory::doneTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.no-quantities-reserved.body'));
+});
 
 it('cancels a draft delivery', function () {
     $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
@@ -511,8 +513,9 @@ it('cancels every move of a multi product delivery', function () {
 it('refuses to cancel a delivery that is already done', function () {
     $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::cancelTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::cancelTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.cancel-move.already-done'));
+});
 
 it('leaves a cancelled delivery cancelled when cancelled again', function () {
     $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
@@ -853,8 +856,9 @@ it('reserves more when the delivery move line quantity is increased and stock is
 it('refuses to set a negative reserved quantity on the delivery move line', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    $operation->moves->first()->lines->first()->update(['qty' => -1]);
-})->throws(Exception::class);
+    expect(fn () => $operation->moves->first()->lines->first()->update(['qty' => -1]))
+        ->toThrow(Exception::class, __('inventories::system.move-line.negative-quantity-not-allowed'));
+});
 
 it('releases the reservation when a reserved delivery move line is deleted', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
@@ -979,4 +983,23 @@ it('reserves the product uom equivalent when the delivery demand is in dozens', 
     Inventory::doneTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
+});
+
+it('throws when only part of a source package is moved while keeping the same result package', function () {
+    $package = InventoryHelper::package(PackageUse::REUSABLE, $this->stock, typed: false);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 5]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    $move->lines->first()->update(['result_package_id' => $package->id]);
+
+    InventoryHelper::pick($move, 5);
+
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.partial-package.body'));
 });

@@ -59,7 +59,7 @@ it('records an inventory move from stock into the adjustment location on a negat
 });
 
 it('resets the inventory difference quantity to zero after applying', function () {
-    $quant = InventoryHelper::stockUp($this->product, $this->stock, 0);
+    $quant = InventoryHelper::stockUp($this->product, $this->stock, 4);
 
     InventoryHelper::applyInventoryAdjustment($quant, 10);
 
@@ -82,7 +82,7 @@ it('does not create an inventory move when a quant is simply stocked up', functi
 });
 
 it('leaves the counterpart quantity at the adjustment location', function () {
-    $quant = InventoryHelper::stockUp($this->product, $this->stock, 0);
+    $quant = InventoryHelper::stockUp($this->product, $this->stock, 4);
 
     InventoryHelper::applyInventoryAdjustment($quant, 10);
 

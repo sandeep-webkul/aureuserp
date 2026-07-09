@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Support\Str;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\ProductQuantity;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -235,8 +237,9 @@ it('cancels a confirmed receipt and stocks nothing', function () {
 it('refuses to cancel a receipt that is already done', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
-    Inventory::cancelTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::cancelTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.cancel-move.already-done'));
+});
 
 it('leaves a cancelled receipt cancelled when cancelled again', function () {
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
@@ -429,8 +432,9 @@ it('refuses to validate a lot tracked receipt when no lot name is given', functi
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.validate.missing-lot-serial-number'), ':'));
+});
 
 it('creates the lot named on the move line when the receipt is validated', function () {
     InventoryHelper::trackLots($this->warehouse->inType);
@@ -592,4 +596,89 @@ it('forces a manually added move to done when the receipt is already done', func
 
     expect($move->additional)->toBeTrue()
         ->and($move->state)->toBe(MoveState::DONE);
+});
+
+it('throws when splitting a draft move', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    expect(fn () => $operation->moves->first()->split(5))
+        ->toThrow(Exception::class, __('inventories::system.move.split-draft'));
+});
+
+it('throws when splitting a validated move', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    expect(fn () => $operation->refresh()->moves->first()->split(5))
+        ->toThrow(Exception::class, __('inventories::system.move.split-done-or-cancel'));
+});
+
+it('throws when checking availability on an operation with no moves', function () {
+    $operation = InventoryHelper::operation($this->warehouse->inType, []);
+
+    expect(fn () => Inventory::assignTransfer($operation))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.check-availability.no-moves'));
+});
+
+it('throws when reserving without a quantity', function () {
+    expect(fn () => ProductQuantity::updateReservedQuantity(
+        product: $this->product,
+        location: $this->stock,
+        quantity: 0,
+    ))->toThrow(Exception::class, __('inventories::system.product-quantity.quantity-not-set'));
+});
+
+it('throws when the same serial number is assigned to two move lines', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = InventoryHelper::serialTrackedProduct();
+
+    $lot = InventoryHelper::lot($product, 'SN-1');
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 2]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh()->moves->first()->lines->each(fn ($line) => $line->update(['lot_id' => $lot->id]));
+
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.move.serial-already-assigned'), ':'));
+});
+
+it('throws when validating a move line with a negative done quantity', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    $move->update(['quantity' => 10]);
+
+    $move->refresh()->lines->first()->forceFill(['qty' => -1])->saveQuietly();
+
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.validate.no-negative-quantities'));
+});
+
+it('throws when a move line quantity violates the unit rounding precision', function () {
+    $category = Webkul\Support\Models\UOMCategory::factory()->create();
+
+    $uom = Webkul\Support\Models\UOM::factory()->reference()->create([
+        'rounding'    => 1.0,
+        'category_id' => $category->id,
+    ]);
+
+    $product = InventoryHelper::product(['uom_id' => $uom->id, 'uom_po_id' => $uom->id]);
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $move = $operation->refresh()->moves->first();
+
+    $move->update(['quantity' => 10]);
+
+    $move->refresh()->lines->first()->forceFill(['qty' => 0.5])->saveQuietly();
+
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.validate.quantity-rounding-mismatch'), ':'));
 });

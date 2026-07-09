@@ -319,8 +319,9 @@ it('refuses to validate the pick leg with no picked quantity', function () {
 
     InventoryHelper::pick($operation->moves->first(), 0);
 
-    Inventory::doneTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.no-quantities-reserved.body'));
+});
 
 it('cancels the pick leg and pushes nothing', function () {
     $operation = confirmedThreeStepPick($this->warehouse, $this->product, 10, 10);

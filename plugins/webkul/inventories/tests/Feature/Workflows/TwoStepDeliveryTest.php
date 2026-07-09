@@ -264,8 +264,9 @@ it('refuses to validate the pick leg with no picked quantity', function () {
 
     InventoryHelper::pick($operation->moves->first(), 0);
 
-    Inventory::doneTransfer($operation->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+        ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.no-quantities-reserved.body'));
+});
 
 it('cancels the pick leg and pushes nothing', function () {
     $operation = confirmedPick($this->warehouse, $this->product, 10, 10);
@@ -304,8 +305,9 @@ it('refuses to cancel the ship leg once it is done', function () {
 
     Inventory::doneTransfer($ship->refresh());
 
-    Inventory::cancelTransfer($ship->refresh());
-})->throws(Exception::class);
+    expect(fn () => Inventory::cancelTransfer($ship->refresh()))
+        ->toThrow(Exception::class, __('inventories::system.inventory-manager.cancel-move.already-done'));
+});
 
 it('unreserves the pick move and drops it back to confirmed', function () {
     $operation = confirmedPick($this->warehouse, $this->product, 10, 10);
