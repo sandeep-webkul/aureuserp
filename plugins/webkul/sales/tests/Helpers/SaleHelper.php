@@ -13,16 +13,16 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
-use Webkul\Purchase\Enums\OrderState;
-use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
-use Webkul\Purchase\Models\Order;
-use Webkul\Purchase\Models\OrderLine;
+use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
+use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderLine;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 
-class PurchaseHelper
+class SaleHelper
 {
     public static function company(): Company
     {
@@ -77,7 +77,7 @@ class PurchaseHelper
             'amount'                 => $amount,
             'amount_type'            => $amountType,
             'price_include_override' => $include,
-            'type_tax_use'           => TypeTaxUse::PURCHASE,
+            'type_tax_use'           => TypeTaxUse::SALE,
             'is_base_affected'       => $isBaseAffected,
             'include_base_amount'    => $includeBaseAmount,
             'sort'                   => $sort,
@@ -98,17 +98,17 @@ class PurchaseHelper
     public static function line(Order $order, Product $product, float $qty, float $priceUnit, float $discount = 0, array $taxes = []): OrderLine
     {
         $line = OrderLine::factory()->create([
-            'order_id'     => $order->id,
-            'state'        => $order->state,
-            'product_id'   => $product->id,
-            'uom_id'       => $product->uom_id,
-            'product_qty'  => $qty,
+            'order_id'        => $order->id,
+            'state'           => $order->state,
+            'product_id'      => $product->id,
+            'product_uom_id'  => $product->uom_id,
             'product_uom_qty' => $qty,
-            'price_unit'   => $priceUnit,
-            'discount'     => $discount,
-            'partner_id'   => $order->partner_id,
-            'currency_id'  => $order->currency_id,
-            'company_id'   => static::company()->id,
+            'product_qty'     => $qty,
+            'price_unit'      => $priceUnit,
+            'discount'        => $discount,
+            'customer_lead'   => 0,
+            'currency_id'     => $order->currency_id,
+            'company_id'      => static::company()->id,
         ]);
 
         if ($taxes) {
@@ -120,63 +120,84 @@ class PurchaseHelper
 
     public static function compute(Order $order): Order
     {
-        return PurchaseOrderFacade::computePurchaseOrder($order->refresh());
+        return SaleOrderFacade::computeSaleOrder($order->refresh());
+    }
+
+    public static function setLineQty(OrderLine $line, float $qty): void
+    {
+        $line->update([
+            'product_uom_qty' => $qty,
+            'product_qty'     => $qty,
+        ]);
     }
 
     public static function confirmedOrder(Warehouse $warehouse, Product $product, float $qty, float $price = 100): Order
     {
-        $order = static::order(['operation_type_id' => $warehouse->in_type_id]);
+        \Webkul\Inventory\Models\ProductQuantity::factory()->create([
+            'product_id'        => $product->id,
+            'location_id'       => $warehouse->lot_stock_location_id,
+            'quantity'          => $qty,
+            'reserved_quantity' => 0,
+            'incoming_at'       => now(),
+            'company_id'        => static::company()->id,
+        ]);
+
+        $order = static::order(['warehouse_id' => $warehouse->id]);
 
         static::line($order, $product, $qty, $price);
 
-        return PurchaseOrderFacade::confirmPurchaseOrder($order->refresh())->load('operations.moves', 'lines');
+        return SaleOrderFacade::confirmSaleOrder($order->refresh())->load('operations.moves', 'lines');
     }
 
-    public static function vendorReceipt(Order $order): ?Operation
+    public static function customerDelivery(Order $order): ?Operation
     {
         return $order->operations()->get()
             ->first(fn (Operation $op) => $op->moves
-                ->contains(fn ($move) => $move->sourceLocation?->type === LocationType::SUPPLIER));
+                ->contains(fn ($move) => $move->destinationLocation?->type === LocationType::CUSTOMER));
     }
 
-    public static function readyReceipt(Order $order): ?Operation
+    public static function deliverNextLeg(Order $order): ?Operation
     {
         $order->load('operations.moves');
 
-        return $order->operations
+        $ready = $order->operations
             ->first(fn (Operation $op) => ! in_array($op->state, [OperationState::DONE, OperationState::CANCELED])
-                && $op->moves->contains(fn ($move) => ! in_array($move->state, [MoveState::DONE, MoveState::CANCELED, MoveState::DRAFT])));
-    }
+                && $op->moves->contains(fn ($move) => in_array($move->state, [MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])));
 
-    public static function receiveNextLeg(Order $order): ?Operation
-    {
-        $leg = static::readyReceipt($order);
-
-        if ($leg) {
-            Inventory::doneTransfer($leg->refresh());
+        if ($ready) {
+            Inventory::doneTransfer($ready->refresh());
         }
 
-        return $leg;
+        return $ready;
     }
 
-    public static function receiveChain(Order $order): void
+    public static function deliverChain(Order $order): void
     {
         for ($i = 0; $i < 6; $i++) {
-            if (! static::receiveNextLeg($order)) {
+            if (! static::deliverNextLeg($order)) {
                 break;
             }
         }
     }
 
-    public static function partialReceive(Order $order, float $qty): ?Operation
+    public static function readyLeg(Order $order): ?Operation
     {
-        $leg = static::readyReceipt($order);
+        $order->load('operations.moves');
+
+        return $order->operations
+            ->first(fn (Operation $op) => ! in_array($op->state, [OperationState::DONE, OperationState::CANCELED])
+                && $op->moves->contains(fn ($move) => in_array($move->state, [MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])));
+    }
+
+    public static function partialDeliver(Order $order, float $qty): ?Operation
+    {
+        $leg = static::readyLeg($order);
 
         if (! $leg) {
             return null;
         }
 
-        $leg->moves->first()->update(['quantity' => $qty]);
+        InventoryHelper::pick($leg->moves->first(), $qty);
 
         Inventory::doneTransfer($leg->refresh());
 

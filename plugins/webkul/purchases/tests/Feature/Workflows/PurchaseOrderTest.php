@@ -465,3 +465,63 @@ it('converts the company-currency total using the order currency rate', function
     expect((float) $order->total_amount)->toBe(200.0)
         ->and((float) $order->total_cc_amount)->toBe(100.0);
 });
+
+it('backorders the unreceived remainder and marks the receipt partial', function () {
+    $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
+
+    PurchaseHelper::partialReceive($order, 6);
+
+    $order->refresh()->load('operations.moves');
+
+    expect((float) $order->lines->first()->qty_received)->toBe(6.0)
+        ->and($order->refresh()->receipt_status)->toBe(Webkul\Purchase\Enums\OrderReceiptStatus::PARTIAL);
+
+    $backorder = $order->operations->first(fn ($op) => $op->state !== OperationState::DONE);
+
+    expect($backorder)->not->toBeNull()
+        ->and((float) $backorder->moves->sum(fn ($m) => (float) $m->product_uom_qty))->toBe(4.0);
+});
+
+it('merges the change into a single open move when the quantity is decreased before receipt', function () {
+    $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
+
+    $order->lines->first()->update(['product_qty' => 7]);
+
+    $order->refresh()->load('operations.moves');
+
+    $openMoves = $order->operations
+        ->flatMap->moves
+        ->filter(fn ($move) => $move->state !== MoveState::CANCELED);
+
+    expect($openMoves)->toHaveCount(1)
+        ->and((float) $openMoves->first()->product_uom_qty)->toBe(7.0);
+});
+
+it('adds a move for a new order line appended to a confirmed purchase order', function () {
+    $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
+
+    $product2 = PurchaseHelper::product();
+
+    $line2 = PurchaseHelper::line($order->refresh(), $product2, qty: 5, priceUnit: 100);
+
+    $move = Webkul\Inventory\Models\Move::where('purchase_order_line_id', $line2->id)->first();
+
+    expect($move)->not->toBeNull()
+        ->and((float) $move->product_uom_qty)->toBe(5.0)
+        ->and($order->refresh()->operations->pluck('id'))->toContain($move->operation_id);
+});
+
+it('handles a quantity change after a receipt has been returned', function () {
+    $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
+
+    Inventory::doneTransfer($order->operations->first()->refresh());
+
+    $receipt = $order->refresh()->operations->first();
+    $return = Inventory::returnTransfer($receipt, [$receipt->moves->first()->id => 4]);
+
+    Inventory::doneTransfer($return->refresh());
+
+    $order->refresh()->lines->first()->update(['product_qty' => 12]);
+
+    expect((float) $order->refresh()->lines->first()->qty_received)->toBe(6.0);
+});

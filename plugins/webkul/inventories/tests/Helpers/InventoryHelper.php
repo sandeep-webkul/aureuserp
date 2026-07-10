@@ -292,7 +292,7 @@ class InventoryHelper
     }
 
     public static function stockUp(
-        Product $product,
+        \Webkul\Product\Models\Product $product,
         Location $location,
         float $quantity,
         ?int $lotId = null,

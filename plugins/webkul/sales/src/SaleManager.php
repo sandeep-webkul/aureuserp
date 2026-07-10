@@ -718,12 +718,12 @@ class SaleManager
                     ! $move->origin_returned_move_id
                     || (
                         $move->origin_returned_move_id
-                        && $move->to_refund
+                        && $move->is_refund
                     )
                 ) {
                     $outgoingMoveIds[] = $move->id;
                 }
-            } elseif ($move->sourceLocation == InventoryEnums\LocationType::CUSTOMER && $move->is_refund) {
+            } elseif ($move->sourceLocation->type == InventoryEnums\LocationType::CUSTOMER && $move->is_refund) {
                 $incomingMoveIds[] = $move->id;
             }
         }
@@ -805,6 +805,11 @@ class SaleManager
             return;
         }
 
-        $record->operations->each(fn ($operation) => InventoryFacade::cancelTransfer($operation));
+        $record->operations
+            ->filter(fn ($operation) => ! in_array($operation->state, [
+                InventoryEnums\OperationState::DONE,
+                InventoryEnums\OperationState::CANCELED,
+            ]))
+            ->each(fn ($operation) => InventoryFacade::cancelTransfer($operation));
     }
 }
