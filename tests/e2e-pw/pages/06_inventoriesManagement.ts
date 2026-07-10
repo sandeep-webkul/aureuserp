@@ -1519,10 +1519,34 @@ export class InventoriesManagementPage {
      * Open the "Manage Stock Moves" modal on the move at `rowIndex` and route the
      * line's stock into the given destination package.
      */
-    private async setResultPackageOnMove(packageName: string, rowIndex = 0) {
+    /**
+     * Route a move's stock into a destination package, picking the move by its product.
+     * The moves repeater does not render its rows in sale-order line order, so a
+     * multi-line operation must be addressed by product rather than by row index.
+     */
+    async setResultPackageForProduct(packageName: string, productName: string) {
+        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        await expect(row).toBeVisible({ timeout: 15000 });
+
+        const trigger = row.locator('button[wire\\:click*="manageLines"]').first();
+        await trigger.click({ timeout: 15000 });
+
+        await this.selectResultPackageInOpenMoveLinesModal(packageName);
+    }
+
+    /**
+     * Route a move's stock into a destination package through the Manage Stock Moves
+     * modal. On a delivery the line's "Pick From" is already resolved by the
+     * reservation, so only the package has to be chosen.
+     */
+    async setResultPackageOnMove(packageName: string, rowIndex = 0) {
+        await this.erpLocators.inventoryMoveManageLinesAction.nth(rowIndex).click({ timeout: 15000 });
+        await this.selectResultPackageInOpenMoveLinesModal(packageName);
+    }
+
+    private async selectResultPackageInOpenMoveLinesModal(packageName: string) {
         const l = this.erpLocators;
 
-        await l.inventoryMoveManageLinesAction.nth(rowIndex).click({ timeout: 15000 });
         await expect(l.inventoryMoveLinesModal).toBeVisible();
 
         await this.selectFromFilamentDropdown(l.inventoryMoveLinesResultPackageSelect, packageName);
@@ -2017,6 +2041,16 @@ export class InventoriesManagementPage {
     /**
      * Assert the current operation lists a move for the product at the given quantity.
      */
+    /**
+     * Assert the Demand of a move row on the currently-open operation. Demand renders as a
+     * numeric input, so it is read off the field rather than the row's text.
+     */
+    async expectOperationMoveDemand(demand: string, rowIndex = 0) {
+        const input = this.erpLocators.inventoryOperationMoveDemandInput.nth(rowIndex);
+        await expect(input).toBeVisible({ timeout: 15000 });
+        await expect(input).toHaveValue(new RegExp(`^${demand}(\\.0+)?$`));
+    }
+
     async expectCurrentOperationMoveQuantity(productName: string, quantity: string) {
         const row = this.page.getByRole("row").filter({ hasText: productName }).first();
         await expect(row).toBeVisible();
@@ -2162,10 +2196,19 @@ export class InventoriesManagementPage {
     }
 
     /**
-     * Open a package from the list and land on its "Products" sub-page.
+     * Open a package from the list and land on its "Products" sub-page. The list defaults
+     * to an "Internal Locations" view, which hides a package once a delivery has shipped
+     * it to the customer, so switch to the unfiltered "Default" view first.
      */
     async gotoPackageProductsTab(packageName: string) {
         await this.gotoPackagesPage();
+
+        const defaultView = this.erpLocators.inventoryPackageDefaultViewTab;
+        if (await defaultView.isVisible().catch(() => false)) {
+            await defaultView.click();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        }
+
         await this.searchList(packageName);
         const link = this.erpLocators.inventoryTableRows.locator("a").filter({ hasText: packageName }).first();
         await expect(link).toBeVisible();

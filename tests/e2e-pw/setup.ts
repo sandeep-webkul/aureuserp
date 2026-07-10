@@ -37,7 +37,8 @@ async function createAdminSession(browser: Browser): Promise<AdminSession> {
         return { context, page };
     }
 
-    await page.goto("/admin/dashboard");
+    await page.goto("/admin");
+    await page.waitForLoadState("domcontentloaded").catch(() => undefined);
 
     if (page.url().includes("admin/login")) {
         await loginAsAdmin(page);

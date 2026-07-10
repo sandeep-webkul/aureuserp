@@ -9,16 +9,30 @@ export type SalesCustomerData = {
 
 export type InvoicePolicy = "order" | "delivery";
 
+export type ProductTracking = "qty" | "lot" | "serial";
+
 export type SalesProductData = {
     name: string;
     price: string;
     invoicePolicy?: InvoicePolicy;
+    tracking?: ProductTracking;
+};
+
+export type SalesQuotationLine = {
+    productName: string;
+    quantity: string;
 };
 
 export type SalesQuotationData = {
     customerName: string;
     productName: string;
     quantity: string;
+};
+
+export type SalesOrderData = {
+    customerName: string;
+    lines: SalesQuotationLine[];
+    warehouseName?: string;
 };
 
 export class SalesFlowPage {
@@ -36,8 +50,31 @@ export class SalesFlowPage {
         await pluginPage.installPluginByName("Sales");
     }
 
+    /**
+     * Navigate, tolerating a navigation that a still-in-flight Livewire redirect aborts.
+     * A test that lands here straight after saving a record on another page (a warehouse,
+     * say) would otherwise fail with net::ERR_ABORTED.
+     */
+    private async safeGoto(url: string) {
+        await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await this.page.goto(url);
+                return;
+            } catch (error) {
+                if (!/ERR_ABORTED/.test((error as Error).message)) {
+                    throw error;
+                }
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await this.page.goto(url);
+    }
+
     async gotoCustomersPage() {
-        await this.page.goto("/admin/sale/orders/customers");
+        await this.safeGoto("/admin/sale/orders/customers");
         await expect(this.page).toHaveURL(/sale\/orders\/customers/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.salesCustomerNewCreateButton).toBeVisible();
@@ -49,13 +86,36 @@ export class SalesFlowPage {
         await this.erpLocators.salesCustomerNewCreateButton.click();
         await expect(this.page).toHaveURL(/customers\/create/);
 
-        await this.erpLocators.salesCustomerNameInput.fill(customer.name);
+        await this.fillWhenReady(this.erpLocators.salesCustomerNameInput, customer.name);
         if (customer.email) {
-            await this.erpLocators.salesCustomerEmailInput.fill(customer.email);
+            await this.fillWhenReady(this.erpLocators.salesCustomerEmailInput, customer.email);
         }
 
-        await this.erpLocators.salesCustomerSaveButton.click();
-        await this.expectSuccessToast();
+        // "Create" redirects off the create form; the reachable outcome is that redirect,
+        // whereas the success toast is torn down by it and cannot be relied on.
+        await this.erpLocators.salesCustomerCreateButton.click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/customers\/create/);
+    }
+
+    /**
+     * Fill a field once its form is done hydrating. Livewire swaps the DOM after an SPA
+     * navigation, which silently discards a value typed into the pre-swap markup, so the
+     * value is read back and retyped if it did not stick.
+     */
+    private async fillWhenReady(input: ReturnType<Page["locator"]>, value: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(input).toBeVisible();
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.fill(value);
+            if ((await input.inputValue()) === value) {
+                return;
+            }
+            await this.page.waitForTimeout(500);
+        }
+
+        await expect(input).toHaveValue(value);
     }
 
     async editCustomer(originalName: string, updates: Partial<SalesCustomerData>) {
@@ -87,7 +147,7 @@ export class SalesFlowPage {
     }
 
     async gotoProductsPage() {
-        await this.page.goto("/admin/sale/products/products");
+        await this.safeGoto("/admin/sale/products/products");
         await expect(this.page).toHaveURL(/sale\/products\/products/);
         await expect(this.erpLocators.salesProductNewCreateButton).toBeVisible();
         await expect(this.erpLocators.salesProductsTable.first()).toBeVisible();
@@ -98,16 +158,25 @@ export class SalesFlowPage {
         await this.erpLocators.salesProductNewCreateButton.click();
         await expect(this.page).toHaveURL(/products\/create/);
 
-        await this.erpLocators.salesProductNameInput.fill(product.name);
-        await this.erpLocators.salesProductPriceInput.fill(product.price);
+        await this.fillWhenReady(this.erpLocators.salesProductNameInput, product.name);
+        await this.fillWhenReady(this.erpLocators.salesProductPriceInput, product.price);
 
         if (product.invoicePolicy) {
             // invoice_policy renders as a native <select>; pick by its option value.
             await this.erpLocators.salesProductInvoicePolicySelect.selectOption(product.invoicePolicy);
         }
 
+        // Products default to storable goods tracked "By Quantity"; only touch Track By
+        // when a lot/serial product is wanted.
+        if (product.tracking && product.tracking !== "qty") {
+            await expect(this.erpLocators.salesProductTrackingSelect).toBeVisible();
+            await this.erpLocators.salesProductTrackingSelect.selectOption(product.tracking);
+            await this.page.waitForTimeout(300);
+        }
+
         await this.erpLocators.salesProductCreateButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/products\/create/);
     }
 
     async editProduct(originalName: string, updates: Partial<SalesProductData>) {
@@ -139,7 +208,7 @@ export class SalesFlowPage {
     }
 
     async gotoQuotationsPage() {
-        await this.page.goto("/admin/sale/orders/quotations");
+        await this.safeGoto("/admin/sale/orders/quotations");
         await expect(this.page).toHaveURL(/sale\/orders\/quotations/);
         await expect(this.erpLocators.salesQuotationCreateButton).toBeVisible();
         await expect(this.erpLocators.salesProductsTable.first()).toBeVisible();
@@ -159,7 +228,57 @@ export class SalesFlowPage {
         await this.erpLocators.salesQuotationQuantityInput.first().fill(quotation.quantity);
 
         await this.erpLocators.salesQuotationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/quotations\/create/);
+    }
+
+    /**
+     * Create a quotation with any number of product lines, optionally shipped from a
+     * non-default warehouse. The warehouse is picked before the lines are added so each
+     * line inherits it, which is what drives the delivery route (1/2/3-step).
+     */
+    async createOrderWithLines(order: SalesOrderData) {
+        const l = this.erpLocators;
+
+        await this.gotoQuotationsPage();
+        await l.salesQuotationCreateButton.click();
+        await expect(this.page).toHaveURL(/quotations\/create/);
+
+        await this.selectBySearch(l.salesQuotationCustomerSelect, order.customerName);
+        await this.selectFirstOption(l.salesQuotationPaymentTermSelect);
+
+        if (order.warehouseName) {
+            await l.salesQuotationOtherInformationTab.click();
+            await expect(l.salesQuotationWarehouseSelect).toBeVisible();
+            await this.selectBySearch(l.salesQuotationWarehouseSelect, order.warehouseName);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await l.salesQuotationOrderLineTab.click();
+        }
+
+        for (let index = 0; index < order.lines.length; index++) {
+            const line = order.lines[index];
+
+            await l.salesQuotationAddProductButton.scrollIntoViewIfNeeded();
+            await l.salesQuotationAddProductButton.click();
+            await this.selectBySearch(l.salesQuotationProductSelectInput.nth(index), line.productName);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await l.salesQuotationQuantityInput.nth(index).fill(line.quantity);
+            await this.page.waitForTimeout(400);
+        }
+
+        await l.salesQuotationSaveButton.click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/quotations\/create/);
+    }
+
+    /**
+     * Assert the sale order's Delivered column for a line, which only moves once the
+     * transfer that reaches the customer location is validated.
+     */
+    async expectDeliveredQuantity(lineIndex: number, quantity: string) {
+        const input = this.erpLocators.salesQuotationDeliveredQuantityInputs.nth(lineIndex);
+        await expect(input).toBeVisible();
+        await expect(input).toHaveValue(new RegExp(`^${quantity}(\\.0+)?$`));
     }
 
     async editQuotationQuantity(searchKey: string, quantity: string) {
@@ -183,17 +302,30 @@ export class SalesFlowPage {
         await this.expectSuccessToast();
     }
 
+    /**
+     * Confirm the open quotation. Confirming redirects the record onto the Order resource,
+     * so the outcome is read from that landing page rather than from the success toast.
+     */
     async confirmQuotation() {
         await this.erpLocators.salesQuotationConfirmButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).toHaveURL(/\/orders\/\d+/);
+        await expect(this.erpLocators.salesQuotationConfirmButton).toHaveCount(0);
     }
 
+    /**
+     * Invoice the order. Submitting the dialog redirects, which can tear the success
+     * toast down before it can be observed, so the outcome is read off the order itself:
+     * with nothing left to invoice the Create Invoice action is gone.
+     */
     async createInvoice() {
         await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toBeVisible();
         await this.erpLocators.salesQuotationCreateInvoiceButton.click();
         await expect(this.erpLocators.salesQuotationInvoiceSubmitButton).toBeVisible();
         await this.erpLocators.salesQuotationInvoiceSubmitButton.click();
-        await this.expectSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toHaveCount(0);
     }
 
     // With the "Ordered Quantities" policy the Create Invoice button is shown as soon as the
@@ -254,17 +386,205 @@ export class SalesFlowPage {
         return id;
     }
 
-    async validateFirstDeliveryForCurrentQuotation() {
-        await this.openDeliveriesForCurrentQuotation();
-        await this.erpLocators.salesQuotationDeliveryEditButton.click();
-        await expect(this.erpLocators.salesDeliveryValidateButton).toBeVisible();
-        await this.erpLocators.salesDeliveryValidateButton.click();
+    /**
+     * Read every operation listed on the sale order's Deliveries tab. A multi-step
+     * warehouse links its whole Pick/Pack/Ship chain to the order, so this returns
+     * one entry per transfer.
+     */
+    async readDeliveryRows(): Promise<Array<{ id: string; reference: string; state: string }>> {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
-        if (await this.erpLocators.salesDeliveryNoBackorderButton.isVisible().catch(() => false)) {
-            await this.erpLocators.salesDeliveryNoBackorderButton.click();
+        const rows = this.erpLocators.salesQuotationDeliveryRows;
+        const total = await rows.count();
+        const entries: Array<{ id: string; reference: string; state: string }> = [];
+
+        for (let index = 0; index < total; index++) {
+            const row = rows.nth(index);
+            const link = row.locator('a[href*="/deliveries/"]').first();
+
+            if (!(await link.count())) {
+                continue;
+            }
+
+            const href = (await link.getAttribute("href")) ?? "";
+            const id = href.match(/\/deliveries\/(\d+)/)?.[1];
+
+            if (!id) {
+                continue;
+            }
+
+            entries.push({
+                id,
+                reference: ((await link.textContent()) ?? "").trim(),
+                state: ((await row.textContent()) ?? "").trim(),
+            });
         }
 
-        await this.expectSuccessToast();
+        return entries;
+    }
+
+    async expectDeliveryCount(count: number) {
+        await this.openDeliveriesForCurrentQuotation();
+        const rows = await this.readDeliveryRows();
+        expect(rows).toHaveLength(count);
+    }
+
+    /**
+     * Assert the operation whose reference matches `reference` shows `state` on the
+     * order's Deliveries tab (Draft / Waiting / Ready / Done).
+     */
+    async expectDeliveryState(reference: string, state: string) {
+        await this.openDeliveriesForCurrentQuotation();
+        const row = this.erpLocators.salesQuotationDeliveryRows
+            .filter({ hasText: new RegExp(this.escapeRegExp(reference)) })
+            .first();
+        await expect(row).toBeVisible();
+        await expect(row).toContainText(new RegExp(state, "i"));
+    }
+
+    /**
+     * Open a delivery of the current order on its edit page, where the Mark as Todo /
+     * Check Availability / Validate / Return header actions live.
+     */
+    async openDeliveryEditPage(deliveryId: string) {
+        const { resource, id } = this.currentRecordRef();
+        await this.page.goto(`/admin/sale/orders/${resource}/${id}/deliveries/${deliveryId}/edit`);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+    }
+
+    /**
+     * Open the order's delivery whose reference contains `part` (e.g. "/PICK/", "/OUT/").
+     */
+    async openDeliveryByReference(part: string): Promise<string> {
+        await this.openDeliveriesForCurrentQuotation();
+        const rows = await this.readDeliveryRows();
+        const match = rows.find((row) => row.reference.includes(part));
+
+        if (!match) {
+            throw new Error(`No delivery matching "${part}". Found: ${rows.map((r) => r.reference).join(", ")}`);
+        }
+
+        await this.openDeliveryEditPage(match.id);
+
+        return match.reference;
+    }
+
+    /**
+     * Open the order's first transfer that has not been validated yet. Used after a back
+     * order is created, where the remaining transfer cannot be addressed by row index —
+     * the deliveries table does not list the transfers in creation order.
+     */
+    async openPendingDelivery(): Promise<string> {
+        await this.openDeliveriesForCurrentQuotation();
+        const rows = await this.readDeliveryRows();
+        const pending = rows.find((row) => !/\bDone\b/i.test(row.state));
+
+        if (!pending) {
+            throw new Error(`Every transfer of this order is already Done: ${rows.map((r) => r.reference).join(", ")}`);
+        }
+
+        await this.openDeliveryEditPage(pending.id);
+
+        return pending.reference;
+    }
+
+    async openDeliveryByIndex(index = 0): Promise<string> {
+        await this.openDeliveriesForCurrentQuotation();
+        const rows = await this.readDeliveryRows();
+
+        if (!rows[index]) {
+            throw new Error(`No delivery at index ${index}; the order has ${rows.length} transfers.`);
+        }
+
+        await this.openDeliveryEditPage(rows[index].id);
+
+        return rows[index].reference;
+    }
+
+    /**
+     * Assert the currently-open operation reached Done. Validate raises no notification,
+     * so the transition is read off the header actions: Validate disappears and the
+     * Return action — only offered on a validated transfer — appears.
+     */
+    async expectOpenDeliveryDone() {
+        await expect(this.erpLocators.salesDeliveryValidateButton).toBeHidden();
+        await expect(this.erpLocators.salesDeliveryReturnButton).toBeVisible();
+    }
+
+    /**
+     * Drive the currently-open delivery to Done. Sale-order deliveries are already
+     * confirmed and reserved at confirm, so Mark as Todo is normally absent; the
+     * backorder prompt is declined when the transfer is short.
+     */
+    async validateOpenDelivery() {
+        const l = this.erpLocators;
+
+        if (await l.salesDeliveryMarkAsTodoButton.isVisible().catch(() => false)) {
+            await l.salesDeliveryMarkAsTodoButton.click();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        }
+
+        if (await l.salesDeliveryCheckAvailabilityButton.isVisible().catch(() => false)) {
+            await l.salesDeliveryCheckAvailabilityButton.click();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        }
+
+        await expect(l.salesDeliveryValidateButton).toBeVisible();
+        await l.salesDeliveryValidateButton.click();
+        await this.page.waitForTimeout(800);
+
+        if (await l.salesDeliveryNoBackorderButton.isVisible().catch(() => false)) {
+            await l.salesDeliveryNoBackorderButton.click();
+        }
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(600);
+        await this.expectOpenDeliveryDone();
+    }
+
+    /**
+     * Validate the open delivery short of its demand and keep the remainder: the
+     * "Create Back Order?" prompt is confirmed, so a second transfer is created for
+     * the undelivered quantity.
+     */
+    async validateOpenDeliveryCreatingBackorder() {
+        const l = this.erpLocators;
+
+        await expect(l.salesDeliveryValidateButton).toBeVisible();
+        await l.salesDeliveryValidateButton.click();
+
+        await expect(l.salesDeliveryBackorderModal).toBeVisible({ timeout: 20000 });
+        await l.salesDeliveryBackorderConfirmButton.click();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+        await this.expectOpenDeliveryDone();
+    }
+
+    /**
+     * Walk the whole transfer chain of a multi-step warehouse (Pick -> Pack -> Ship),
+     * validating each transfer and following the "Next Transfer" header action, which
+     * only appears while a downstream transfer is still open.
+     */
+    async validateDeliveryChain(maxSteps = 3) {
+        for (let step = 0; step < maxSteps; step++) {
+            await this.validateOpenDelivery();
+
+            await this.page.reload().catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (!(await this.erpLocators.salesDeliveryNextTransferButton.isVisible().catch(() => false))) {
+                return;
+            }
+
+            await this.erpLocators.salesDeliveryNextTransferButton.click();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        }
+    }
+
+    async validateFirstDeliveryForCurrentQuotation() {
+        await this.openDeliveryByIndex(0);
+        await this.validateOpenDelivery();
     }
 
     async expectInvoiceRowPresent() {

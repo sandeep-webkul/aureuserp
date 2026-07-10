@@ -111,6 +111,8 @@ export class ErpLocators {
     readonly salesProductCategorySelect: Locator;
     readonly salesProductPriceInput: Locator;
     readonly salesProductInvoicePolicySelect: Locator;
+    readonly salesProductTrackingSelect: Locator;
+    readonly salesQuotationOrderLineTab: Locator;
     readonly salesProductUomSelect: Locator;
     readonly salesProductSaveButton: Locator;
     readonly salesProductCreateButton: Locator;
@@ -134,8 +136,19 @@ export class ErpLocators {
     readonly salesQuotationInvoiceSubmitButton: Locator;
     readonly salesQuotationDeliveriesTable: Locator;
     readonly salesQuotationDeliveryEditButton: Locator;
+    readonly salesQuotationDeliveryRows: Locator;
+    readonly salesQuotationDeliveryReferenceLinks: Locator;
+    readonly salesQuotationWarehouseSelect: Locator;
+    readonly salesQuotationOtherInformationTab: Locator;
+    readonly salesQuotationDeliveredQuantityInputs: Locator;
     readonly salesDeliveryValidateButton: Locator;
+    readonly salesDeliveryMarkAsTodoButton: Locator;
+    readonly salesDeliveryCheckAvailabilityButton: Locator;
     readonly salesDeliveryNoBackorderButton: Locator;
+    readonly salesDeliveryBackorderModal: Locator;
+    readonly salesDeliveryBackorderConfirmButton: Locator;
+    readonly salesDeliveryNextTransferButton: Locator;
+    readonly salesDeliveryReturnButton: Locator;
     readonly salesInvoicesTable: Locator;
 
     readonly salesSearchInput: Locator;
@@ -328,6 +341,7 @@ export class ErpLocators {
     readonly inventoryPackageSaveButton: Locator;
     readonly inventoryPackageTable: Locator;
     readonly inventoryPackageDeleteAction: Locator;
+    readonly inventoryPackageDefaultViewTab: Locator;
 
     readonly inventoryScrapCreateButton: Locator;
     readonly inventoryScrapProductSelect: Locator;
@@ -587,6 +601,9 @@ export class ErpLocators {
         this.salesProductCategorySelect = page.locator('input[id="form.category_id"], [role="combobox"][aria-label*="Category"], [role="combobox"][aria-labelledby*="Category"]').first();
         this.salesProductPriceInput = page.locator('input[id="form.price"]').first();
         this.salesProductInvoicePolicySelect = page.locator('select[id="form.invoice_policy"]').first();
+        // "Track By" only renders once traceability is enabled and the product is storable.
+        this.salesProductTrackingSelect = page.locator('select[id="form.tracking"]').first();
+        this.salesQuotationOrderLineTab = page.getByRole("tab", { name: /Order Line/i }).first();
         this.salesProductUomSelect = page.locator('input[id="form.uom_id"], [role="combobox"][aria-label*="UOM"], [role="combobox"][aria-labelledby*="UOM"]').first();
         this.salesProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
         this.salesProductEditButton = page.getByRole('link', { name: 'Edit' });
@@ -610,8 +627,28 @@ export class ErpLocators {
         this.salesQuotationInvoiceSubmitButton = page.getByRole("dialog").getByRole("button", { name: /^(Submit|Confirm|Create Invoice)$/i }).first();
         this.salesQuotationDeliveriesTable = page.locator("table, div.fi-ta-empty-state");
         this.salesQuotationDeliveryEditButton = page.getByRole('table').getByRole('link', { name: 'Edit' });
+        // The sale order's Deliveries tab lists every operation linked to the order
+        // (Pick, Pack and Ship for multi-step warehouses). Each row's Edit action lives
+        // inside an "Actions" dropdown, so rows are opened through their reference link.
+        this.salesQuotationDeliveryRows = page.locator("table tbody tr");
+        this.salesQuotationDeliveryReferenceLinks = page.locator('table tbody tr a[href*="/deliveries/"]');
+        this.salesQuotationWarehouseSelect = page.locator('[wire\\:key$="form.warehouse_id"] button.fi-select-input-btn').first();
+        this.salesQuotationOtherInformationTab = page.getByRole("tab", { name: /Other Information/i }).first();
+        this.salesQuotationDeliveredQuantityInputs = page.locator('input[id^="form.products."][id$=".qty_delivered"]');
         this.salesDeliveryValidateButton = page.getByRole("button", { name: /Validate/i }).first();
+        this.salesDeliveryMarkAsTodoButton = page.getByRole("button", { name: /Mark as Todo/i }).first();
+        this.salesDeliveryCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
         this.salesDeliveryNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
+        this.salesDeliveryBackorderModal = page.getByRole("heading", { name: /Create Back Order/i }).first();
+        this.salesDeliveryBackorderConfirmButton = page
+            .getByRole("dialog")
+            .filter({ hasText: /Create Back Order/i })
+            .getByRole("button", { name: /^Confirm$/i })
+            .first();
+        // Only rendered while the operation has a downstream transfer still to process.
+        this.salesDeliveryNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
+        // Only rendered once the operation is validated (state Done).
+        this.salesDeliveryReturnButton = page.getByRole("button", { name: /^Return$/i }).first();
         this.salesInvoicesTable = page.locator("table, div.fi-ta-empty-state");
 
         this.salesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
@@ -854,6 +891,9 @@ export class ErpLocators {
         this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
         this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        // The packages list ships with an "Internal Locations" preset view as its default;
+        // "Default" is the unfiltered view that also lists shipped-out packages.
+        this.inventoryPackageDefaultViewTab = page.locator("button,a").filter({ hasText: /^\s*Default\s*$/ }).first();
 
         this.inventoryScrapCreateButton = page.locator("a,button").filter({ hasText: /new scrap|create/i }).first();
         this.inventoryScrapProductSelect = page.locator('[wire\\:key$="form.product_id"] button.fi-select-input-btn').first();
