@@ -33,7 +33,7 @@ export default defineConfig({
     outputDir: "./test-results",
 
     fullyParallel: !!process.env.CI,
-    workers: 4,
+    workers: 1,
 
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 1 : 0,
@@ -43,7 +43,7 @@ export default defineConfig({
     reporter: reporters,
 
     use: {
-        baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8001",
+        baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8000",
         screenshot: { mode: "only-on-failure", fullPage: true },
         video: "retain-on-failure",
         trace: "retain-on-failure",
