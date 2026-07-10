@@ -4,6 +4,7 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\PackageUse;
+use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 
@@ -933,7 +934,7 @@ it('does not resync reservation when a done move line quantity is edited', funct
 });
 
 it('does not auto reserve a delivery when the operation type uses manual reservation', function () {
-    InventoryHelper::setReservationMethod($this->warehouse->outType, \Webkul\Inventory\Enums\ReservationMethod::MANUAL);
+    InventoryHelper::setReservationMethod($this->warehouse->outType, ReservationMethod::MANUAL);
 
     InventoryHelper::stockUp($this->product, $this->stock, 10);
 

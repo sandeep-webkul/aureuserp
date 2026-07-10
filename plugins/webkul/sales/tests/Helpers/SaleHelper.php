@@ -10,6 +10,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
@@ -133,7 +134,7 @@ class SaleHelper
 
     public static function confirmedOrder(Warehouse $warehouse, Product $product, float $qty, float $price = 100): Order
     {
-        \Webkul\Inventory\Models\ProductQuantity::factory()->create([
+        ProductQuantity::factory()->create([
             'product_id'        => $product->id,
             'location_id'       => $warehouse->lot_stock_location_id,
             'quantity'          => $qty,

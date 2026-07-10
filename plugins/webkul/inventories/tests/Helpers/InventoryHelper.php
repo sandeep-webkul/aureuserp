@@ -18,9 +18,11 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Package;
 use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
+use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Models\PutawayRule;
+use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Scrap;
@@ -197,7 +199,7 @@ class InventoryHelper
 
     public static function enableLocations(): void
     {
-        $settings = app(\Webkul\Inventory\Settings\WarehouseSettings::class);
+        $settings = app(WarehouseSettings::class);
 
         $settings->enable_locations = true;
 
@@ -292,7 +294,7 @@ class InventoryHelper
     }
 
     public static function stockUp(
-        \Webkul\Product\Models\Product $product,
+        BaseProduct $product,
         Location $location,
         float $quantity,
         ?int $lotId = null,
@@ -384,7 +386,7 @@ class InventoryHelper
         return $operationType->refresh();
     }
 
-    public static function lot(\Webkul\Product\Models\Product $product, string $name): Lot
+    public static function lot(BaseProduct $product, string $name): Lot
     {
         return Lot::factory()->create([
             'name'       => $name,
@@ -415,7 +417,7 @@ class InventoryHelper
         ]);
     }
 
-    public static function lotsOf(\Webkul\Product\Models\Product $product): array
+    public static function lotsOf(BaseProduct $product): array
     {
         return Lot::query()
             ->where('product_id', $product->id)
@@ -459,7 +461,7 @@ class InventoryHelper
             ->first();
     }
 
-    public static function onHand(\Webkul\Product\Models\Product $product, Location $location): float
+    public static function onHand(BaseProduct $product, Location $location): float
     {
         return (float) ProductQuantity::query()
             ->where('product_id', $product->id)
@@ -467,7 +469,7 @@ class InventoryHelper
             ->sum('quantity');
     }
 
-    public static function reserved(\Webkul\Product\Models\Product $product, Location $location): float
+    public static function reserved(BaseProduct $product, Location $location): float
     {
         return (float) ProductQuantity::query()
             ->where('product_id', $product->id)

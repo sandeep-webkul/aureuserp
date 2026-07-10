@@ -7,6 +7,8 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Models\Move;
+use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
@@ -126,7 +128,7 @@ it('marks the order to-invoice after delivery and invoiced after invoicing', fun
     expect($order->refresh()->invoice_status)->toBe(InvoiceStatus::TO_INVOICE);
 
     SaleOrderFacade::createInvoice($order->refresh(), [
-        'advance_payment_method' => Webkul\Sale\Enums\AdvancedPayment::DELIVERED->value,
+        'advance_payment_method' => AdvancedPayment::DELIVERED->value,
     ]);
 
     expect($order->refresh()->invoice_status)->toBe(InvoiceStatus::INVOICED);
@@ -188,7 +190,7 @@ it('adds a move for a new order line appended to a confirmed sale order', functi
 
     $line2 = SaleHelper::line($order->refresh(), $product2, 4, 100);
 
-    $move = Webkul\Inventory\Models\Move::where('sale_order_line_id', $line2->id)->first();
+    $move = Move::where('sale_order_line_id', $line2->id)->first();
 
     expect($move)->not->toBeNull()
         ->and((float) $move->product_uom_qty)->toBe(4.0)

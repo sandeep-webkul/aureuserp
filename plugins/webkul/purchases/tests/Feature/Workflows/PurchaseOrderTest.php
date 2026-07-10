@@ -7,7 +7,11 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Models\Move;
+use Webkul\Purchase\Enums\OrderInvoiceStatus;
+use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
+use Webkul\Purchase\Enums\QtyReceivedMethod;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -363,7 +367,7 @@ it('uses the manually entered received quantity when the line method is manual',
     $line = PurchaseHelper::line($order, $this->product, qty: 10, priceUnit: 100);
 
     $line->update([
-        'qty_received_method' => Webkul\Purchase\Enums\QtyReceivedMethod::MANUAL,
+        'qty_received_method' => QtyReceivedMethod::MANUAL,
         'qty_received_manual' => 6,
     ]);
 
@@ -377,7 +381,7 @@ it('computes the quantity to invoice as received minus invoiced', function () {
     $line = PurchaseHelper::line($order, $this->product, qty: 10, priceUnit: 100);
 
     $line->update([
-        'qty_received_method' => Webkul\Purchase\Enums\QtyReceivedMethod::MANUAL,
+        'qty_received_method' => QtyReceivedMethod::MANUAL,
         'qty_received_manual' => 6,
     ]);
 
@@ -389,11 +393,11 @@ it('computes the quantity to invoice as received minus invoiced', function () {
 it('marks the receipt status pending after confirmation and full after validation', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    expect($order->refresh()->receipt_status)->toBe(Webkul\Purchase\Enums\OrderReceiptStatus::PENDING);
+    expect($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::PENDING);
 
     Inventory::doneTransfer($order->operations->first()->refresh());
 
-    expect($order->refresh()->receipt_status)->toBe(Webkul\Purchase\Enums\OrderReceiptStatus::FULL);
+    expect($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::FULL);
 });
 
 it('marks the receipt status partial when only some receipts are done', function () {
@@ -405,7 +409,7 @@ it('marks the receipt status partial when only some receipts are done', function
 
     PurchaseHelper::compute($order);
 
-    expect($order->refresh()->receipt_status)->toBe(Webkul\Purchase\Enums\OrderReceiptStatus::PARTIAL);
+    expect($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::PARTIAL);
 });
 
 /*
@@ -420,7 +424,7 @@ it('reports no invoice status while the order is still a draft', function () {
 
     PurchaseHelper::compute($order);
 
-    expect($order->refresh()->invoice_status)->toBe(Webkul\Purchase\Enums\OrderInvoiceStatus::NO);
+    expect($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::NO);
 });
 
 it('marks the order to-invoice after receipt and invoiced after billing', function () {
@@ -428,14 +432,14 @@ it('marks the order to-invoice after receipt and invoiced after billing', functi
 
     Inventory::doneTransfer($order->operations->first()->refresh());
 
-    expect($order->refresh()->invoice_status)->toBe(Webkul\Purchase\Enums\OrderInvoiceStatus::TO_INVOICED);
+    expect($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::TO_INVOICED);
 
     PurchaseOrderFacade::createPurchaseOrderBill($order->refresh());
 
     $order->refresh();
     $line = $order->lines->first();
 
-    expect($order->invoice_status)->toBe(Webkul\Purchase\Enums\OrderInvoiceStatus::INVOICED)
+    expect($order->invoice_status)->toBe(OrderInvoiceStatus::INVOICED)
         ->and((float) $line->qty_invoiced)->toBe(10.0)
         ->and((float) $line->qty_to_invoice)->toBe(0.0);
 });
@@ -475,7 +479,7 @@ it('backorders the unreceived remainder and marks the receipt partial', function
     $order->refresh()->load('operations.moves');
 
     expect((float) $order->lines->first()->qty_received)->toBe(6.0)
-        ->and($order->refresh()->receipt_status)->toBe(Webkul\Purchase\Enums\OrderReceiptStatus::PARTIAL);
+        ->and($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::PARTIAL);
 
     $backorder = $order->operations->first(fn ($op) => $op->state !== OperationState::DONE);
 
@@ -505,7 +509,7 @@ it('adds a move for a new order line appended to a confirmed purchase order', fu
 
     $line2 = PurchaseHelper::line($order->refresh(), $product2, qty: 5, priceUnit: 100);
 
-    $move = Webkul\Inventory\Models\Move::where('purchase_order_line_id', $line2->id)->first();
+    $move = Move::where('purchase_order_line_id', $line2->id)->first();
 
     expect($move)->not->toBeNull()
         ->and((float) $move->product_uom_qty)->toBe(5.0)
