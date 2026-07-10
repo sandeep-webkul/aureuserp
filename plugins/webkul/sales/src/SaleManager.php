@@ -322,10 +322,13 @@ class SaleManager
             return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
         })) {
             $order->delivery_status = OrderDeliveryStatus::FULL;
-        } elseif ($order->operations->contains(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::DONE;
-        })) {
+        } elseif (
+            $order->operations->contains(fn ($receipt) => $receipt->state == InventoryEnums\OperationState::DONE)
+            && $order->lines->contains(fn ($line) => (float) $line->qty_delivered > 0)
+        ) {
             $order->delivery_status = OrderDeliveryStatus::PARTIAL;
+        } elseif ($order->operations->contains(fn ($receipt) => $receipt->state == InventoryEnums\OperationState::DONE)) {
+            $order->delivery_status = OrderDeliveryStatus::STARTED;
         } else {
             $order->delivery_status = OrderDeliveryStatus::PENDING;
         }

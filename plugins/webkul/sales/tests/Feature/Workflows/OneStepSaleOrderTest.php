@@ -4,6 +4,7 @@ use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -325,4 +326,24 @@ it('flags up-selling when the delivered quantity exceeds the ordered quantity un
 
     expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(12.0)
         ->and($order->refresh()->invoice_status)->toBe(InvoiceStatus::UP_SELLING);
+});
+
+it('reserves and delivers a specific lot for a lot-tracked sale', function () {
+    $product = SaleHelper::product(['tracking' => ProductTracking::LOT]);
+
+    $lot = InventoryHelper::lot($product, 'LOT-A');
+
+    InventoryHelper::stockUp($product, $this->stock, 10, $lot->id);
+
+    $order = SaleHelper::order(['warehouse_id' => $this->warehouse->id]);
+    SaleHelper::line($order, $product, 10, 100);
+    $order = SaleOrderFacade::confirmSaleOrder($order->refresh())->load('operations.moves', 'lines');
+
+    SaleHelper::deliverChain($order);
+
+    $moveLine = SaleHelper::customerDelivery($order)->moves->first()->lines->first();
+
+    expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(10.0)
+        ->and($moveLine->lot_id)->toBe($lot->id)
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(0.0);
 });

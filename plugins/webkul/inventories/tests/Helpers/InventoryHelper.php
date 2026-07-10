@@ -384,7 +384,7 @@ class InventoryHelper
         return $operationType->refresh();
     }
 
-    public static function lot(Product $product, string $name): Lot
+    public static function lot(\Webkul\Product\Models\Product $product, string $name): Lot
     {
         return Lot::factory()->create([
             'name'       => $name,
@@ -415,7 +415,7 @@ class InventoryHelper
         ]);
     }
 
-    public static function lotsOf(Product $product): array
+    public static function lotsOf(\Webkul\Product\Models\Product $product): array
     {
         return Lot::query()
             ->where('product_id', $product->id)

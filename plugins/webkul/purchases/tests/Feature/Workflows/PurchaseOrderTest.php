@@ -5,6 +5,7 @@ use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
@@ -524,4 +525,38 @@ it('handles a quantity change after a receipt has been returned', function () {
     $order->refresh()->lines->first()->update(['product_qty' => 12]);
 
     expect((float) $order->refresh()->lines->first()->qty_received)->toBe(6.0);
+});
+
+it('creates the lot named on the receipt move when a lot-tracked purchase is validated', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = PurchaseHelper::product(['tracking' => ProductTracking::LOT]);
+
+    $order = confirmedPurchaseOrder($this->warehouse, $product, 10);
+
+    InventoryHelper::nameLines($order->operations->first()->refresh()->moves->first(), ['LOT-A']);
+
+    Inventory::doneTransfer($order->operations->first()->refresh());
+
+    $moveLine = $order->operations->first()->refresh()->moves->first()->lines->first();
+
+    expect((float) $order->refresh()->lines->first()->qty_received)->toBe(10.0)
+        ->and($moveLine->lot_id)->not->toBeNull()
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(10.0);
+});
+
+it('assigns one serial number per unit on a serial-tracked receipt', function () {
+    InventoryHelper::trackLots($this->warehouse->inType);
+
+    $product = PurchaseHelper::product(['tracking' => ProductTracking::SERIAL]);
+
+    $order = confirmedPurchaseOrder($this->warehouse, $product, 3);
+
+    InventoryHelper::nameLines($order->operations->first()->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
+
+    Inventory::doneTransfer($order->operations->first()->refresh());
+
+    expect((float) $order->refresh()->lines->first()->qty_received)->toBe(3.0)
+        ->and(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
+        ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0);
 });

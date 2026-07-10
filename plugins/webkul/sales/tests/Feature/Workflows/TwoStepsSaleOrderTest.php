@@ -53,7 +53,8 @@ it('does not update delivered quantity until the customer-facing ship leg is val
 
     SaleHelper::deliverNextLeg($order);
 
-    expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(0.0);
+    expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(0.0)
+        ->and($order->refresh()->delivery_status)->toBe(OrderDeliveryStatus::STARTED);
 });
 
 it('links both the pick and ship legs to the sale order once the chain completes', function () {
