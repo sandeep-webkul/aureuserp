@@ -424,6 +424,7 @@ class OrderResource extends Resource
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]))
+            ->columnManagerColumns(3)
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.groups.vendor')),

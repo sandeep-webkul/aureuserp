@@ -13,12 +13,13 @@ class TestBootstrapHelper
     public static function ensurePluginInstalled(string $pluginName): void
     {
         $pluginTables = [
-            'projects'    => 'projects_projects',
-            'sales'       => 'sales_orders',
-            'purchases'   => 'purchases_orders',
-            'inventories' => 'inventories_operations',
-            'accounts'    => 'accounts_account_moves',
-            'products'    => 'products_products',
+            'projects'      => 'projects_projects',
+            'sales'         => 'sales_orders',
+            'purchases'     => 'purchases_orders',
+            'inventories'   => 'inventories_operations',
+            'accounts'      => 'accounts_account_moves',
+            'products'      => 'products_products',
+            'manufacturing' => 'manufacturing_orders',
         ];
 
         $table = $pluginTables[$pluginName] ?? null;
@@ -53,11 +54,12 @@ class TestBootstrapHelper
     private static function ensurePluginSeeded(string $pluginName): void
     {
         $pluginSeeders = [
-            'projects'    => ['projects_project_stages', 'Webkul\Project\Database\Seeders\DatabaseSeeder'],
-            'sales'       => ['sales_teams', 'Webkul\Sale\Database\Seeders\DatabaseSeeder'],
-            'inventories' => ['inventories_locations', 'Webkul\Inventory\Database\Seeders\DatabaseSeeder'],
-            'accounts'    => ['accounts_accounts', 'Webkul\Account\Database\Seeders\DatabaseSeeder'],
-            'products'    => ['products_categories', 'Webkul\Product\Database\Seeders\DatabaseSeeder'],
+            'projects'      => ['projects_project_stages', 'Webkul\Project\Database\Seeders\DatabaseSeeder'],
+            'sales'         => ['sales_teams', 'Webkul\Sale\Database\Seeders\DatabaseSeeder'],
+            'inventories'   => ['inventories_locations', 'Webkul\Inventory\Database\Seeders\DatabaseSeeder'],
+            'accounts'      => ['accounts_accounts', 'Webkul\Account\Database\Seeders\DatabaseSeeder'],
+            'products'      => ['products_categories', 'Webkul\Product\Database\Seeders\DatabaseSeeder'],
+            'manufacturing' => ['manufacturing_work_center_productivity_losses', 'Webkul\Manufacturing\Database\Seeders\DatabaseSeeder'],
         ];
 
         if (! isset($pluginSeeders[$pluginName])) {

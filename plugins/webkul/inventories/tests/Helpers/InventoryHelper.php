@@ -452,7 +452,7 @@ class InventoryHelper
         return Operation::query()->where('return_id', $operation->id)->first();
     }
 
-    public static function quantOf(Product $product, Location $location, ?int $lotId = null): ?ProductQuantity
+    public static function quantOf(BaseProduct $product, Location $location, ?int $lotId = null): ?ProductQuantity
     {
         return ProductQuantity::query()
             ->where('product_id', $product->id)
