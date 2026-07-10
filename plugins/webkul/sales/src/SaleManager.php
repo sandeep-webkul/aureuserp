@@ -178,25 +178,34 @@ class SaleManager
 
         $line = $this->computeQtyToInvoice($line);
 
-        $subTotal = $line->price_unit * $line->product_qty;
+        $priceUnit = $line->discount > 0
+            ? $line->price_unit * (1 - ($line->discount / 100))
+            : $line->price_unit;
 
-        $discountAmount = 0;
+        if ($line->taxes->isEmpty()) {
+            $subTotal = $priceUnit * $line->product_qty;
 
-        if ($line->discount > 0) {
-            $discountAmount = $subTotal * ($line->discount / 100);
+            $line->price_subtotal = round($subTotal, 4);
 
-            $subTotal = $subTotal - $discountAmount;
+            $line->price_tax = 0;
+
+            $line->price_total = round($subTotal, 4);
+        } else {
+            $taxResult = Tax::computeAll(
+                $line->taxes,
+                $priceUnit,
+                $line->order->currency,
+                $line->product_qty,
+                $line->product,
+                $line->order->partner,
+            );
+
+            $line->price_subtotal = round($taxResult['total_excluded'], 4);
+
+            $line->price_tax = round($taxResult['total_included'] - $taxResult['total_excluded'], 4);
+
+            $line->price_total = round($taxResult['total_included'], 4);
         }
-
-        $taxIds = $line->taxes->pluck('id')->toArray();
-
-        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $line->product_qty);
-
-        $line->price_subtotal = round($subTotal, 4);
-
-        $line->price_tax = $taxAmount;
-
-        $line->price_total = $subTotal + $taxAmount;
 
         $line->sort = $line->sort ?? OrderLine::max('sort') + 1;
 

@@ -2016,25 +2016,29 @@ class QuotationResource extends Resource
 
         $discountValue = floatval($get($prefix.'discount') ?? 0);
 
-        $subTotal = $priceUnit * $quantity;
-
-        if ($discountValue > 0) {
-            $discountAmount = $subTotal * ($discountValue / 100);
-
-            $subTotal -= $discountAmount;
-        }
+        $discountedUnit = $discountValue > 0 ? $priceUnit * (1 - ($discountValue / 100)) : $priceUnit;
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
+        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
 
-        $total = $subTotal + $taxAmount;
+        if ($taxes->isEmpty()) {
+            $subTotal = round($discountedUnit * $quantity, 4);
 
-        $set($prefix.'price_subtotal', round($subTotal, 4));
+            $set($prefix.'price_subtotal', $subTotal);
 
-        $set($prefix.'price_tax', round($taxAmount, 4));
+            $set($prefix.'price_tax', 0);
 
-        $set($prefix.'price_total', round($total, 4));
+            $set($prefix.'price_total', $subTotal);
+        } else {
+            $taxResult = Tax::computeAll($taxes, $discountedUnit, null, $quantity);
+
+            $set($prefix.'price_subtotal', round($taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_tax', round($taxResult['total_included'] - $taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_total', round($taxResult['total_included'], 4));
+        }
 
         [$margin, $marginPercentage] = static::calculateMargin($priceUnit, $purchasePrice, $quantity, $discountValue);
 

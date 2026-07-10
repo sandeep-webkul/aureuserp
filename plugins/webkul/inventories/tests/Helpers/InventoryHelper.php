@@ -459,7 +459,7 @@ class InventoryHelper
             ->first();
     }
 
-    public static function onHand(Product $product, Location $location): float
+    public static function onHand(\Webkul\Product\Models\Product $product, Location $location): float
     {
         return (float) ProductQuantity::query()
             ->where('product_id', $product->id)
@@ -467,7 +467,7 @@ class InventoryHelper
             ->sum('quantity');
     }
 
-    public static function reserved(Product $product, Location $location): float
+    public static function reserved(\Webkul\Product\Models\Product $product, Location $location): float
     {
         return (float) ProductQuantity::query()
             ->where('product_id', $product->id)
