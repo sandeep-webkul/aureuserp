@@ -21,6 +21,13 @@ export type SalesProductData = {
 export type SalesQuotationLine = {
     productName: string;
     quantity: string;
+    taxName?: string;
+};
+
+export type OrderTotals = {
+    untaxed: string;
+    tax?: string;
+    total: string;
 };
 
 export type SalesQuotationData = {
@@ -264,11 +271,106 @@ export class SalesFlowPage {
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await l.salesQuotationQuantityInput.nth(index).fill(line.quantity);
             await this.page.waitForTimeout(400);
+
+            if (line.taxName) {
+                await this.selectLineTax(index, line.taxName);
+            }
         }
 
         await l.salesQuotationSaveButton.click();
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await expect(this.page).not.toHaveURL(/quotations\/create/);
+    }
+
+    /**
+     * Add a tax to a line. The taxes field is a multi-select, so its panel stays open
+     * after a pick; it is dismissed explicitly, and the line and order totals are only
+     * recomputed once that Livewire round-trip lands.
+     */
+    async selectLineTax(lineIndex: number, taxName: string) {
+        const l = this.erpLocators;
+
+        await l.salesQuotationLineTaxSelects.nth(lineIndex).click();
+
+        const option = l.salesSelectOption.filter({ hasText: new RegExp(this.escapeRegExp(taxName), "i") }).first();
+        await expect(option).toBeVisible();
+        await option.click();
+
+        await this.page.keyboard.press("Escape");
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1500);
+    }
+
+    /**
+     * Assert the order summary. `tax` is omitted for an untaxed order, where the app
+     * renders no "Amount Tax" row at all.
+     */
+    async expectOrderTotals(totals: OrderTotals) {
+        const items = this.erpLocators.salesQuotationSummaryItems;
+        const taxRow = items.filter({ hasText: /Amount Tax/ });
+
+        await expect(items.filter({ hasText: /Untaxed Amount/ }).first()).toContainText(totals.untaxed);
+
+        if (totals.tax) {
+            await expect(taxRow.first()).toContainText(totals.tax);
+        } else {
+            await expect(taxRow).toHaveCount(0);
+        }
+
+        await expect(items.filter({ hasText: /Amount Total/ }).first()).toContainText(totals.total);
+    }
+
+    async expectLineSubtotal(lineIndex: number, subtotal: string) {
+        const input = this.erpLocators.salesQuotationLineSubtotalInputs.nth(lineIndex);
+        await expect(input).toHaveValue(new RegExp(`^${subtotal}(\\.0+)?$`));
+    }
+
+    async expectLineQuantity(lineIndex: number, quantity: string) {
+        const input = this.erpLocators.salesQuotationQuantityInput.nth(lineIndex);
+        await expect(input).toHaveValue(new RegExp(`^${quantity}(\\.0+)?$`));
+    }
+
+    /**
+     * Retype a line's ordered quantity. The field recomputes on blur, so the click away
+     * is what triggers the Livewire round-trip.
+     */
+    async updateLineQuantity(lineIndex: number, quantity: string) {
+        const input = this.erpLocators.salesQuotationQuantityInput.nth(lineIndex);
+        await expect(input).toBeEnabled();
+        await input.fill(quantity);
+        await input.blur();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
+    }
+
+    /**
+     * Append a product line to the order that is already open, without saving.
+     */
+    async addLineToOpenOrder(productName: string, quantity: string) {
+        const l = this.erpLocators;
+        const existingLines = await l.salesQuotationProductSelectInput.count();
+
+        await l.salesQuotationAddProductButton.scrollIntoViewIfNeeded();
+        await l.salesQuotationAddProductButton.click();
+        await this.selectBySearch(l.salesQuotationProductSelectInput.nth(existingLines), productName);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await l.salesQuotationQuantityInput.nth(existingLines).fill(quantity);
+        await this.page.waitForTimeout(600);
+    }
+
+    async saveOrder() {
+        await this.erpLocators.salesQuotationSaveButton.click();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1500);
+    }
+
+    /**
+     * Assert the order refuses a quantity below what has already been delivered.
+     */
+    async expectQuantityBelowDeliveredError(deliveredQuantity: string) {
+        await expect(this.erpLocators.salesValidationMessage.first()).toContainText(
+            new RegExp(`cannot reduce the quantity below the delivered quantity \\(${deliveredQuantity}`, "i"),
+        );
     }
 
     /**
@@ -363,13 +465,13 @@ export class SalesFlowPage {
     }
 
     async gotoOrderEdit(ref: { resource: string; id: string }) {
-        await this.page.goto(`/admin/sale/orders/${ref.resource}/${ref.id}/edit`);
+        await this.safeGoto(`/admin/sale/orders/${ref.resource}/${ref.id}/edit`);
         await this.page.waitForLoadState("networkidle");
     }
 
     async openInvoicesForCurrentQuotation(): Promise<string> {
         const { resource, id } = this.currentRecordRef();
-        await this.page.goto(`/admin/sale/orders/${resource}/${id}/invoices`);
+        await this.safeGoto(`/admin/sale/orders/${resource}/${id}/invoices`);
         await expect(this.page).toHaveURL(new RegExp(`/${resource}/${id}/invoices`));
         await expect(this.erpLocators.salesInvoicesTable.first()).toBeVisible();
 
@@ -379,7 +481,7 @@ export class SalesFlowPage {
     async openDeliveriesForCurrentQuotation(): Promise<string> {
         const { resource, id } = this.currentRecordRef();
         await this.page.waitForLoadState("networkidle");
-        await this.page.goto(`/admin/sale/orders/${resource}/${id}/deliveries`, { waitUntil: "domcontentloaded" });
+        await this.safeGoto(`/admin/sale/orders/${resource}/${id}/deliveries`);
         await expect(this.page).toHaveURL(new RegExp(`/${resource}/${id}/deliveries`));
         await expect(this.erpLocators.salesQuotationDeliveriesTable.first()).toBeVisible();
 
@@ -448,7 +550,7 @@ export class SalesFlowPage {
      */
     async openDeliveryEditPage(deliveryId: string) {
         const { resource, id } = this.currentRecordRef();
-        await this.page.goto(`/admin/sale/orders/${resource}/${id}/deliveries/${deliveryId}/edit`);
+        await this.safeGoto(`/admin/sale/orders/${resource}/${id}/deliveries/${deliveryId}/edit`);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
     }
 

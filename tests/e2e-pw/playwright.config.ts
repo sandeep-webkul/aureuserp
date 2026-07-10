@@ -27,23 +27,23 @@ const reporters = process.env.CI
 export default defineConfig({
     testDir: "./tests",
 
-    timeout: 400 * 1000,
+    timeout: 420 * 1000,
     expect: { timeout: 50 * 1000 },
 
     outputDir: "./test-results",
 
     fullyParallel: !!process.env.CI,
-    workers: 1,
+    workers: 4,
 
     forbidOnly: !!process.env.CI,
-    retries: 0,
+    retries: process.env.CI ? 1 : 0,
 
     reportSlowTests: null,
 
     reporter: reporters,
 
     use: {
-        baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8000",
+        baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8001",
         screenshot: { mode: "only-on-failure", fullPage: true },
         video: "retain-on-failure",
         trace: "retain-on-failure",

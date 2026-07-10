@@ -259,8 +259,11 @@ export class InventoriesManagementPage {
             await this.selectDeliveryStep(data.deliveryStep);
         }
 
+        // Saving redirects off the create form, and that redirect tears the success toast
+        // down before it can be observed; the redirect is the reliable signal instead.
         await this.erpLocators.inventoryWarehouseSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/warehouses\/create/);
     }
 
     async selectReceptionStep(step: 1 | 2 | 3) {
@@ -1257,7 +1260,7 @@ export class InventoriesManagementPage {
         }
 
         await this.erpLocators.inventoryOperationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.expectOperationCreated();
 
         return this.readOperationReference();
     }
@@ -1316,7 +1319,7 @@ export class InventoriesManagementPage {
         await this.addMoveLines(lines);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.expectOperationCreated();
 
         return this.readOperationReference();
     }
@@ -1497,7 +1500,12 @@ export class InventoriesManagementPage {
      * Open the "Manage Stock Moves" modal on the move at `rowIndex` and generate
      * the lot/serials covering the received quantity.
      */
-    private async generateLotOnMove(lotName: string, quantity: string, rowIndex = 0) {
+    /**
+     * Enter lot/serial numbers for a move of the currently-open incoming operation through
+     * the Manage Stock Moves modal. Only receipts offer this: the "Generate Serials/Lots"
+     * action is gated on the move's source being a supplier location.
+     */
+    async generateLotOnMove(lotName: string, quantity: string, rowIndex = 0) {
         const l = this.erpLocators;
 
         await l.inventoryMoveManageLinesAction.nth(rowIndex).click({ timeout: 15000 });
@@ -1620,7 +1628,7 @@ export class InventoriesManagementPage {
         }
 
         await this.erpLocators.inventoryOperationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.expectOperationCreated();
 
         return this.readOperationReference();
     }
@@ -1792,7 +1800,7 @@ export class InventoriesManagementPage {
         await this.addMoveLines(lines);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.expectOperationCreated();
 
         return this.readOperationReference();
     }
@@ -2051,6 +2059,26 @@ export class InventoriesManagementPage {
         await expect(input).toHaveValue(new RegExp(`^${demand}(\\.0+)?$`));
     }
 
+    /**
+     * Assert the Demand of the move that carries `productName` on the currently-open
+     * operation. Move rows are not ordered by sale-order line, so they are addressed by
+     * product.
+     */
+    async expectOperationMoveDemandForProduct(productName: string, demand: string) {
+        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        await expect(row).toBeVisible({ timeout: 15000 });
+
+        const input = row.locator('input[id$=".product_uom_qty"]').first();
+        await expect(input).toHaveValue(new RegExp(`^${demand}(\\.0+)?$`));
+    }
+
+    /**
+     * Assert how many move lines the currently-open operation carries.
+     */
+    async expectOperationMoveCount(count: number) {
+        await expect(this.erpLocators.inventoryOperationMoveDemandInput).toHaveCount(count);
+    }
+
     async expectCurrentOperationMoveQuantity(productName: string, quantity: string) {
         const row = this.page.getByRole("row").filter({ hasText: productName }).first();
         await expect(row).toBeVisible();
@@ -2091,7 +2119,7 @@ export class InventoriesManagementPage {
         await this.addMoveLines([{ productName: data.productName, demand: data.demand }]);
 
         await this.erpLocators.inventoryOperationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.expectOperationCreated();
 
         return this.readOperationReference();
     }
@@ -2440,6 +2468,15 @@ export class InventoriesManagementPage {
 
     private escapeRegExp(value: string): string {
         return value.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+    }
+
+    /**
+     * Saving an operation redirects onto its edit page, and that redirect tears the
+     * success toast down before it can be observed. Assert the redirect instead.
+     */
+    private async expectOperationCreated() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/\/create$/);
     }
 
     private async expectSuccessToast() {

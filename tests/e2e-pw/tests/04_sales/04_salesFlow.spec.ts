@@ -2,15 +2,11 @@ import { test } from "../../setup";
 import { SalesFlowPage } from "../../pages/04_salesFlow";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
 
-/** Stock location of the seeded default warehouse, where sale orders ship from. */
 const DEFAULT_STOCK_LOCATION = "WH/Stock";
+const SALE_TAX_NAME = "15 %";
 
 /**
- * Enable the inventory settings the sales-to-inventory tests rely on: locations and
- * multi-step warehouses, traceability for lot/serial products, and operations for
- * packages. Each describe calls this from its own beforeAll so a shard that runs only
- * a subset of the describes still provisions what its tests need, keeping CI sharding
- * and fullyParallel runs order-independent.
+ * Enable the inventory settings 
  */
 async function enableSalesInventorySettings(adminPage: import("@playwright/test").Page) {
     const salesPage = new SalesFlowPage(adminPage);
@@ -140,6 +136,9 @@ test.describe("Sales Order Flow E2E", () => {
         await salesPage.expectInvoiceRowPresent();
     });
 
+    /**
+     * A quotation can be sent to the customer by email, and the email is recorded in the chatter. 
+     */
     test("Sales Flow - Send Quotation By Email", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const key = Date.now();
@@ -384,9 +383,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     });
 
     /**
-     * A sale order shipped from a 2-step warehouse starts with a Pick. The chain is built
-     * lazily — the Ship transfer only appears once the Pick is validated — and the
-     * delivered quantity moves only when the Ship reaches the customer location.
+     * A sale order shipped from a 2-step warehouse starts with a Pick. 
      */
     test("Sales order - 2-step delivery warehouse (pick, ship)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
@@ -444,9 +441,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     });
 
     /**
-     * A sale order shipped from a 3-step warehouse walks Pick, Pack and Ship. Each
-     * transfer is created only once its predecessor is validated, so the chain is
-     * followed through the Next Transfer action until the goods reach the customer.
+     * A sale order shipped from a 3-step warehouse walks Pick, Pack and Ship. 
      */
     test("Sales order - 3-step delivery warehouse (pick, pack, ship)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
@@ -592,5 +587,287 @@ test.describe("Sales Flow - Inventory Integration", () => {
         await salesPage.gotoOrderEdit(orderRef);
         await salesPage.expectDeliveredQuantity(0, "3");
         await salesPage.expectCreateInvoiceButtonVisible();
+    });
+});
+
+test.describe("Sales Flow - Amounts", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableSalesInventorySettings(adminPage);
+    });
+
+    /**
+     * A line with no tax contributes its full subtotal to the order: the "Amount Tax" row
+     * is not rendered at all and the total equals the untaxed amount.
+     */
+    test("Sales order - amounts without tax", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E Amt NoTax Customer ${key}`;
+        const productName = `E2E Amt NoTax Product ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `amt.notax+${key}@example.com` });
+        await salesPage.createProduct({ name: productName, price: "100" });
+
+        await salesPage.createOrderWithLines({
+            customerName,
+            lines: [{ productName, quantity: "3" }],
+        });
+
+        await salesPage.expectLineSubtotal(0, "300");
+        await salesPage.expectOrderTotals({ untaxed: "$300.00", total: "$300.00" });
+
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectOrderTotals({ untaxed: "$300.00", total: "$300.00" });
+    });
+
+    /**
+     * The seeded 15% sale tax is added on top of the untaxed amount, so 3 x 100 becomes
+     * 300 untaxed, 45 tax and 345 total. The line subtotal stays untaxed.
+     */
+    test("Sales order - amounts with 15% tax", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E Amt Tax Customer ${key}`;
+        const productName = `E2E Amt Tax Product ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `amt.tax+${key}@example.com` });
+        await salesPage.createProduct({ name: productName, price: "100" });
+
+        await salesPage.createOrderWithLines({
+            customerName,
+            lines: [{ productName, quantity: "3", taxName: SALE_TAX_NAME }],
+        });
+
+        await salesPage.expectLineSubtotal(0, "300");
+        await salesPage.expectOrderTotals({ untaxed: "$300.00", tax: "$45.00", total: "$345.00" });
+
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectOrderTotals({ untaxed: "$300.00", tax: "$45.00", total: "$345.00" });
+    });
+});
+
+test.describe("Sales Flow - Confirmed Order Changes", () => {
+    test.beforeAll(async ({ adminPage }) => {
+        await enableSalesInventorySettings(adminPage);
+    });
+
+    /**
+     * Raising an ordered quantity on a confirmed order does not spawn a second transfer:
+     * the extra units are merged into the open delivery's existing move and reserved.
+     */
+    test("Sales order - increasing quantity after confirm grows the delivery", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E Qty Up Customer ${key}`;
+        const productName = `E2E Qty Up Product ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `qty.up+${key}@example.com` });
+        await salesPage.createProduct({ name: productName, price: "20", invoicePolicy: "delivery" });
+        await inventoryPage.addOnHandQuantity(productName, DEFAULT_STOCK_LOCATION, "20");
+
+        await salesPage.createQuotation({ customerName, productName, quantity: "5" });
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+
+        await salesPage.expectDeliveryCount(1);
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveDemandForProduct(productName, "5");
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.updateLineQuantity(0, "8");
+        await salesPage.saveOrder();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectLineQuantity(0, "8");
+
+        await salesPage.expectDeliveryCount(1);
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveCount(1);
+        await inventoryPage.expectOperationMoveDemandForProduct(productName, "8");
+
+        await inventoryPage.expectReservedQuantityRow(productName, DEFAULT_STOCK_LOCATION, "8");
+    });
+
+    /**
+     * Lowering an ordered quantity on a confirmed order shrinks the open delivery's move
+     * rather than cancelling and re-creating the transfer.
+     */
+    test("Sales order - decreasing quantity after confirm shrinks the delivery", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E Qty Down Customer ${key}`;
+        const productName = `E2E Qty Down Product ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `qty.down+${key}@example.com` });
+        await salesPage.createProduct({ name: productName, price: "20", invoicePolicy: "delivery" });
+        await inventoryPage.addOnHandQuantity(productName, DEFAULT_STOCK_LOCATION, "20");
+
+        await salesPage.createQuotation({ customerName, productName, quantity: "8" });
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+
+        await salesPage.expectDeliveryCount(1);
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveDemandForProduct(productName, "8");
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.updateLineQuantity(0, "5");
+        await salesPage.saveOrder();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectLineQuantity(0, "5");
+
+        await salesPage.expectDeliveryCount(1);
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveCount(1);
+        await inventoryPage.expectOperationMoveDemandForProduct(productName, "5");
+
+        await inventoryPage.expectReservedQuantityRow(productName, DEFAULT_STOCK_LOCATION, "5");
+    });
+
+    /**
+     * Once units have shipped, the order refuses to be reduced below them.
+     */
+    test("Sales order - quantity cannot drop below the delivered quantity", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E Qty Guard Customer ${key}`;
+        const productName = `E2E Qty Guard Product ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `qty.guard+${key}@example.com` });
+        await salesPage.createProduct({ name: productName, price: "20", invoicePolicy: "delivery" });
+        await inventoryPage.addOnHandQuantity(productName, DEFAULT_STOCK_LOCATION, "20");
+
+        await salesPage.createQuotation({ customerName, productName, quantity: "5" });
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+
+        await salesPage.openDeliveryByIndex(0);
+        await salesPage.validateOpenDelivery();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectDeliveredQuantity(0, "5");
+
+        await salesPage.updateLineQuantity(0, "3");
+        await salesPage.saveOrder();
+        await salesPage.expectQuantityBelowDeliveredError("5");
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectLineQuantity(0, "5");
+    });
+
+    /**
+     * A product added to a confirmed order whose delivery is still open joins that
+     * delivery as a second move instead of opening a new transfer.
+     */
+    test("Sales order - adding a product after confirm extends the open delivery", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E AddLine Customer ${key}`;
+        const firstProduct = `E2E AddLine First ${key}`;
+        const secondProduct = `E2E AddLine Second ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `add.line+${key}@example.com` });
+        await salesPage.createProduct({ name: firstProduct, price: "20", invoicePolicy: "delivery" });
+        await salesPage.createProduct({ name: secondProduct, price: "30", invoicePolicy: "delivery" });
+        await inventoryPage.addOnHandQuantity(firstProduct, DEFAULT_STOCK_LOCATION, "10");
+        await inventoryPage.addOnHandQuantity(secondProduct, DEFAULT_STOCK_LOCATION, "10");
+
+        await salesPage.createQuotation({ customerName, productName: firstProduct, quantity: "4" });
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+
+        await salesPage.expectDeliveryCount(1);
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveCount(1);
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.addLineToOpenOrder(secondProduct, "2");
+        await salesPage.saveOrder();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectDeliveryCount(1);
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openDeliveryByIndex(0);
+        await inventoryPage.expectOperationMoveCount(2);
+        await inventoryPage.expectOperationMoveDemandForProduct(firstProduct, "4");
+        await inventoryPage.expectOperationMoveDemandForProduct(secondProduct, "2");
+
+        await inventoryPage.expectReservedQuantityRow(secondProduct, DEFAULT_STOCK_LOCATION, "2");
+    });
+
+    /**
+     * Once the order's delivery is validated there is no open transfer left to extend, so
+     * a newly added product is shipped by a brand-new delivery.
+     */
+    test("Sales order - adding a product after delivery is done creates a new delivery", async ({ adminPage }) => {
+        const salesPage = new SalesFlowPage(adminPage);
+        const inventoryPage = new InventoriesManagementPage(adminPage);
+        const key = Date.now();
+
+        const customerName = `E2E AddAfter Customer ${key}`;
+        const firstProduct = `E2E AddAfter First ${key}`;
+        const secondProduct = `E2E AddAfter Second ${key}`;
+
+        await salesPage.createCustomer({ name: customerName, email: `add.after+${key}@example.com` });
+        await salesPage.createProduct({ name: firstProduct, price: "20", invoicePolicy: "delivery" });
+        await salesPage.createProduct({ name: secondProduct, price: "30", invoicePolicy: "delivery" });
+        await inventoryPage.addOnHandQuantity(firstProduct, DEFAULT_STOCK_LOCATION, "10");
+        await inventoryPage.addOnHandQuantity(secondProduct, DEFAULT_STOCK_LOCATION, "10");
+
+        await salesPage.createQuotation({ customerName, productName: firstProduct, quantity: "4" });
+        await salesPage.confirmQuotation();
+
+        const orderRef = salesPage.currentRecordRef();
+
+        await salesPage.openDeliveryByIndex(0);
+        await salesPage.validateOpenDelivery();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.addLineToOpenOrder(secondProduct, "2");
+        await salesPage.saveOrder();
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectDeliveryCount(2);
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.openPendingDelivery();
+        await inventoryPage.expectOperationMoveCount(1);
+        await inventoryPage.expectOperationMoveDemandForProduct(secondProduct, "2");
+
+        await salesPage.validateOpenDelivery();
+
+        await inventoryPage.expectOnHandQuantityRow(firstProduct, DEFAULT_STOCK_LOCATION, "6");
+        await inventoryPage.expectOnHandQuantityRow(secondProduct, DEFAULT_STOCK_LOCATION, "8");
+
+        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectDeliveredQuantity(0, "4");
+        await salesPage.expectDeliveredQuantity(1, "2");
     });
 });

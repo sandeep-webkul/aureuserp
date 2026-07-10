@@ -141,6 +141,9 @@ export class ErpLocators {
     readonly salesQuotationWarehouseSelect: Locator;
     readonly salesQuotationOtherInformationTab: Locator;
     readonly salesQuotationDeliveredQuantityInputs: Locator;
+    readonly salesQuotationLineTaxSelects: Locator;
+    readonly salesQuotationLineSubtotalInputs: Locator;
+    readonly salesQuotationSummaryItems: Locator;
     readonly salesDeliveryValidateButton: Locator;
     readonly salesDeliveryMarkAsTodoButton: Locator;
     readonly salesDeliveryCheckAvailabilityButton: Locator;
@@ -362,6 +365,20 @@ export class ErpLocators {
     readonly purchaseVendorNameInput: Locator;
     readonly purchaseVendorEmailInput: Locator;
     readonly purchaseVendorSaveButton: Locator;
+    readonly purchaseVendorCreateButton: Locator;
+    readonly purchaseQuotationConfirmOrderButton: Locator;
+    readonly purchaseQuotationCreateSubmitButton: Locator;
+    readonly purchaseProductTrackingSelect: Locator;
+    readonly purchaseQuotationOperationTypeSelect: Locator;
+    readonly purchaseQuotationLineTaxSelects: Locator;
+    readonly purchaseQuotationLineSubtotalInputs: Locator;
+    readonly purchaseQuotationReceivedQuantityInputs: Locator;
+    readonly purchaseQuotationSummaryItems: Locator;
+    readonly purchaseQuotationReceiptRows: Locator;
+    readonly purchaseQuotationReceiptReferenceLinks: Locator;
+    readonly purchaseCreateBillButton: Locator;
+    readonly purchaseBillSubmitButton: Locator;
+    readonly purchaseBillsTableRows: Locator;
     readonly purchaseVendorSearchInput: Locator;
     readonly purchaseVendorEditButton: Locator;
     readonly purchaseVendorDeleteButton: Locator;
@@ -635,6 +652,12 @@ export class ErpLocators {
         this.salesQuotationWarehouseSelect = page.locator('[wire\\:key$="form.warehouse_id"] button.fi-select-input-btn').first();
         this.salesQuotationOtherInformationTab = page.getByRole("tab", { name: /Other Information/i }).first();
         this.salesQuotationDeliveredQuantityInputs = page.locator('input[id^="form.products."][id$=".qty_delivered"]');
+        this.salesQuotationLineTaxSelects = page.locator('[wire\\:key*="form.products."][wire\\:key*=".taxes."] button.fi-select-input-btn');
+        this.salesQuotationLineSubtotalInputs = page.locator('input[id^="form.products."][id$=".price_subtotal"]');
+        // The order totals are a Livewire island, not form fields: one ".invoice-item" per
+        // row ("Untaxed Amount", "Amount Tax", "Amount Total", "Margin"). The tax row is
+        // only rendered when the tax is greater than zero.
+        this.salesQuotationSummaryItems = page.locator(".invoice-item");
         this.salesDeliveryValidateButton = page.getByRole("button", { name: /Validate/i }).first();
         this.salesDeliveryMarkAsTodoButton = page.getByRole("button", { name: /Mark as Todo/i }).first();
         this.salesDeliveryCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
@@ -916,6 +939,32 @@ export class ErpLocators {
         this.purchaseVendorEditButton = page.getByRole('link', { name: 'Edit' }).first();
         this.purchaseVendorDeleteButton = page.locator('button[id="key-bindings-1"]').first();
         this.purchaseVendorSaveButton = page.locator('button[id="key-bindings-2"]').first();
+        // On a create form key-bindings-1 is "Create" and key-bindings-2 is
+        // "Create & create another", which leaves the form open instead of redirecting.
+        this.purchaseVendorCreateButton = page.locator('button[id="key-bindings-1"]').first();
+        // Match "Confirm Order" exactly: a confirmed order also offers "Confirm Receipt Date",
+        // which the looser purchaseQuotationConfirmButton regex would match.
+        this.purchaseQuotationConfirmOrderButton = page.getByRole("button", { name: /^Confirm Order$/i }).first();
+        // Target the create form's own submit. "#key-bindings-1" is index-based and becomes
+        // the Delete header action once the save redirects onto the edit page.
+        this.purchaseQuotationCreateSubmitButton = page
+            .locator('button[type="submit"]')
+            .filter({ hasText: /^\s*Create\s*$/ })
+            .first();
+        this.purchaseProductTrackingSelect = page.locator('select[id="form.tracking"]').first();
+        // "Deliver To" — the incoming operation type the purchase order receives into.
+        this.purchaseQuotationOperationTypeSelect = page.locator('[wire\\:key$="form.operation_type_id"] button.fi-select-input-btn').first();
+        this.purchaseQuotationLineTaxSelects = page.locator('[wire\\:key*="form.products."][wire\\:key*=".taxes."] button.fi-select-input-btn');
+        this.purchaseQuotationLineSubtotalInputs = page.locator('input[id^="form.products."][id$=".price_subtotal"]');
+        this.purchaseQuotationReceivedQuantityInputs = page.locator('input[id^="form.products."][id$=".qty_received"]');
+        // The order totals are a Livewire island: rows labelled "Untaxed Amount", "Tax"
+        // (rendered only when the tax is above zero) and "Total".
+        this.purchaseQuotationSummaryItems = page.locator(".invoice-item");
+        this.purchaseQuotationReceiptRows = page.locator("table tbody tr");
+        this.purchaseQuotationReceiptReferenceLinks = page.locator('table tbody tr a[href*="/receipts/"]');
+        this.purchaseCreateBillButton = page.getByRole("button", { name: /Create Bill/i }).first();
+        this.purchaseBillSubmitButton = page.getByRole("dialog").getByRole("button", { name: /^(Submit|Confirm|Create Bill)$/i }).first();
+        this.purchaseBillsTableRows = page.locator("table tbody tr");
         this.purchaseVendorSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
 
         this.purchaseProductsTable = page.locator("table, div.fi-ta-empty-state");
