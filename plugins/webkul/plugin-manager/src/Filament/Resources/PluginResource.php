@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
@@ -377,6 +378,7 @@ class PluginResource extends Resource
             });
 
         Package::refreshPluginCaches();
+        ChatterCleanupService::purgeOrphanedRecords();
 
         if (empty($errors)) {
             Notification::make()
