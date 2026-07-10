@@ -45,8 +45,8 @@ export default defineConfig({
     use: {
         baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8000",
         screenshot: { mode: "only-on-failure", fullPage: true },
-        video: "retain-on-failure",
-        trace: "retain-on-failure",
+        video: "on-first-retry",
+        trace: "on-first-retry",
     },
 
     projects: [

@@ -703,6 +703,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
         await purchasePage.saveOrder();
 
         await purchasePage.gotoOrderEdit(orderRef);
+        await purchasePage.expectLineQuantity(1, "2");
         await purchasePage.expectReceiptCount(1);
 
         await purchasePage.gotoOrderEdit(orderRef);
@@ -745,6 +746,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
         await purchasePage.saveOrder();
 
         await purchasePage.gotoOrderEdit(orderRef);
+        await purchasePage.expectLineQuantity(1, "2");
         await purchasePage.expectReceiptCount(2);
 
         await purchasePage.gotoOrderEdit(orderRef);

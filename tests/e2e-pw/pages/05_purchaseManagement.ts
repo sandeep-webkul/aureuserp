@@ -420,9 +420,11 @@ export class PurchaseFlowPage {
      * disabled while one is running, so anything that follows must wait it out.
      */
     private async blurAndSettle() {
-        await this.page.locator("body").click({ position: { x: 5, y: 5 } });
+        // Tab away rather than clicking the page: a stray click can land on a header
+        // action, and the fields here recompute on blur.
+        await this.page.keyboard.press("Tab");
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.waitForTimeout(2500);
+        await this.page.waitForTimeout(2000);
     }
 
     /**
@@ -489,13 +491,41 @@ export class PurchaseFlowPage {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await l.purchaseQuotationQuantityInput.nth(existingLines).fill(quantity);
         await l.purchaseQuotationUnitPriceInput.nth(existingLines).fill(unitPrice);
-        await this.page.waitForTimeout(600);
+
+        // The line recomputes on blur; let that round-trip finish, or the save that
+        // follows lands while the form is busy and is dropped.
+        await this.blurAndSettle();
     }
 
     async saveOrder() {
-        await this.clickWhenEnabled(this.erpLocators.purchaseQuotationSavechangesButton.first());
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.waitForTimeout(1500);
+        await this.submitForm(this.erpLocators.purchaseQuotationSavechangesButton.first());
+    }
+
+    /**
+     * Submit a form and make sure the request actually left the browser. A click that
+     * lands while Livewire is mid-request is swallowed: the button is disabled for that
+     * instant and nothing is saved, which on a loaded CI machine silently drops an added
+     * order line. Retry until the submit is seen on the wire.
+     */
+    private async submitForm(button: ReturnType<Page["locator"]>) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const submitted = this.page
+                .waitForResponse(
+                    (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
+                    { timeout: 10000 },
+                )
+                .catch(() => null);
+
+            await this.clickWhenEnabled(button);
+
+            if (await submitted) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(1200);
+                return;
+            }
+        }
+
+        throw new Error("The form submit never reached the server.");
     }
 
     /**

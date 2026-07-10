@@ -811,6 +811,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
         await salesPage.saveOrder();
 
         await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectLineQuantity(1, "2");
         await salesPage.expectDeliveryCount(1);
 
         await salesPage.gotoOrderEdit(orderRef);
@@ -854,6 +855,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
         await salesPage.saveOrder();
 
         await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.expectLineQuantity(1, "2");
         await salesPage.expectDeliveryCount(2);
 
         await salesPage.gotoOrderEdit(orderRef);

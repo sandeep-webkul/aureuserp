@@ -355,13 +355,70 @@ export class SalesFlowPage {
         await this.selectBySearch(l.salesQuotationProductSelectInput.nth(existingLines), productName);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await l.salesQuotationQuantityInput.nth(existingLines).fill(quantity);
-        await this.page.waitForTimeout(600);
+
+        // The quantity recomputes the line on blur; let that round-trip finish, or the
+        // save that follows lands while the form is busy and is dropped.
+        await this.blurAndSettle();
     }
 
     async saveOrder() {
-        await this.erpLocators.salesQuotationSaveButton.click();
+        await this.submitForm(this.erpLocators.salesQuotationSaveButton);
+    }
+
+    /**
+     * Let the form's in-flight Livewire recompute finish. Filament keeps submit buttons
+     * disabled while one is running, so anything that follows must wait it out.
+     */
+    private async blurAndSettle() {
+        await this.page.keyboard.press("Tab");
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.waitForTimeout(1500);
+        await this.page.waitForTimeout(1200);
+    }
+
+    /**
+     * Click a submit button once Filament re-enables it. It is disabled for the duration
+     * of an in-flight Livewire request, and occasionally stays that way, so the wait is
+     * bounded and the click is forced rather than letting the whole test time out.
+     */
+    private async clickWhenEnabled(button: ReturnType<Page["locator"]>) {
+        await button.waitFor({ state: "visible", timeout: 15000 });
+
+        for (let attempt = 0; attempt < 10; attempt++) {
+            if (await button.isEnabled().catch(() => false)) {
+                await button.click({ timeout: 15000 }).catch(() => undefined);
+                return;
+            }
+            await this.page.waitForTimeout(1000);
+        }
+
+        await button.click({ force: true, timeout: 15000 }).catch(() => undefined);
+    }
+
+    /**
+     * Submit a form and make sure the request actually left the browser. A click that
+     * lands while Livewire is mid-request is swallowed: the button is disabled for that
+     * instant and nothing is saved, which on a loaded CI machine silently drops an added
+     * order line. Retry until the submit is seen on the wire.
+     */
+    private async submitForm(button: ReturnType<Page["locator"]>) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const submitted = this.page
+                .waitForResponse(
+                    (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
+                    { timeout: 10000 },
+                )
+                .catch(() => null);
+
+            await this.clickWhenEnabled(button);
+
+            if (await submitted) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(1200);
+                return;
+            }
+        }
+
+        throw new Error("The form submit never reached the server.");
     }
 
     /**
