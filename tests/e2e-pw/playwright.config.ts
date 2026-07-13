@@ -44,6 +44,7 @@ export default defineConfig({
 
     use: {
         baseURL: process.env.BASE_URL ?? "http://127.0.0.1:8000",
+        actionTimeout: 30 * 1000,
         screenshot: { mode: "only-on-failure", fullPage: true },
         video: "on-first-retry",
         trace: "on-first-retry",

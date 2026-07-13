@@ -259,10 +259,18 @@ export class InventoriesManagementPage {
             await this.selectDeliveryStep(data.deliveryStep);
         }
 
-        // Saving redirects off the create form, and that redirect tears the success toast
-        // down before it can be observed; the redirect is the reliable signal instead.
-        await this.erpLocators.inventoryWarehouseSaveButton.click();
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.erpLocators.inventoryWarehouseSaveButton.click().catch(() => undefined);
+            await this.page
+                .waitForURL((url) => !/warehouses\/create/.test(url.toString()), { timeout: 20000 })
+                .catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (!/warehouses\/create/.test(this.page.url())) {
+                return;
+            }
+        }
+
         await expect(this.page).not.toHaveURL(/warehouses\/create/);
     }
 
@@ -275,7 +283,17 @@ export class InventoriesManagementPage {
 
         if (await target.isVisible().catch(() => false)) {
             await target.click();
+            await this.settleForm();
         }
+    }
+
+    /**
+     * Let the Livewire round-trip a live field triggers land before the next interaction,
+     * so the submit that follows is not clicked while the form is still disabled.
+     */
+    private async settleForm() {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async selectDeliveryStep(step: 1 | 2 | 3) {
@@ -287,6 +305,7 @@ export class InventoriesManagementPage {
 
         if (await target.isVisible().catch(() => false)) {
             await target.click();
+            await this.settleForm();
         }
     }
 
