@@ -173,7 +173,13 @@ class InventoryManager
         $newOperation->save();
 
         foreach ($movesToReturn as $move) {
-            $values = $this->prepareReturnMoveValues($newOperation, $move, $moveQuantities[$move->id]);
+            $entry = $moveQuantities[$move->id];
+
+            $quantity = is_array($entry) ? ($entry['quantity'] ?? 0) : $entry;
+
+            $isRefund = is_array($entry) ? (bool) ($entry['to_refund'] ?? true) : true;
+
+            $values = $this->prepareReturnMoveValues($newOperation, $move, $quantity, $isRefund);
 
             $newMove = $move->replicate()
                 ->fill($values);
@@ -1199,7 +1205,7 @@ class InventoryManager
                         product: null,
                         package: $package,
                         excludeMoveLineIds: $excludedMoveLines,
-                        products: $packageMoveLines->pluck('product')->all()
+                        products: $packageMoveLines->pluck('product')->filter()->unique('id')->values()
                     );
 
                 $packageMoveLines->each(function ($moveLine) use ($bestLocation) {
@@ -2297,7 +2303,7 @@ class InventoryManager
         ];
     }
 
-    public function prepareReturnMoveValues(Operation $operation, Move $move, mixed $quantity): array
+    public function prepareReturnMoveValues(Operation $operation, Move $move, mixed $quantity, bool $isRefund = true): array
     {
         $values = [
             'name'                    => $operation->name,
@@ -2307,6 +2313,7 @@ class InventoryManager
             // 'quantity'                => $quantity,
             'quantity'                => 0,
             'is_picked'               => false,
+            'is_refund'               => $isRefund,
             'uom_id'                  => $move->product->uom_id,
             'operation_id'            => $operation->id,
             'state'                   => MoveState::DRAFT,
