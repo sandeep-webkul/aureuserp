@@ -586,7 +586,8 @@ test.describe("Sales Flow - Inventory Integration", () => {
 
         await salesPage.gotoOrderEdit(orderRef);
         await salesPage.expectDeliveredQuantity(0, "0");
-        await salesPage.expectCreateInvoiceButtonVisible();
+
+        await salesPage.expectCreateInvoiceButtonHidden();
     });
 });
 

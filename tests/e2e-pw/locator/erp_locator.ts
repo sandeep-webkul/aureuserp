@@ -15,8 +15,11 @@ export class ErpLocators {
     readonly pluginUninstallButton: Locator
     readonly pluginConfirmButton : Locator;
     readonly pluginSearchInput : Locator;
+    readonly inventoryMoveProductSelectButton: Locator;
     readonly pluginCards : Locator;
     readonly pluginCardBadges : Locator;
+    readonly pluginInstalledCards : Locator;
+    readonly pluginNotInstalledCards : Locator;
     readonly pluginSuccessMessage : Locator;
     readonly pluginErrorMessage : Locator;
 
@@ -524,8 +527,18 @@ export class ErpLocators {
         this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item:visible');
         this.pluginConfirmButton = page.locator('span[x-show="! isProcessing"]');
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        // The selected product of a move row. A row's own text also contains every option of
+        // its product select, so matching a row on its text finds every row, not the right one.
+        this.inventoryMoveProductSelectButton = page.locator('.fi-select-input-btn');
+
         this.pluginCards = page.locator('.fi-ta-record');
         this.pluginCardBadges = page.locator('.fi-ta-record .fi-badge');
+        // Installing a plugin moves its card to the top of the list, so cards are selected
+        // by their state badge rather than by position.
+        this.pluginInstalledCards = page.locator('.fi-ta-record')
+            .filter({ has: page.locator('.fi-badge', { hasText: /^\s*Installed\s*$/ }) });
+        this.pluginNotInstalledCards = page.locator('.fi-ta-record')
+            .filter({ has: page.locator('.fi-badge', { hasText: /^\s*Not Installed\s*$/ }) });
         this.pluginSuccessMessage = page.locator('h3.fi-no-notification-title');
         this.pluginErrorMessage = page.locator('.fi-toast-message-error');
 

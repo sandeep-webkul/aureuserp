@@ -358,6 +358,18 @@ export class PurchaseFlowPage {
      * an in-flight Livewire request, and occasionally stays that way, so the wait is
      * bounded and the click is forced rather than letting the whole test time out.
      */
+    /**
+     * Click the submit exactly once. Playwright re-tries a click whose element moves or is
+     * detached mid-dispatch, and Livewire re-renders the button as the form settles — on a
+     * slow machine that retry lands a second click, the form is saved twice, and the line
+     * added to a confirmed order is applied to its transfer twice (demand 2 becomes 4).
+     */
+    private async dispatchSingleClick(button: ReturnType<Page["locator"]>) {
+        await button.waitFor({ state: "visible", timeout: 15000 });
+        await expect(button).toBeEnabled({ timeout: 60000 });
+        await button.evaluate((element) => (element as HTMLButtonElement).click());
+    }
+
     private async clickWhenEnabled(button: ReturnType<Page["locator"]>) {
         await button.waitFor({ state: "visible", timeout: 15000 });
 
@@ -518,7 +530,7 @@ export class PurchaseFlowPage {
             )
             .catch(() => null);
 
-        await this.clickWhenEnabled(button);
+        await this.dispatchSingleClick(button);
 
         if (!(await submitted)) {
             throw new Error("The form submit never reached the server.");

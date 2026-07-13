@@ -1599,8 +1599,20 @@ export class InventoriesManagementPage {
      * The moves repeater does not render its rows in sale-order line order, so a
      * multi-line operation must be addressed by product rather than by row index.
      */
+    /**
+     * The move row holding a product. The row must be matched on its product select's chosen
+     * value: the row's text also contains every option the select can offer, so filtering a
+     * row by text matches any row and silently reads another product's quantities.
+     */
+    private moveRowForProduct(productName: string) {
+        return this.page
+            .getByRole("row")
+            .filter({ has: this.erpLocators.inventoryMoveProductSelectButton.filter({ hasText: productName }) })
+            .first();
+    }
+
     async setResultPackageForProduct(packageName: string, productName: string) {
-        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        const row = this.moveRowForProduct(productName);
         await expect(row).toBeVisible({ timeout: 15000 });
 
         const trigger = row.locator('button[wire\\:click*="manageLines"]').first();
@@ -2132,7 +2144,7 @@ export class InventoriesManagementPage {
      * product.
      */
     async expectOperationMoveDemandForProduct(productName: string, demand: string) {
-        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        const row = this.moveRowForProduct(productName);
         await expect(row).toBeVisible({ timeout: 15000 });
 
         const input = row.locator('input[id$=".product_uom_qty"]').first();
@@ -2147,7 +2159,7 @@ export class InventoriesManagementPage {
     }
 
     async expectCurrentOperationMoveQuantity(productName: string, quantity: string) {
-        const row = this.page.getByRole("row").filter({ hasText: productName }).first();
+        const row = this.moveRowForProduct(productName);
         await expect(row).toBeVisible();
         const escaped = quantity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         await expect(row).toContainText(new RegExp(`(^|\\s)${escaped}(\\.0+)?(\\s|$)`));
