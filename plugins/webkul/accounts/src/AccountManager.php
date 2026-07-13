@@ -1122,6 +1122,16 @@ class AccountManager
             foreach ($values['to_reconcile'] as $line) {
                 $line->move->matchedPayments()->attach($payment->id);
             }
+
+            AccountMove::whereIn('id', $values['to_reconcile']->pluck('move_id')->unique())
+                ->get()
+                ->each(function ($move) {
+                    $move->refresh();
+
+                    $move->computePaymentState();
+
+                    $move->save();
+                });
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Database\Factories\MoveLineFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -616,5 +618,10 @@ class MoveLine extends Model implements Sortable
 
         $this->reconciled = $companyCurrency->isZero($this->amount_residual)
             && $foreignCurrency->isZero($this->amount_residual_currency);
+    }
+
+    protected static function newFactory(): Factory
+    {
+        return MoveLineFactory::new();
     }
 }
