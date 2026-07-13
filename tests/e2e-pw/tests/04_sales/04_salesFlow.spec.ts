@@ -1,5 +1,5 @@
 import { test } from "../../setup";
-import { SalesFlowPage } from "../../pages/04_salesFlow";
+import { SalesFlowPage } from "../../pages/04_salesManagement";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
 
 const DEFAULT_STOCK_LOCATION = "WH/Stock";

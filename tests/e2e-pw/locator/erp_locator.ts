@@ -15,6 +15,8 @@ export class ErpLocators {
     readonly pluginUninstallButton: Locator
     readonly pluginConfirmButton : Locator;
     readonly pluginSearchInput : Locator;
+    readonly pluginCards : Locator;
+    readonly pluginCardBadges : Locator;
     readonly pluginSuccessMessage : Locator;
     readonly pluginErrorMessage : Locator;
 
@@ -520,6 +522,8 @@ export class ErpLocators {
         this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item');
         this.pluginConfirmButton = page.locator('span[x-show="! isProcessing"]');
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        this.pluginCards = page.locator('.fi-ta-record');
+        this.pluginCardBadges = page.locator('.fi-ta-record .fi-badge');
         this.pluginSuccessMessage = page.locator('h3.fi-no-notification-title');
         this.pluginErrorMessage = page.locator('.fi-toast-message-error');
 

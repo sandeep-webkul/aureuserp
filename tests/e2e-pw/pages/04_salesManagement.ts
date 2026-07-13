@@ -58,9 +58,9 @@ export class SalesFlowPage {
     }
 
     /**
-     * Navigate, tolerating a navigation that a still-in-flight Livewire redirect aborts.
-     * A test that lands here straight after saving a record on another page (a warehouse,
-     * say) would otherwise fail with net::ERR_ABORTED.
+     * Navigate, retrying when a redirect still in flight from the previous page aborts or
+     * interrupts this one. Landing here straight after saving a record elsewhere would
+     * otherwise fail with net::ERR_ABORTED.
      */
     private async safeGoto(url: string) {
         await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
@@ -70,7 +70,7 @@ export class SalesFlowPage {
                 await this.page.goto(url);
                 return;
             } catch (error) {
-                if (!/ERR_ABORTED/.test((error as Error).message)) {
+                if (!/ERR_ABORTED|interrupted by another navigation/.test((error as Error).message)) {
                     throw error;
                 }
                 await this.page.waitForTimeout(500);
@@ -270,15 +270,37 @@ export class SalesFlowPage {
             await this.selectBySearch(l.salesQuotationProductSelectInput.nth(index), line.productName);
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await l.salesQuotationQuantityInput.nth(index).fill(line.quantity);
-            await this.page.waitForTimeout(400);
+
+            // The quantity recomputes the line on blur; let that round-trip finish before
+            // touching the tax field, or its request overlaps and the submit stays disabled.
+            await this.blurAndSettle();
 
             if (line.taxName) {
                 await this.selectLineTax(index, line.taxName);
             }
         }
 
-        await l.salesQuotationSaveButton.click();
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.submitCreateForm();
+    }
+
+    /**
+     * Submit the create form. Filament disables the submit button while a Livewire request
+     * is in flight — a line recompute, say — and a click that lands in that window is
+     * swallowed, so the submit is retried until the create page is actually left behind.
+     */
+    private async submitCreateForm() {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.clickWhenEnabled(this.erpLocators.salesQuotationSaveButton);
+            await this.page
+                .waitForURL((url) => !/quotations\/create/.test(url.toString()), { timeout: 20000 })
+                .catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (!/quotations\/create/.test(this.page.url())) {
+                return;
+            }
+        }
+
         await expect(this.page).not.toHaveURL(/quotations\/create/);
     }
 
@@ -339,8 +361,7 @@ export class SalesFlowPage {
         await expect(input).toBeEnabled();
         await input.fill(quantity);
         await input.blur();
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.waitForTimeout(1000);
+        await this.blurAndSettle();
     }
 
     /**
