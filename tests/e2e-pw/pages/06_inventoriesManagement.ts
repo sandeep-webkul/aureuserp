@@ -950,15 +950,36 @@ export class InventoriesManagementPage {
         await expect(this.erpLocators.inventoryProductTable.first()).toBeVisible();
     }
 
+    /**
+     * Fill a field once its form has finished hydrating. Livewire swaps the markup after the
+     * page settles, discarding a value typed into the pre-swap DOM — the product is then
+     * submitted with an empty name, fails validation, and the form never leaves /create.
+     */
+    private async fillWhenReady(input: ReturnType<Page["locator"]>, value: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(input).toBeVisible();
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.fill(value);
+
+            if ((await input.inputValue()) === value) {
+                return;
+            }
+
+            await this.page.waitForTimeout(500);
+        }
+
+        await expect(input).toHaveValue(value);
+    }
+
     async createInventoryProduct(product: InventoryProductData) {
         await this.gotoProductsPage();
         await this.erpLocators.inventoryProductCreateButton.click();
         await expect(this.page).toHaveURL(/products\/create/);
 
-        await this.erpLocators.inventoryProductNameInput.fill(product.name);
+        await this.fillWhenReady(this.erpLocators.inventoryProductNameInput, product.name);
         if (product.price) {
-            await this.erpLocators.inventoryProductPriceInput
-                .fill(product.price)
+            await this.fillWhenReady(this.erpLocators.inventoryProductPriceInput, product.price)
                 .catch(() => undefined);
         }
 
@@ -1604,15 +1625,25 @@ export class InventoriesManagementPage {
      * value: the row's text also contains every option the select can offer, so filtering a
      * row by text matches any row and silently reads another product's quantities.
      */
-    private moveRowForProduct(productName: string) {
-        return this.page
-            .getByRole("row")
-            .filter({ has: this.erpLocators.inventoryMoveProductSelectButton.filter({ hasText: productName }) })
-            .first();
+    private async moveRowForProduct(productName: string) {
+        const selects = this.erpLocators.inventoryMoveProductSelectButton;
+
+        // On an editable operation the product is a select, and the row's text carries every
+        // option it offers — so the row has to be matched on the select's chosen value.
+        if (await selects.count() > 0) {
+            return this.page
+                .getByRole("row")
+                .filter({ has: selects.filter({ hasText: productName }) })
+                .first();
+        }
+
+        // A read-only operation (a draft return, for one) renders the product as plain text,
+        // and with no select there is nothing to pollute the row's text.
+        return this.page.getByRole("row").filter({ hasText: productName }).first();
     }
 
     async setResultPackageForProduct(packageName: string, productName: string) {
-        const row = this.moveRowForProduct(productName);
+        const row = await this.moveRowForProduct(productName);
         await expect(row).toBeVisible({ timeout: 15000 });
 
         const trigger = row.locator('button[wire\\:click*="manageLines"]').first();
@@ -1933,7 +1964,7 @@ export class InventoriesManagementPage {
         const l = this.erpLocators;
         const startUrl = this.page.url();
 
-        await l.inventoryOperationReturnButton.waitFor({ state: "visible", timeout: 15000 });
+        await l.inventoryOperationReturnButton.waitFor({ state: "visible", timeout: 60000 });
 
         for (let attempt = 0; attempt < 3; attempt++) {
             if (await l.inventoryReturnModal.isVisible().catch(() => false)) {
@@ -2007,14 +2038,35 @@ export class InventoriesManagementPage {
      */
     private async settleAfterValidation() {
         const l = this.erpLocators;
-        for (let attempt = 0; attempt < 6; attempt++) {
+        let revalidations = 0;
+
+        for (let attempt = 0; attempt < 30; attempt++) {
             await this.dismissReturnModalIfOpen();
             const modalOpen = await l.inventoryReturnModal.isVisible().catch(() => false);
             const returnReady = await l.inventoryOperationReturnButton.isVisible().catch(() => false);
+
             if (returnReady && !modalOpen) {
                 return;
             }
-            await this.page.waitForTimeout(500);
+
+            // A Validate click that lands while Livewire is mid-request is swallowed, so the
+            // operation quietly stays open and the Return button never arrives. Re-issue the
+            // validation instead of walking into a 15s wait for a button that is not coming.
+            const stillOpen = await l.inventoryOperationValidateButton.isVisible().catch(() => false);
+
+            if (!modalOpen && stillOpen && revalidations < 3) {
+                revalidations++;
+                await l.inventoryOperationValidateButton.click({ timeout: 15000 }).catch(() => undefined);
+                await this.page.waitForTimeout(800);
+
+                if (await l.inventoryOperationNoBackorderButton.isVisible().catch(() => false)) {
+                    await l.inventoryOperationNoBackorderButton.click({ timeout: 15000 }).catch(() => undefined);
+                }
+
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            }
+
+            await this.page.waitForTimeout(1000);
         }
     }
 
@@ -2144,7 +2196,7 @@ export class InventoriesManagementPage {
      * product.
      */
     async expectOperationMoveDemandForProduct(productName: string, demand: string) {
-        const row = this.moveRowForProduct(productName);
+        const row = await this.moveRowForProduct(productName);
         await expect(row).toBeVisible({ timeout: 15000 });
 
         const input = row.locator('input[id$=".product_uom_qty"]').first();
@@ -2159,7 +2211,7 @@ export class InventoriesManagementPage {
     }
 
     async expectCurrentOperationMoveQuantity(productName: string, quantity: string) {
-        const row = this.moveRowForProduct(productName);
+        const row = await this.moveRowForProduct(productName);
         await expect(row).toBeVisible();
         const escaped = quantity.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         await expect(row).toContainText(new RegExp(`(^|\\s)${escaped}(\\.0+)?(\\s|$)`));
