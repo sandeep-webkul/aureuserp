@@ -135,15 +135,14 @@ class QuotationResource extends Resource
                     ->options(function ($record) {
                         $options = OrderState::options();
 
-                        if (
-                            $record
-                            && $record->state != OrderState::CANCEL->value
-                        ) {
-                            unset($options[OrderState::CANCEL->value]);
-                        }
-
                         if ($record == null) {
                             unset($options[OrderState::CANCEL->value]);
+                        } else {
+                            if ($record->state !== OrderState::CANCEL) {
+                                unset($options[OrderState::CANCEL->value]);
+                            } else {
+                                unset($options[OrderState::SALE->value]);
+                            }
                         }
 
                         return $options;
@@ -681,8 +680,10 @@ class QuotationResource extends Resource
                     ->options(function ($record) {
                         $options = OrderState::options();
 
-                        if ($record->state != OrderState::CANCEL->value) {
+                        if ($record->state !== OrderState::CANCEL) {
                             unset($options[OrderState::CANCEL->value]);
+                        } else {
+                            unset($options[OrderState::SALE->value]);
                         }
 
                         return $options;
