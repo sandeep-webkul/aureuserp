@@ -31,18 +31,27 @@ export class PluginManagementPage {
         const pluginCount = await this.erpLocators.pluginName.count();
         for (let i = 0; i < pluginCount; i++) {
 
-            await this.erpLocators.pluginthreeDot.nth(i).click();
-            const checkInstalled = await this.erpLocators.pluginUninstallButton.nth(i).isVisible();
+            const checkInstalled = await this.openPluginActionsAndCheckInstalled(i);
 
             if (!checkInstalled) {
                 await this.page.waitForLoadState('networkidle');
-                await this.erpLocators.pluginInstallButton.nth(0).click();
-                await this.page.waitForTimeout(3000); // Wait for 3 seconds to allow installation to complete
-                await this.erpLocators.pluginConfirmButton.click();
                 const pluginTitle = await this.erpLocators.pluginName.nth(i).innerText();
                 console.log(`Installing Plugin: ${pluginTitle}`);
+
+                await this.erpLocators.pluginInstallButton.first().click({ timeout: 30000 });
+                await this.page.waitForTimeout(3000); // Wait for 3 seconds to allow installation to complete
+                await this.erpLocators.pluginConfirmButton.click();
+
+                await this.waitForPluginActionToFinish();
                 await expect(this.erpLocators.pluginSuccessMessage).toBeVisible();
+
+                continue;
             }
+
+            // Installing redirects and rebuilds the list, but a plugin that was already
+            // installed leaves its dropdown open over the next card's actions button.
+            await this.page.keyboard.press('Escape');
+            await this.page.waitForTimeout(500);
         }
     }
 
@@ -53,19 +62,25 @@ export class PluginManagementPage {
         const pluginCount = await this.erpLocators.pluginName.count();
         for (let i = 0; i < pluginCount; i++) {
 
-            await this.erpLocators.pluginthreeDot.nth(i).click();
-            const checkInstalled = await this.erpLocators.pluginUninstallButton.nth(0).isVisible();
+            const checkInstalled = await this.openPluginActionsAndCheckInstalled(i);
 
             if (checkInstalled) {
-                await this.page.waitForLoadState('networkidle');
-                await this.page.waitForTimeout(2000);
-                await this.erpLocators.pluginUninstallButton.nth(0).click();
-                await this.page.waitForTimeout(5000);
-                await this.erpLocators.pluginConfirmButton.click();
                 const pluginTitle = await this.erpLocators.pluginName.nth(i).innerText();
                 console.log(`Uninstalling Plugin: ${pluginTitle}`);
+
+                await this.page.waitForTimeout(2000);
+                await this.erpLocators.pluginUninstallButton.first().click({ timeout: 30000 });
+                await this.page.waitForTimeout(5000);
+                await this.erpLocators.pluginConfirmButton.click();
+
+                await this.waitForPluginActionToFinish();
                 await expect(this.erpLocators.pluginSuccessMessage).toBeVisible();
+
+                continue;
             }
+
+            await this.page.keyboard.press('Escape');
+            await this.page.waitForTimeout(500);
         }
     }
 
@@ -86,15 +101,31 @@ export class PluginManagementPage {
         await this.erpLocators.pluginInstallButton.first().click({ timeout: 30000 });
         await this.page.waitForTimeout(3000);
         await this.erpLocators.pluginConfirmButton.click();
+
+        await this.waitForPluginActionToFinish();
         await expect(this.erpLocators.pluginSuccessMessage).toBeVisible();
     }
 
     /**
-     * Open the actions dropdown and report whether the plugin is already installed.
+     * Wait for the install/uninstall request itself, which runs artisan on the server and
+     * takes tens of seconds. The success notification alone is not a safe signal: the
+     * previous plugin's toast is still on screen, so it reads as done while this request is
+     * still running and every action button is held disabled by wire:loading.
      */
-    private async openPluginActionsAndCheckInstalled(): Promise<boolean> {
+    private async waitForPluginActionToFinish() {
+        await this.page.waitForLoadState('networkidle', { timeout: 300000 });
+        await expect(this.erpLocators.pluginthreeDot.first()).toBeEnabled({ timeout: 300000 });
+    }
+
+    /**
+     * Open a plugin's actions dropdown and report whether it is already installed. The
+     * dropdown holds a single action set, so the state is always read from its first
+     * button: indexing those buttons by the card position never matches, which reads as
+     * "not installed" and sends the caller looking for an install button that is not there.
+     */
+    private async openPluginActionsAndCheckInstalled(cardIndex = 0): Promise<boolean> {
         for (let attempt = 0; attempt < 3; attempt++) {
-            await this.erpLocators.pluginthreeDot.first().click({ timeout: 30000 });
+            await this.erpLocators.pluginthreeDot.nth(cardIndex).click({ timeout: 30000 });
 
             const uninstall = this.erpLocators.pluginUninstallButton.first();
             const install = this.erpLocators.pluginInstallButton.first();

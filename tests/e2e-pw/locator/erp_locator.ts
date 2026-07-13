@@ -518,8 +518,10 @@ export class ErpLocators {
         this.pluginSyncButton = page.locator('text=Sync Available Plugins');
         this.pluginthreeDot = page.locator('button[title="Actions"]');
         this.pluginName = page.locator('.fi-size-lg.fi-font-semibold.fi-ta-text-item.fi-ta-text.fi-inline');
-        this.pluginInstallButton = page.locator('button.fi-color.fi-color-success.fi-text-color-700');
-        this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item');
+        // Every card keeps its own dropdown in the DOM, so these are scoped to the open one:
+        // an unscoped match resolves to the first card's hidden button and never clicks.
+        this.pluginInstallButton = page.locator('button.fi-color.fi-color-success.fi-text-color-700:visible');
+        this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item:visible');
         this.pluginConfirmButton = page.locator('span[x-show="! isProcessing"]');
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
         this.pluginCards = page.locator('.fi-ta-record');
@@ -1089,7 +1091,12 @@ export class ErpLocators {
         this.blogPostsMetaDescriptionInput = page.getByRole("textbox", { name: /^Meta Description$/ }).first();
         this.blogPostsCategorySelect = page.locator("button").filter({ hasText: /^Select an option$/ }).first();
         this.blogPostsSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.blogPostsSaveButton = page.getByRole("button", { name: /create|save|submit/i }).last();
+        // The form's real submit — a loose name match picks "Create & create another", which
+        // saves but resets the form in place instead of redirecting to the saved record.
+        this.blogPostsSaveButton = page
+            .locator('button[type="submit"]')
+            .filter({ hasText: /^\s*(Create|Save changes|Submit)\s*$/i })
+            .first();
         this.blogPostsConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /delete/i }).first();
         this.blogPostsSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
     }

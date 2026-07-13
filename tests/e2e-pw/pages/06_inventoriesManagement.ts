@@ -102,8 +102,6 @@ export class InventoriesManagementPage {
     async ensureBaseDependentPluginsInstalled() {
         const pluginPage = new PluginManagementPage(this.page);
         await pluginPage.gotoPluginManagementPage();
-        // await pluginPage.installPluginByName("Products");
-        // await pluginPage.gotoPluginManagementPage();
         await pluginPage.installPluginByName("Inventories");
     }
 
@@ -312,18 +310,54 @@ export class InventoriesManagementPage {
     async editWarehouseSteps(name: string, receptionStep: 1 | 2 | 3, deliveryStep: 1 | 2 | 3) {
         await this.gotoWarehousesPage();
         await this.searchList(name);
-        // await this.erpLocators.openWarehouseRow().click();
-        // await this.openRowActions();
-        // await this.page.waitForLoadState("networkidle");
         await this.page.waitForTimeout(800);
         
         await this.erpLocators.inventoryWarehouseEditAction.click();
 
-        await this.selectReceptionStep(receptionStep);
-        await this.selectDeliveryStep(deliveryStep);
+        // The list opens the edit form as an SPA navigation: a radio picked before the form
+        // has hydrated is discarded along with the markup it was clicked in.
+        await this.page.waitForURL(/warehouses\/\d+\/edit/, { timeout: 30000 });
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
-        await this.erpLocators.inventoryWarehouseEditSaveButton.click();
-        await this.expectSuccessToast();
+        const editUrl = this.page.url();
+
+        // The success toast cannot tell a real save from a click Filament swallowed while
+        // the step radios were still recomputing, so the saved steps are read back instead.
+        // A reload resets the form, hence the steps are re-picked on every attempt.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.selectReceptionStep(receptionStep);
+            await this.selectDeliveryStep(deliveryStep);
+
+            await this.erpLocators.inventoryWarehouseEditSaveButton.click().catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(1000);
+
+            await this.page.goto(editUrl);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (await this.areWarehouseStepsSelected(receptionStep, deliveryStep)) {
+                return;
+            }
+        }
+
+        throw new Error(`The warehouse steps were never saved (reception ${receptionStep}, delivery ${deliveryStep}).`);
+    }
+
+    private async areWarehouseStepsSelected(receptionStep: 1 | 2 | 3, deliveryStep: 1 | 2 | 3): Promise<boolean> {
+        const reception = receptionStep === 1
+            ? this.erpLocators.inventoryWarehouseReceptionOneStep
+            : receptionStep === 2
+                ? this.erpLocators.inventoryWarehouseReceptionTwoSteps
+                : this.erpLocators.inventoryWarehouseReceptionThreeSteps;
+
+        const delivery = deliveryStep === 1
+            ? this.erpLocators.inventoryWarehouseDeliveryOneStep
+            : deliveryStep === 2
+                ? this.erpLocators.inventoryWarehouseDeliveryTwoSteps
+                : this.erpLocators.inventoryWarehouseDeliveryThreeSteps;
+
+        return (await reception.isChecked().catch(() => false))
+            && (await delivery.isChecked().catch(() => false));
     }
 
     async deleteWarehouse(name: string) {
@@ -934,11 +968,25 @@ export class InventoriesManagementPage {
 
         if (product.tracking) {
             await this.erpLocators.inventoryProductTrackingSelect.selectOption(product.tracking, { timeout: 15000 });
+
+            // Track By recomputes the form; Filament disables the submit while that request
+            // is in flight and a click landing then is swallowed, leaving the form open.
+            await this.settleForm();
         }
 
-        await this.erpLocators.inventoryProductSaveButton.click();
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.erpLocators.inventoryProductSaveButton.click().catch(() => undefined);
+            await this.page
+                .waitForURL((url) => !/products\/create/.test(url.toString()), { timeout: 60000 })
+                .catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (!/products\/create/.test(this.page.url())) {
+                return;
+            }
+        }
+
         await expect(this.page).not.toHaveURL(/products\/create/);
-        await this.page.waitForLoadState("networkidle");
     }
 
     /**

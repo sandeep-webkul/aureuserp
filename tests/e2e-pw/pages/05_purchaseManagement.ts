@@ -341,7 +341,7 @@ export class PurchaseFlowPage {
             // in-flight Livewire request leaves the form open and is worth retrying, while
             // clicking again after the redirect would hit the edit page's Delete action.
             await this.page
-                .waitForURL((url) => !/quotations\/create/.test(url.toString()), { timeout: 20000 })
+                .waitForURL((url) => !/quotations\/create/.test(url.toString()), { timeout: 60000 })
                 .catch(() => undefined);
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
@@ -507,24 +507,25 @@ export class PurchaseFlowPage {
      * order line. Retry until the submit is seen on the wire.
      */
     private async submitForm(button: ReturnType<Page["locator"]>) {
-        for (let attempt = 0; attempt < 3; attempt++) {
-            const submitted = this.page
-                .waitForResponse(
-                    (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
-                    { timeout: 10000 },
-                )
-                .catch(() => null);
+        // The submit must not be retried: a save that is merely slow is still on its way to
+        // the server, and clicking again saves the form a second time — the line added to a
+        // confirmed order is then applied to the receipt twice (demand 2 becomes 4). Click
+        // once, and give the save as long as it needs.
+        const submitted = this.page
+            .waitForResponse(
+                (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
+                { timeout: 120000 },
+            )
+            .catch(() => null);
 
-            await this.clickWhenEnabled(button);
+        await this.clickWhenEnabled(button);
 
-            if (await submitted) {
-                await this.page.waitForLoadState("networkidle").catch(() => undefined);
-                await this.page.waitForTimeout(1200);
-                return;
-            }
+        if (!(await submitted)) {
+            throw new Error("The form submit never reached the server.");
         }
 
-        throw new Error("The form submit never reached the server.");
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1200);
     }
 
     /**

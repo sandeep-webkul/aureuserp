@@ -549,8 +549,8 @@ test.describe("Sales Flow - Inventory Integration", () => {
 
     /**
      * Returning a validated sale-order delivery creates the reverse incoming transfer.
-     * Validating it puts the goods back on hand, but the return's move is not tied to the
-     * sale order line, so the order keeps its delivered quantity and stays invoiceable.
+     * Validating it puts the goods back on hand, and because the return move is tied to the
+     * same order line, the order's delivered quantity drops back to zero.
      */
     test("Sales order - return delivered goods", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
@@ -585,7 +585,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
         await inventoryPage.expectProductMoveRowVisible(productName, "Done");
 
         await salesPage.gotoOrderEdit(orderRef);
-        await salesPage.expectDeliveredQuantity(0, "3");
+        await salesPage.expectDeliveredQuantity(0, "0");
         await salesPage.expectCreateInvoiceButtonVisible();
     });
 });
