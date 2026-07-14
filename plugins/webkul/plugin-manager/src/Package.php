@@ -252,16 +252,8 @@ class Package extends BasePackage
         return 'php';
     }
 
-    private static bool $sequencesSynced = false;
-
     public static function syncPostgresSequences(): void
     {
-        if (static::$sequencesSynced) {
-            return;
-        }
-
-        static::$sequencesSynced = true;
-
         db_dialect()->syncSequences();
     }
 

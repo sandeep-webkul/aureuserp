@@ -112,7 +112,9 @@ trait HasChatter
         $relation = $this->chatterResponsibleRelation($name);
 
         if ($relation instanceof BelongsToMany || $relation instanceof HasMany) {
-            return $relation->pluck($relation->getRelated()->getKeyName())->all();
+            $related = $relation->getRelated();
+
+            return $relation->pluck($related->getTable().'.'.$related->getKeyName())->all();
         }
 
         if ($relation instanceof BelongsTo) {
