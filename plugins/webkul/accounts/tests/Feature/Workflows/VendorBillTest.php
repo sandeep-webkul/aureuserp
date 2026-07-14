@@ -102,3 +102,18 @@ it('marks a partially paid vendor bill as partial with a remaining residual', fu
     expect($bill->refresh()->payment_state)->toBe(PaymentState::PARTIAL)
         ->and((float) abs($bill->amount_residual))->toBe(80.0);
 });
+
+it('reconciles a vendor refund against the bill and clears the residual', function () {
+    $bill = AccountHelper::invoice(MoveType::IN_INVOICE, $this->partner);
+    AccountHelper::productLine($bill, $this->expense, qty: 2, priceUnit: 100);
+    AccountHelper::post($bill);
+
+    $refund = AccountHelper::invoice(MoveType::IN_REFUND, $this->partner);
+    AccountHelper::productLine($refund, $this->expense, qty: 2, priceUnit: 100);
+    AccountHelper::post($refund);
+
+    AccountHelper::reconcile($bill, $refund);
+
+    expect((float) abs($bill->refresh()->amount_residual))->toBe(0.0)
+        ->and($bill->payment_state)->toBe(PaymentState::REVERSED);
+});

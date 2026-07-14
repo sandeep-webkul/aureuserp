@@ -713,6 +713,7 @@ class AccountManager
             rate: $rate,
             sign: $isInvoice ? $line->move->direction_sign : 1,
             specialMode: $isInvoice ? false : 'total_excluded',
+            is_refund: in_array($line->move->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND], true),
         );
     }
 
@@ -1680,11 +1681,11 @@ class AccountManager
 
         $defaultAccountsSettings = new DefaultAccountSettings;
 
-        if (
-            ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
-                || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
-                    || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
-        ) {
+        $journalId = $defaultAccountsSettings->currency_exchange_journal_id;
+        $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id;
+        $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id;
+
+        if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
             throw new Exception('Exchange difference journal and accounts must be configured');
         }
 

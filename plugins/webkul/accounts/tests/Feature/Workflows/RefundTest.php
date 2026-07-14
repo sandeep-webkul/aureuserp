@@ -2,6 +2,7 @@
 
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentState;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -71,4 +72,17 @@ it('mirrors the original debit and credit on the vendor refund reversal', functi
 
     expect((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe(200.0)
         ->and((float) $lines->sum(fn ($l) => (float) $l->credit))->toBe(200.0);
+});
+
+it('reverses and reconciles a posted vendor bill, marking it reversed', function () {
+    $bill = AccountHelper::invoice(MoveType::IN_INVOICE, $this->partner);
+    AccountHelper::productLine($bill, $this->expense, qty: 2, priceUnit: 100);
+    AccountHelper::post($bill);
+
+    $refund = AccountHelper::reverse($bill);
+
+    AccountHelper::reconcile($bill, $refund);
+
+    expect($bill->refresh()->payment_state)->toBe(PaymentState::REVERSED)
+        ->and((float) abs($bill->amount_residual))->toBe(0.0);
 });

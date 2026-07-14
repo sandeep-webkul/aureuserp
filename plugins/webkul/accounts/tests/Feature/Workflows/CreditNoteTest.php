@@ -1,7 +1,11 @@
 <?php
 
+use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Models\TaxPartition;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -71,4 +75,32 @@ it('mirrors the original debit and credit on the reversing entry', function () {
 
     expect((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe(200.0)
         ->and((float) $lines->sum(fn ($l) => (float) $l->credit))->toBe(200.0);
+});
+
+it('uses the refund repartition line for a taxed credit note', function () {
+    $tax = AccountHelper::taxWithAccounts(10);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100, taxes: [$tax]);
+
+    AccountHelper::post($creditNote);
+
+    $taxLine = $creditNote->refresh()->lines->firstWhere('display_type', DisplayType::TAX);
+    $repartition = TaxPartition::find($taxLine->tax_repartition_line_id);
+
+    expect((float) $creditNote->amount_tax)->toBe(20.0)
+        ->and($repartition->document_type)->toBe(DocumentType::REFUND);
+});
+
+it('reverses and reconciles a posted invoice, marking it reversed', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::reverse($invoice);
+
+    AccountHelper::reconcile($invoice, $creditNote);
+
+    expect($invoice->refresh()->payment_state)->toBe(PaymentState::REVERSED)
+        ->and((float) abs($invoice->amount_residual))->toBe(0.0);
 });

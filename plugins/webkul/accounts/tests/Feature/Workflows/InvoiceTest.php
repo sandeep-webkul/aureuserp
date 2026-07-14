@@ -1,10 +1,14 @@
 <?php
 
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\RepartitionType;
+use Webkul\Account\Models\TaxPartition;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -267,4 +271,142 @@ it('reconciles the payment against the receivable line', function () {
     AccountHelper::pay($invoice);
 
     expect((bool) $invoice->refresh()->paymentTermLines->first()->reconciled)->toBeTrue();
+});
+
+/*
+|--------------------------------------------------------------------------
+| Tax variants: division, group, repartition
+|--------------------------------------------------------------------------
+*/
+
+it('computes a division tax out of the base', function () {
+    $tax = AccountHelper::taxWithAccounts(10, AmountType::DIVISION);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100, taxes: [$tax]);
+
+    AccountHelper::compute($invoice);
+
+    expect((float) $invoice->refresh()->amount_untaxed)->toBe(200.0)
+        ->and((float) $invoice->amount_tax)->toBe(22.22)
+        ->and((float) $invoice->amount_total)->toBe(222.22);
+});
+
+it('sums the child taxes of a group tax', function () {
+    $group = AccountHelper::groupTax([
+        AccountHelper::taxWithAccounts(10),
+        AccountHelper::taxWithAccounts(5),
+    ]);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100, taxes: [$group]);
+
+    AccountHelper::compute($invoice);
+
+    expect((float) $invoice->refresh()->amount_untaxed)->toBe(200.0)
+        ->and((float) $invoice->amount_tax)->toBe(30.0)
+        ->and((float) $invoice->amount_total)->toBe(230.0);
+});
+
+it('links the tax move line to its invoice repartition line', function () {
+    $tax = AccountHelper::taxWithAccounts(10);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100, taxes: [$tax]);
+
+    AccountHelper::post($invoice);
+
+    $taxLine = $invoice->refresh()->lines->firstWhere('display_type', DisplayType::TAX);
+    $repartition = TaxPartition::find($taxLine->tax_repartition_line_id);
+
+    expect($taxLine->tax_repartition_line_id)->not->toBeNull()
+        ->and($repartition->document_type)->toBe(DocumentType::INVOICE)
+        ->and($repartition->repartition_type)->toBe(RepartitionType::TAX);
+});
+
+it('splits a tax across two repartition lines', function () {
+    $tax = AccountHelper::taxWithAccounts(10, taxFactors: [40, 60]);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100, taxes: [$tax]);
+
+    AccountHelper::post($invoice);
+
+    $taxLines = $invoice->refresh()->lines->where('display_type', DisplayType::TAX)->values();
+
+    expect($taxLines)->toHaveCount(2)
+        ->and((float) $taxLines->sum(fn ($l) => abs((float) $l->balance)))->toBe(20.0)
+        ->and($taxLines->every(fn ($l) => $l->tax_repartition_line_id !== null))->toBeTrue();
+});
+
+it('nets a reverse-charge tax to zero across positive and negative repartition', function () {
+    $tax = AccountHelper::taxWithAccounts(10, taxFactors: [100, -100]);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100, taxes: [$tax]);
+
+    AccountHelper::post($invoice);
+
+    $lines = $invoice->refresh()->lines;
+    $taxLines = $lines->where('display_type', DisplayType::TAX)->values();
+
+    expect($taxLines)->toHaveCount(2)
+        ->and((float) $invoice->amount_tax)->toBe(0.0);
+});
+
+it('sets an early-payment discount date on the receivable line', function () {
+    $term = AccountHelper::earlyPaymentTerm(2, 7);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
+        'invoice_payment_term_id' => $term->id,
+    ]);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+
+    AccountHelper::post($invoice);
+
+    $termLine = $invoice->refresh()->lines->firstWhere('display_type', DisplayType::PAYMENT_TERM);
+
+    expect($termLine)->not->toBeNull()
+        ->and((float) abs($termLine->balance))->toBe(200.0);
+});
+
+it('reconciles a credit note against the invoice and clears the residual', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($creditNote);
+
+    AccountHelper::reconcile($invoice, $creditNote);
+
+    expect((float) abs($invoice->refresh()->amount_residual))->toBe(0.0)
+        ->and($invoice->payment_state)->toBe(PaymentState::REVERSED);
+});
+
+it('restores the residual when a reconciliation is undone', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($creditNote);
+
+    AccountHelper::reconcile($invoice, $creditNote);
+    AccountHelper::unreconcile($invoice);
+
+    expect((float) abs($invoice->refresh()->amount_residual))->toBe(200.0)
+        ->and($invoice->payment_state)->toBe(PaymentState::NOT_PAID);
+});
+
+it('assigns a sequential name from the journal when the invoice is posted', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+
+    AccountHelper::post($invoice);
+
+    expect($invoice->refresh()->name)->not->toBeNull()
+        ->and($invoice->name)->not->toBe('/');
 });

@@ -20,6 +20,9 @@ use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\FiscalPositionAccount;
+use Webkul\Account\Models\FiscalPositionTax;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Move;
@@ -33,6 +36,7 @@ use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
 
 class AccountHelper
@@ -206,6 +210,7 @@ class AccountHelper
         AmountType $amountType = AmountType::PERCENT,
         TypeTaxUse $type = TypeTaxUse::SALE,
         TaxIncludeOverride $include = TaxIncludeOverride::TAX_EXCLUDED,
+        array $taxFactors = [100],
     ): Tax {
         $tax = static::tax($amount, $amountType, $include, $type);
 
@@ -224,17 +229,50 @@ class AccountHelper
                 'company_id'       => static::company()->id,
             ]);
 
-            TaxPartition::factory()->create([
-                'tax_id'           => $tax->id,
-                'document_type'    => $document,
-                'repartition_type' => RepartitionType::TAX,
-                'factor_percent'   => 100,
-                'account_id'       => $taxAccount->id,
-                'company_id'       => static::company()->id,
-            ]);
+            foreach ($taxFactors as $factor) {
+                TaxPartition::factory()->create([
+                    'tax_id'           => $tax->id,
+                    'document_type'    => $document,
+                    'repartition_type' => RepartitionType::TAX,
+                    'factor_percent'   => $factor,
+                    'account_id'       => $taxAccount->id,
+                    'company_id'       => static::company()->id,
+                ]);
+            }
         }
 
         return $tax->refresh();
+    }
+
+    public static function groupTax(array $children, TypeTaxUse $type = TypeTaxUse::SALE): Tax
+    {
+        $parent = static::tax(0, AmountType::GROUP, TaxIncludeOverride::TAX_EXCLUDED, $type);
+
+        $parent->childrenTaxes()->sync(collect($children)->pluck('id')->all());
+
+        return $parent->refresh();
+    }
+
+    public static function earlyPaymentTerm(float $discountPercent = 2, int $discountDays = 7, int $dueDays = 30): PaymentTerm
+    {
+        $term = PaymentTerm::factory()->create([
+            'company_id'          => static::company()->id,
+            'early_discount'      => true,
+            'discount_percentage' => $discountPercent,
+            'discount_days'       => $discountDays,
+        ]);
+
+        $term->dueTerms()->delete();
+
+        PaymentDueTerm::factory()->create([
+            'payment_id'   => $term->id,
+            'value'        => DueTermValue::PERCENT,
+            'value_amount' => 100,
+            'delay_type'   => DelayType::DAYS_AFTER,
+            'nb_days'      => $dueDays,
+        ]);
+
+        return $term->refresh();
     }
 
     public static function bankJournal(): Journal
@@ -316,6 +354,16 @@ class AccountHelper
         return Currency::query()->where('id', '!=', static::currency()->id)->firstOrFail();
     }
 
+    public static function setCurrencyRate(Currency $currency, float $rate, ?string $date = null): CurrencyRate
+    {
+        return CurrencyRate::factory()->create([
+            'currency_id' => $currency->id,
+            'company_id'  => static::company()->id,
+            'rate'        => $rate,
+            'name'        => $date ?? now()->subYears(5)->toDateString(),
+        ]);
+    }
+
     public static function paymentTerm(array $installments): PaymentTerm
     {
         $term = PaymentTerm::factory()->create([
@@ -348,6 +396,55 @@ class AccountHelper
             'profit_account_id' => static::account('income')->id,
             'loss_account_id'   => static::account('expense')->id,
         ]);
+    }
+
+    public static function fiscalPositionRemappingAccount(Account $source, Account $destination): FiscalPosition
+    {
+        $fiscalPosition = FiscalPosition::factory()->create(['company_id' => static::company()->id]);
+
+        FiscalPositionAccount::factory()
+            ->mapping($source->id, $destination->id)
+            ->create([
+                'fiscal_position_id' => $fiscalPosition->id,
+                'company_id'         => static::company()->id,
+            ]);
+
+        return $fiscalPosition->refresh();
+    }
+
+    public static function fiscalPositionRemappingTax(Tax $source, Tax $destination): FiscalPosition
+    {
+        $fiscalPosition = FiscalPosition::factory()->create(['company_id' => static::company()->id]);
+
+        FiscalPositionTax::factory()
+            ->mapping($source->id, $destination->id)
+            ->create([
+                'fiscal_position_id' => $fiscalPosition->id,
+                'company_id'         => static::company()->id,
+            ]);
+
+        return $fiscalPosition->refresh();
+    }
+
+    public static function reconcile(Move $a, Move $b): void
+    {
+        $lines = $a->refresh()->lines
+            ->merge($b->refresh()->lines)
+            ->filter(fn ($line) => in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])
+                && ! $line->reconciled)
+            ->values();
+
+        AccountFacade::reconcile($lines);
+    }
+
+    public static function unreconcile(Move $move): void
+    {
+        $line = $move->refresh()->lines
+            ->firstWhere(fn ($line) => in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]));
+
+        $partial = $line->matchedDebits->merge($line->matchedCredits)->first();
+
+        AccountFacade::unReconcile($partial);
     }
 
     public static function compute(Move $move): Move
