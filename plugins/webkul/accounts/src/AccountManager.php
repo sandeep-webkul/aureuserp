@@ -1681,11 +1681,11 @@ class AccountManager
 
         $defaultAccountsSettings = new DefaultAccountSettings;
 
-        $journalId = $defaultAccountsSettings->currency_exchange_journal_id;
-        $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id;
-        $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id;
-
-        if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
+        if (
+            ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
+                || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
+                    || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
+        ) {
             throw new Exception('Exchange difference journal and accounts must be configured');
         }
 
