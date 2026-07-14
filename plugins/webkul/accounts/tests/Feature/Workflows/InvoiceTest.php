@@ -8,6 +8,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\RepartitionType;
+use Webkul\Account\Enums\TaxIncludeOverride;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\TaxPartition;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -410,4 +412,57 @@ it('assigns a sequential name from the journal when the invoice is posted', func
 
     expect($invoice->refresh()->name)->not->toBeNull()
         ->and($invoice->name)->not->toBe('/');
+});
+
+it('extracts an inclusive tax out of the unit price on post', function () {
+    $tax = AccountHelper::taxWithAccounts(10, AmountType::PERCENT, TypeTaxUse::SALE, TaxIncludeOverride::TAX_INCLUDED);
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 1, priceUnit: 110, taxes: [$tax]);
+
+    AccountHelper::post($invoice);
+
+    $lines = $invoice->refresh()->lines;
+    $taxLine = $lines->firstWhere('display_type', DisplayType::TAX);
+
+    expect((float) $invoice->amount_untaxed)->toBe(100.0)
+        ->and((float) $invoice->amount_tax)->toBe(10.0)
+        ->and((float) $invoice->amount_total)->toBe(110.0)
+        ->and((float) abs($taxLine->balance))->toBe(10.0)
+        ->and((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));
+});
+
+it('marks the invoice paid after two partial payments cover the full amount', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    AccountHelper::pay($invoice, amount: 120);
+    AccountHelper::pay($invoice, amount: 80);
+
+    expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID)
+        ->and((float) abs($invoice->amount_residual))->toBe(0.0);
+});
+
+it('restores the residual and unpaid state when a payment is unreconciled', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    AccountHelper::pay($invoice);
+    AccountHelper::unreconcile($invoice);
+
+    expect((float) abs($invoice->refresh()->amount_residual))->toBe(200.0)
+        ->and($invoice->payment_state)->toBe(PaymentState::NOT_PAID);
+});
+
+it('writes off the shortfall and marks the invoice paid when the difference is reconciled', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    AccountHelper::pay($invoice, amount: 190, differenceHandling: 'reconcile');
+
+    expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID)
+        ->and((float) abs($invoice->amount_residual))->toBe(0.0);
 });

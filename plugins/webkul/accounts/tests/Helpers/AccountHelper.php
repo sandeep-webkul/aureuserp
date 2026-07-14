@@ -297,7 +297,7 @@ class AccountHelper
         return $journal->refresh();
     }
 
-    public static function pay(Move $move, ?float $amount = null): Move
+    public static function pay(Move $move, ?float $amount = null, string $differenceHandling = 'open'): Move
     {
         static::bankJournal();
 
@@ -332,7 +332,9 @@ class AccountHelper
             'payment_date'                => now()->toDateString(),
             'amount'                      => $amount ?? $amounts['amount_by_default'],
             'installments_mode'           => $register->installments_mode ?? 'full',
-            'payment_difference_handling' => 'open',
+            'payment_difference_handling' => $differenceHandling,
+            'writeoff_account_id'         => $differenceHandling === 'reconcile' ? static::account('expense')->id : null,
+            'writeoff_label'              => $differenceHandling === 'reconcile' ? 'Write-off' : null,
             'communication'               => $move->name,
         ]);
 
