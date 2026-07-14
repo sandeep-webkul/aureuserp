@@ -351,7 +351,8 @@ it('nets a reverse-charge tax to zero across positive and negative repartition',
     $taxLines = $lines->where('display_type', DisplayType::TAX)->values();
 
     expect($taxLines)->toHaveCount(2)
-        ->and((float) $invoice->amount_tax)->toBe(0.0);
+        ->and((float) $invoice->amount_tax)->toBe(0.0)
+        ->and((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));
 });
 
 it('sets an early-payment discount date on the receivable line', function () {

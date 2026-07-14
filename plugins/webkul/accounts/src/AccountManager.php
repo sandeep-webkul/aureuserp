@@ -738,16 +738,18 @@ class AccountManager
 
             $taxResults = TaxFacade::prepareTaxLines($baseLines, $move->company);
 
-            foreach ($taxResults['base_lines_to_update'] as $baseLine) {
-                $untaxedAmountCurrency += $sign * abs($baseLine['amount_currency']);
+            $directionSign = $move->direction_sign;
 
-                $untaxedAmount += $sign * abs($baseLine['balance']);
+            foreach ($taxResults['base_lines_to_update'] as $baseLine) {
+                $untaxedAmountCurrency += $sign * $directionSign * $baseLine['amount_currency'];
+
+                $untaxedAmount += $sign * $directionSign * $baseLine['balance'];
             }
 
             foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
-                $taxAmountCurrency += $sign * abs($taxLineVals['amount_currency']);
+                $taxAmountCurrency += $sign * $directionSign * $taxLineVals['amount_currency'];
 
-                $taxAmount += $sign * abs($taxLineVals['balance']);
+                $taxAmount += $sign * $directionSign * $taxLineVals['balance'];
             }
 
             if ($move->invoice_payment_term_id) {
