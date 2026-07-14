@@ -62,3 +62,28 @@ it('keeps a foreign-currency invoice balanced in company currency', function () 
         ->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));
 });
 
+it('creates an exchange-difference entry when reconciling foreign documents at different rates', function () {
+    AccountHelper::setCurrencyRate($this->foreign, 4.0, now()->toDateString());
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->subYear()->toDateString(),
+        'date'         => now()->subYear()->toDateString(),
+    ]);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->toDateString(),
+        'date'         => now()->toDateString(),
+    ]);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($creditNote);
+
+    AccountHelper::reconcile($invoice, $creditNote);
+
+    expect((float) abs($invoice->refresh()->amount_residual))->toBe(0.0)
+        ->and(Move::where('move_type', MoveType::ENTRY)->count())->toBeGreaterThan(0);
+});
+

@@ -1681,11 +1681,11 @@ class AccountManager
 
         $defaultAccountsSettings = new DefaultAccountSettings;
 
-        if (
-            ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
-                || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
-                    || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
-        ) {
+        $journalId = $defaultAccountsSettings->currency_exchange_journal_id;
+        $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id;
+        $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id;
+
+        if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
             throw new Exception('Exchange difference journal and accounts must be configured');
         }
 
@@ -1872,7 +1872,7 @@ class AccountManager
 
                 $exchangeLine = $exchangeMove->lines[$exchangeLineSequence];
 
-                $this->reconcilePlan([$sourceLine->id, $exchangeLine->id]);
+                $this->reconcilePlan([MoveLine::whereIn('id', [$sourceLine->id, $exchangeLine->id])->get()]);
             }
 
             $exchangeMoves[] = $exchangeMove;
