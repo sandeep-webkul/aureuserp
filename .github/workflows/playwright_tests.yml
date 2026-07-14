@@ -45,8 +45,6 @@ jobs:
 
     name: ${{ matrix.db-label }} | Shard ${{ matrix.shard_index }} of ${{ matrix.shard_total }}
 
-    name: Shard ${{ matrix.shard_index }} of ${{ matrix.shard_total }}
-
     services:
       database:
         image: ${{ matrix.db-image }}
@@ -57,7 +55,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ matrix.db-password }}
           POSTGRES_DB: aureuserp
         ports:
-          - ${{ matrix.db-port }}
+          - ${{ matrix.db-port }}:${{ matrix.db-port }}
         options: >-
           --health-cmd="${{ matrix.db-health }}"
           --health-interval=10s
@@ -123,7 +121,7 @@ jobs:
         run: |
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1${{ matrix.db }}|" .env
-          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ job.services.database.ports[matrix.db-port] }}|" .env
+          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ matrix.db-port }}|" .env
           sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=${{ matrix.db-user }}|" .env
@@ -141,7 +139,7 @@ jobs:
 
       - name: Wait for Database to be ready
         run: |
-          DB_PORT=${{ job.services.database.ports[matrix.db-port] }}
+          DB_PORT=${{ matrix.db-port }}
           echo "Waiting for ${{ matrix.db-label }} service on 127.0.0.1:${DB_PORT}..."
           for i in {1..30}; do
             if [ "${{ matrix.db }}" = "mysql" ]; then
