@@ -183,6 +183,31 @@ class AccountHelper
         ]);
     }
 
+    public static function displayLine(Move $move, DisplayType $type, string $name): MoveLine
+    {
+        return MoveLine::factory()->create([
+            'move_id'         => $move->id,
+            'display_type'    => $type,
+            'account_id'      => null,
+            'name'            => $name,
+            'quantity'        => 0,
+            'price_unit'      => 0,
+            'price_subtotal'  => 0,
+            'price_total'     => 0,
+            'debit'           => 0,
+            'credit'          => 0,
+            'balance'         => 0,
+            'amount_currency' => 0,
+            'currency_id'     => $move->currency_id,
+            'company_id'      => static::company()->id,
+        ]);
+    }
+
+    public static function setAsChecked(Move $move): Move
+    {
+        return AccountFacade::setAsCheckedMove($move->refresh());
+    }
+
     public static function productLine(Move $move, Account $account, float $qty, float $priceUnit, float $discount = 0, array $taxes = []): MoveLine
     {
         $line = MoveLine::factory()->create([
@@ -472,5 +497,10 @@ class AccountHelper
     public static function reverse(Move $move): Move
     {
         return AccountFacade::reverseMoves(collect([$move->refresh()]))->first();
+    }
+
+    public static function reverseAndCancel(Move $move): Move
+    {
+        return AccountFacade::reverseMoves(collect([$move->refresh()]), [], true)->first();
     }
 }

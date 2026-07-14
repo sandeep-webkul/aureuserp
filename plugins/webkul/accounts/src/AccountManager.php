@@ -57,6 +57,22 @@ class AccountManager
     {
         $this->isConfirmAllowedForMove($record);
 
+        $record->state = MoveState::POSTED;
+
+        $record->posted_before = true;
+
+        $record->save();
+
+        $record = $this->computeAccountMove($record);
+
+        $record->refresh();
+
+        foreach ($record->lines as $line) {
+            $line->update(['parent_state' => MoveState::POSTED]);
+        }
+
+        $record->refresh();
+
         if ($record->reversedEntry?->state == MoveState::POSTED) {
             $this->reconcileReversedMoves(collect([$record->reversedEntry]), [$record]);
 
@@ -89,20 +105,6 @@ class AccountManager
                     $this->reconcile($groupLines);
                 }
             }
-        }
-
-        $record->state = MoveState::POSTED;
-
-        $record->posted_before = true;
-
-        $record->save();
-
-        $record = $this->computeAccountMove($record);
-
-        $record->refresh();
-
-        foreach ($record->lines as $line) {
-            $line->update(['parent_state' => MoveState::POSTED]);
         }
 
         if ($record->isSaleDocument()) {
@@ -458,6 +460,8 @@ class AccountManager
             return;
         }
 
+        $move->load('lines');
+
         $computeCashRounding = function ($move, $totalAmountCurrency) {
             $difference = $move->invoiceCashRounding->computeDifference($move->currency, $totalAmountCurrency);
 
@@ -563,7 +567,8 @@ class AccountManager
         }
 
         $othersLines = $move->lines->filter(function ($line) {
-            return ! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+            return $line->account
+                && ! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
         if ($existingCashRoundingLine) {
@@ -685,6 +690,7 @@ class AccountManager
 
         $taxLines = $move->lines
             ->whereNotNull('tax_repartition_line_id')
+            ->where('display_type', DisplayType::TAX)
             ->map(fn ($line) => TaxFacade::prepareTaxLineForTaxesComputation($line, sign: $move->direction_sign))
             ->all();
 
@@ -750,6 +756,16 @@ class AccountManager
                 $taxAmountCurrency += $sign * $directionSign * $taxLineVals['amount_currency'];
 
                 $taxAmount += $sign * $directionSign * $taxLineVals['balance'];
+            }
+
+            $biggestTaxRoundingLines = $move->lines
+                ->where('display_type', DisplayType::ROUNDING)
+                ->whereNotNull('tax_repartition_line_id');
+
+            foreach ($biggestTaxRoundingLines as $roundingLine) {
+                $taxAmountCurrency += $sign * $directionSign * $roundingLine->amount_currency;
+
+                $taxAmount += $sign * $directionSign * $roundingLine->balance;
             }
 
             if ($move->invoice_payment_term_id) {
@@ -1981,6 +1997,9 @@ class AccountManager
 
             $reverseMove = $move->replicate();
             $reverseMove->fill($defaultValues);
+            $reverseMove->state = MoveState::DRAFT;
+            $reverseMove->posted_before = false;
+            $reverseMove->name = null;
             $reverseMove->save();
 
             foreach ($move->lines as $line) {
@@ -2052,7 +2071,7 @@ class AccountManager
             throw new Exception(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
-        if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
+        if ($record->lines->some(fn ($line) => $line->account && $line->account->deprecated)) {
             throw new Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 

@@ -2,6 +2,10 @@
 
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -9,14 +13,14 @@ require_once __DIR__.'/../../Helpers/AccountHelper.php';
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('accounts');
 
-    Illuminate\Support\Facades\DB::table('plugins')->updateOrInsert(
+    DB::table('plugins')->updateOrInsert(
         ['name' => 'accounts'],
         ['is_installed' => true, 'is_active' => true, 'updated_at' => now()],
     );
 
-    Webkul\PluginManager\Package::$plugins = Webkul\PluginManager\Models\Plugin::all()->keyBy('name');
+    Package::$plugins = Plugin::all()->keyBy('name');
 
-    Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
     AccountHelper::actingAsAdmin();
 
@@ -75,4 +79,15 @@ it('refuses to post an already posted invoice', function () {
 
     expect(fn () => AccountHelper::post($invoice))
         ->toThrow(Exception::class, __('accounts::account-manager.post-action-validate.draft-state-required'));
+});
+
+it('marks a posted invoice as checked', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    AccountHelper::setAsChecked($invoice);
+
+    expect($invoice->refresh()->checked)->toBeTrue()
+        ->and($invoice->state)->toBe(MoveState::POSTED);
 });

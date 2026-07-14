@@ -11,6 +11,10 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\TaxPartition;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -18,14 +22,14 @@ require_once __DIR__.'/../../Helpers/AccountHelper.php';
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('accounts');
 
-    Illuminate\Support\Facades\DB::table('plugins')->updateOrInsert(
+    DB::table('plugins')->updateOrInsert(
         ['name' => 'accounts'],
         ['is_installed' => true, 'is_active' => true, 'updated_at' => now()],
     );
 
-    Webkul\PluginManager\Package::$plugins = Webkul\PluginManager\Models\Plugin::all()->keyBy('name');
+    Package::$plugins = Plugin::all()->keyBy('name');
 
-    Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
     AccountHelper::actingAsAdmin();
 
@@ -465,4 +469,25 @@ it('writes off the shortfall and marks the invoice paid when the difference is r
 
     expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID)
         ->and((float) abs($invoice->amount_residual))->toBe(0.0);
+});
+
+it('keeps section and note lines through post without affecting the balance', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    AccountHelper::displayLine($invoice, DisplayType::LINE_SECTION, 'Services');
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::displayLine($invoice, DisplayType::LINE_NOTE, 'Thanks for your business');
+
+    AccountHelper::post($invoice);
+
+    $lines = $invoice->refresh()->lines;
+    $section = $lines->firstWhere('display_type', DisplayType::LINE_SECTION);
+    $note = $lines->firstWhere('display_type', DisplayType::LINE_NOTE);
+
+    expect($section)->not->toBeNull()
+        ->and($section->account_id)->toBeNull()
+        ->and($note)->not->toBeNull()
+        ->and($note->account_id)->toBeNull()
+        ->and((float) $invoice->amount_untaxed)->toBe(200.0)
+        ->and((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe(200.0)
+        ->and((float) $lines->sum(fn ($l) => (float) $l->credit))->toBe(200.0);
 });

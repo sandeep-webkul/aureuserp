@@ -2,6 +2,10 @@
 
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveType;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -9,14 +13,14 @@ require_once __DIR__.'/../../Helpers/AccountHelper.php';
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('accounts');
 
-    Illuminate\Support\Facades\DB::table('plugins')->updateOrInsert(
+    DB::table('plugins')->updateOrInsert(
         ['name' => 'accounts'],
         ['is_installed' => true, 'is_active' => true, 'updated_at' => now()],
     );
 
-    Webkul\PluginManager\Package::$plugins = Webkul\PluginManager\Models\Plugin::all()->keyBy('name');
+    Package::$plugins = Plugin::all()->keyBy('name');
 
-    Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
     AccountHelper::actingAsAdmin();
 
