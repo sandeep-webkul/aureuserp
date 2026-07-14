@@ -582,6 +582,8 @@ class Move extends Model implements Sortable
     {
         if (! in_array($this->journal?->type, $this->getValidJournalTypes())) {
             $this->journal_id = $this->searchDefaultJournal($this)?->id;
+
+            $this->unsetRelation('journal');
         }
     }
 

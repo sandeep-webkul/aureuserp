@@ -96,3 +96,14 @@ it('nets the invoiced quantity down when the invoice is reversed into a credit n
         ->and((float) $line->refresh()->qty_invoiced)->toBe(0.0)
         ->and($order->refresh()->invoice_status)->toBe(InvoiceStatus::TO_INVOICE);
 });
+
+it('assigns an invoice number when creating an invoice from a sale order', function () {
+    $order = SaleHelper::order();
+    SaleHelper::line($order, $this->product, qty: 5, priceUnit: 100);
+    SaleHelper::confirm($order);
+
+    $invoice = SaleHelper::createInvoice($order);
+
+    expect($invoice->refresh()->name)->not->toBeNull()
+        ->and($invoice->name)->not->toBe('');
+});

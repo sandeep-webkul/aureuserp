@@ -119,3 +119,13 @@ it('nets the billed quantity down when a received quantity is returned and refun
         ->and((float) $line->refresh()->qty_invoiced)->toBe(6.0)
         ->and($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::INVOICED);
 });
+
+it('assigns a bill number when creating a bill from a purchase order', function () {
+    $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, qty: 5);
+    PurchaseHelper::receiveChain($order);
+
+    $bill = PurchaseHelper::createBill($order);
+
+    expect($bill->refresh()->name)->not->toBeNull()
+        ->and($bill->name)->not->toBe('');
+});
