@@ -165,6 +165,11 @@ class PurchaseHelper
         return AccountFacade::resetToDraftMove($move->refresh());
     }
 
+    public static function reverseBill(AccountMove $move): AccountMove
+    {
+        return AccountFacade::reverseMoves(collect([$move->refresh()]))->first();
+    }
+
     public static function vendorReceipt(Order $order): ?Operation
     {
         return $order->operations()->get()

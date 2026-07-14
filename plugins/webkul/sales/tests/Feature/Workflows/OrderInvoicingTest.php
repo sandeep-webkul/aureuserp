@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -79,4 +80,19 @@ it('re-invoices the order when a cancelled invoice is reset to draft', function 
 
     expect((float) $line->refresh()->qty_invoiced)->toBe(5.0)
         ->and($order->refresh()->invoice_status)->toBe(InvoiceStatus::INVOICED);
+});
+
+it('nets the invoiced quantity down when the invoice is reversed into a credit note', function () {
+    $order = SaleHelper::order();
+    $line = SaleHelper::line($order, $this->product, qty: 5, priceUnit: 100);
+    SaleHelper::confirm($order);
+    $invoice = SaleHelper::createInvoice($order);
+    SaleHelper::postInvoice($invoice);
+
+    $creditNote = SaleHelper::reverseInvoice($invoice);
+    SaleHelper::postInvoice($creditNote);
+
+    expect($creditNote->refresh()->move_type)->toBe(MoveType::OUT_REFUND)
+        ->and((float) $line->refresh()->qty_invoiced)->toBe(0.0)
+        ->and($order->refresh()->invoice_status)->toBe(InvoiceStatus::TO_INVOICE);
 });

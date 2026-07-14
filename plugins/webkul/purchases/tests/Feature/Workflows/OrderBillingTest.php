@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Inventory\Facades\Inventory;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
@@ -77,5 +79,43 @@ it('re-bills the order when a cancelled bill is reset to draft', function () {
     PurchaseHelper::resetBillToDraft($bill);
 
     expect((float) $line->refresh()->qty_invoiced)->toBe(5.0)
+        ->and($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::INVOICED);
+});
+
+it('nets the billed quantity down when the bill is reversed into a refund', function () {
+    $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, qty: 5);
+    PurchaseHelper::receiveChain($order);
+    $line = $order->refresh()->lines->first();
+    $bill = PurchaseHelper::createBill($order);
+    PurchaseHelper::postBill($bill);
+
+    $refund = PurchaseHelper::reverseBill($bill);
+    PurchaseHelper::postBill($refund);
+
+    expect($refund->refresh()->move_type)->toBe(MoveType::IN_REFUND)
+        ->and((float) $line->refresh()->qty_invoiced)->toBe(0.0)
+        ->and($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::TO_INVOICED);
+});
+
+it('nets the billed quantity down when a received quantity is returned and refunded', function () {
+    $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, qty: 10);
+    PurchaseHelper::receiveChain($order);
+    $line = $order->refresh()->lines->first();
+
+    $bill = PurchaseHelper::createBill($order);
+    PurchaseHelper::postBill($bill);
+
+    $receipt = $order->refresh()->operations->first();
+    $receiptMove = $receipt->moves->first();
+    $return = Inventory::returnTransfer($receipt, [$receiptMove->id => 4]);
+    Inventory::doneTransfer($return->refresh());
+
+    expect($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::TO_INVOICED);
+
+    $refund = PurchaseHelper::createBill($order);
+    PurchaseHelper::postBill($refund);
+
+    expect($refund->refresh()->move_type)->toBe(MoveType::IN_REFUND)
+        ->and((float) $line->refresh()->qty_invoiced)->toBe(6.0)
         ->and($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::INVOICED);
 });
