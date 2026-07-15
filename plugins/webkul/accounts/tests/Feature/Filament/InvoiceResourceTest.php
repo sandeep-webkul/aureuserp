@@ -147,7 +147,9 @@ it('registers a full payment and marks the invoice paid through the action', fun
 
     Livewire::test(EditInvoice::class, ['record' => $invoice->id])
         ->assertOk()
-        ->callAction(PayAction::class);
+        ->assertActionVisible(PayAction::class)
+        ->callAction(PayAction::class)
+        ->assertActionHidden(PayAction::class);
 
     expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID);
 });
