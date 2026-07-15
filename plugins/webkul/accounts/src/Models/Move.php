@@ -668,9 +668,9 @@ class Move extends Model implements Sortable
                 'source_move_id'           => $row->source_move_id,
                 'source_line_account_type' => $row->source_line_account_type,
                 'opposite_move_types'      => $oppositeMoveTypes,
-                'all_payments_matched'     => $row->all_payments_matched === true,
-                'has_payment'              => $row->has_payment === true,
-                'has_statement_line'       => $row->has_statement_line === true,
+                'all_payments_matched'     => (bool) $row->all_payments_matched,
+                'has_payment'              => (bool) $row->has_payment,
+                'has_statement_line'       => (bool) $row->has_statement_line,
             ];
         }
 

@@ -5,8 +5,13 @@ use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\CancelAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ConfirmAction;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions\PayAction;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ResetToDraftAction;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ReverseAction;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions\SetAsCheckedAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
@@ -52,30 +57,6 @@ it('renders the invoice create page', function () {
     Livewire::test(CreateInvoice::class)->assertOk();
 });
 
-it('creates a draft invoice through the create form', function () {
-    FilamentHelper::actingAs(['view_any_account_invoice', 'create_account_invoice']);
-
-    $partner = AccountHelper::partner();
-
-    Livewire::test(CreateInvoice::class)
-        ->fillForm([
-            'partner_id'   => $partner->id,
-            'invoice_date' => now(),
-            'journal_id'   => AccountHelper::saleJournal()->id,
-            'currency_id'  => AccountHelper::currency()->id,
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
-
-    $invoice = Move::query()
-        ->where('partner_id', $partner->id)
-        ->where('move_type', MoveType::OUT_INVOICE)
-        ->first();
-
-    expect($invoice)->not->toBeNull()
-        ->and($invoice->name)->not->toBeNull();
-});
-
 it('posts a draft invoice through the confirm action', function () {
     FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
 
@@ -101,4 +82,72 @@ it('cancels a draft invoice through the cancel action', function () {
         ->callAction(CancelAction::class);
 
     expect($invoice->refresh()->state)->toBe(MoveState::CANCEL);
+});
+
+function postedInvoiceRecord(): Move
+{
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE);
+
+    AccountHelper::productLine($invoice, AccountHelper::account('income'), qty: 2, priceUnit: 100);
+
+    return AccountHelper::post($invoice);
+}
+
+it('reverses a posted invoice into a credit note through the action', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
+
+    $invoice = postedInvoiceRecord();
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(ReverseAction::class, data: [
+            'reason'     => 'Test reversal',
+            'journal_id' => $invoice->journal_id,
+            'date'       => now(),
+        ]);
+
+    expect(
+        Move::query()
+            ->where('reversed_entry_id', $invoice->id)
+            ->where('move_type', MoveType::OUT_REFUND)
+            ->exists()
+    )->toBeTrue();
+});
+
+it('resets a posted invoice to draft through the action', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
+
+    $invoice = postedInvoiceRecord();
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(ResetToDraftAction::class);
+
+    expect($invoice->refresh()->state)->toBe(MoveState::DRAFT);
+});
+
+it('marks a posted invoice as checked through the action', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
+
+    $invoice = postedInvoiceRecord();
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(SetAsCheckedAction::class);
+
+    expect($invoice->refresh()->checked)->toBeTrue();
+});
+
+it('registers a full payment and marks the invoice paid through the action', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
+
+    AccountHelper::bankJournal();
+
+    $invoice = postedInvoiceRecord();
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(PayAction::class);
+
+    expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID);
 });

@@ -3,15 +3,18 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\CreateInvoiceAction;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\ConfirmAction;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\CreateInvoiceAction;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Sale\Models\Order;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -82,6 +85,38 @@ it('renders the sale order create page', function () {
     FilamentHelper::actingAs(['view_any_sale_order', 'create_sale_order']);
 
     Livewire::test(CreateOrder::class)->assertOk();
+});
+
+it('creates a quotation through the create form', function () {
+    FilamentHelper::actingAs(['view_any_sale_order', 'create_sale_order']);
+
+    $partner = SaleHelper::partner();
+
+    Livewire::test(CreateOrder::class)
+        ->fillForm([
+            'partner_id'      => $partner->id,
+            'date_order'      => now(),
+            'validity_date'   => now()->addDays(30),
+            'payment_term_id' => PaymentTerm::query()->value('id'),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Order::query()->where('partner_id', $partner->id)->exists())->toBeTrue();
+});
+
+it('confirms a draft quotation into a sale order through the action', function () {
+    $user = FilamentHelper::actingAs(['view_any_sale_quotation', 'update_sale_quotation']);
+
+    $product = SaleHelper::product();
+    $order = SaleHelper::order(['user_id' => $user->id]);
+    SaleHelper::line($order, $product, qty: 2, priceUnit: 100);
+
+    Livewire::test(EditQuotation::class, ['record' => $order->id])
+        ->assertOk()
+        ->callAction(ConfirmAction::class);
+
+    expect($order->refresh()->state)->toBe(OrderState::SALE);
 });
 
 it('creates an invoice from a confirmed sale order through the action', function () {

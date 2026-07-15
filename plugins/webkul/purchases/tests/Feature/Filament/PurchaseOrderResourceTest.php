@@ -7,14 +7,17 @@ use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderState;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions\ConfirmAction;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions\CreateBillAction;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\CreatePurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\ListPurchaseOrders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\ViewPurchaseOrder;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Purchase\Models\Order;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
+require_once __DIR__.'/../../../../inventories/tests/Helpers/InventoryHelper.php';
 require_once __DIR__.'/../../Helpers/PurchaseHelper.php';
 
 beforeEach(function () {
@@ -72,10 +75,48 @@ it('finds a purchase order by searching its number', function () {
         ->assertCanSeeTableRecords([$order]);
 });
 
+it('confirms a draft RFQ into a purchase order through the action', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_quotation', 'update_purchase_quotation']);
+
+    $warehouse = InventoryHelper::warehouse();
+    $product = PurchaseHelper::product();
+
+    $order = PurchaseHelper::order([
+        'state'             => OrderState::DRAFT,
+        'operation_type_id' => $warehouse->in_type_id,
+        'user_id'           => $user->id,
+    ]);
+    PurchaseHelper::line($order, $product, qty: 2, priceUnit: 100);
+
+    Livewire::test(EditQuotation::class, ['record' => $order->id])
+        ->assertOk()
+        ->callAction(ConfirmAction::class);
+
+    expect($order->refresh()->state)->toBe(OrderState::PURCHASE);
+});
+
 it('renders the purchase order create page', function () {
     FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'create_purchase_purchase::order']);
 
     Livewire::test(CreatePurchaseOrder::class)->assertOk();
+});
+
+it('creates a purchase order through the create form', function () {
+    FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'create_purchase_purchase::order']);
+
+    $warehouse = InventoryHelper::warehouse();
+    $partner = PurchaseHelper::partner();
+
+    Livewire::test(CreatePurchaseOrder::class)
+        ->fillForm([
+            'partner_id'        => $partner->id,
+            'ordered_at'        => now(),
+            'operation_type_id' => $warehouse->in_type_id,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Order::query()->where('partner_id', $partner->id)->exists())->toBeTrue();
 });
 
 it('exposes the create-bill action on a confirmed purchase order', function () {
