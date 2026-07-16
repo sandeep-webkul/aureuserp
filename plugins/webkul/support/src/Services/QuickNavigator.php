@@ -125,11 +125,18 @@ class QuickNavigator
 
             $label = Str::ucfirst($resource::getModelLabel());
 
+            try {
+                $indexUrl = $resource::getUrl('index');
+            } catch (Throwable) {
+                $indexUrl = null;
+            }
+
             $nodes[] = [
                 'id'        => 'create.'.md5($resource),
                 'label'     => __('support::quick-navigation.new', ['label' => $label]),
                 'icon'      => 'heroicon-o-plus-circle',
                 'url'       => $url,
+                'indexUrl'  => $indexUrl,
                 'clusterId' => null,
                 'keywords'  => 'create new '.Str::lower($label),
             ];

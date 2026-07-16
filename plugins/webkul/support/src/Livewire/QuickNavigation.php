@@ -66,7 +66,7 @@ class QuickNavigation extends Component
 
             $map[$node['url']] ??= [
                 'icon'    => $node['icon'] ?? null,
-                'context' => __('support::quick-navigation.create'),
+                'context' => $map[$node['indexUrl'] ?? '']['context'] ?? __('support::quick-navigation.create'),
             ];
         }
 
@@ -151,16 +151,23 @@ class QuickNavigation extends Component
         $items = [];
 
         foreach ($this->navigator()->createNodes() as $node) {
-            if ($query !== '' && $this->rank($query, $node['label'], $node['keywords'] ?? '') === null) {
+            $context = $this->contextForUrl($node['url']);
+
+            if ($query !== '' && $this->rank($query, $node['label'], trim(($node['keywords'] ?? '').' '.$context)) === null) {
                 continue;
             }
 
-            $items[] = $this->presentNode($node);
+            $item = $this->presentNode($node);
+            $item['subtitle'] = $context;
+
+            $items[] = $item;
         }
 
         if ($items === []) {
             return [];
         }
+
+        usort($items, fn (array $a, array $b): int => [$a['subtitle'], $a['title']] <=> [$b['subtitle'], $b['title']]);
 
         return [[
             'label' => __('support::quick-navigation.create'),
