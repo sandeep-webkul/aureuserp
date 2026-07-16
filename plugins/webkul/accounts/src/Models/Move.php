@@ -598,13 +598,13 @@ class Move extends Model implements Sortable
 
     public function computePaymentState()
     {
-        $debitResults = PartialReconcile::select([
-            'source_line.id as source_line_id',
-            'source_line.move_id as source_move_id',
-            'account.account_type as source_line_account_type',
-            ...$this->reconciliationAggregateSelects(),
-        ])
-            ->from('accounts_partial_reconciles as partial_reconciles')
+        $debitResults = DB::table('accounts_partial_reconciles as partial_reconciles')
+            ->select([
+                'source_line.id as source_line_id',
+                'source_line.move_id as source_move_id',
+                'account.account_type as source_line_account_type',
+                ...$this->reconciliationAggregateSelects(),
+            ])
             ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.debit_move_id')
             ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
             ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.credit_move_id')
@@ -615,13 +615,13 @@ class Move extends Model implements Sortable
             ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type')
             ->get();
 
-        $creditResults = PartialReconcile::select([
-            'source_line.id as source_line_id',
-            'source_line.move_id as source_move_id',
-            'account.account_type as source_line_account_type',
-            ...$this->reconciliationAggregateSelects(),
-        ])
-            ->from('accounts_partial_reconciles as partial_reconciles')
+        $creditResults = DB::table('accounts_partial_reconciles as partial_reconciles')
+            ->select([
+                'source_line.id as source_line_id',
+                'source_line.move_id as source_move_id',
+                'account.account_type as source_line_account_type',
+                ...$this->reconciliationAggregateSelects(),
+            ])
             ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.credit_move_id')
             ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
             ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.debit_move_id')
