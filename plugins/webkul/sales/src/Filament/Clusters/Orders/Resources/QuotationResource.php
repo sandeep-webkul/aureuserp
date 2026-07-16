@@ -1774,7 +1774,8 @@ class QuotationResource extends Resource
                             ->send();
                     })
                     ->visible(
-                        fn (array $arguments, Get $get): bool => filled($get("optionalProducts.{$arguments['item']}.product_id"))
+                        fn (array $arguments, Get $get, $record): bool => filled($record)
+                            && filled($get("optionalProducts.{$arguments['item']}.product_id"))
                     ),
             ]);
     }
