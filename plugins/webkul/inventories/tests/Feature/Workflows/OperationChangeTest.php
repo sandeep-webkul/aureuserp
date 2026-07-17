@@ -363,6 +363,110 @@ it('releases the reservation when the operation type changes to a delivery in th
         ->and($move->destination_location_id)->toBe($outType->destination_location_id);
 });
 
+it('re-derives the move warehouse when the source location moves to another warehouse', function () {
+    InventoryHelper::stockUp($this->product, $this->stock, 10);
+
+    $operation = InventoryHelper::internalTransfer($this->warehouse, $this->stock, $this->shelf, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->update(['source_location_id' => $this->otherStock->id]);
+
+    expect($operation->refresh()->moves->first()->warehouse_id)->toBe($this->otherWarehouse->id);
+});
+
+it('re-derives the move warehouse when the operation type changes to another warehouse', function () {
+    InventoryHelper::stockUp($this->product, $this->stock, 10);
+
+    $operation = InventoryHelper::internalTransfer($this->warehouse, $this->stock, $this->shelf, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    expect($operation->refresh()->moves->first()->warehouse_id)->toBe($this->warehouse->id);
+
+    $otherType = OperationType::findOrFail($this->otherWarehouse->internal_type_id);
+
+    $operation->update([
+        'operation_type_id'       => $otherType->id,
+        'source_location_id'      => $otherType->source_location_id,
+        'destination_location_id' => $otherType->destination_location_id,
+    ]);
+
+    expect($operation->refresh()->moves->first()->warehouse_id)->toBe($this->otherWarehouse->id);
+});
+
+it('releases the reservation on the old location when a move line source location is edited', function () {
+    InventoryHelper::stockUp($this->product, $this->shelf, 10);
+    InventoryHelper::stockUp($this->product, $this->shelfB, 10);
+
+    $operation = InventoryHelper::internalTransfer($this->warehouse, $this->stock, $this->shelf, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $line = $operation->refresh()->moves->first()->lines->first();
+
+    expect(InventoryHelper::reserved($this->product, $this->shelf))->toBe(10.0);
+
+    $line->update(['source_location_id' => $this->shelfB->id]);
+
+    expect(InventoryHelper::reserved($this->product, $this->shelf))->toBe(0.0)
+        ->and(InventoryHelper::reserved($this->product, $this->shelfB))->toBe(10.0);
+});
+
+it('releases the reservation on the old lot when a move line lot is edited', function () {
+    $product = InventoryHelper::lotTrackedProduct();
+
+    InventoryHelper::trackLots(OperationType::findOrFail($this->warehouse->internal_type_id));
+
+    $lotA = InventoryHelper::lot($product, 'LOT-A');
+    $lotB = InventoryHelper::lot($product, 'LOT-B');
+
+    InventoryHelper::stockUp($product, $this->stock, 10, $lotA->id);
+    InventoryHelper::stockUp($product, $this->stock, 10, $lotB->id);
+
+    $operation = InventoryHelper::internalTransfer($this->warehouse, $this->stock, $this->shelf, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $line = $operation->refresh()->moves->first()->lines->first();
+
+    expect($line->lot_id)->toBe($lotA->id)
+        ->and((float) InventoryHelper::quantOf($product, $this->stock, $lotA->id)->reserved_quantity)->toBe(10.0);
+
+    $line->update(['lot_id' => $lotB->id]);
+
+    expect((float) InventoryHelper::quantOf($product, $this->stock, $lotA->id)->reserved_quantity)->toBe(0.0)
+        ->and((float) InventoryHelper::quantOf($product, $this->stock, $lotB->id)->reserved_quantity)->toBe(10.0);
+});
+
+it('releases the reservation on the old lot when the lot and source location are edited together', function () {
+    $product = InventoryHelper::lotTrackedProduct();
+
+    InventoryHelper::trackLots(OperationType::findOrFail($this->warehouse->internal_type_id));
+
+    $lotA = InventoryHelper::lot($product, 'LOT-A');
+    $lotB = InventoryHelper::lot($product, 'LOT-B');
+
+    InventoryHelper::stockUp($product, $this->shelf, 10, $lotA->id);
+    InventoryHelper::stockUp($product, $this->shelfB, 10, $lotB->id);
+
+    $operation = InventoryHelper::internalTransfer($this->warehouse, $this->shelf, $this->stock, [[$product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $line = $operation->refresh()->moves->first()->lines->first();
+
+    expect((float) InventoryHelper::quantOf($product, $this->shelf, $lotA->id)->reserved_quantity)->toBe(10.0);
+
+    $line->update([
+        'source_location_id' => $this->shelfB->id,
+        'lot_id'             => $lotB->id,
+    ]);
+
+    expect((float) InventoryHelper::quantOf($product, $this->shelf, $lotA->id)->reserved_quantity)->toBe(0.0)
+        ->and((float) InventoryHelper::quantOf($product, $this->shelfB, $lotB->id)->reserved_quantity)->toBe(10.0);
+});
+
 it('derives the locations from the new operation type when only the operation type changes', function () {
     InventoryHelper::stockUp($this->product, $this->stock, 10);
 

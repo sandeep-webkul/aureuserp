@@ -461,6 +461,21 @@ class Move extends Model
                 // TODO: apply putaway rules
             }
 
+            if (
+                $move->wasChanged('source_location_id')
+                || $move->wasChanged('destination_location_id')
+            ) {
+                $move->load('sourceLocation', 'destinationLocation');
+
+                $warehouseId = $move->sourceLocation?->warehouse_id ?? $move->destinationLocation?->warehouse_id;
+
+                if ($warehouseId !== $move->warehouse_id) {
+                    $move->warehouse_id = $warehouseId;
+
+                    $move->saveQuietly();
+                }
+            }
+
             if ($receiptMovesToReassign->isNotEmpty()) {
                 InventoryFacade::assignMoves($receiptMovesToReassign->unique('id'));
             }
