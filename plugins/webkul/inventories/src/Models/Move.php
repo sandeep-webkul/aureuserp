@@ -437,12 +437,32 @@ class Move extends Model
                 $move->lines()->get()->each(fn ($moveLine) => $moveLine->update(['is_picked' => $move->is_picked]));
             }
 
+            if ($move->wasChanged('source_location_id')) {
+                $move->load('sourceLocation');
+
+                foreach ($move->lines()->get() as $moveLine) {
+                    if ($moveLine->sourceLocation->isChildOf($move->sourceLocation)) {
+                        continue;
+                    }
+
+                    $move->procure_method = ProcureMethod::MAKE_TO_STOCK;
+
+                    $move->saveQuietly();
+
+                    $move->moveOrigins()->detach();
+
+                    $moveLine->delete();
+                }
+
+                $receiptMovesToReassign->push($move->refresh());
+            }
+
             if ($move->wasChanged('destination_location_id')) {
                 // TODO: apply putaway rules
             }
 
             if ($receiptMovesToReassign->isNotEmpty()) {
-                InventoryFacade::assignMoves($receiptMovesToReassign);
+                InventoryFacade::assignMoves($receiptMovesToReassign->unique('id'));
             }
         });
 

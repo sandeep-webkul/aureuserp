@@ -274,6 +274,16 @@ class Operation extends Model
             $operation->update(['name' => $operation->name]);
         });
 
+        static::updating(function ($operation) {
+            if ($operation->isDirty('operation_type_id')) {
+                $operationType = OperationType::withTrashed()->find($operation->operation_type_id);
+
+                $operation->source_location_id = $operationType?->source_location_id;
+
+                $operation->destination_location_id = $operationType?->destination_location_id;
+            }
+        });
+
         static::updated(function ($operation) {
             if ($operation->wasChanged('operation_type_id')) {
                 $operation->updateChildrenNames();
@@ -283,7 +293,7 @@ class Operation extends Model
                 $operation->wasChanged('source_location_id')
                 || $operation->wasChanged('destination_location_id')
             ) {
-                $operation->moves()->get()->each(function($move) use ($operation) {
+                $operation->moves()->where('is_scraped', false)->get()->each(function($move) use ($operation) {
                     $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
 
                     $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
