@@ -503,7 +503,18 @@ class Move extends Model
 
     public function computeProductQty()
     {
-        $this->product_qty ??= $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
+        if (
+            $this->product_qty !== null
+            && ! $this->isDirty(['product_uom_qty', 'uom_id', 'product_id'])
+        ) {
+            return;
+        }
+
+        if ($this->product_uom_qty === null) {
+            return;
+        }
+
+        $this->product_qty = $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
     }
 
     public function computeProductUOMQty()
