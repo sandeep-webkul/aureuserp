@@ -275,13 +275,20 @@ class Operation extends Model
         });
 
         static::updating(function ($operation) {
-            if ($operation->isDirty('operation_type_id')) {
-                $operationType = OperationType::withTrashed()->find($operation->operation_type_id);
+            $originalOperationTypeId = $operation->getOriginal('operation_type_id');
 
-                $operation->source_location_id = $operationType?->source_location_id;
-
-                $operation->destination_location_id = $operationType?->destination_location_id;
+            if (
+                $originalOperationTypeId === null
+                || $originalOperationTypeId === $operation->operation_type_id
+            ) {
+                return;
             }
+
+            $operationType = OperationType::withTrashed()->find($operation->operation_type_id);
+
+            $operation->source_location_id = $operationType?->source_location_id;
+
+            $operation->destination_location_id = $operationType?->destination_location_id;
         });
 
         static::updated(function ($operation) {
