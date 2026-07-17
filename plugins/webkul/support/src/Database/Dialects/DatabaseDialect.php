@@ -40,4 +40,15 @@ interface DatabaseDialect
      * driver has no equivalent concept (e.g. MySQL).
      */
     public function syncSequences(): void;
+
+    /**
+     * `whereRaw` expression matching a string column case-insensitively against a
+     * single `?` binding. MySQL's utf8mb4_unicode_ci collation already compares
+     * case-insensitively, so it keeps the plain (index-friendly) equality, while
+     * PostgreSQL — which compares case-sensitively — has to fold both sides.
+     *
+     * Use for values a user types (emails, barcodes, lot names), where MySQL has
+     * always matched regardless of case and PostgreSQL would silently miss.
+     */
+    public function caseInsensitiveEquals(string $column): string;
 }

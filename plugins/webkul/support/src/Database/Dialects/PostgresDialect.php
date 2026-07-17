@@ -21,6 +21,11 @@ class PostgresDialect implements DatabaseDialect
         DB::statement("ALTER TABLE {$table} ALTER COLUMN {$column} TYPE {$postgresType} USING {$postgresUsing}");
     }
 
+    public function caseInsensitiveEquals(string $column): string
+    {
+        return "LOWER({$column}) = LOWER(?)";
+    }
+
     public function syncSequences(): void
     {
         DB::statement(<<<'SQL'

@@ -28,4 +28,9 @@ class MySqlDialect implements DatabaseDialect
     {
         // MySQL's AUTO_INCREMENT already advances past explicitly-inserted ids.
     }
+
+    public function caseInsensitiveEquals(string $column): string
+    {
+        return "{$column} = ?";
+    }
 }
