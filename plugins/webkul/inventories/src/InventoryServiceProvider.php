@@ -11,11 +11,8 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
-<<<<<<< HEAD
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\QuantityResolver;
-=======
 use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
->>>>>>> 11e474c1611757fbce36a2cffec03e5908a95d3c
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\ProductQuantity;
