@@ -7,6 +7,7 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\OperationType;
@@ -148,6 +149,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                                 ->forceDelete();
                         }
                     }
+                });
+
+                $command->endWith(function (UninstallCommand $command) {
+                    ChatterCleanupService::purgeOrphanedRecords();
                 });
             })
             ->icon('manufacturing');

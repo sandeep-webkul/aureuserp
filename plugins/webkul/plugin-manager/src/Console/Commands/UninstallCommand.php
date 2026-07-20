@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Package;
 
 class UninstallCommand extends Command
@@ -61,8 +60,6 @@ class UninstallCommand extends Command
         }
 
         $this->dropTables();
-
-        ChatterCleanupService::purgeOrphanedRecords();
 
         $this->package->delete();
 

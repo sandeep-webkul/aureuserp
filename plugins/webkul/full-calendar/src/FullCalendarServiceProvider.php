@@ -6,6 +6,7 @@ use Filament\Panel;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -24,7 +25,11 @@ class FullCalendarServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasInstallCommand(function (InstallCommand $command) {})
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function (UninstallCommand $command) {
+                    ChatterCleanupService::purgeOrphanedRecords();
+                });
+            });
     }
 
     public function packageBooted(): void

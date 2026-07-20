@@ -7,6 +7,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
@@ -134,6 +135,10 @@ class InventoryServiceProvider extends PackageServiceProvider
 
                         DB::table($table)->delete();
                     }
+                });
+
+                $command->endWith(function (UninstallCommand $command) {
+                    ChatterCleanupService::purgeOrphanedRecords();
                 });
             })
             ->icon('inventories');

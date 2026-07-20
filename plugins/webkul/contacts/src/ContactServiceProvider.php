@@ -3,6 +3,7 @@
 namespace Webkul\Contact;
 
 use Filament\Panel;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -17,7 +18,11 @@ class ContactServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasTranslations()
             ->hasInstallCommand(function (InstallCommand $command) {})
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function (UninstallCommand $command) {
+                    ChatterCleanupService::purgeOrphanedRecords();
+                });
+            })
             ->icon('contacts');
     }
 
