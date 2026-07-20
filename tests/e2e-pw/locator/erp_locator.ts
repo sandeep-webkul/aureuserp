@@ -1060,7 +1060,7 @@ export class ErpLocators {
         this.websitePagesCreateButton = page.locator("a,button").filter({ hasText: /new page|create page|add page|create/i }).first();
         this.websitePagesTitleInput = page.locator('input[id="form.title"]');
         this.websitePagesSlugInput = page.locator('input[id="form.slug"]');
-        this.websitePagesContentInput = page.locator('textarea[id="form.content"], input[id="form.content"], [id="form.content"]');
+        this.websitePagesContentInput = page.locator('textarea[id="form.content"], input[id="form.content"]');
         this.websitePagesEditableContent = page.locator('[contenteditable="true"]');
         this.websitePagesMetaTitleInput = page.locator('input[id="form.meta_title"]');
         this.websitePagesMetaKeywordsInput = page.locator('input[id="form.meta_keywords"], input[name="form.meta_keywords"]');
@@ -1070,7 +1070,7 @@ export class ErpLocators {
         this.websitePagesSaveButton = page.getByRole("button", { name: /save|create|submit/i }).first();
         this.websitePagesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
         this.websitePagesRowActionsButton = page.locator("div.fi-ta-text-item").first();
-        this.websitePagesEditButton = page.getByRole('tab', { name: 'Edit' });
+        this.websitePagesEditButton = page.locator('a.fi-tabs-item[href$="/edit"]').first();
         this.websitePagesEditLink = page.getByRole("link", { name: /edit/i }).first();
         this.websitePagesEditActionButton = page.getByRole("button", { name: /edit/i }).first();
         this.websitePagesDeleteButton = page.getByRole("menuitem", { name: /delete/i }).first();
@@ -1106,7 +1106,7 @@ export class ErpLocators {
         this.blogPostsTitleInput = page.getByRole("textbox", { name: /^Title/ }).first();
         this.blogPostsSlugInput = page.getByRole("textbox", { name: /^Slug$/ }).first();
         this.blogPostsSubTitleInput = page.getByRole("textbox", { name: /^Sub Title$/ }).first();
-        this.blogPostsContentInput = page.locator('textarea[id="form.content"], input[id="form.content"], [id="form.content"]').first();
+        this.blogPostsContentInput = page.locator('textarea[id="form.content"], input[id="form.content"]').first();
         this.blogPostsEditableContent = page.locator('[contenteditable="true"]');
         this.blogPostsMetaTitleInput = page.getByRole("textbox", { name: /^Meta Title$/ }).first();
         this.blogPostsMetaKeywordsInput = page.getByRole("textbox", { name: /^Meta Keywords$/ }).first();
