@@ -10,7 +10,7 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\OnHandQuantityResolver;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\QuantityResolver;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -154,6 +154,8 @@ class InventoryServiceProvider extends PackageServiceProvider
 
         ProductSchemaRegistry::table('columns', fn () => InventoryProductSchema::onHandColumn());
 
+        ProductSchemaRegistry::table('columns', fn () => InventoryProductSchema::forecastedColumn());
+
         ProductSchemaRegistry::actions('header', fn () => UpdateQuantityAction::make());
 
         ProductSchemaRegistry::eagerLoad(['routes', 'responsible']);
@@ -219,6 +221,6 @@ class InventoryServiceProvider extends PackageServiceProvider
 
         $this->app->singleton('inventory', InventoryManager::class);
 
-        $this->app->scoped(OnHandQuantityResolver::class);
+        $this->app->scoped(QuantityResolver::class);
     }
 }

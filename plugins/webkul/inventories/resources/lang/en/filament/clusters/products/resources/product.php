@@ -3,7 +3,8 @@
 return [
     'table' => [
         'columns' => [
-            'on-hand' => 'On Hand',
+            'on-hand'    => 'On Hand',
+            'forecasted' => 'Forecasted',
         ],
     ],
 

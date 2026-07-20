@@ -3,7 +3,8 @@
 return [
     'table' => [
         'columns' => [
-            'on-hand' => 'المتاح',
+            'on-hand'    => 'المتاح',
+            'forecasted' => 'المتوقع',
         ],
     ],
 

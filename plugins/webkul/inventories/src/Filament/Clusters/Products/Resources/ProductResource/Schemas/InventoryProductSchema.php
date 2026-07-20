@@ -16,7 +16,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Inventory\Enums\ProductTracking;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\OnHandQuantityResolver;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\QuantityResolver;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Product\Enums\ProductType;
 
@@ -27,7 +27,21 @@ class InventoryProductSchema
         return TextColumn::make('on_hand')
             ->label(__('inventories::filament/clusters/products/resources/product.table.columns.on-hand'))
             ->state(fn (Model $record, $livewire): ?float => $record->is_storable
-                ? app(OnHandQuantityResolver::class)->get($record, $livewire->getTableRecords())
+                ? app(QuantityResolver::class)->onHand($record, $livewire->getTableRecords())
+                : null
+            )
+            ->suffix(fn (Model $record): string => $record->uom ? ' '.$record->uom->name : '')
+            ->placeholder('—')
+            ->numeric()
+            ->toggleable();
+    }
+
+    public static function forecastedColumn(): TextColumn
+    {
+        return TextColumn::make('forecasted')
+            ->label(__('inventories::filament/clusters/products/resources/product.table.columns.forecasted'))
+            ->state(fn (Model $record, $livewire): ?float => $record->is_storable
+                ? app(QuantityResolver::class)->forecasted($record, $livewire->getTableRecords())
                 : null
             )
             ->suffix(fn (Model $record): string => $record->uom ? ' '.$record->uom->name : '')
