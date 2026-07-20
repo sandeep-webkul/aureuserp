@@ -6,10 +6,12 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Livewire;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
+use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -139,6 +141,13 @@ class InventoryServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->contributeProductSchema();
+
+        $this->registerLivewireComponents();
+    }
+
+    public function registerLivewireComponents(): void
+    {
+        Livewire::component('inventories-operation-type-card', OperationTypeCardWidget::class);
     }
 
     protected function contributeProductSchema(): void
