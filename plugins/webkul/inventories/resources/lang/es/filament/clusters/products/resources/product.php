@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'table' => [
+        'columns' => [
+            'on-hand' => 'Disponible',
+        ],
+    ],
+
     'navigation' => [
         'title' => 'Productos',
         'group' => 'Inventario',

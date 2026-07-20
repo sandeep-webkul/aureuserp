@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'table' => [
+        'columns' => [
+            'on-hand' => 'المتاح',
+        ],
+    ],
+
     'navigation' => [
         'title' => 'المنتجات',
         'group' => 'المخزون',
