@@ -198,6 +198,7 @@ class CurrencyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort(fn ($query) => $query->orderBy('active', 'desc')->orderBy('name', 'asc'))
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
