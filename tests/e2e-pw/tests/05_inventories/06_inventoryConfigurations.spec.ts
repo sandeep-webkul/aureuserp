@@ -243,7 +243,7 @@ test.describe("Inventory Location", () => {
 
         await inventoryPage.createScrapAtLocation(product, "1", scrapLocation);
         await inventoryPage.gotoCurrentOperationView();
-        await inventoryPage.expectInfolistField("Destination Location", scrapLocation);
+        await inventoryPage.expectInfolistField("Scrap Location", scrapLocation);
     });
 
     /**
