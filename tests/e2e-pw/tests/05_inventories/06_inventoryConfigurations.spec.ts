@@ -725,15 +725,21 @@ test.describe("Inventory Operation Type", () => {
     });
 
     /**
-     * With dropshipping off, the type field must not offer Dropship (fails until
-     * the app gates the option — the type select currently always lists it).
+     * The Dropshipping setting gates the Dropship option on the type select: off
+     * leaves it listed but unselectable, on makes it selectable again. Re-enabling
+     * at the end restores what the suite's beforeAll set up, since the other
+     * operation type scenarios here rely on dropshipping being on.
      */
-    test("Dropship type hidden when dropshipping off", async ({ adminPage }) => {
+    test("Dropship type disabled when dropshipping off", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
         await inventoryPage.disableDropshipping();
         await inventoryPage.gotoOperationTypeCreatePage();
-        await inventoryPage.expectOperationTypeOptionAbsent("dropship");
+        await inventoryPage.expectOperationTypeOptionDisabled("dropship");
+
+        await inventoryPage.enableManageLogisticsToggles();
+        await inventoryPage.gotoOperationTypeCreatePage();
+        await inventoryPage.expectOperationTypeOptionDisabled("dropship", false);
     });
 
     /**
