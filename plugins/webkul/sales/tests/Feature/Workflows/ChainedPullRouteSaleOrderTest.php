@@ -2,11 +2,14 @@
 
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Enums\RuleAuto;
+use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Location;
+use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -178,28 +181,24 @@ it('produces four inventory documents in total, matching odoo', function () {
     expect($this->order->operations)->toHaveCount(4);
 });
 
-it('DIAGNOSTIC internals of prepareProcurementQty', function () {
-    $move = $this->order->operations
-        ->flatMap->moves
-        ->where('product_id', $this->routedProduct->id)
+it('auto-readies each downstream leg as the upstream leg is validated', function () {
+    $moveFor = fn (int $opTypeId) => Move::query()
+        ->where('procurement_group_id', $this->order->procurement_group_id)
+        ->where('operation_type_id', $opTypeId)
         ->first();
 
-    $product = Webkul\Inventory\Models\Product::whereIn('id', [$move->product_id])->get()->first();
-    $product->setContext(['location_id' => $move->source_location_id]);
+    $sharpMove = $moveFor($this->sharpType->id);
 
-    dump([
-        'move_product_qty'      => $move->product_qty,
-        'move_product_uom_qty'  => $move->product_uom_qty,
-        'move_uom_id'           => $move->uom_id,
-        'product_uom_id'        => $move->product->uom_id,
-        'move_uom_rounding'     => $move->uom?->rounding,
-        'move_uom_factor'       => $move->uom?->factor,
-        'move_bypass_reservation' => $move->shouldBypassReservation(),
-        'source_bypass'         => $move->sourceLocation?->shouldBypassReservation(),
-        'rule_procure'          => $move->rule?->procure_method?->value,
-        'forecast_free_same_as_prepare' => $product->free_qty,
-        'computeQty_of_10'      => $move->product->uom->computeQuantity(10, $move->uom, roundingMethod: 'HALF-UP'),
-    ]);
+    expect($sharpMove->state)->toBe(MoveState::ASSIGNED);
+    expect($moveFor($this->shineType->id)->state)->toBe(MoveState::WAITING);
+    expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::CONFIRMED);
 
-    expect(true)->toBeTrue();
+    Inventory::doneTransfer($sharpMove->operation->refresh());
+
+    expect($moveFor($this->shineType->id)->state)->toBe(MoveState::ASSIGNED);
+    expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::CONFIRMED);
+
+    Inventory::doneTransfer($moveFor($this->shineType->id)->operation->refresh());
+
+    expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::ASSIGNED);
 });
