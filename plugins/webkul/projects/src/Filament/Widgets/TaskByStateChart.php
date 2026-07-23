@@ -79,6 +79,7 @@ class TaskByStateChart extends ChartWidget
                             'warning' => '#fbbf24',
                             'success' => '#22c55e',
                             'danger'  => '#ef4444',
+                            'primary' => '#3b82f6',
                             default   => '#cccccc',
                         },
                         array_keys(TaskState::options())
@@ -112,7 +113,7 @@ class TaskByStateChart extends ChartWidget
 
         if (empty($startDate) && empty($endDate)) {
             $query->whereBetween('created_at', [
-                now()->subMonth()->startOfDay(),
+                now()->startOfYear(),
                 now()->endOfDay(),
             ]);
         }

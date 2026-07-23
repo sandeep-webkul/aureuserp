@@ -53,7 +53,7 @@ class StatsOverviewWidget extends BaseWidget
 
         $currentPeriodStart = ! is_null($this->pageFilters['startDate'] ?? null) ?
             Carbon::parse($this->pageFilters['startDate']) :
-            now()->subMonth();
+            now()->startOfYear();
 
         $currentPeriodEnd = ! is_null($this->pageFilters['endDate'] ?? null) ?
             Carbon::parse($this->pageFilters['endDate']) :

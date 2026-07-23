@@ -52,7 +52,7 @@ class WebsiteDashboard extends BaseDashboard
                     ->label(__('website::filament/admin/pages/dashboard.from-date'))
                     ->native(false)
                     ->closeOnDateSelection()
-                    ->default(now()->subMonth()),
+                    ->default(now()->startOfYear()),
 
                 DatePicker::make('to_date')
                     ->label(__('website::filament/admin/pages/dashboard.to-date'))

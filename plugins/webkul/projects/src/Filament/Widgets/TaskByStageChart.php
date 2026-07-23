@@ -72,7 +72,7 @@ class TaskByStageChart extends ChartWidget
 
             $endDate = ! is_null($this->pageFilters['endDate'] ?? null) ?
                 Carbon::parse($this->pageFilters['endDate']) :
-                now();
+                now()->endnvOfDay();
 
             $datasets['datasets'][] = $query
                 ->whereBetween('created_at', [$startDate, $endDate])

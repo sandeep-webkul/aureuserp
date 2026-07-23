@@ -94,7 +94,7 @@ class Dashboard extends BaseDashboard
                         DatePicker::make('startDate')
                             ->label(__('projects::filament/pages/dashboard.filters-form.start-date'))
                             ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                            ->default(now()->subMonth()->format('Y-m-d'))
+                            ->default(now()->startOfYear()->format('Y-m-d'))
                             ->native(false),
                         DatePicker::make('endDate')
                             ->label(__('projects::filament/pages/dashboard.filters-form.end-date'))
