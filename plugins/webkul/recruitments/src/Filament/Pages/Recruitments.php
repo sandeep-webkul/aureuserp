@@ -95,7 +95,7 @@ class Recruitments extends BaseDashboard
                         DatePicker::make('startDate')
                             ->label(__('recruitments::filament/pages/recruitment.filters-form.start-date'))
                             ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                            ->default(now()->startOfYear()->format('Y-m-d'))
+                            ->default(now()->subMonth()->format('Y-m-d'))
                             ->native(false),
                         DatePicker::make('endDate')
                             ->label(__('recruitments::filament/pages/recruitment.filters-form.end-date'))

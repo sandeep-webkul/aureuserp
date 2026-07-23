@@ -43,7 +43,7 @@ class JobPositionStatsWidget extends BaseWidget
 
         $currentPeriodStart = ! is_null($this->pageFilters['startDate'] ?? null) ?
             Carbon::parse($this->pageFilters['startDate']) :
-            now()->startOfYear();
+            now()->subMonth();
 
         $currentPeriodEnd = ! is_null($this->pageFilters['endDate'] ?? null) ?
             Carbon::parse($this->pageFilters['endDate']) :

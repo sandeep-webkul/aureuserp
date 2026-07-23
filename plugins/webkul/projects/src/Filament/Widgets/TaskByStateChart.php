@@ -113,7 +113,7 @@ class TaskByStateChart extends ChartWidget
 
         if (empty($startDate) && empty($endDate)) {
             $query->whereBetween('created_at', [
-                now()->startOfYear(),
+                now()->subMonth()->startOfDay(),
                 now()->endOfDay(),
             ]);
         }
