@@ -127,7 +127,7 @@ class AccountServiceProvider extends PackageServiceProvider
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {
-                    ChatterCleanupService::purgeForModels([Move::class, Payment::class, Models\Product::class]);
+                    ChatterCleanupService::purgeForModels([Move::class, Payment::class]);
                 });
             });
     }
