@@ -6,7 +6,6 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Route;
-use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -40,11 +39,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_094021_create_website_contact_settings',
             ])
             ->runsSettings()
-            ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
-                });
-            })
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('website');
     }
 

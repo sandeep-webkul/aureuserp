@@ -5,7 +5,6 @@ namespace Webkul\Blog;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -41,11 +40,7 @@ class BlogServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsMigrations();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
-                });
-            })
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('blog');
     }
 

@@ -3,9 +3,7 @@
 namespace Webkul\Chatter\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Webkul\Chatter\Models\Attachment;
 
 class ChatterCleanupService
@@ -20,47 +18,36 @@ class ChatterCleanupService
     ];
 
     /**
-     * Delete the chatter records whose owning model no longer has a database table.
+     * Delete every chatter record (message, activity, follower, attachment) attached to the
+     * given models.
      *
-     * Uninstalling a plugin rolls back only its own migrations, so its chatter records
-     * outlive it and reappear against the reused ids once the plugin is installed again.
+     * Called on plugin uninstall: a model's chatter records live in the core chatter tables,
+     * so without this they outlive the plugin and resurface against reused ids on reinstall.
+     *
+     * @param  array<int, class-string>  $models
      */
-    public static function purgeOrphanedRecords(): void
+    public static function purgeForModels(array $models): void
     {
+        $types = collect($models)
+            ->filter(fn ($model) => is_subclass_of($model, Model::class))
+            ->map(fn ($model) => (new $model)->getMorphClass())
+            ->unique()
+            ->values();
+
+        if ($types->isEmpty()) {
+            return;
+        }
+
         foreach (self::MORPH_TYPE_COLUMNS as $table => $typeColumn) {
-            if (! Schema::hasTable($table)) {
-                continue;
-            }
-
-            $orphanedTypes = DB::table($table)
-                ->distinct()
-                ->pluck($typeColumn)
-                ->reject(fn (?string $type) => $type === null || self::morphedTableExists($type));
-
-            if ($orphanedTypes->isEmpty()) {
-                continue;
-            }
-
             if ($table === 'chatter_attachments') {
                 // Deleted through Eloquent so the model's `deleted` hook removes the stored files.
-                Attachment::whereIn($typeColumn, $orphanedTypes)
+                Attachment::whereIn($typeColumn, $types)
                     ->chunkById(100, fn ($attachments) => $attachments->each->delete());
 
                 continue;
             }
 
-            DB::table($table)->whereIn($typeColumn, $orphanedTypes)->delete();
+            DB::table($table)->whereIn($typeColumn, $types)->delete();
         }
-    }
-
-    protected static function morphedTableExists(string $type): bool
-    {
-        $model = Relation::getMorphedModel($type) ?? $type;
-
-        if (! is_subclass_of($model, Model::class)) {
-            return false;
-        }
-
-        return Schema::hasTable((new $model)->getTable());
     }
 }

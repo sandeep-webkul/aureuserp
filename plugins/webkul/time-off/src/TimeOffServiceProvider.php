@@ -8,6 +8,8 @@ use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\TimeOff\Models\Leave;
+use Webkul\TimeOff\Models\LeaveAllocation;
 
 class TimeOffServiceProvider extends PackageServiceProvider
 {
@@ -41,8 +43,8 @@ class TimeOffServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Leave::class, LeaveAllocation::class]);
                 });
             })
             ->icon('time-offs');

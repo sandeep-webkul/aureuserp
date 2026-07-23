@@ -24,6 +24,8 @@ use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
+use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\Requisition;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -73,8 +75,8 @@ class PurchaseServiceProvider extends PackageServiceProvider
                     ->runsMigrations();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Requisition::class]);
                 });
             })
             ->icon('purchases');

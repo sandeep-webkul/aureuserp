@@ -22,6 +22,8 @@ use Webkul\Sale\Listeners\ComputeSaleOrderFromMoveListener;
 use Webkul\Sale\Listeners\ComputeSaleOrderListener;
 use Webkul\Sale\Listeners\SendSMSNotificationListener;
 use Webkul\Sale\Livewire\QuotationSummary;
+use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\Team;
 
 class SaleServiceProvider extends PackageServiceProvider
 {
@@ -81,8 +83,8 @@ class SaleServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Team::class]);
                 });
             })
             ->icon('sales');

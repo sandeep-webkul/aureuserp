@@ -15,6 +15,8 @@ use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSche
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Move;
+use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\Tax;
@@ -124,8 +126,8 @@ class AccountServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Move::class, Payment::class, Models\Product::class]);
                 });
             });
     }

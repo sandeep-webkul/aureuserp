@@ -6,6 +6,7 @@ use Filament\Panel;
 use Livewire\Livewire;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Invoice\Livewire\InvoiceSummary;
+use Webkul\Invoice\Models\Category;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -28,8 +29,8 @@ class InvoiceServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Category::class]);
                 });
             })
             ->icon('invoices');

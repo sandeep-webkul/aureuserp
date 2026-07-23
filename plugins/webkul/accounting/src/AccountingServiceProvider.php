@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Accounting\Filament\Widgets\JournalChartWidget;
 use Webkul\Accounting\Livewire\InvoiceSummary;
+use Webkul\Accounting\Models\Category;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -33,8 +34,8 @@ class AccountingServiceProvider extends PackageServiceProvider
                 $command->installDependencies();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Category::class]);
                 });
             });
     }

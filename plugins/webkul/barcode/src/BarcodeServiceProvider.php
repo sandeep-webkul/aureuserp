@@ -11,7 +11,6 @@ use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
 use Webkul\Barcode\Livewire\Transfers;
-use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -35,11 +34,7 @@ class BarcodeServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->installDependencies();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command): void {
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
-                });
-            })
+            ->hasUninstallCommand(function (UninstallCommand $command): void {})
             ->icon('barcode');
     }
 

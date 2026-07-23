@@ -16,8 +16,10 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Suppor
 use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
+use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Models\Scrap;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -137,8 +139,8 @@ class InventoryServiceProvider extends PackageServiceProvider
                     }
                 });
 
-                $command->endWith(function (UninstallCommand $command) {
-                    ChatterCleanupService::purgeOrphanedRecords();
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Operation::class, Scrap::class]);
                 });
             })
             ->icon('inventories');
