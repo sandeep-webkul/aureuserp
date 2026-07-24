@@ -167,7 +167,7 @@ class InventoryManager
             $this->unreserveMoves($movesToUnreserve);
         }
 
-        $newOperation = $record->replicate()
+        $newOperation = $record->replicate(['back_order_id', 'closed_at', 'is_printed'])
             ->fill($this->prepareReturnOperationValues($record));
 
         $newOperation->save();
@@ -736,6 +736,8 @@ class InventoryManager
             $this->assignMoves(collect($moveDestinations));
         }
 
+        $this->triggerAssign($movesTodo);
+
         if ($operation && ! $cancelBackOrder) {
             $backOrder = $this->createBackOrder($operation);
 
@@ -749,6 +751,45 @@ class InventoryManager
         }
 
         return $movesTodo;
+    }
+
+    public function triggerAssign($doneMoves)
+    {
+        $relevant = $doneMoves->filter(fn ($move) => in_array(
+            $move->operationType?->type,
+            [OperationType::INCOMING, OperationType::INTERNAL],
+            true
+        ));
+
+        if ($relevant->isEmpty()) {
+            return;
+        }
+
+        $pairs = $relevant
+            ->map(fn ($move) => [$move->product_id, $move->destination_location_id])
+            ->unique(fn ($pair) => $pair[0].'-'.$pair[1]);
+
+        $movesToReserve = Move::query()
+            ->whereIn('state', [MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])
+            ->where('procure_method', ProcureMethod::MAKE_TO_STOCK)
+            ->where(function ($query) use ($pairs) {
+                foreach ($pairs as [$productId, $locationId]) {
+                    $query->orWhere(fn ($sub) => $sub
+                        ->where('product_id', $productId)
+                        ->where('source_location_id', $locationId));
+                }
+            })
+            ->where(function ($query) {
+                $query->whereDate('reservation_date', '<=', now())
+                    ->orWhereHas('operationType', fn ($operationType) => $operationType->where('reservation_method', ReservationMethod::AT_CONFIRM));
+            })
+            ->orderBy('scheduled_at')
+            ->orderBy('id')
+            ->get();
+
+        if ($movesToReserve->isNotEmpty()) {
+            $this->assignMoves($movesToReserve);
+        }
     }
 
     public function cancelMoves($moves)
@@ -1441,7 +1482,7 @@ class InventoryManager
             return;
         }
 
-        $backOrderOperation = $record->replicate(['name', 'moves', 'moveLines']);
+        $backOrderOperation = $record->replicate(['name', 'return_id', 'closed_at', 'is_printed', 'moves', 'moveLines']);
 
         $backOrderOperation->fill([
             'name'          => '/',
@@ -2104,7 +2145,7 @@ class InventoryManager
             $forecastedQuantitiesByLocation[$locationId] = Product::whereIn('id', array_unique($productIds))
                 ->get()
                 ->mapWithKeys(function ($product) use ($locationId) {
-                    $product->context = ['location_id' => $locationId];
+                    $product->setContext(['location_id' => $locationId]);
 
                     return [$product->id => $product->free_qty];
                 })
@@ -2317,7 +2358,9 @@ class InventoryManager
             'uom_id'                  => $move->product->uom_id,
             'operation_id'            => $operation->id,
             'state'                   => MoveState::DRAFT,
-            'date'                    => now(),
+            'scheduled_at'            => now(),
+            'deadline'                => null,
+            'price_unit'              => 0,
             'source_location_id'      => $operation->source_location_id ?? $move->destination_location_id,
             'destination_location_id' => $operation->destination_location_id ?? $move->source_location_id,
             'final_location_id'       => null,

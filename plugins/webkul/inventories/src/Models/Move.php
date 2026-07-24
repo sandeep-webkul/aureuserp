@@ -437,12 +437,47 @@ class Move extends Model
                 $move->lines()->get()->each(fn ($moveLine) => $moveLine->update(['is_picked' => $move->is_picked]));
             }
 
+            if ($move->wasChanged('source_location_id')) {
+                $move->load('sourceLocation');
+
+                foreach ($move->lines()->get() as $moveLine) {
+                    if ($moveLine->sourceLocation->isChildOf($move->sourceLocation)) {
+                        continue;
+                    }
+
+                    $move->procure_method = ProcureMethod::MAKE_TO_STOCK;
+
+                    $move->saveQuietly();
+
+                    $move->moveOrigins()->detach();
+
+                    $moveLine->delete();
+                }
+
+                $receiptMovesToReassign->push($move->refresh());
+            }
+
             if ($move->wasChanged('destination_location_id')) {
                 // TODO: apply putaway rules
             }
 
+            if (
+                $move->wasChanged('source_location_id')
+                || $move->wasChanged('destination_location_id')
+            ) {
+                $move->load('sourceLocation', 'destinationLocation');
+
+                $warehouseId = $move->sourceLocation?->warehouse_id ?? $move->destinationLocation?->warehouse_id;
+
+                if ($warehouseId !== $move->warehouse_id) {
+                    $move->warehouse_id = $warehouseId;
+
+                    $move->saveQuietly();
+                }
+            }
+
             if ($receiptMovesToReassign->isNotEmpty()) {
-                InventoryFacade::assignMoves($receiptMovesToReassign);
+                InventoryFacade::assignMoves($receiptMovesToReassign->unique('id'));
             }
         });
 
@@ -468,7 +503,18 @@ class Move extends Model
 
     public function computeProductQty()
     {
-        $this->product_qty ??= $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
+        if (
+            $this->product_qty !== null
+            && ! $this->isDirty(['product_uom_qty', 'uom_id', 'product_id'])
+        ) {
+            return;
+        }
+
+        if ($this->product_uom_qty === null) {
+            return;
+        }
+
+        $this->product_qty = $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
     }
 
     public function computeProductUOMQty()
@@ -1194,7 +1240,8 @@ class Move extends Model
 
         $toWarehouse = $this->destinationLocation->warehouse ?? null;
 
-        return $this->operationType?->type === OperationTypeEnum::OUTGOING
+        return $this->operationType?->type === OperationTypeEnum::INTERNAL
+            || $this->operationType?->type === OperationTypeEnum::OUTGOING
             || $this->operationType?->type === OperationTypeEnum::MANUFACTURE
             || (
                 $fromWarehouse
@@ -1321,11 +1368,16 @@ class Move extends Model
 
                 $product = Product::find($this->product_id);
 
-                $product->setContext(['to_date' => Carbon::parse($key[1])]);
+                $product->setContext([
+                    'warehouse_id' => $key[0],
+                    'to_date'      => Carbon::parse($key[1]),
+                ]);
 
-                $virtualAvailable = $product->computeQuantities()['virtual_available_qty'] ?? 0;
+                $freeQty = $product->computeQuantities()['virtual_available_qty'] ?? 0;
 
-                $forecastAvailability = $virtualAvailable - $this->product_qty;
+                $forecastAvailability = float_compare($freeQty, $this->product_qty, precisionRounding: $this->product->uom->rounding) >= 0
+                    ? $freeQty
+                    : $freeQty - $this->product_qty;
             } elseif (in_array($this->state, [MoveState::WAITING, MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])) {
                 $warehouseId = $this->sourceLocation->warehouse_id;
 
@@ -1344,7 +1396,10 @@ class Move extends Model
 
             $product = Product::find($this->product_id);
 
-            $product->setContext(['to_date' => Carbon::parse($key[1])]);
+            $product->setContext([
+                'warehouse_id' => $key[0],
+                'to_date'      => Carbon::parse($key[1]),
+            ]);
 
             $forecastAvailability = $product->computeQuantities()['virtual_available_qty'] ?? 0;
 
