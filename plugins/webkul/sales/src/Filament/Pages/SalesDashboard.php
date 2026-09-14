@@ -2,46 +2,40 @@
 
 namespace Webkul\Sale\Filament\Pages;
 
-use App\Models\User;
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\View\LegacyComponents\Widget;
-use Webkul\Sale\Filament\Widgets\RevenueChartWidget;
-use Webkul\Sale\Filament\Widgets\SalesChartWidget;
-use Webkul\Sale\Filament\Widgets\StatsOverviewWidget;
-use Webkul\Sale\Filament\Widgets\TopCategoriesWidget;
-use Webkul\Sale\Filament\Widgets\TopCustomerWidget;
-use Webkul\Sale\Filament\Widgets\TopProductsWidget;
-use Webkul\Sale\Filament\Widgets\TopSalesCountryWidget;
-use Webkul\Sale\Filament\Widgets\TopSalesTeamWidget;
-use Webkul\Sale\Filament\Widgets\YearlyComparisonWidget;
-use Webkul\Sale\Models\Category;
-use Webkul\Sale\Models\Order;
-use Webkul\Sale\Models\Partner;
+use Filament\Widgets\Widget;
+use Illuminate\Contracts\Support\Htmlable;
+use Webkul\Product\Models\Category;
+use Webkul\Sale\Filament\Widgets\MonthlySalesChart;
+use Webkul\Sale\Filament\Widgets\RevenueByCategoryChart;
+use Webkul\Sale\Filament\Widgets\SalesPersonPerformanceChart;
+use Webkul\Sale\Filament\Widgets\SaleStatsOverview;
+use Webkul\Sale\Filament\Widgets\TopCustomersTable;
+use Webkul\Sale\Filament\Widgets\TopProductsTable;
+use Webkul\Sale\Filament\Widgets\TopQuotationsTable;
+use Webkul\Sale\Filament\Widgets\TopSalesOrdersTable;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Team;
+use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 use Webkul\Support\Models\Country;
 
 class SalesDashboard extends BaseDashboard
 {
-    use HasFiltersForm, HasPageShield;
+    use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
-    protected static string $routePath = 'sale';
+    protected static string $routePath = 'sales';
 
-    public static function getNavigationIcon(): ?string
+    protected static function getPagePermission(): ?string
     {
-        return null;
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('sales::filament/pages/sales-dashboard.navigation-group.title');
+        return 'page_sale_sales_dashboard';
     }
 
     public static function getNavigationLabel(): string
@@ -49,98 +43,80 @@ class SalesDashboard extends BaseDashboard
         return __('sales::filament/pages/sales-dashboard.navigation.title');
     }
 
+    public static function getNavigationGroup(): string|\UnitEnum
+    {
+        return NavigationGroup::Dashboard;
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return null;
+    }
+
     public function filtersForm(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make()
                     ->schema([
-                        DatePicker::make('start_date')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.start-date'))
-                            ->maxDate(fn (Get $get) => $get('end_date') ?: now())
-                            ->default(now()->subMonth())
-                            ->native(false)
-                            ->live(),
-
-                        DatePicker::make('end_date')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.end-date'))
-                            ->minDate(fn (Get $get) => $get('start_date') ?: now())
-                            ->maxDate(now())
-                            ->default(now())
-                            ->native(false)
-                            ->live(),
-
-                        Select::make('country_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.country'))
-                            ->options(fn () => Country::pluck('name', 'id')->toArray())
+                        ...DashboardDateRange::make(
+                            __('sales::filament/pages/sales-dashboard.filters.date-range'),
+                        ),
+                        Select::make('countries')
+                            ->label(__('sales::filament/pages/sales-dashboard.filters.countries'))
                             ->multiple()
                             ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.country'))
-                            ->live(),
-
-                        Select::make('product_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.product'))
-                            ->options(fn () => Product::pluck('name', 'id')->toArray())
+                            ->preload()
+                            ->options(fn () => Country::pluck('name', 'id')),
+                        Select::make('products')
+                            ->label(__('sales::filament/pages/sales-dashboard.filters.products'))
                             ->multiple()
                             ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.product'))
-                            ->live(),
-
-                        Select::make('customer_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.customer'))
-                            ->options(fn () => Partner::pluck('name', 'id')->toArray())
+                            ->preload()
+                            ->options(fn () => Product::pluck('name', 'id')),
+                        Select::make('categories')
+                            ->label(__('sales::filament/pages/sales-dashboard.filters.categories'))
                             ->multiple()
                             ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.customer'))
-                            ->live(),
-
-                        Select::make('category_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.category'))
-                            ->options(fn () => Category::pluck('name', 'id')->toArray())
+                            ->preload()
+                            ->options(fn () => Category::pluck('name', 'id')),
+                        Select::make('teams')
+                            ->label(__('sales::filament/pages/sales-dashboard.filters.teams'))
                             ->multiple()
                             ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.category'))
-                            ->live(),
-
-                        Select::make('salesteam_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.salesteam'))
-                            ->options(fn () => Team::pluck('name', 'id')->toArray())
+                            ->preload()
+                            ->options(fn () => Team::pluck('name', 'id')),
+                        Select::make('salesPersons')
+                            ->label(__('sales::filament/pages/sales-dashboard.filters.sales-persons'))
                             ->multiple()
                             ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.salesteam'))
-                            ->live(),
-
-                        Select::make('salesperson_id')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.salesperson'))
-                            ->options(fn () => User::whereIn('id', Order::distinct()->pluck('user_id')->filter())
-                                ->pluck('name', 'id')
-                                ->toArray()
-                            )
-                            ->multiple()
-                            ->searchable()
-                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.salesperson'))
-                            ->live(),
+                            ->preload()
+                            ->options(fn () => User::pluck('name', 'id')),
                     ])
-                    ->columns(4)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->columns([
+                        'default' => 1,
+                        'sm'      => 2,
+                        'md'      => 3,
+                        'xl'      => 6,
+                    ]),
             ]);
     }
 
     /**
-     * @return array<class-string<Widget> | WidgetConfiguration>
+     * @return array<class-string<Widget>>
      */
     public function getWidgets(): array
     {
         return [
-            StatsOverviewWidget::class,
-            SalesChartWidget::class,
-            RevenueChartWidget::class,
-            YearlyComparisonWidget::class,
-            TopCategoriesWidget::class,
-            TopCustomerWidget::class,
-            TopProductsWidget::class,
-            TopSalesTeamWidget::class,
-            TopSalesCountryWidget::class,
+            SaleStatsOverview::class,
+            MonthlySalesChart::class,
+            RevenueByCategoryChart::class,
+            SalesPersonPerformanceChart::class,
+            TopProductsTable::class,
+            TopCustomersTable::class,
+            TopSalesOrdersTable::class,
+            TopQuotationsTable::class,
         ];
     }
 }

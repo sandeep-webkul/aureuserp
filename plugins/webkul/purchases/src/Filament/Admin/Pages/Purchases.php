@@ -4,11 +4,9 @@ namespace Webkul\Purchase\Filament\Admin\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Partner\Models\Partner;
@@ -19,9 +17,11 @@ use Webkul\Purchase\Filament\Admin\Widgets\PurchaseStatsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\PurchaseTrendWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopOrdersWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopPurchasedProductsWidget;
-use Webkul\Purchase\Filament\Admin\Widgets\TopVendorsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\VendorSpendChart;
 use Webkul\Purchase\Models\Order;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 use Webkul\Support\Models\Country;
 
 class Purchases extends BaseDashboard
@@ -41,9 +41,9 @@ class Purchases extends BaseDashboard
         return __('purchases::filament/admin/pages/dashboard.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|\UnitEnum
     {
-        return __('projects::filament/pages/dashboard.navigation.group');
+        return NavigationGroup::Dashboard;
     }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
@@ -56,72 +56,70 @@ class Purchases extends BaseDashboard
         return $form->schema([
             Section::make()
                 ->schema([
-                    DatePicker::make('start_date')
-                        ->label('Start Date')
-                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
-                        ->default(now()->subMonth())
-                        ->native(false),
-
-                    DatePicker::make('end_date')
-                        ->label('End Date')
-                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
-                        ->maxDate(now())
-                        ->default(now())
-                        ->native(false),
+                    ...DashboardDateRange::make(
+                        __('purchases::filament/admin/pages/dashboard.filters.date-range'),
+                        'start_date',
+                        'end_date',
+                    ),
 
                     Select::make('country_id')
-                        ->label('Country')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.country'))
                         ->options(fn () => Country::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Countries')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-countries'))
                         ->live(),
 
                     Select::make('product_id')
-                        ->label('Product')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.product'))
                         ->options(fn () => Product::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Products')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-products'))
                         ->live(),
 
                     Select::make('partner_id')
-                        ->label('Vendor')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.vendor'))
                         ->options(fn () => Partner::where('supplier_rank', '>', 0)->pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Vendors')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-vendors'))
                         ->live(),
 
                     Select::make('category_id')
-                        ->label('Category')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.category'))
                         ->options(fn () => Category::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Categories')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-categories'))
                         ->live(),
 
                     Select::make('buyer_id')
-                        ->label('Buyer')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.buyer'))
                         ->options(fn () => User::whereIn('id', Order::distinct()->pluck('user_id')->filter())
                             ->pluck('name', 'id')
                             ->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Buyers')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-buyers'))
                         ->live(),
 
                     Select::make('state')
-                        ->label('Order State')
+                        ->label(__('purchases::filament/admin/pages/dashboard.filters.state'))
                         ->options(OrderState::options())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All States')
+                        ->placeholder(__('purchases::filament/admin/pages/dashboard.filters.all-states'))
                         ->live(),
 
                 ])
-                ->columns(4)
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->columns([
+                    'default' => 1,
+                    'sm'      => 2,
+                    'md'      => 3,
+                    'xl'      => 7,
+                ]),
         ]);
     }
 
@@ -130,10 +128,9 @@ class Purchases extends BaseDashboard
         return [
             PurchaseStatsWidget::class,
             PurchaseTrendWidget::class,
+            VendorSpendChart::class,
             TopOrdersWidget::class,
-            TopVendorsWidget::class,
             TopPurchasedProductsWidget::class,
-
         ];
     }
 }

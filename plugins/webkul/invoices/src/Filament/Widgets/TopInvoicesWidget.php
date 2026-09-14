@@ -2,100 +2,74 @@
 
 namespace Webkul\Invoice\Filament\Widgets;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Enums\PaymentState;
-use Webkul\Invoice\Models\Invoice;
+use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
 
 class TopInvoicesWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
+    use HasInvoiceDashboardFilters, HasWidgetShield;
 
-    protected static ?string $heading = 'Top Invoices';
+    protected static ?int $sort = 6;
 
-    protected static bool $isLazy = false;
-
-    public function getColumnSpan(): int|string
-    {
-        return 'full';
-    }
+    protected static bool $isLazy = true;
 
     public function table(Table $table): Table
     {
-        return $table
-            ->query($this->getFilteredQuery())
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Number'),
-
-                Tables\Columns\TextColumn::make('invoice_date')
-                    ->label('Invoice Date')
-                    ->date('M d, Y'),
-
-                Tables\Columns\TextColumn::make('invoiceUser.name')
-                    ->label('Salesperson'),
-
-                Tables\Columns\TextColumn::make('amount_total')
-                    ->label('Total')
-                    ->money('USD')
-                    ->alignRight(),
-
-                Tables\Columns\TextColumn::make('payment_state')
-                    ->label('Payment State')
-                    ->color(fn (PaymentState $state) => $state->getColor())
-                    ->icon(fn (PaymentState $state) => $state->getIcon())
-                    ->formatStateUsing(fn (PaymentState $state) => $state->getLabel())
-                    ->badge(),
-            ])
-            ->defaultSort('amount_total', 'desc')
-            ->paginated(false);
+        return $table->defaultKeySort(false);
     }
 
-    protected function getFilteredQuery(): Builder
+    protected function getTableHeading(): string|Htmlable|null
     {
-        $query = Invoice::query();
+        return __('invoices::filament/widgets/invoice-dashboard.top-invoices.heading');
+    }
 
-        if (! empty($this->filters['start_date'])) {
-            $query->whereDate('invoice_date', '>=', $this->filters['start_date']);
-        }
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 
-        if (! empty($this->filters['end_date'])) {
-            $query->whereDate('invoice_date', '<=', $this->filters['end_date']);
-        }
-
-        if (! empty($this->filters['salesperson_id'])) {
-            $query->whereIn('invoice_user_id', (array) $this->filters['salesperson_id']);
-        }
-
-        if (! empty($this->filters['product_id'])) {
-            $query->whereHas('lines', function ($q) {
-                $q->where('display_type', 'product')
-                    ->whereIn('product_id', (array) $this->filters['product_id']);
-            });
-        }
-
-        if (! empty($this->filters['category_id'])) {
-            $query->whereHas('lines.product', function ($q) {
-                $q->whereIn('category_id', (array) $this->filters['category_id']);
-            });
-        }
-
-        if (! empty($this->filters['customer_id'])) {
-            $query->whereIn('partner_id', (array) $this->filters['customer_id']);
-        }
-
-        if (! empty($this->filters['payment_state'])) {
-            $query->whereIn('payment_state', (array) $this->filters['payment_state']);
-        }
-
-        $query->where('move_type', MoveType::OUT_INVOICE);
-
-        return $query->with('invoiceUser')
+    protected function getTableQuery(): Builder
+    {
+        return $this->customerInvoices()
+            ->with(['partner', 'invoiceUser', 'currency'])
+            ->where('amount_total', '>', 0)
             ->orderByDesc('amount_total')
             ->limit(10);
+    }
+
+    protected function getTableColumns(): array
+    {
+        return [
+            Tables\Columns\TextColumn::make('name')
+                ->label(__('invoices::filament/widgets/invoice-dashboard.top-invoices.columns.reference')),
+            Tables\Columns\TextColumn::make('partner.name')
+                ->label(__('invoices::filament/widgets/invoice-dashboard.customer'))
+                ->placeholder('-')
+                ->wrap(),
+            Tables\Columns\TextColumn::make('invoice_date')
+                ->label(__('invoices::filament/widgets/invoice-dashboard.top-invoices.columns.date'))
+                ->date(),
+            Tables\Columns\TextColumn::make('payment_state')
+                ->label(__('invoices::filament/widgets/invoice-dashboard.payment-state'))
+                ->badge()
+                ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
+                ->color(fn ($state): string => match ($state instanceof BackedEnum ? $state->value : $state) {
+                    'paid'           => 'success',
+                    'partial'        => 'warning',
+                    'not_paid'       => 'danger',
+                    'reversed'       => 'info',
+                    default          => 'gray',
+                }),
+            Tables\Columns\TextColumn::make('amount_total')
+                ->label(__('invoices::filament/widgets/invoice-dashboard.top-invoices.columns.amount'))
+                ->money(fn ($record) => $record->currency?->name ?? $this->dashboardCurrency())
+                ->alignEnd(),
+        ];
     }
 }

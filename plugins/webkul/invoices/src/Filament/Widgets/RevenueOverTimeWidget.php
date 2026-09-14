@@ -2,89 +2,100 @@
 
 namespace Webkul\Invoice\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use DateInterval;
+use DatePeriod;
 use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Database\Eloquent\Builder;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Invoice\Models\Invoice;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Carbon;
+use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
 
 class RevenueOverTimeWidget extends ChartWidget
 {
-    use InteractsWithPageFilters;
+    use HasInvoiceDashboardFilters, HasWidgetShield;
 
-    protected ?string $heading = 'Revenue Over Time';
+    protected const BAR_COLOR = '#2a78d6';
 
-    protected ?string $maxHeight = '300px';
+    protected const INK_MUTED = '#898781';
+
+    protected const GRID = 'rgba(137, 135, 129, 0.25)';
+
+    protected static ?int $sort = 3;
 
     protected static bool $isLazy = false;
 
-    protected function getType(): string
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '300px';
+
+    public function getHeading(): string|Htmlable|null
     {
-        return 'line';
+        return __('invoices::filament/widgets/invoice-dashboard.revenue-over-time.heading');
     }
 
-    public function getColumnSpan(): int|string
+    public function getDescription(): string|Htmlable|null
     {
-        return 'full';
+        return __('invoices::filament/widgets/invoice-dashboard.revenue-over-time.description');
     }
 
     protected function getData(): array
     {
-        $query = Invoice::query()
-            ->where('payment_state', 'paid');
+        [$start, $end] = $this->periodRange();
 
-        if (! empty($this->filters['start_date'])) {
-            $query->whereDate('invoice_date', '>=', $this->filters['start_date']);
+        $query = $this->customerInvoices();
+
+        $totals = $query
+            ->where($query->qualifyColumn('payment_state'), 'paid')
+            ->get(['invoice_date', 'amount_total'])
+            ->groupBy(fn ($invoice) => Carbon::parse($invoice->invoice_date)->format('Y-m-d'))
+            ->map(fn ($group) => round((float) $group->sum('amount_total'), 2));
+
+        $labels = [];
+        $data = [];
+
+        foreach (new DatePeriod($start, new DateInterval('P1D'), (clone $end)->addDay()) as $date) {
+            $labels[] = $date->format('M d');
+            $data[] = $totals[$date->format('Y-m-d')] ?? 0;
         }
-
-        if (! empty($this->filters['end_date'])) {
-            $query->whereDate('invoice_date', '<=', $this->filters['end_date']);
-        }
-
-        if (! empty($this->filters['salesperson_id'])) {
-            $query->whereIn('invoice_user_id', (array) $this->filters['salesperson_id']);
-        }
-
-        if (! empty($this->filters['product_id'])) {
-            $query->whereHas('lines', function (Builder $q) {
-                $q->where('display_type', 'product')
-                    ->whereIn('product_id', (array) $this->filters['product_id']);
-            });
-        }
-
-        if (! empty($this->filters['category_id'])) {
-            $query->whereHas('lines.product', function (Builder $q) {
-                $q->whereIn('category_id', (array) $this->filters['category_id']);
-            });
-        }
-
-        if (! empty($this->filters['customer_id'])) {
-            $query->whereIn('partner_id', (array) $this->filters['customer_id']);
-        }
-
-        if (! empty($this->filters['payment_state'])) {
-            $query->whereIn('payment_state', (array) $this->filters['payment_state']);
-        }
-
-        $query->where('move_type', MoveType::OUT_INVOICE);
-
-        $results = $query->selectRaw('DATE(invoice_date) as date, SUM(amount_total) as total')
-            ->groupByRaw('DATE(invoice_date)')
-            ->orderByRaw('DATE(invoice_date)')
-            ->get();
-
-        $labels = $results->pluck('date')->map(fn ($date) => date('M d', strtotime($date)))->toArray();
-        $data = $results->pluck('total')->map(fn ($amount) => round((float) $amount, 2))->toArray();
 
         return [
             'datasets' => [
                 [
-                    'label'           => 'Revenue',
+                    'label'           => __('invoices::filament/widgets/invoice-dashboard.revenue-over-time.revenue'),
                     'data'            => $data,
-                    'backgroundColor' => '#3b82f6',
+                    'backgroundColor' => self::BAR_COLOR,
+                    'borderRadius'    => 4,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 24,
                 ],
             ],
             'labels' => $labels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'maintainAspectRatio' => false,
+            'plugins'             => ['legend' => ['display' => false]],
+            'scales'              => [
+                'x' => [
+                    'border' => ['display' => false],
+                    'grid'   => ['display' => false],
+                    'ticks'  => ['color' => self::INK_MUTED, 'maxTicksLimit' => 12],
+                ],
+                'y' => [
+                    'beginAtZero' => true,
+                    'border'      => ['display' => false],
+                    'grid'        => ['color' => self::GRID],
+                    'ticks'       => ['color' => self::INK_MUTED],
+                ],
+            ],
+        ];
+    }
+
+    protected function getType(): string
+    {
+        return 'bar';
     }
 }

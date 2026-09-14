@@ -4,11 +4,9 @@ namespace Webkul\Invoice\Filament\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Account\Enums\PaymentState;
@@ -17,6 +15,8 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 
 class Invoices extends BaseDashboard
 {
@@ -35,9 +35,9 @@ class Invoices extends BaseDashboard
         return __('invoices::filament/pages/dashboard.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|\UnitEnum
     {
-        return __('projects::filament/pages/dashboard.navigation.group');
+        return NavigationGroup::Dashboard;
     }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
@@ -50,83 +50,81 @@ class Invoices extends BaseDashboard
         return $form->schema([
             Section::make()
                 ->schema([
-                    DatePicker::make('start_date')
-                        ->label('Start Date')
-                        ->maxDate(fn (Get $get) => $get('end_date') ?: now())
-                        ->default(now()->subMonth())
-                        ->native(false),
-
-                    DatePicker::make('end_date')
-                        ->label('End Date')
-                        ->minDate(fn (Get $get) => $get('start_date') ?: now())
-                        ->maxDate(now())
-                        ->default(now())
-                        ->native(false),
+                    ...DashboardDateRange::make(
+                        __('invoices::filament/pages/dashboard.filters.date-range'),
+                        'start_date',
+                        'end_date',
+                    ),
 
                     Select::make('product_id')
-                        ->label('Product')
+                        ->label(__('invoices::filament/pages/dashboard.filters.product'))
                         ->options(fn () => Product::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Products')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-products'))
                         ->live(),
 
                     Select::make('category_id')
-                        ->label('Category')
+                        ->label(__('invoices::filament/pages/dashboard.filters.category'))
                         ->options(fn () => Category::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Categories')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-categories'))
                         ->live(),
 
                     Select::make('customer_id')
-                        ->label('Customer')
+                        ->label(__('invoices::filament/pages/dashboard.filters.customer'))
                         ->options(fn () => Partner::where('customer_rank', '>', 0)->pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Customers')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-customers'))
                         ->live(),
 
                     Select::make('vendor_id')
-                        ->label('Vendor')
+                        ->label(__('invoices::filament/pages/dashboard.filters.vendor'))
                         ->options(fn () => Partner::where('supplier_rank', '>', 0)->pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Vendors')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-vendors'))
                         ->live(),
 
                     Select::make('salesperson_id')
-                        ->label('Salesperson')
+                        ->label(__('invoices::filament/pages/dashboard.filters.salesperson'))
                         ->options(fn () => User::pluck('name', 'id')->toArray())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Salespersons')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-salespersons'))
                         ->live(),
 
                     Select::make('payment_state')
-                        ->label('Payment Status')
+                        ->label(__('invoices::filament/pages/dashboard.filters.payment-state'))
                         ->options(PaymentState::options())
                         ->multiple()
                         ->searchable()
-                        ->placeholder('All Payment States')
+                        ->placeholder(__('invoices::filament/pages/dashboard.filters.all-payment-states'))
                         ->live(),
 
                 ])
-                ->columns(4)
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->columns([
+                    'default' => 1,
+                    'sm'      => 2,
+                    'md'      => 3,
+                    'xl'      => 7,
+                ]),
         ]);
     }
 
     public function getWidgets(): array
     {
         return [
-            Widgets\InvoiceStatsWidget::make(),
-            Widgets\BillStatsWidget::make(),
-            Widgets\RevenueOverTimeWidget::make(),
-            Widgets\TopInvoicesWidget::make(),
-            Widgets\TopBillsWidget::make(),
-            Widgets\TopCustomersWidget::make(),
-            Widgets\TopSalespersonsWidget::make(),
+            Widgets\InvoiceStatsWidget::class,
+            Widgets\BillStatsWidget::class,
+            Widgets\RevenueOverTimeWidget::class,
+            Widgets\CustomerRevenueChart::class,
+            Widgets\SalespersonPerformanceChart::class,
+            Widgets\TopInvoicesWidget::class,
+            Widgets\TopBillsWidget::class,
         ];
     }
 }

@@ -3,119 +3,111 @@
 namespace Webkul\Invoice\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Carbon\Carbon;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Invoice\Models\Invoice;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
 
 class InvoiceStatsWidget extends BaseWidget
 {
-    use HasWidgetShield;
-    use InteractsWithPageFilters;
+    use HasInvoiceDashboardFilters, HasWidgetShield;
 
-    // protected static ?string $pollingInterval = '15s';
+    protected static ?int $sort = 1;
+
+    protected static bool $isLazy = false;
+
+    protected int|string|array $columnSpan = 'full';
+
+    public function getHeading(): ?string
+    {
+        return __('invoices::filament/widgets/invoice-dashboard.invoice-stats.heading');
+    }
 
     protected function getStats(): array
     {
-        $baseQuery = $this->getBaseFilteredQuery();
-        $current = $this->applyDateRange(clone $baseQuery);
-        $previous = $this->applyDateRange(clone $baseQuery, previous: true);
-
-        $totalInvoiced = (float) (clone $current)->sum('amount_total');
-        $totalInvoicedPrevious = (float) (clone $previous)->sum('amount_total');
-
-        $invoiceCount = (clone $current)->count();
-        $invoiceCountPrevious = (clone $previous)->count();
-
-        $paidCount = (clone $current)->where('payment_state', 'paid')->count();
-        $paidCountPrevious = (clone $previous)->where('payment_state', 'paid')->count();
-
-        $unpaidCount = (clone $current)->where('payment_state', 'not_paid')->count();
-        $unpaidCountPrevious = (clone $previous)->where('payment_state', 'not_paid')->count();
+        [$previousStart, $previousEnd] = $this->previousPeriodRange();
 
         return [
-            Stat::make('Total Invoiced', money($totalInvoiced))
-                ->description($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['icon'])
-                ->color($this->calculateTrend($totalInvoiced, $totalInvoicedPrevious)['color'])
-                ->icon('heroicon-o-currency-dollar')
-                ->chart([$totalInvoicedPrevious, $totalInvoiced]),
-
-            Stat::make('Invoices', number_format($invoiceCount))
-                ->description($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['icon'])
-                ->color($this->calculateTrend($invoiceCount, $invoiceCountPrevious)['color'])
-                ->icon('heroicon-o-document-text')
-                ->chart([$invoiceCountPrevious, $invoiceCount]),
-
-            Stat::make('Paid Invoices', $paidCount)
-                ->description($this->calculateTrend($paidCount, $paidCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($paidCount, $paidCountPrevious)['icon'])
-                ->color($this->calculateTrend($paidCount, $paidCountPrevious)['color'])
-                ->icon('heroicon-o-check-circle')
-                ->chart([$paidCountPrevious, $paidCount]),
-
-            Stat::make('Unpaid Invoices', $unpaidCount)
-                ->description($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['description'])
-                ->descriptionIcon($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['icon'])
-                ->color($this->calculateTrend($unpaidCount, $unpaidCountPrevious)['color'])
-                ->icon('heroicon-o-exclamation-circle')
-                ->chart([$unpaidCountPrevious, $unpaidCount]),
+            $this->makeStat(
+                __('invoices::filament/widgets/invoice-dashboard.invoice-stats.total'),
+                'heroicon-o-currency-dollar',
+                (float) $this->scope()->sum('amount_total'),
+                (float) $this->scope($previousStart, $previousEnd)->sum('amount_total'),
+                money: true,
+            ),
+            $this->makeStat(
+                __('invoices::filament/widgets/invoice-dashboard.invoice-stats.count'),
+                'heroicon-o-document-text',
+                (float) $this->scope()->count(),
+                (float) $this->scope($previousStart, $previousEnd)->count(),
+            ),
+            $this->makeStat(
+                __('invoices::filament/widgets/invoice-dashboard.invoice-stats.paid'),
+                'heroicon-o-check-circle',
+                (float) $this->byPaymentState('paid'),
+                (float) $this->byPaymentState('paid', $previousStart, $previousEnd),
+            ),
+            $this->makeStat(
+                __('invoices::filament/widgets/invoice-dashboard.invoice-stats.unpaid'),
+                'heroicon-o-exclamation-circle',
+                (float) $this->byPaymentState('not_paid'),
+                (float) $this->byPaymentState('not_paid', $previousStart, $previousEnd),
+            ),
         ];
     }
 
-    protected function getBaseFilteredQuery()
+    protected function scope(?Carbon $start = null, ?Carbon $end = null): Builder
     {
-        $filters = $this->filters ?? [];
-
-        return Invoice::query()
-            ->where('move_type', MoveType::OUT_INVOICE)
-            ->when(! empty($filters['salesperson_id']), fn ($query) => $query->whereIn('invoice_user_id', (array) $filters['salesperson_id']))
-            ->when(! empty($filters['product_id']), fn ($query) => $query->whereHas('lines', fn ($lineQuery) => $lineQuery->where('display_type', 'product')->whereIn('product_id', (array) $filters['product_id'])))
-            ->when(! empty($filters['category_id']), fn ($query) => $query->whereHas('lines.product', fn ($productQuery) => $productQuery->whereIn('category_id', (array) $filters['category_id'])))
-            ->when(! empty($filters['customer_id']), fn ($query) => $query->whereIn('partner_id', (array) $filters['customer_id']))
-            ->when(! empty($filters['payment_state']), fn ($query) => $query->whereIn('payment_state', (array) $filters['payment_state']));
+        return $this->customerInvoices($start, $end);
     }
 
-    protected function applyDateRange($query, bool $previous = false)
+    protected function byPaymentState(string $state, ?Carbon $start = null, ?Carbon $end = null): int
     {
-        $filters = $this->filters ?? [];
-        $start = ! empty($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subMonth();
-        $end = ! empty($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
+        $query = $this->scope($start, $end);
 
-        if ($previous) {
-            $periodLength = $end->diffInDays($start) + 1;
-            $previousEnd = $start->copy()->subDay();
-            $previousStart = $previousEnd->copy()->subDays($periodLength - 1);
-
-            return $query->whereBetween('invoice_date', [$previousStart->startOfDay(), $previousEnd->endOfDay()]);
-        }
-
-        return $query->whereBetween('invoice_date', [$start->startOfDay(), $end->endOfDay()]);
+        return $query->where($query->qualifyColumn('payment_state'), $state)->count();
     }
 
-    protected function calculateTrend(float|int $current, float|int $previous): array
+    protected function makeStat(string $label, string $icon, float $current, float $previous, bool $money = false): Stat
     {
-        if ($previous == 0 && $current == 0) {
-            return ['description' => 'No change', 'icon' => 'heroicon-m-minus', 'color' => 'gray'];
+        [$description, $descriptionIcon, $color] = $this->trend($current, $previous);
+
+        return Stat::make($label, $money ? money($current, $this->dashboardCurrency()) : number_format($current))
+            ->description($description)
+            ->descriptionIcon($descriptionIcon)
+            ->color($color)
+            ->icon($icon)
+            ->chart([$previous, $current]);
+    }
+
+    /**
+     * @return array{0: string, 1: string, 2: string}
+     */
+    protected function trend(float $current, float $previous): array
+    {
+        if ($previous == 0.0 && $current == 0.0) {
+            return [__('invoices::filament/widgets/invoice-dashboard.no-change'), 'heroicon-m-minus', 'gray'];
         }
 
-        if ($previous == 0 && $current > 0) {
-            return ['description' => '100% increase', 'icon' => 'heroicon-m-arrow-trending-up', 'color' => 'success'];
-        }
-
-        $percentage = round((($current - $previous) / $previous) * 100, 1);
-
-        if ($percentage > 0) {
-            return ['description' => abs($percentage).'% increase', 'icon' => 'heroicon-m-arrow-trending-up', 'color' => 'success'];
-        }
+        $percentage = $previous == 0.0 ? 100.0 : round((($current - $previous) / abs($previous)) * 100, 1);
 
         if ($percentage < 0) {
-            return ['description' => abs($percentage).'% decrease', 'icon' => 'heroicon-m-arrow-trending-down', 'color' => 'danger'];
+            return [
+                __('invoices::filament/widgets/invoice-dashboard.decrease', ['percent' => abs($percentage)]),
+                'heroicon-m-arrow-trending-down',
+                'danger',
+            ];
         }
 
-        return ['description' => 'No change', 'icon' => 'heroicon-m-minus', 'color' => 'gray'];
+        if ($percentage == 0.0) {
+            return [__('invoices::filament/widgets/invoice-dashboard.no-change'), 'heroicon-m-minus', 'gray'];
+        }
+
+        return [
+            __('invoices::filament/widgets/invoice-dashboard.increase', ['percent' => $percentage]),
+            'heroicon-m-arrow-trending-up',
+            'success',
+        ];
     }
 }

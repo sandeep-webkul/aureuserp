@@ -2,98 +2,77 @@
 
 namespace Webkul\Purchase\Filament\Admin\Widgets;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
+use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
 use Webkul\Purchase\Models\PurchaseOrder;
 
 class TopOrdersWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
+    use HasPurchaseDashboardFilters, HasWidgetShield;
 
-    protected static ?string $pollingInterval = '15s';
+    protected static ?int $sort = 4;
 
-    protected static bool $isLazy = false;
+    protected static bool $isLazy = true;
 
-    protected static ?string $heading = 'Top Orders';
-
-    public function getColumnSpan(): int|string
-    {
-        return 'full';
-    }
-
-    public function getTableRecordKey($record): string
-    {
-        return (string) $record->id;
-    }
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
-        return $table
-            ->query($this->getFilteredQuery())
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Order Number'),
-
-                Tables\Columns\TextColumn::make('partner.name')
-                    ->label('Vendor'),
-
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->label('Total Amount')
-                    ->money(fn (PurchaseOrder $record) => $record->currency?->name),
-
-                Tables\Columns\TextColumn::make('ordered_at')
-                    ->label('Ordered At')
-                    ->date(),
-            ])
-            ->paginated(false);
+        return $table->defaultKeySort(false);
     }
 
-    protected function getFilteredQuery(): Builder
+    protected function getTableHeading(): string|Htmlable|null
     {
-        $query = PurchaseOrder::with('partner');
+        return __('purchases::filament/admin/widgets/purchase-dashboard.top-orders.heading');
+    }
 
-        if (! empty($this->filters['start_date'])) {
-            $query->whereDate('ordered_at', '>=', Carbon::parse($this->filters['start_date']));
-        }
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 
-        if (! empty($this->filters['end_date'])) {
-            $query->whereDate('ordered_at', '<=', Carbon::parse($this->filters['end_date']));
-        }
+    protected function getTableQuery(): Builder
+    {
+        return $this->purchaseOrders()
+            ->with(['partner', 'currency'])
+            ->where('total_amount', '>', 0)
+            ->orderByDesc('total_amount')
+            ->limit(10);
+    }
 
-        if (! empty($this->filters['country_id'])) {
-            $query->whereHas('partner', function ($partnerQuery) {
-                $partnerQuery->whereIn('country_id', (array) $this->filters['country_id']);
-            });
-        }
-
-        if (! empty($this->filters['product_id'])) {
-            $query->whereHas('lines', function ($lineQuery) {
-                $lineQuery->whereIn('product_id', (array) $this->filters['product_id']);
-            });
-        }
-
-        if (! empty($this->filters['partner_id'])) {
-            $query->whereIn('partner_id', (array) $this->filters['partner_id']);
-        }
-
-        if (! empty($this->filters['category_id'])) {
-            $query->whereHas('lines.product', function ($productQuery) {
-                $productQuery->whereIn('category_id', (array) $this->filters['category_id']);
-            });
-        }
-
-        if (! empty($this->filters['buyer_id'])) {
-            $query->whereIn('user_id', (array) $this->filters['buyer_id']);
-        }
-
-        if (! empty($this->filters['state'])) {
-            $query->whereIn('state', (array) $this->filters['state']);
-        }
-
-        return $query->orderByDesc('total_amount')->limit(10);
+    protected function getTableColumns(): array
+    {
+        return [
+            Tables\Columns\TextColumn::make('name')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.reference')),
+            Tables\Columns\TextColumn::make('partner.name')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.vendor'))
+                ->placeholder('-')
+                ->wrap(),
+            Tables\Columns\TextColumn::make('state')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.status'))
+                ->badge()
+                ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
+                ->color(fn ($state): string => match ($state instanceof BackedEnum ? $state->value : $state) {
+                    'purchase' => 'info',
+                    'done'     => 'success',
+                    'sent'     => 'warning',
+                    'canceled' => 'danger',
+                    default    => 'gray',
+                }),
+            Tables\Columns\TextColumn::make('ordered_at')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.ordered-at'))
+                ->date(),
+            Tables\Columns\TextColumn::make('total_amount')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.amount'))
+                ->money(fn (PurchaseOrder $record) => $record->currency?->name ?? $this->dashboardCurrency())
+                ->alignEnd(),
+        ];
     }
 }
