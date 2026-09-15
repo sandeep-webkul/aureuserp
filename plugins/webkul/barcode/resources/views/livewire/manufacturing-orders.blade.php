@@ -83,6 +83,18 @@
                     <div>{{ __('barcode::app.manufacturing.empty') }}</div>
                 </div>
             @endforelse
+
+            @if ($orders->isNotEmpty())
+                <div class="flex flex-col items-center gap-2 py-2 text-sm text-gray-600">
+                    <span>{{ __('barcode::app.pagination.showing', ['shown' => $orders->count(), 'total' => $totalOrders]) }}</span>
+
+                    @if ($orders->count() < $totalOrders)
+                        <x-filament::button color="gray" outlined type="button" wire:click="loadMore">
+                            {{ __('barcode::app.pagination.load-more') }}
+                        </x-filament::button>
+                    @endif
+                </div>
+            @endif
         </section>
     </main>
 </div>

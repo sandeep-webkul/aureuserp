@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Livewire\Component;
+use Webkul\Barcode\Support\Barcode;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Models\Order;
 use Webkul\Product\Models\Product;
@@ -19,6 +20,8 @@ class ManufacturingOrders extends Component
     public string $noticeColor = 'info';
 
     public array $matchingOrderIds = [];
+
+    public int $perPage = 50;
 
     public function openOrder()
     {
@@ -40,7 +43,7 @@ class ManufacturingOrders extends Component
         if ($orders->count() === 1) {
             return $this->redirectRoute('barcode.manufacturing-order', [
                 'order' => $orders->first(),
-                'scan'  => $this->normalizeBarcode($this->search),
+                'scan'  => Barcode::normalize($this->search),
             ], navigate: true);
         }
 
@@ -51,6 +54,11 @@ class ManufacturingOrders extends Component
         $this->dispatchNativeFeedback($this->notice);
 
         return null;
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 50;
     }
 
     public function updatedSearch(): void
@@ -65,12 +73,17 @@ class ManufacturingOrders extends Component
 
     public function render(): View
     {
-        $orders = $this->matchingOrderIds !== []
-            ? $this->baseQuery()->whereIn('id', $this->matchingOrderIds)->get()
-            : $this->openOrders();
+        if ($this->matchingOrderIds !== []) {
+            $orders = $this->baseQuery()->whereIn('id', $this->matchingOrderIds)->get();
+            $totalOrders = $orders->count();
+        } else {
+            $orders = $this->openOrdersQuery()->limit($this->perPage)->get();
+            $totalOrders = $this->openOrdersQuery()->count();
+        }
 
         return view('barcode::livewire.manufacturing-orders', [
-            'orders' => $orders,
+            'orders'      => $orders,
+            'totalOrders' => $totalOrders,
         ])->layout('barcode::layouts.app', [
             'title' => __('barcode::app.manufacturing.title'),
         ]);
@@ -85,7 +98,7 @@ class ManufacturingOrders extends Component
             ->orderBy('id');
     }
 
-    private function openOrders(): Collection
+    private function openOrdersQuery(): Builder
     {
         return $this->baseQuery()
             ->whereNotIn('state', [
@@ -106,14 +119,12 @@ class ManufacturingOrders extends Component
                                 ->orWhereRaw('LOWER(barcode) like ?', ["%{$search}%"]);
                         });
                 });
-            })
-            ->limit(200)
-            ->get();
+            });
     }
 
     private function findMatchingOrders(string $barcode): Collection
     {
-        $barcode = $this->normalizeBarcode($barcode);
+        $barcode = Barcode::normalize($barcode);
 
         if ($barcode === '') {
             return collect();
@@ -153,14 +164,6 @@ class ManufacturingOrders extends Component
             ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
             ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
-    }
-
-    private function normalizeBarcode(string $barcode): string
-    {
-        $barcode = trim($barcode);
-        $barcode = preg_replace('/\s+/', ' ', $barcode) ?: '';
-
-        return trim($barcode, " \t\n\r\0\x0B#");
     }
 
     private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Livewire\Component;
 use Throwable;
+use Webkul\Barcode\Support\Barcode;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Packaging;
@@ -154,9 +155,13 @@ class ManufacturingOrder extends Component
 
             $this->order->refresh();
 
-            $this->componentQuantities = [];
-            $this->countedComponentIds = [];
-            $this->quantityProducing = (float) $this->order->quantity_producing;
+            if (in_array($action, ['done', 'cancel'], true)) {
+                $this->componentQuantities = [];
+                $this->countedComponentIds = [];
+                $this->quantityProducing = (float) $this->order->quantity_producing;
+            } else {
+                $this->reseedUntouchedComponents();
+            }
 
             $this->syncComponentState();
 
@@ -186,6 +191,7 @@ class ManufacturingOrder extends Component
             'editingComponent'  => $this->editingComponentId ? $this->componentMoves()->firstWhere('id', $this->editingComponentId) : null,
             'remainingQuantity' => $this->remainingQuantity(),
             'actions'           => $this->availableActions(),
+            'blockedNotice'     => $this->blockedNotice(),
         ])->layout('barcode::layouts.app', [
             'title' => $order->name,
         ]);
@@ -198,6 +204,10 @@ class ManufacturingOrder extends Component
 
     private function runAction(string $action): void
     {
+        if ($this->availableActions() === []) {
+            throw new InvalidArgumentException($this->blockedNotice() ?? __('barcode::app.actions.unsupported'));
+        }
+
         match ($action) {
             'confirm' => Manufacturing::confirmManufacturingOrder($this->order),
             'start'   => Manufacturing::startManufacturingOrder($this->order),
@@ -288,6 +298,41 @@ class ManufacturingOrder extends Component
         })->values();
     }
 
+    private function reseedUntouchedComponents(): void
+    {
+        foreach ($this->componentMoves() as $move) {
+            if ($this->countedComponentIds[$move->id] ?? false) {
+                continue;
+            }
+
+            $this->componentQuantities[$move->id] = (float) $move->quantity;
+        }
+    }
+
+    private function unavailableProductComponents(): Collection
+    {
+        return $this->componentMoves()->filter(fn (Move $move): bool => $move->product === null);
+    }
+
+    private function blockedNotice(): ?string
+    {
+        if ($this->availableActionsForState() === []) {
+            return null;
+        }
+
+        $unavailable = $this->unavailableProductComponents();
+
+        if ($unavailable->isNotEmpty()) {
+            return __('barcode::app.actions.product-unavailable', ['count' => $unavailable->count()]);
+        }
+
+        if ($this->order->product === null) {
+            return __('barcode::app.actions.product-unavailable', ['count' => 1]);
+        }
+
+        return null;
+    }
+
     private function syncComponentState(): void
     {
         foreach ($this->componentMoves() as $move) {
@@ -316,6 +361,15 @@ class ManufacturingOrder extends Component
 
     private function availableActions(): array
     {
+        if ($this->blockedNotice() !== null) {
+            return [];
+        }
+
+        return $this->availableActionsForState();
+    }
+
+    private function availableActionsForState(): array
+    {
         return match ($this->order->state) {
             ManufacturingOrderState::DRAFT => [
                 ['key' => 'confirm', 'label' => __('barcode::app.manufacturing.confirm'), 'variant' => 'primary'],
@@ -336,7 +390,7 @@ class ManufacturingOrder extends Component
 
     private function resolveScan(string $barcode): void
     {
-        $barcode = $this->normalizeBarcode($barcode);
+        $barcode = Barcode::normalize($barcode);
 
         if ($barcode === '') {
             $this->notice = __('barcode::app.scan.empty');
@@ -406,14 +460,6 @@ class ManufacturingOrder extends Component
             ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
             ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
-    }
-
-    private function normalizeBarcode(string $barcode): string
-    {
-        $barcode = trim($barcode);
-        $barcode = preg_replace('/\s+/', ' ', $barcode) ?: '';
-
-        return trim($barcode, " \t\n\r\0\x0B#");
     }
 
     private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void

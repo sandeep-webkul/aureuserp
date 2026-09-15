@@ -13,6 +13,7 @@ return [
     ],
 
     'auth' => [
+        'forbidden'         => 'You do not have permission to use the barcode app.',
         'login-title'       => 'Barcode Login',
         'login-heading'     => 'Sign in to Barcode',
         'login-subheading'  => 'Continue to the barcode operations app.',
@@ -140,7 +141,14 @@ return [
         'move-counted'             => 'Move marked as counted.',
     ],
 
+    'pagination' => [
+        'showing'   => 'Showing :shown of :total',
+        'load-more' => 'Load more',
+    ],
+
     'actions' => [
+        'draft-blocked'            => 'This transfer is still a draft. Confirm it in the back office before validating it here.',
+        'product-unavailable'      => ':count line(s) use a product that is not available in your active company. Switch company to continue.',
         'confirm'                  => 'Confirm',
         'confirm-prompt'           => 'Are you sure you want to',
         'cancel'                   => 'Cancel',

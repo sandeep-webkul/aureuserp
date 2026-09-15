@@ -13,6 +13,7 @@ return [
     ],
 
     'auth' => [
+        'forbidden'         => 'No tiene permiso para usar la aplicación de código de barras.',
         'login-title'       => 'Inicio de sesión de Código de barras',
         'login-heading'     => 'Inicie sesión en Código de barras',
         'login-subheading'  => 'Continúe a la aplicación de operaciones de código de barras.',
@@ -140,7 +141,14 @@ return [
         'move-counted'             => 'Movimiento marcado como contado.',
     ],
 
+    'pagination' => [
+        'showing'   => 'Mostrando :shown de :total',
+        'load-more' => 'Cargar más',
+    ],
+
     'actions' => [
+        'draft-blocked'            => 'Esta transferencia sigue en borrador. Confírmela en la administración antes de validarla aquí.',
+        'product-unavailable'      => ':count línea(s) usan un producto que no está disponible en su empresa activa. Cambie de empresa para continuar.',
         'confirm'                  => 'Confirmar',
         'confirm-prompt'           => '¿Está seguro de que desea',
         'cancel'                   => 'Cancelar',

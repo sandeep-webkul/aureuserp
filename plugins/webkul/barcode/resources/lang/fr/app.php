@@ -13,6 +13,7 @@ return [
     ],
 
     'auth' => [
+        'forbidden'         => 'Vous n\'avez pas la permission d\'utiliser l\'application code-barres.',
         'login-title'       => 'Connexion Code-barres',
         'login-heading'     => 'Connexion à Code-barres',
         'login-subheading'  => "Continuer vers l'application des opérations de codes-barres.",
@@ -140,7 +141,14 @@ return [
         'move-counted'             => 'Mouvement marqué comme compté.',
     ],
 
+    'pagination' => [
+        'showing'   => 'Affichage de :shown sur :total',
+        'load-more' => 'Charger plus',
+    ],
+
     'actions' => [
+        'draft-blocked'            => 'Ce transfert est encore un brouillon. Confirmez-le dans l\'administration avant de le valider ici.',
+        'product-unavailable'      => ':count ligne(s) utilisent un produit indisponible dans votre société active. Changez de société pour continuer.',
         'confirm'                  => 'Confirmer',
         'confirm-prompt'           => 'Êtes-vous sûr de vouloir',
         'cancel'                   => 'Annuler',

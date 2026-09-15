@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
+use Webkul\Barcode\Support\Barcode;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Lot;
@@ -32,9 +33,11 @@ class Adjustments extends Component
 
     public float|string|null $editingCountedQuantity = null;
 
+    public int $perPage = 50;
+
     public function scan(): void
     {
-        $barcode = $this->normalizeBarcode($this->search);
+        $barcode = Barcode::normalize($this->search);
 
         if ($barcode === '') {
             $this->notice = __('barcode::app.scan.empty');
@@ -102,6 +105,11 @@ class Adjustments extends Component
         $this->notice = __('barcode::app.scan.not-found');
         $this->noticeColor = 'warning';
         $this->dispatchNativeFeedback($this->notice, false);
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 50;
     }
 
     public function clearFilters(): void
@@ -278,7 +286,10 @@ class Adjustments extends Component
     public function render(): View
     {
         $editingQuantity = $this->editingQuantityId
-            ? $this->loadQuantities()->firstWhere('id', $this->editingQuantityId)
+            ? ProductQuantity::query()
+                ->with(['company', 'location', 'lot', 'package', 'product.uom'])
+                ->whereHas('product')
+                ->find($this->editingQuantityId)
             : null;
 
         return view('barcode::livewire.adjustments', [
@@ -287,6 +298,7 @@ class Adjustments extends Component
             'selectedProduct'  => $this->selectedProduct(),
             'selectedLot'      => $this->selectedLot(),
             'quantities'       => $this->loadQuantities(),
+            'totalQuantities'  => $this->inventoryQuery()->count(),
         ])->layout('barcode::layouts.app', [
             'title' => __('barcode::app.adjustments.title'),
         ]);
@@ -347,7 +359,7 @@ class Adjustments extends Component
     private function loadQuantities(): Collection
     {
         return $this->inventoryQuery()
-            ->limit(200)
+            ->limit($this->perPage)
             ->get();
     }
 
@@ -455,14 +467,6 @@ class Adjustments extends Component
     private function selectedLot(): ?Lot
     {
         return $this->selectedLotId ? Lot::query()->find($this->selectedLotId) : null;
-    }
-
-    private function normalizeBarcode(string $barcode): string
-    {
-        $barcode = trim($barcode);
-        $barcode = preg_replace('/\s+/', ' ', $barcode) ?: '';
-
-        return trim($barcode, " \t\n\r\0\x0B#");
     }
 
     private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void
