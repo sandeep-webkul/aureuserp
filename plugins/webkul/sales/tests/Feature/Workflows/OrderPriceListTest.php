@@ -1,5 +1,6 @@
 <?php
 
+use Webkul\Partner\Models\Partner as BasePartner;
 use Webkul\Product\Enums\PriceRuleType;
 use Webkul\Product\Models\PriceList;
 use Webkul\Product\Models\PriceRuleItem;
@@ -7,6 +8,7 @@ use Webkul\Product\Models\Product;
 use Webkul\Product\Services\PriceListResolver;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Filament\Clusters\Products\Resources\PriceListResource;
+use Webkul\Sale\Models\Partner;
 use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/CompanyHelper.php';
@@ -41,11 +43,16 @@ it('leaves the price list empty on orders that do not use one', function () {
 it('remembers the price list a customer buys on', function () {
     $priceList = PriceList::factory()->create();
 
-    $partner = SaleHelper::partner();
+    $partner = Partner::findOrFail(SaleHelper::partner()->id);
 
     $partner->update(['price_list_id' => $priceList->id]);
 
     expect($partner->refresh()->priceList?->id)->toBe($priceList->id);
+});
+
+it('keeps the price list off the base partner model', function () {
+    expect((new BasePartner)->getFillable())->not->toContain('price_list_id')
+        ->and(method_exists(BasePartner::class, 'priceList'))->toBeFalse();
 });
 
 it('prices an order line from the price list on the order', function () {

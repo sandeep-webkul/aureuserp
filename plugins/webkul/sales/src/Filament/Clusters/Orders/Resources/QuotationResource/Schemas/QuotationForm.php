@@ -1293,6 +1293,27 @@ class QuotationForm
         );
     }
 
+    private static function syncCurrencyFromPriceList(Set $set, Get $get, ?int $previousCurrencyId, $companyId): void
+    {
+        $priceList = static::resolvePriceList($get('price_list_id'));
+
+        $currencyId = $priceList?->currency_id
+            ?? Company::find(filled($companyId) ? $companyId : current_company_id())?->currency_id
+            ?? $previousCurrencyId;
+
+        $set('currency_id', $currencyId);
+
+        if ($priceList) {
+            static::repriceLines($set, $get);
+
+            return;
+        }
+
+        if ($previousCurrencyId && $currencyId && $previousCurrencyId !== (int) $currencyId) {
+            static::updateProductPricesForCurrency($previousCurrencyId, $set, $get);
+        }
+    }
+
     private static function resolvePriceList($priceListId): ?PriceList
     {
         if (! $priceListId) {
