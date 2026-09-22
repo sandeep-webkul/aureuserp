@@ -260,7 +260,7 @@
                         </div>
 
                         <div class="flex min-h-[42px] w-[92px] items-end justify-end gap-2">
-                            @if (! $quantity->inventory_quantity_set || $countedQuantity <= 0)
+                            @if (! $quantity->inventory_quantity_set)
                                 <x-filament::button color="gray" outlined type="button" class="h-[42px] min-w-[42px] justify-center px-3" wire:click="quickCountQuantity({{ $quantity->id }})">+{{ number_format($onHandQuantity, 0) }}</x-filament::button>
                             @else
                                 <x-filament::button

@@ -87,3 +87,22 @@ it('refuses to act on a quantity whose product is out of scope', function () {
         ->call('applyQuantityCount', 99999999)
         ->assertSet('noticeColor', 'warning');
 });
+
+it('offers the apply action for a counted quantity of zero', function () {
+    Livewire::test(Adjustments::class)
+        ->call('editQuantity', $this->quantity->id)
+        ->call('setEditingQuantity', 0)
+        ->call('confirmQuantityEdit')
+        ->assertSeeHtml('applyQuantityCount('.$this->quantity->id.')');
+});
+
+it('zeroes the on hand quantity when a count of zero is applied', function () {
+    Livewire::test(Adjustments::class)
+        ->call('editQuantity', $this->quantity->id)
+        ->call('setEditingQuantity', 0)
+        ->call('confirmQuantityEdit')
+        ->call('applyQuantityCount', $this->quantity->id)
+        ->assertSet('noticeColor', 'success');
+
+    expect((float) ($this->quantity->fresh()?->quantity ?? 0.0))->toBe(0.0);
+});
