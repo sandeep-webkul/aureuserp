@@ -40,13 +40,11 @@
                         </span>
                     </div>
 
-                    <div class="inline-flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                        @if ($productImageUrl)
+                    @if ($productImageUrl)
+                        <div class="inline-flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                             <img src="{{ $productImageUrl }}" alt="{{ __('barcode::app.adjustments.edit-tooltip') }}" class="h-full w-full object-cover">
-                        @else
-                            <span class="text-lg font-extrabold text-gray-500">{{ mb_substr((string) $editingQuantity->product?->name, 0, 1) }}</span>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
             </x-filament::section>
 
@@ -240,14 +238,12 @@
                     </div>
 
                     <div class="flex shrink-0 flex-col items-end gap-7 px-4 py-3 text-right">
-                        <div class="grid w-[92px] grid-cols-2 gap-2">
-                            <div class="inline-flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                                @if ($productImageUrl)
+                        <div class="flex w-[92px] justify-end gap-2">
+                            @if ($productImageUrl)
+                                <div class="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                                     <img src="{{ $productImageUrl }}" alt="{{ __('barcode::app.adjustments.edit-tooltip') }}" class="h-full w-full object-cover">
-                                @else
-                                    <span class="text-lg font-extrabold text-gray-500">{{ mb_substr((string) $quantity->product?->name, 0, 1) }}</span>
-                                @endif
-                            </div>
+                                </div>
+                            @endif
 
                             <x-filament::button
                                 color="gray"
