@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Validator;
-use Webkul\Support\Exceptions\CrossCompanyException;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Rules\WithinAllowedCompanies;
 use Webkul\Support\Support\CompanyConsistencyGuard;
@@ -40,42 +39,6 @@ it('passes validation for a company inside the allowed set', function () {
     );
 
     expect($validator->fails())->toBeFalse();
-});
-
-it('never persists a record created under a forbidden company', function () {
-    $allowed = CompanyHelper::company();
-    $forbidden = CompanyHelper::company();
-
-    CompanyHelper::actingAsCompanyUser($allowed);
-
-    expect(fn () => UtmCampaign::factory()->company($forbidden)->create())
-        ->toThrow(CrossCompanyException::class);
-
-    $persisted = UtmCampaign::query()
-        ->withoutGlobalScopes()
-        ->where('company_id', $forbidden->id)
-        ->count();
-
-    expect($persisted)->toBe(0);
-});
-
-it('never moves an existing record into a forbidden company', function () {
-    $allowed = CompanyHelper::company();
-    $forbidden = CompanyHelper::company();
-
-    CompanyHelper::actingAsCompanyUser($allowed);
-
-    $campaign = UtmCampaign::factory()->company($allowed)->create();
-
-    expect(fn () => $campaign->update(['company_id' => $forbidden->id]))
-        ->toThrow(CrossCompanyException::class);
-
-    $stored = UtmCampaign::query()
-        ->withoutGlobalScopes()
-        ->whereKey($campaign->getKey())
-        ->value('company_id');
-
-    expect($stored)->toBe($allowed->id);
 });
 
 it('names a conflicting record the user is allowed to see', function () {

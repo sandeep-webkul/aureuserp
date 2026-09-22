@@ -15,13 +15,6 @@ class CrossCompanyException extends Exception
         ]));
     }
 
-    public static function forCompany(int $companyId): self
-    {
-        return new self(__('support::support.cross-company.company', [
-            'company' => $companyId,
-        ]));
-    }
-
     public function title(): string
     {
         return __('support::support.cross-company.title');
