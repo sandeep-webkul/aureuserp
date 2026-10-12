@@ -29,6 +29,7 @@ function discard(uuid) {
         :open="state.ordersModalOpen"
         width="max-w-2xl"
         :heading="till.t('parked.heading')"
+        content-class="!gap-0"
         @close="till.closeOrders()"
     >
             <div class="flex flex-none items-center gap-2">
@@ -36,7 +37,7 @@ function discard(uuid) {
                     v-model="state.ordersSearch"
                     type="search"
                     :placeholder="till.t('parked.search')"
-                    class="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-950 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                    class="h-full min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-950 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                 >
 
                 <button
@@ -48,7 +49,7 @@ function discard(uuid) {
                 </button>
             </div>
 
-            <div class="flex min-h-0 flex-auto flex-col gap-2">
+            <div class="flex min-h-0 flex-auto flex-col gap-2 overflow-y-auto">
                 <div
                     v-for="order in results"
                     :key="order.uuid"

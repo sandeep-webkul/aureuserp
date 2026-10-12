@@ -106,18 +106,7 @@ class Registers extends Page
             return null;
         }
 
-        try {
-            $session = PointOfSale::liveSessionFor($config) ?? PointOfSale::openSession($config);
-        } catch (Throwable $exception) {
-            Notification::make()
-                ->danger()
-                ->body($exception->getMessage())
-                ->send();
-
-            return null;
-        }
-
-        $url = Home::getUrl(['session' => $session->getKey()]);
+        $url = Register::getUrl(['config' => $config->getKey()]);
 
         if ($newTab) {
             return $url;

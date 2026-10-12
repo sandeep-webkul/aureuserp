@@ -266,7 +266,7 @@ class Orders extends Page
 
     public function backUrl(): string
     {
-        return Home::getUrl(['session' => $this->session?->getKey()]);
+        return Register::getUrl(['config' => $this->session?->config_id]);
     }
 
     public function lineImage(OrderLine $line): ?string
@@ -327,7 +327,7 @@ class Orders extends Page
 
         session()->put(Terminal::pendingRefundKey($this->session), $pending);
 
-        $this->redirect(Home::getUrl(['session' => $this->session->getKey()]), navigate: FilamentView::hasSpaMode());
+        $this->redirect(Register::getUrl(['config' => $this->session->config_id]), navigate: FilamentView::hasSpaMode());
     }
 
     public function canRefund(Order $order): bool

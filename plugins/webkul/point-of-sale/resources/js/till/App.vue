@@ -62,7 +62,7 @@ const state = till.state
         <div v-else class="grid h-full min-h-0 flex-auto grid-cols-[1fr] grid-rows-[minmax(0,1fr)] gap-4 p-4 lg:grid-cols-[1fr_minmax(22rem,32%)]">
             <section class="flex min-h-0 min-w-0 flex-col gap-3">
                 <div v-if="state.screen === 'products'" class="flex flex-none items-center gap-2">
-                    <div class="relative w-80 max-w-full">
+                    <div class="relative min-w-0 flex-1">
                         <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-400">
                             <svg class="size-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 2.95 10.14l3.2 3.21a.75.75 0 1 0 1.06-1.06l-3.21-3.2A5.5 5.5 0 0 0 9 3.5ZM5 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z" clip-rule="evenodd" />
@@ -199,12 +199,13 @@ const state = till.state
 
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ till.t('session-closed.body') }}</p>
 
-                <a
-                    :href="till.boot.session.registers_url"
+                <button
+                    type="button"
                     class="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-600 px-6 text-sm font-semibold text-white hover:bg-primary-700"
+                    @click="till.cancelOpening()"
                 >
                     {{ till.t('session-closed.back') }}
-                </a>
+                </button>
             </div>
         </div>
     </div>

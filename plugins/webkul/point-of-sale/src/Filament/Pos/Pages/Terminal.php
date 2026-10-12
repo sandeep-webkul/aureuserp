@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
 use Webkul\PointOfSale\Facades\PointOfSale;
 use Webkul\PointOfSale\Filament\Admin\Pages\Registers as AdminRegisters;
+use Webkul\PointOfSale\Http\Resources\V1\RegisterResource;
 use Webkul\PointOfSale\Models\Config;
 use Webkul\PointOfSale\Models\Session;
 use Webkul\PointOfSale\Services\BootLoader;
@@ -18,44 +19,40 @@ abstract class Terminal extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
-    protected static ?string $slug = 'terminal/{session}';
+    protected static ?string $slug = 'terminal/{config}';
 
-    protected string $view = 'point-of-sale::filament.pos.pages.till';
+    protected string $view = 'point-of-sale::filament.pos.pages.terminal';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public Session $session;
-
     public Config $config;
 
-    public function mount(Session $session): void
+    public ?Session $session = null;
+
+    public function mount(Config $config): void
     {
-        abort_unless(PosAccess::reachesActiveSession($session), 403);
+        abort_unless(PosAccess::reachesConfig($config), 403);
 
-        $this->session = $session;
+        $this->config = $config;
 
-        $this->config = $session->config;
+        $session = app(SessionWorkflow::class)->liveSessionFor($config);
 
-        if (! $session->isLive()) {
-            $live = app(SessionWorkflow::class)->liveSessionFor($this->config);
+        if ($session && PosAccess::reachesSession($session)) {
+            $this->session = PointOfSale::loginSession($session);
+        }
+    }
 
-            $this->redirect($live && PosAccess::reachesSession($live)
-                ? static::getUrl(['session' => $live->getKey()])
-                : $this->backUrl());
+    public function hasSession(): bool
+    {
+        return $this->session !== null;
+    }
 
-            return;
+    public function bootPayload(): ?array
+    {
+        if (! $this->session) {
+            return null;
         }
 
-        $this->session = PointOfSale::loginSession($session);
-    }
-
-    public function backUrl(): string
-    {
-        return Registers::getUrl();
-    }
-
-    public function bootPayload(): array
-    {
         return array_merge(app(BootLoader::class)->load($this->config, $this->session), [
             'pending_refund' => session()->pull(static::pendingRefundKey($this->session)),
         ]);
@@ -66,9 +63,34 @@ abstract class Terminal extends Page
         return 'point-of-sale.pending-refund.'.$session->getKey();
     }
 
+    public function registers(): array
+    {
+        return RegisterResource::collection(collect([$this->config]))->resolve();
+    }
+
     public function syncEndpoint(): string
     {
         return route('point-of-sale.till.orders.sync');
+    }
+
+    public function registersEndpoint(): string
+    {
+        return route('point-of-sale.till.registers');
+    }
+
+    public function openEndpointBase(): string
+    {
+        return route('point-of-sale.till.configs.session.open', ['config' => '__config__']);
+    }
+
+    public function bootEndpointBase(): string
+    {
+        return route('point-of-sale.till.sessions.boot', ['session' => '__session__']);
+    }
+
+    public function backUrl(): string
+    {
+        return AdminRegisters::getUrl(panel: 'admin');
     }
 
     public function backOfficeUrl(): string
@@ -78,7 +100,7 @@ abstract class Terminal extends Page
 
     public function logoutUrl(): string
     {
-        return route('filament.pos.auth.logout');
+        return route('point-of-sale.pos.logout');
     }
 
     public function brandLogo(): string
@@ -96,5 +118,12 @@ abstract class Terminal extends Page
         $user = Auth::user();
 
         return $user ? Filament::getUserAvatarUrl($user) : null;
+    }
+
+    public function strings(): array
+    {
+        $lines = trans('point-of-sale::filament/pos/pages/terminal');
+
+        return is_array($lines) ? $lines : [];
     }
 }

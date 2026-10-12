@@ -126,6 +126,7 @@ return [
         'note'                     => 'Opening note',
         'placeholder'              => 'Add an opening note…',
         'confirm'                  => 'Open Register',
+        'cancel'                   => 'Cancel',
     ],
 
     'tabs' => [

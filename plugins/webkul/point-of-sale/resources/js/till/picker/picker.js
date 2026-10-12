@@ -1,22 +1,22 @@
 import { reactive } from 'vue'
 
-const ACTIVE_SESSION_KEY = 'pos-active-session'
-
 function csrf() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
 }
 
 export class Picker {
-    constructor(endpoints, strings) {
+    constructor(endpoints, strings, registers = [], configId = null) {
         this.endpoints = endpoints
         this.strings = strings ?? {}
+        this.configId = configId
 
         this.state = reactive({
-            loading: true,
+            loading: registers.length === 0,
             error: null,
+            offline: !navigator.onLine,
             busyConfigId: null,
             confirmingConfigId: null,
-            registers: [],
+            registers,
         })
     }
 
@@ -60,44 +60,32 @@ export class Picker {
     }
 
     async load() {
-        this.state.loading = true
+        this.state.offline = !navigator.onLine
+
+        if (!navigator.onLine) {
+            this.state.loading = false
+
+            return
+        }
+
+        this.state.loading = this.state.registers.length === 0
         this.state.error = null
 
         try {
             const payload = await this.request(this.endpoints.registers)
 
-            this.state.registers = payload.data ?? []
+            const all = payload.data ?? []
 
-            const resumeId = this.autoResumeId(payload.own_session_id)
-
-            if (resumeId) {
-                await this.boot(resumeId)
-
-                return
-            }
+            this.state.registers = this.configId
+                ? all.filter((register) => register.id === this.configId)
+                : all
         } catch (error) {
-            this.state.error = error.message
+            if (this.state.registers.length === 0) {
+                this.state.error = error.message
+            }
         } finally {
             this.state.loading = false
         }
-    }
-
-    autoResumeId(ownSessionId) {
-        const stored = Number(window.localStorage.getItem(ACTIVE_SESSION_KEY)) || null
-
-        const live = this.state.registers
-            .map((register) => register.live_session?.id)
-            .filter(Boolean)
-
-        if (stored && live.includes(stored)) {
-            return stored
-        }
-
-        if (ownSessionId && live.includes(ownSessionId)) {
-            return ownSessionId
-        }
-
-        return null
     }
 
     async open(register) {
@@ -117,9 +105,9 @@ export class Picker {
         this.state.busyConfigId = register.id
 
         try {
-            const payload = await this.request(this.endpoints.open.replace('__config__', register.id), 'POST')
+            const opened = await this.request(this.endpoints.open.replace('__config__', register.id), 'POST')
 
-            await this.boot(payload.data.id, true)
+            await this.enterTerminal(opened.data.id)
         } catch (error) {
             this.state.error = error.message
             this.state.busyConfigId = null
@@ -135,7 +123,17 @@ export class Picker {
 
         this.state.error = null
 
-        await this.boot(sessionId)
+        try {
+            await this.enterTerminal(sessionId)
+        } catch (error) {
+            this.state.error = error.message
+        }
+    }
+
+    async enterTerminal(sessionId) {
+        const boot = await this.request(this.endpoints.boot.replace('__session__', sessionId), 'GET')
+
+        window.pointOfSaleShell.openTerminal(boot.data)
     }
 
     async discard(register) {
@@ -153,13 +151,5 @@ export class Picker {
         } finally {
             this.state.busyConfigId = null
         }
-    }
-
-    boot(sessionId, fresh = false) {
-        window.localStorage.setItem(ACTIVE_SESSION_KEY, String(sessionId))
-
-        const url = this.endpoints.terminal.replace('__session__', sessionId)
-
-        window.location.href = fresh ? `${url}?opening=1` : url
     }
 }

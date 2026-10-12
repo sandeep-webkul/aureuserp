@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 class Register extends Terminal
 {
-    protected static ?string $slug = '{session}';
+    protected static ?string $slug = '{config}';
 
     protected string $view = 'point-of-sale::filament.pos.pages.terminal';
 
@@ -23,12 +23,7 @@ class Register extends Terminal
         Route::get(static::getRoutePath($panel), static::class)
             ->middleware($middleware)
             ->withoutMiddleware(static::getWithoutRouteMiddleware($panel))
-            ->whereNumber('session')
+            ->whereNumber('config')
             ->name(static::getRelativeRouteName($panel));
-    }
-
-    public function backUrl(): string
-    {
-        return Pos::getUrl(panel: 'pos');
     }
 }

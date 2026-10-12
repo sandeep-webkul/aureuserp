@@ -4,11 +4,9 @@ namespace Webkul\PointOfSale\Filament\Admin\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
-use Throwable;
 use UnitEnum;
 use Webkul\PointOfSale\Enums\SessionState;
 use Webkul\PointOfSale\Facades\PointOfSale;
@@ -16,7 +14,7 @@ use Webkul\PointOfSale\Filament\Admin\Clusters\Configurations\Resources\ConfigRe
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\SessionResource;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Reporting\Pages\OrderReport;
-use Webkul\PointOfSale\Filament\Pos\Pages\Home;
+use Webkul\PointOfSale\Filament\Pos\Pages\Register;
 use Webkul\PointOfSale\Models\Config;
 use Webkul\PointOfSale\Models\Session;
 use Webkul\Support\Enums\NavigationGroup;
@@ -174,18 +172,7 @@ class Registers extends Page
             return null;
         }
 
-        try {
-            $session = PointOfSale::liveSessionFor($config) ?? PointOfSale::openSession($config);
-        } catch (Throwable $exception) {
-            Notification::make()
-                ->danger()
-                ->body($exception->getMessage())
-                ->send();
-
-            return null;
-        }
-
-        $url = Home::getUrl(['session' => $session->getKey()], panel: 'pos');
+        $url = Register::getUrl(['config' => $config->getKey()], panel: 'pos');
 
         if ($newTab) {
             return $url;

@@ -18,7 +18,12 @@ use Webkul\PointOfSale\Http\Controllers\API\V1\RegisterListController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\SalesDetailsController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\SessionController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\TerminalProductController;
+use Webkul\PointOfSale\Http\Controllers\LogoutController;
 use Webkul\PointOfSale\Http\Controllers\PwaController;
+
+Route::post('pos/sign-out', LogoutController::class)
+    ->middleware(['web'])
+    ->name('point-of-sale.pos.logout');
 
 Route::name('point-of-sale.till.')
     ->prefix('pos/till')

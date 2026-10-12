@@ -68,7 +68,16 @@ const state = till.state
                 {{ state.openingError }}
             </p>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-2">
+                <button
+                    type="button"
+                    class="flex min-h-11 items-center justify-center rounded-lg border border-gray-200 px-6 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                    :disabled="state.openingBusy"
+                    @click="till.cancelOpening()"
+                >
+                    {{ till.t('opening-control.cancel') }}
+                </button>
+
                 <button
                     type="button"
                     class="flex min-h-11 items-center justify-center rounded-lg bg-primary-600 px-6 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-60"

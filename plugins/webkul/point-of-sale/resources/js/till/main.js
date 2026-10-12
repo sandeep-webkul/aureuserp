@@ -8,6 +8,8 @@ let mounted = null
 
 let activeTill = null
 
+let shellElement = null
+
 function mountTillWithBoot(element, boot) {
     unmountMounted()
 
@@ -45,9 +47,11 @@ function mountPicker(element) {
             registers: element.dataset.registersEndpoint,
             open: element.dataset.openEndpoint,
             discard: element.dataset.discardEndpoint,
-            terminal: element.dataset.terminalBase,
+            boot: element.dataset.bootEndpoint,
         },
         JSON.parse(element.dataset.strings ?? '{}'),
+        JSON.parse(element.dataset.registers ?? '[]'),
+        Number(element.dataset.configId) || null,
     )
 
     const app = createApp(PickerApp)
@@ -57,6 +61,8 @@ function mountPicker(element) {
     app.mount(element)
 
     mounted = app
+
+    window.pointOfSalePicker = picker
 
     picker.load()
 }
@@ -88,6 +94,8 @@ function boot() {
 
     element.dataset.mounted = 'true'
 
+    shellElement = element
+
     if (element.dataset.boot) {
         mountTillWithBoot(element, JSON.parse(element.dataset.boot))
 
@@ -95,6 +103,19 @@ function boot() {
     }
 
     mountPicker(element)
+}
+
+window.pointOfSaleShell = {
+    openTerminal(bootData) {
+        if (shellElement) {
+            mountTillWithBoot(shellElement, bootData)
+        }
+    },
+    showPicker() {
+        if (shellElement) {
+            mountPicker(shellElement)
+        }
+    },
 }
 
 document.addEventListener('DOMContentLoaded', boot)

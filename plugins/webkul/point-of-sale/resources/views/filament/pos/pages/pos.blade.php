@@ -6,6 +6,7 @@
         wire:ignore
         data-sync-endpoint="{{ $this->syncEndpoint() }}"
         data-registers-endpoint="{{ $this->registersEndpoint() }}"
+        data-registers="{{ json_encode($this->registers()) }}"
         data-open-endpoint="{{ $this->openEndpointBase() }}"
         data-discard-endpoint="{{ $this->discardEndpointBase() }}"
         data-terminal-base="{{ $this->terminalBase() }}"

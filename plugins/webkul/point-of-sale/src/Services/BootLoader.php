@@ -21,7 +21,7 @@ use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Models\Partner;
 use Webkul\PointOfSale\Enums\PriceType;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\OrderResource;
-use Webkul\PointOfSale\Filament\Pos\Pages\Pos;
+use Webkul\PointOfSale\Filament\Admin\Pages\Registers;
 use Webkul\PointOfSale\Models\Bill;
 use Webkul\PointOfSale\Models\Category;
 use Webkul\PointOfSale\Models\Config;
@@ -251,7 +251,7 @@ class BootLoader
             'cash_movement_endpoint'      => route('point-of-sale.till.sessions.cash-movements', ['session' => $session->id]),
             'cancel_drafts_endpoint'      => route('point-of-sale.till.sessions.cancel-draft-orders', ['session' => $session->id]),
             'sales_details_endpoint'      => route('point-of-sale.till.sessions.sales-details', ['session' => $session->id]),
-            'registers_url'               => Pos::getUrl(panel: 'pos'),
+            'registers_url'               => Registers::getUrl(panel: 'admin'),
             'previous_closing_balance'    => $session->config?->lastClosedSession?->cash_balance_end_real !== null
                 ? (float) $session->config->lastClosedSession->cash_balance_end_real
                 : null,

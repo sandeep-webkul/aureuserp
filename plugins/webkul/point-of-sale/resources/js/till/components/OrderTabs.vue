@@ -8,7 +8,7 @@ const state = till.state
 
 const drafts = computed(() => till.parkedOrders)
 
-const limit = 4
+const limit = 3
 
 const visible = computed(() => {
     const all = drafts.value
@@ -28,12 +28,12 @@ const overflow = computed(() => drafts.value.length - visible.value.length)
 </script>
 
 <template>
-    <div class="flex flex-none items-stretch justify-end gap-2">
+    <div class="flex flex-none items-stretch gap-2">
         <button
             v-for="order in visible"
             :key="order.uuid"
             type="button"
-            class="flex h-10 flex-none items-center gap-1 whitespace-nowrap rounded-lg border px-3 text-xs font-semibold transition-colors"
+            class="flex h-10 min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg border px-3 text-xs font-semibold transition-colors"
             :class="state.activeOrderUuid === order.uuid
                 ? 'border-primary-600 bg-primary-50 text-gray-950 dark:border-primary-500 dark:bg-primary-500/15 dark:text-white'
                 : 'border-gray-200 bg-white text-gray-950 hover:border-gray-300 dark:hover:border-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-white'"
@@ -41,7 +41,7 @@ const overflow = computed(() => drafts.value.length - visible.value.length)
         >
             <OrderTableBadge :order="order" />
 
-            <span class="max-w-[9rem] truncate">{{ till.orderLabel(order) }}</span>
+            <span class="truncate">{{ till.orderLabel(order) }}</span>
         </button>
 
         <button

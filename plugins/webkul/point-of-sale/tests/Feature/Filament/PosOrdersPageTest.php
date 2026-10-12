@@ -8,8 +8,8 @@ use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\PointOfSale\Enums\OrderState;
 use Webkul\PointOfSale\Facades\PointOfSale;
-use Webkul\PointOfSale\Filament\Pos\Pages\Home;
 use Webkul\PointOfSale\Filament\Pos\Pages\Orders;
+use Webkul\PointOfSale\Filament\Pos\Pages\Register;
 use Webkul\PointOfSale\Filament\Pos\Pages\Terminal;
 use Webkul\PointOfSale\Models\Order;
 
@@ -100,7 +100,7 @@ it('hands a refund to the till instead of saving a draft order', function () {
     Livewire::test(Orders::class, ['session' => $session])
         ->set('selectedOrderId', $order->id)
         ->call('refundOrder', [$line->id => 1])
-        ->assertRedirect(Home::getUrl(['session' => $session->getKey()]));
+        ->assertRedirect(Register::getUrl(['config' => $session->config_id]));
 
     $pending = session(Terminal::pendingRefundKey($session));
 

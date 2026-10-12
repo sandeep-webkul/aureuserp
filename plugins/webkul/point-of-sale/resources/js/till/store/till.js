@@ -1964,6 +1964,35 @@ export class Till {
         return payload.data
     }
 
+    receiptOrderFor(order) {
+        if (!order) {
+            return null
+        }
+
+        return {
+            ...order,
+            pos_reference: order.pos_reference ?? order.reference ?? null,
+            partner_id: order.partner_id ?? order.partner?.id ?? null,
+            table_id: order.table_id ?? order.table?.id ?? null,
+            validated_at: order.validated_at ?? order.ordered_at ?? null,
+            fiscal_position_id: order.fiscal_position_id ?? null,
+            lines: (order.lines ?? []).map((line) => ({
+                ...line,
+                order_uuid: order.uuid,
+                tax_ids: line.tax_ids ?? [],
+                fiscal_position_id: order.fiscal_position_id ?? null,
+            })),
+            payments: (order.payments ?? []).map((payment) => ({
+                ...payment,
+                order_uuid: order.uuid,
+            })),
+        }
+    }
+
+    printHistoryReceipt() {
+        window.pointOfSaleReceipt?.print('.pos-receipt')
+    }
+
     async loadClosingControl() {
         const payload = await this.request(this.boot.session.closing_control_endpoint, 'GET')
 
@@ -3275,7 +3304,11 @@ export class Till {
     taxesFor(line) {
         const order = this.state.orders.find((entry) => entry.uuid === line.order_uuid)
 
-        const mapped = this.mapTaxIds(line.tax_ids ?? [], order ? order.fiscal_position_id : this.state.fiscalPositionId)
+        const fiscalPositionId = order
+            ? order.fiscal_position_id
+            : (line.fiscal_position_id ?? this.state.fiscalPositionId)
+
+        const mapped = this.mapTaxIds(line.tax_ids ?? [], fiscalPositionId)
 
         return mapped.map((id) => this.taxById.get(id)).filter(Boolean)
     }
@@ -4148,6 +4181,10 @@ export class Till {
         this.menuHandlers = null
     }
 
+    cancelOpening() {
+        window.pointOfSaleShell.showPicker()
+    }
+
     async confirmOpening() {
         this.state.openingError = null
         this.state.openingBusy = true
@@ -4386,9 +4423,10 @@ export class Till {
 
             if (result.ok) {
                 this.state.closingOpen = false
-                this.state.sessionClosed = true
 
                 window.localStorage.removeItem('pos-active-session')
+
+                window.pointOfSaleShell.showPicker()
 
                 return
             }

@@ -1,9 +1,12 @@
 <script setup>
 import { inject, computed } from 'vue'
+import ReceiptBody from './ReceiptBody.vue'
 
 const till = inject('till')
 
 const state = till.state
+
+const receiptOrder = computed(() => till.receiptOrderFor(state.historySelected))
 
 const statuses = ['active', 'draft', 'paid', 'done', 'invoiced', 'canceled']
 
@@ -256,15 +259,14 @@ function back() {
                         {{ till.t('history.invoiced') }}
                     </span>
 
-                    <a
+                    <button
                         v-if="state.historySelected.state !== 'cancel'"
-                        :href="till.boot.config.order_receipt_endpoint.replace('__order__', state.historySelected.id)"
-                        target="_blank"
-                        rel="noopener"
+                        type="button"
                         class="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+                        @click="till.printHistoryReceipt()"
                     >
                         {{ till.t('history.print') }}
-                    </a>
+                    </button>
 
                     <a
                         :href="till.boot.config.order_details_endpoint.replace('__order__', state.historySelected.id)"
@@ -324,6 +326,10 @@ function back() {
                 <p v-if="state.refundError" class="flex-none text-sm text-danger-600 dark:text-danger-400">{{ state.refundError }}</p>
 
                 <p v-if="state.historyError" class="flex-none text-sm text-danger-600 dark:text-danger-400">{{ state.historyError }}</p>
+
+                <div class="hidden" aria-hidden="true">
+                    <ReceiptBody :order="receiptOrder" />
+                </div>
             </div>
 
             <div

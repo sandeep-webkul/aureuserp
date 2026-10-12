@@ -7,8 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
-use Webkul\PointOfSale\Facades\PointOfSale;
-use Webkul\PointOfSale\Filament\Pos\Pages\Home;
+use Webkul\PointOfSale\Filament\Pos\Pages\Register;
 use Webkul\PointOfSale\Filament\Pos\Pages\Registers;
 use Webkul\PointOfSale\Models\Config;
 
@@ -18,10 +17,8 @@ class PwaController extends Controller
     {
         $config ??= Registers::ownSession()?->config;
 
-        $session = $config ? PointOfSale::liveSessionFor($config) : null;
-
-        $start = $session
-            ? Home::getUrl(['session' => $session->getKey()], panel: 'pos')
+        $start = $config
+            ? Register::getUrl(['config' => $config->getKey()], panel: 'pos')
             : Registers::getUrl(panel: 'pos');
 
         return response()->json([

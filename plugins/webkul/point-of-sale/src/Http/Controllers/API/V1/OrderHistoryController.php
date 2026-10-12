@@ -28,7 +28,7 @@ class OrderHistoryController extends Controller
 
         return Order::withoutGlobalScopes()
             ->where('session_id', $session->getKey())
-            ->with(['partner', 'user', 'currency', 'lines.product', 'payments.paymentMethod'])
+            ->with(['partner', 'user', 'currency', 'lines.product', 'lines.taxes', 'payments.paymentMethod'])
             ->when($isRestaurant, fn (Builder $query) => $query->with('table.floor'))
             ->when(
                 $status === 'active',

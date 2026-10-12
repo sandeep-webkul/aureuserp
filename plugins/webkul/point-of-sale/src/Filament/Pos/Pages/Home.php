@@ -3,33 +3,24 @@
 namespace Webkul\PointOfSale\Filament\Pos\Pages;
 
 use BackedEnum;
+use Filament\Pages\Page;
+use Webkul\PointOfSale\Models\Session;
+use Webkul\PointOfSale\Support\PosAccess;
 
-class Home extends Terminal
+class Home extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $slug = '{session}/home';
 
-    protected static ?int $navigationSort = 1;
+    protected static bool $shouldRegisterNavigation = false;
 
-    protected static bool $shouldRegisterNavigation = true;
+    protected string $view = 'point-of-sale::filament.pos.pages.redirect';
 
-    public static function getNavigationLabel(): string
+    public function mount(Session $session): void
     {
-        return __('point-of-sale::filament/pos/pages/home.navigation.label');
-    }
+        abort_unless(PosAccess::reachesActiveSession($session), 403);
 
-    public static function getNavigationUrl(array $parameters = []): string
-    {
-        $session = Registers::currentSession();
-
-        return $session
-            ? static::getUrl(['session' => $session->getKey()])
-            : Registers::getUrl();
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return (bool) Registers::currentSession();
+        $this->redirect(Register::getUrl(['config' => $session->config_id], panel: 'pos'));
     }
 }
