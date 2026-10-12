@@ -19,6 +19,85 @@ return [
         'more'    => '+ :count de plus',
     ],
 
+    'nav' => [
+        'home'      => 'Accueil',
+        'orders'    => 'Commandes',
+        'registers' => 'Caisses',
+    ],
+
+    'picker' => [
+        'title'       => 'Caisses',
+        'open'        => 'Ouvrir la caisse',
+        'resume'      => 'Reprendre',
+        'discard'     => 'Abandonner la session',
+        'open-by'     => 'Ouvert par :name',
+        'closed'      => 'Fermée',
+        'opening'     => 'Ouverture…',
+        'back-office' => 'Back-office',
+        'logout'      => 'Se déconnecter',
+        'offline'     => 'Connectez-vous au réseau pour ouvrir une caisse.',
+        'failed'      => 'Impossible de joindre le serveur. Réessayez.',
+
+        'discard-confirm' => [
+            'heading' => 'Abandonner cette session ?',
+            'confirm' => 'Abandonner',
+        ],
+
+        'empty' => [
+            'heading'     => 'Aucun point de vente disponible',
+            'description' => 'Créez un point de vente actif dans le back-office pour commencer à vendre.',
+        ],
+    ],
+
+    'history' => [
+        'heading'       => 'Commandes',
+        'back'          => 'Retour',
+        'search'        => 'Rechercher par commande, reçu, client ou table',
+        'empty'         => 'Aucune commande ne correspond à cette recherche.',
+        'select-order'  => 'Sélectionnez une commande pour voir ses détails.',
+        'walk-in'       => 'Client de passage',
+        'invoice'       => 'Facture',
+        'invoiced'      => 'Facturée',
+        'cancel'        => 'Annuler la commande',
+        'print'         => 'Imprimer le reçu',
+        'details'       => 'Détails',
+        'refund'        => 'Rembourser',
+        'refund-prompt' => 'Sélectionnez le ou les produits à rembourser et définissez la quantité.',
+        'to-refund'     => 'À rembourser',
+        'refundable'    => 'Remboursable : :qty',
+        'taxes'         => 'Taxes',
+        'total'         => 'Total',
+        'paid'          => 'Payé',
+        'lines'         => 'Lignes',
+        'payments'      => 'Paiements',
+        'prev'          => 'Précédent',
+        'next'          => 'Suivant',
+        'page'          => 'Page :page sur :total',
+        'unreachable'   => "Le serveur n'a pas pu être joint. Vérifiez la connexion et réessayez.",
+        'failed'        => 'La requête a échoué (:status).',
+
+        'columns' => [
+            'date'     => 'Date',
+            'receipt'  => 'Reçu',
+            'order'    => 'Commande',
+            'customer' => 'Client',
+            'cashier'  => 'Caissier',
+            'tracking' => 'Suivi',
+            'table'    => 'Table',
+            'total'    => 'Total',
+            'status'   => 'Statut',
+        ],
+
+        'status' => [
+            'active'   => 'Active',
+            'draft'    => 'En cours',
+            'paid'     => 'Payée',
+            'done'     => 'Comptabilisée',
+            'invoiced' => 'Facturée',
+            'canceled' => 'Annulée',
+        ],
+    ],
+
     'parked' => [
         'walk-in'         => 'Client de passage',
         'items'           => '{1} :count article|[2,*] :count articles',
@@ -41,11 +120,12 @@ return [
     ],
 
     'opening-control' => [
-        'heading'     => 'Contrôle d\'ouverture',
-        'cash'        => 'Espèces d\'ouverture',
-        'note'        => 'Note d\'ouverture',
-        'placeholder' => 'Ajouter une note d\'ouverture…',
-        'confirm'     => 'Ouvrir la caisse',
+        'heading'                  => "Contrôle d'ouverture",
+        'cash'                     => "Espèces d'ouverture",
+        'previous-closing-balance' => 'Solde de clôture de la session précédente : :amount',
+        'note'                     => "Note d'ouverture",
+        'placeholder'              => "Ajouter une note d'ouverture…",
+        'confirm'                  => 'Ouvrir la caisse',
     ],
 
     'tabs' => [
@@ -57,23 +137,31 @@ return [
     'menu' => [
         'label'          => 'Menu',
         'orders'         => 'Commandes',
-        'cash-in-out'    => 'Entrée / Sortie d\'espèces',
+        'cash-in-out'    => "Entrée / Sortie d'espèces",
         'create-product' => 'Créer un produit',
         'back-office'    => 'Back-office',
         'close-register' => 'Fermer la caisse',
+        'install'        => "Installer l'application",
+        'theme'          => 'Changer de thème',
+        'logout'         => 'Se déconnecter',
     ],
 
     'cash-movement' => [
-        'heading' => 'Entrée / sortie d\'espèces',
-        'in'      => 'Entrée d\'espèces',
-        'out'     => 'Sortie d\'espèces',
+        'heading' => "Entrée / sortie d'espèces",
+        'in'      => "Entrée d'espèces",
+        'out'     => "Sortie d'espèces",
         'amount'  => 'Montant',
         'reason'  => 'Motif',
         'confirm' => 'Enregistrer le mouvement',
         'close'   => 'Fermer',
 
         'notification' => [
-            'title' => 'Mouvement d\'espèces enregistré',
+            'title' => "Mouvement d'espèces enregistré",
+
+            'body' => [
+                'in'  => ':amount ajouté au tiroir-caisse.',
+                'out' => ':amount retiré du tiroir-caisse.',
+            ],
         ],
     ],
 
@@ -89,23 +177,24 @@ return [
         'total'                    => 'Total',
         'opening'                  => 'Ouverture',
         'payments'                 => 'Paiements en espèces',
-        'moves'                    => 'Entrée / sortie d\'espèces',
-        'cash-in'                  => 'Entrée d\'espèces :number',
-        'cash-out'                 => 'Sortie d\'espèces :number',
+        'moves'                    => "Entrée / sortie d'espèces",
+        'cash-in'                  => "Entrée d'espèces :number",
+        'cash-out'                 => "Sortie d'espèces :number",
         'orders'                   => ':quantity commandes',
         'difference'               => 'Écart',
         'count'                    => 'Comptage des espèces',
         'clear'                    => 'Effacer',
         'discard'                  => 'Abandonner',
         'daily-sale'               => 'Vente du jour',
-        'opening-note'             => 'Note d\'ouverture',
+        'opening-note'             => "Note d'ouverture",
         'authorized-diff'          => 'Écart maximal autorisé : :amount',
         'authorized-diff-exceeded' => 'L’écart dépasse la limite autorisée. Seul un responsable peut fermer cette caisse.',
+        'unbalanced'               => "L'écriture de clôture est déséquilibrée de :amount. Un responsable doit sélectionner un compte d'équilibrage pour clôturer.",
     ],
 
     'draft-orders' => [
         'heading'       => 'Erreur',
-        'message'       => 'Vous ne pouvez pas fermer le PdV tant que des commandes sont encore à l\'état brouillon.',
+        'message'       => "Vous ne pouvez pas fermer le PdV tant que des commandes sont encore à l'état brouillon.",
         'review-orders' => 'Vérifier les commandes',
         'cancel-orders' => 'Annuler les commandes',
     ],
@@ -116,7 +205,7 @@ return [
         'name-placeholder'    => 'p. ex. Cheeseburger',
         'barcode'             => 'Code-barres',
         'barcode-placeholder' => 'p. ex. 1234567890',
-        'tracking'            => 'Suivre l\'inventaire',
+        'tracking'            => "Suivre l'inventaire",
         'price'               => 'Prix de vente',
         'taxes'               => 'Taxes à la vente',
         'tax-included'        => '(= :amount TTC)',
@@ -129,7 +218,7 @@ return [
 
         'error' => [
             'failed'  => 'Impossible de créer le produit (:status)',
-            'offline' => 'La création d\'un produit nécessite une connexion.',
+            'offline' => "La création d'un produit nécessite une connexion.",
         ],
     ],
 
@@ -172,7 +261,7 @@ return [
     'variants' => [
         'heading'     => 'Sélection des attributs',
         'confirm'     => 'Ajouter',
-        'unavailable' => 'Cette combinaison n\'existe pas.',
+        'unavailable' => "Cette combinaison n'existe pas.",
     ],
 
     'lots' => [
@@ -181,7 +270,7 @@ return [
         'add'            => 'Ajouter',
         'remove'         => 'Retirer le numéro',
         'missing'        => 'Définir le numéro de lot / série',
-        'none-available' => 'Il n\'existe aucun numéro de série/lot pour le produit sélectionné, et leur création n\'est pas autorisée depuis l\'application Point de vente.',
+        'none-available' => "Il n'existe aucun numéro de série/lot pour le produit sélectionné, et leur création n'est pas autorisée depuis l'application Point de vente.",
 
         'warning' => [
             'heading' => 'Certains numéros de série/lot sont manquants',
@@ -195,13 +284,13 @@ return [
         'kitchen'     => 'Note cuisine',
         'heading'     => 'Ajouter une note interne',
         'empty'       => 'Aucun modèle de note configuré.',
-        'hint'        => 'Choisissez d\'abord une ligne, puis une note.',
+        'hint'        => "Choisissez d'abord une ligne, puis une note.",
         'placeholder' => 'Ajouter une note pour cette ligne',
     ],
 
     'money-details' => [
         'label'            => 'Pièces/Billets',
-        'opening-heading'  => 'Détails d\'ouverture :',
+        'opening-heading'  => "Détails d'ouverture :",
         'closing-heading'  => 'Détails de clôture :',
         'total'            => 'Total : :total',
         'confirm'          => 'Confirmer',
@@ -238,18 +327,24 @@ return [
     ],
 
     'payment' => [
-        'ship-later'               => 'Livrer plus tard',
-        'ship-later-heading'       => 'Sélectionnez la date d\'expédition',
-        'ship-later-error-heading' => 'Adresse incorrecte pour la livraison',
-        'ship-later-no-customer'   => 'Sélectionnez un client avant de livrer cette commande ultérieurement.',
-        'ship-later-no-address'    => 'Le client sélectionné a besoin d\'une adresse.',
-        'select-method'            => 'Veuillez sélectionner un mode de paiement',
-        'invoice'                  => 'Facture',
-        'change'                   => 'monnaie',
-        'remove'                   => 'Retirer le paiement :method',
-        'validate'                 => 'Valider',
-        'incomplete-title'         => 'Mode de paiement requis',
-        'incomplete-body'          => 'Sélectionnez un mode de paiement qui couvre le total avant de valider cette commande.',
+        'ship-later'                            => 'Livrer plus tard',
+        'ship-later-heading'                    => "Sélectionnez la date d'expédition",
+        'ship-later-error-heading'              => 'Adresse incorrecte pour la livraison',
+        'ship-later-no-customer'                => 'Sélectionnez un client avant de livrer cette commande ultérieurement.',
+        'ship-later-no-address'                 => "Le client sélectionné a besoin d'une adresse.",
+        'select-method'                         => 'Veuillez sélectionner un mode de paiement',
+        'invoice'                               => 'Facture',
+        'change'                                => 'monnaie',
+        'remove'                                => 'Retirer le paiement :method',
+        'validate'                              => 'Valider',
+        'max-value-title'                       => 'Valeur maximale atteinte',
+        'max-value-body'                        => "Le montant ne peut pas être supérieur au montant dû si vous n'avez pas de mode de paiement en espèces configuré.",
+        'customer-required-title'               => 'Client requis',
+        'customer-required-body-terminal'       => 'Sélectionnez un client avant de valider cette commande ; ce terminal en exige un.',
+        'customer-required-body-payment-method' => 'Sélectionnez un client avant de valider cette commande ; le mode de paiement sélectionné en exige un.',
+        'customer-required-body-invoice'        => 'Sélectionnez un client avant de valider cette commande pour générer une facture.',
+        'incomplete-title'                      => 'Mode de paiement requis',
+        'incomplete-body'                       => 'Sélectionnez un mode de paiement qui couvre le total avant de valider cette commande.',
     ],
 
     'floor' => [
@@ -401,7 +496,7 @@ return [
     'install' => [
         'installed'   => 'Cette caisse est déjà installée comme application sur cet appareil.',
         'unavailable' => 'Ce navigateur ne peut pas installer la caisse. Chrome ou Edge en HTTPS est requis.',
-        'label'       => 'Installer l\'application',
+        'label'       => "Installer l'application",
     ],
 
     'scanner' => [
@@ -413,7 +508,7 @@ return [
     ],
 
     'drafts' => [
-        'not-shared' => 'Cette commande n\'est pas partagée avec les autres caisses',
+        'not-shared' => "Cette commande n'est pas partagée avec les autres caisses",
         'rejected'   => 'Le serveur a refusé cette commande.',
     ],
 
@@ -429,18 +524,18 @@ return [
         'by'           => 'Par :name',
         'table'        => 'Table :table',
         'order-note'   => 'Note de commande',
-        'offline'      => 'L\'envoi en cuisine nécessite une connexion.',
+        'offline'      => "L'envoi en cuisine nécessite une connexion.",
         'nothing'      => 'Rien de nouveau à envoyer en cuisine.',
     ],
 
     'rejected' => [
         'settled-heading' => 'Payé sur une autre caisse',
-        'failed-heading'  => 'Cette commande n\'a pas été enregistrée',
+        'failed-heading'  => "Cette commande n'a pas été enregistrée",
         'order'           => 'Commande :order',
         'table'           => 'Table :table',
-        'settled-body'    => ':order a déjà été payée sur une autre caisse. Cette vente n\'a pas été enregistrée.',
+        'settled-body'    => ":order a déjà été payée sur une autre caisse. Cette vente n'a pas été enregistrée.",
         'give-back'       => 'Rendez :amount au client.',
-        'failed-body'     => ':order n\'a pas pu être enregistrée sur le serveur.',
+        'failed-body'     => ":order n'a pas pu être enregistrée sur le serveur.",
         'returned'        => 'Argent rendu',
         'dismiss'         => 'Ignorer',
     ],
@@ -449,8 +544,11 @@ return [
         'banner'              => 'Hors ligne — les ventes continuent et se synchronisent au retour de la connexion',
         'waiting'             => ':count commande(s) en attente de synchronisation',
         'rejected'            => ':count commande(s) rejetée(s) par le serveur',
-        'storage-unavailable' => 'Stockage local indisponible — rechargez la page avant de prendre d\'autres commandes',
+        'storage-unavailable' => "Stockage local indisponible — rechargez la page avant de prendre d'autres commandes",
         'retry'               => 'Réessayer',
+        'lost-heading'        => 'Connexion perdue',
+        'lost-body'           => "Jusqu'au rétablissement de la connexion, le point de vente fonctionnera avec des fonctionnalités limitées.",
+        'continue'            => 'Continuer avec des fonctionnalités limitées',
     ],
 
     'actions' => [
@@ -464,8 +562,8 @@ return [
             'label'   => 'Annuler la commande',
             'confirm' => 'Confirmer',
             'hint'    => 'Ses lignes seront perdues. Cette action est irréversible.',
-            'failed'  => 'Impossible d\'annuler la commande (:status).',
-            'offline' => 'L\'annulation de cette commande nécessite une connexion.',
+            'failed'  => "Impossible d'annuler la commande (:status).",
+            'offline' => "L'annulation de cette commande nécessite une connexion.",
         ],
     ],
 
@@ -482,7 +580,7 @@ return [
         ],
 
         'queued' => [
-            'title' => 'Commande mise en file d\'attente hors ligne',
+            'title' => "Commande mise en file d'attente hors ligne",
             'body'  => ':count commande(s) seront synchronisées au retour de la connexion.',
         ],
     ],

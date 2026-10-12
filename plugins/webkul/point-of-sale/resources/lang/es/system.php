@@ -26,8 +26,9 @@ return [
         ],
 
         'mark-paid' => [
-            'already-settled'      => 'El pedido :order ya se ha liquidado.',
-            'insufficient-payment' => 'El pedido :order no está totalmente pagado.',
+            'already-settled'          => 'El pedido :order ya se ha liquidado.',
+            'insufficient-payment'     => 'El pedido :order no está totalmente pagado.',
+            'cash-method-required'     => 'El pedido :order no puede sobrepagarse porque esta terminal no tiene configurado ningún método de pago en efectivo.',
         ],
 
         'cancel' => [
@@ -65,7 +66,8 @@ return [
     ],
 
     'payment-method-provisioner' => [
-        'cash' => 'Efectivo',
+        'cash'         => 'Efectivo',
+        'cash-journal' => 'Efectivo',
     ],
 
     'order-sync' => [
@@ -92,7 +94,7 @@ return [
     ],
 
     'session-preflight' => [
-        'draft-orders'       => 'Paga o cancela estos pedidos antes de cerrar la sesión: :orders.',
+        'draft-orders' => 'Paga o cancela estos pedidos antes de cerrar la sesión: :orders.',
 
         'journal' => [
             'missing'      => 'Define un diario de ventas en el punto de venta.',
@@ -120,8 +122,8 @@ return [
         ],
 
         'cash-journal' => [
-            'multiple'            => 'Solo se admite un método de pago en efectivo por punto de venta.',
-            'profit-loss-missing' => 'Define las cuentas de pérdidas y ganancias en el diario de efectivo :journal.',
+            'multiple'             => 'Solo se admite un método de pago en efectivo por punto de venta.',
+            'profit-loss-missing'  => 'Define las cuentas de pérdidas y ganancias en el diario de efectivo :journal.',
         ],
 
         'taxes' => [

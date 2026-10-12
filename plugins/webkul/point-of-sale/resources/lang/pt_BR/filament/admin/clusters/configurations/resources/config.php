@@ -9,7 +9,7 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'Geral',
+                'title' => 'Geral',
 
                 'fields' => [
                     'name'             => 'Ponto de venda',
@@ -25,7 +25,7 @@ return [
 
                 'tabs' => [
                     'restaurant' => [
-                        'title'  => 'Modo restaurante',
+                        'title' => 'Modo restaurante',
 
                         'fields' => [
                             'is-restaurant'                 => 'É um bar/restaurante',
@@ -43,39 +43,37 @@ return [
                     ],
 
                     'payment' => [
-                        'title'  => 'Pagamento',
+                        'title' => 'Pagamento',
 
                         'fields' => [
-                            'payment-methods'                       => 'Métodos de pagamento',
-                            'enable-cash-control'                   => 'Controle de caixa',
-                            'enable-cash-control-helper-text'       => 'Conferir o valor do caixa na abertura e no fechamento.',
-                            'enable-maximum-difference'             => 'Definir diferença máxima',
-                            'enable-maximum-difference-helper-text' => 'Defina uma diferença máxima permitida entre o valor esperado e o contado durante o fechamento da sessão.',
-                            'amount-authorized-diff'                => 'Diferença máxima',
-                            'enable-cash-rounding'                  => 'Arredondamento de dinheiro',
-                            'enable-cash-rounding-helper-text'      => 'Defina a menor cédula ou moeda usada para pagar em dinheiro.',
-                            'cash-rounding'                         => 'Método de arredondamento',
-                            'enable-only-round-cash-method'         => 'Aplicar arredondamento somente em dinheiro',
-                            'enable-tip'                            => 'Gorjetas',
-                            'enable-tip-helper-text'                => 'Aceite gorjetas do cliente ou converta o troco dele em gorjeta.',
-                            'tip-product'                           => 'Produto de gorjeta',
+                            'payment-methods'                        => 'Métodos de pagamento',
+                            'enable-maximum-difference'              => 'Definir diferença máxima',
+                            'enable-maximum-difference-helper-text'  => 'Defina uma diferença máxima permitida entre o valor esperado e o contado durante o fechamento da sessão.',
+                            'amount-authorized-diff'                 => 'Diferença máxima',
+                            'enable-cash-rounding'                   => 'Arredondamento de dinheiro',
+                            'enable-cash-rounding-helper-text'       => 'Defina a menor cédula ou moeda usada para pagar em dinheiro.',
+                            'cash-rounding'                          => 'Método de arredondamento',
+                            'enable-only-round-cash-method'          => 'Aplicar arredondamento somente em dinheiro',
+                            'enable-tip'                             => 'Gorjetas',
+                            'enable-tip-helper-text'                 => 'Aceite gorjetas do cliente ou converta o troco dele em gorjeta.',
+                            'tip-product'                            => 'Produto de gorjeta',
                         ],
                     ],
 
                     'interface' => [
-                        'title'  => 'Interface do PDV',
+                        'title' => 'Interface do PDV',
 
                         'fields' => [
-                            'enable-customer-required'            => 'Cliente obrigatório',
-                            'show-product-images'                 => 'Mostrar imagens dos produtos',
-                            'show-category-images'                => 'Mostrar imagens das categorias',
-                            'limited-products-amount'             => 'Produtos carregados',
-                            'limited-products-amount-helper-text' => 'Número de produtos carregados no terminal quando uma sessão é aberta.',
+                            'enable-customer-required'              => 'Cliente obrigatório',
+                            'show-product-images'                   => 'Mostrar imagens dos produtos',
+                            'show-category-images'                  => 'Mostrar imagens das categorias',
+                            'limited-products-amount'               => 'Produtos carregados',
+                            'limited-products-amount-helper-text'   => 'Número de produtos carregados no terminal quando uma sessão é aberta.',
                         ],
                     ],
 
                     'products' => [
-                        'title'  => 'Produtos e categorias do PDV',
+                        'title' => 'Produtos e categorias do PDV',
 
                         'fields' => [
                             'show-margins-and-costs'             => 'Mostrar margens e custos',
@@ -88,31 +86,31 @@ return [
                     ],
 
                     'accounting' => [
-                        'title'  => 'Contabilidade',
+                        'title' => 'Contabilidade',
 
                         'fields' => [
-                            'journal'                                 => 'Diário de pedidos',
-                            'journal-helper-text'                     => 'Diário usado para o lançamento de fechamento da sessão.',
-                            'invoice-journal'                         => 'Diário de faturas',
-                            'is-closing-entry-by-product'             => 'Lançamento de fechamento por produto',
-                            'is-closing-entry-by-product-helper-text' => 'Exibe o detalhamento das linhas de venda por produto no lançamento de fechamento gerado automaticamente.',
-                            'enable-fiscal-position'                  => 'Impostos flexíveis',
-                            'enable-fiscal-position-helper-text'      => 'Use posições fiscais para aplicar impostos diferentes por pedido.',
-                            'fiscal-position'                         => 'Posição fiscal padrão',
-                            'fiscal-positions'                        => 'Posições fiscais',
-                            'receivable-account'                      => 'Conta intermediária',
-                            'receivable-account-helper-text'          => 'Deixe vazio para usar a conta a receber padrão das configurações do Ponto de venda.',
-                            'cash-movement-account'                   => 'Conta de entrada/saída de caixa',
-                            'balancing-account'                       => 'Conta de balanceamento',
-                            'enable-cogs'                             => 'Custo das mercadorias vendidas',
-                            'enable-cogs-helper-text'                 => 'Lançar o custo dos produtos vendidos no fechamento da sessão.',
-                            'cogs-journal'                            => 'Diário do custo das mercadorias vendidas',
-                            'stock-output-account'                    => 'Conta de saída de estoque',
+                            'journal'                                  => 'Diário de pedidos',
+                            'journal-helper-text'                      => 'Diário usado para o lançamento de fechamento da sessão.',
+                            'invoice-journal'                          => 'Diário de faturas',
+                            'is-closing-entry-by-product'              => 'Lançamento de fechamento por produto',
+                            'is-closing-entry-by-product-helper-text'  => 'Exibe o detalhamento das linhas de venda por produto no lançamento de fechamento gerado automaticamente.',
+                            'enable-fiscal-position'                   => 'Impostos flexíveis',
+                            'enable-fiscal-position-helper-text'       => 'Use posições fiscais para aplicar impostos diferentes por pedido.',
+                            'fiscal-position'                          => 'Posição fiscal padrão',
+                            'fiscal-positions'                         => 'Posições fiscais',
+                            'receivable-account'                       => 'Conta intermediária',
+                            'receivable-account-helper-text'           => 'Deixe vazio para usar a conta a receber padrão das configurações do Ponto de venda.',
+                            'cash-movement-account'                    => 'Conta de entrada/saída de caixa',
+                            'balancing-account'                        => 'Conta de balanceamento',
+                            'enable-cogs'                              => 'Custo das mercadorias vendidas',
+                            'enable-cogs-helper-text'                  => 'Lançar o custo dos produtos vendidos no fechamento da sessão.',
+                            'cogs-journal'                             => 'Diário do custo das mercadorias vendidas',
+                            'stock-output-account'                     => 'Conta de saída de estoque',
                         ],
                     ],
 
                     'pricing' => [
-                        'title'  => 'Precificação',
+                        'title' => 'Precificação',
 
                         'fields' => [
                             'tax-display'                            => 'Preços dos produtos',
@@ -135,22 +133,22 @@ return [
                     ],
 
                     'receipts' => [
-                        'title'  => 'Contas e recibos',
+                        'title' => 'Contas e recibos',
 
                         'fields' => [
-                            'enable-receipt-print'                  => 'Impressão de recibos',
-                            'enable-receipt-print-helper-text'      => 'Exibe um botão Imprimir na tela do recibo após o pagamento.',
-                            'enable-receipt-auto-print'             => 'Impressão automática de recibos',
-                            'enable-receipt-auto-print-helper-text' => 'Imprime os recibos automaticamente assim que o pagamento é registrado.',
-                            'receipt-header'                        => 'Cabeçalho do recibo',
-                            'receipt-footer'                        => 'Rodapé do recibo',
-                            'bills'                                 => 'Moedas/Cédulas',
-                            'bills-helper-text'                     => 'Cédulas e moedas oferecidas ao contar o dinheiro na abertura e no fechamento.',
+                            'enable-receipt-print'                   => 'Impressão de recibos',
+                            'enable-receipt-print-helper-text'       => 'Exibe um botão Imprimir na tela do recibo após o pagamento.',
+                            'enable-receipt-auto-print'              => 'Impressão automática de recibos',
+                            'enable-receipt-auto-print-helper-text'  => 'Imprime os recibos automaticamente assim que o pagamento é registrado.',
+                            'receipt-header'                         => 'Cabeçalho do recibo',
+                            'receipt-footer'                         => 'Rodapé do recibo',
+                            'bills'                                  => 'Moedas/Cédulas',
+                            'bills-helper-text'                      => 'Cédulas e moedas oferecidas ao contar o dinheiro na abertura e no fechamento.',
                         ],
                     ],
 
                     'preparation' => [
-                        'title'  => 'Preparo',
+                        'title' => 'Preparo',
 
                         'fields' => [
                             'printers'             => 'Impressoras de preparo',
@@ -159,7 +157,7 @@ return [
                     ],
 
                     'inventory' => [
-                        'title'  => 'Estoque',
+                        'title' => 'Estoque',
 
                         'fields' => [
                             'operation-type'                => 'Tipo de operação',
@@ -180,7 +178,7 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'Geral',
+                'title' => 'Geral',
 
                 'entries' => [
                     'name'           => 'Ponto de venda',

@@ -25,9 +25,15 @@ return [
         'open'     => 'Abrir caja',
         'continue' => 'Seguir vendiendo',
         'close'    => 'Cerrar',
+        'orders'   => 'Pedidos',
         'sessions' => 'Sesiones',
         'edit'     => 'Editar',
         'more'     => 'Más',
+    ],
+
+    'dropdown' => [
+        'view'      => 'Ver',
+        'reporting' => 'Informes',
     ],
 
     'empty' => [

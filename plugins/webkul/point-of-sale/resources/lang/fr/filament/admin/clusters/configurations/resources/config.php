@@ -9,7 +9,7 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'Général',
+                'title' => 'Général',
 
                 'fields' => [
                     'name'             => 'Point de vente',
@@ -25,11 +25,11 @@ return [
 
                 'tabs' => [
                     'restaurant' => [
-                        'title'  => 'Mode restaurant',
+                        'title' => 'Mode restaurant',
 
                         'fields' => [
                             'is-restaurant'                 => 'Est un bar/restaurant',
-                            'is-restaurant-helper-text'     => 'Activer la gestion des tables, le partage d\'addition et les tickets de préparation.',
+                            'is-restaurant-helper-text'     => "Activer la gestion des tables, le partage d'addition et les tickets de préparation.",
                             'enable-split-bill'             => 'Autoriser le partage de l’addition',
                             'enable-split-bill-helper-text' => 'Partager le total ou les lignes de commande.',
                             'enable-print-bill'             => 'Impression anticipée du ticket',
@@ -43,76 +43,74 @@ return [
                     ],
 
                     'payment' => [
-                        'title'  => 'Paiement',
+                        'title' => 'Paiement',
 
                         'fields' => [
-                            'payment-methods'                       => 'Modes de paiement',
-                            'enable-cash-control'                   => 'Contrôle des espèces',
-                            'enable-cash-control-helper-text'       => 'Vérifier le montant de la caisse à l\'ouverture et à la clôture.',
-                            'enable-maximum-difference'             => 'Définir un écart maximal',
-                            'enable-maximum-difference-helper-text' => 'Définir un écart maximal autorisé entre le montant attendu et le montant compté lors de la clôture de la session.',
-                            'amount-authorized-diff'                => 'Écart maximal',
-                            'enable-cash-rounding'                  => 'Arrondi des espèces',
-                            'enable-cash-rounding-helper-text'      => 'Définir la plus petite coupure de la devise utilisée pour payer en espèces.',
-                            'cash-rounding'                         => 'Méthode d\'arrondi',
-                            'enable-only-round-cash-method'         => 'Appliquer l\'arrondi uniquement aux espèces',
-                            'enable-tip'                            => 'Pourboires',
-                            'enable-tip-helper-text'                => 'Accepter les pourboires des clients ou convertir leur monnaie en pourboire.',
-                            'tip-product'                           => 'Produit pourboire',
+                            'payment-methods'                        => 'Modes de paiement',
+                            'enable-maximum-difference'              => 'Définir un écart maximal',
+                            'enable-maximum-difference-helper-text'  => 'Définir un écart maximal autorisé entre le montant attendu et le montant compté lors de la clôture de la session.',
+                            'amount-authorized-diff'                 => 'Écart maximal',
+                            'enable-cash-rounding'                   => 'Arrondi des espèces',
+                            'enable-cash-rounding-helper-text'       => 'Définir la plus petite coupure de la devise utilisée pour payer en espèces.',
+                            'cash-rounding'                          => "Méthode d'arrondi",
+                            'enable-only-round-cash-method'          => "Appliquer l'arrondi uniquement aux espèces",
+                            'enable-tip'                             => 'Pourboires',
+                            'enable-tip-helper-text'                 => 'Accepter les pourboires des clients ou convertir leur monnaie en pourboire.',
+                            'tip-product'                            => 'Produit pourboire',
                         ],
                     ],
 
                     'interface' => [
-                        'title'  => 'Interface PdV',
+                        'title' => 'Interface PdV',
 
                         'fields' => [
-                            'enable-customer-required'            => 'Client obligatoire',
-                            'show-product-images'                 => 'Afficher les images des produits',
-                            'show-category-images'                => 'Afficher les images des catégories',
-                            'limited-products-amount'             => 'Produits chargés',
-                            'limited-products-amount-helper-text' => 'Nombre de produits chargés dans le terminal à l\'ouverture d\'une session.',
+                            'enable-customer-required'              => 'Client obligatoire',
+                            'show-product-images'                   => 'Afficher les images des produits',
+                            'show-category-images'                  => 'Afficher les images des catégories',
+                            'limited-products-amount'               => 'Produits chargés',
+                            'limited-products-amount-helper-text'   => "Nombre de produits chargés dans le terminal à l'ouverture d'une session.",
                         ],
                     ],
 
                     'products' => [
-                        'title'  => 'Produits et catégories PdV',
+                        'title' => 'Produits et catégories PdV',
 
                         'fields' => [
                             'show-margins-and-costs'             => 'Afficher les marges et les coûts',
                             'show-margins-and-costs-helper-text' => 'Afficher les marges et les coûts sur les informations du produit.',
                             'limit-categories'                   => 'Restreindre les catégories',
                             'limit-categories-helper-text'       => 'Choisissez les catégories de produits PdV disponibles.',
-                            'locked-by-session'                  => 'Verrouillé tant qu\'une session est ouverte',
+                            'locked-by-session'                  => "Verrouillé tant qu'une session est ouverte",
                             'categories'                         => 'Catégories de produits PdV disponibles',
                         ],
                     ],
 
                     'accounting' => [
-                        'title'  => 'Comptabilité',
+                        'title' => 'Comptabilité',
 
                         'fields' => [
-                            'journal'                                 => 'Journal des commandes',
-                            'journal-helper-text'                     => 'Journal utilisé pour l\'écriture de clôture de la session.',
-                            'invoice-journal'                         => 'Journal des factures',
-                            'is-closing-entry-by-product'             => 'Écriture de clôture par produit',
-                            'is-closing-entry-by-product-helper-text' => 'Afficher le détail des lignes de vente par produit dans l\'écriture de clôture générée automatiquement.',
-                            'enable-fiscal-position'                  => 'Taxes flexibles',
-                            'enable-fiscal-position-helper-text'      => 'Utiliser les positions fiscales pour appliquer des taxes différentes par commande.',
-                            'fiscal-position'                         => 'Position fiscale par défaut',
-                            'fiscal-positions'                        => 'Positions fiscales',
-                            'receivable-account'                      => 'Compte intermédiaire',
-                            'receivable-account-helper-text'          => 'Laissez vide pour utiliser le compte client par défaut des paramètres du Point de vente.',
-                            'cash-movement-account'                   => 'Compte d\'entrée/sortie d\'espèces',
-                            'balancing-account'                       => 'Compte d\'équilibrage',
-                            'enable-cogs'                             => 'Coût des ventes',
-                            'enable-cogs-helper-text'                 => 'Comptabiliser le coût des produits vendus à la clôture de la session.',
-                            'cogs-journal'                            => 'Journal du coût des ventes',
-                            'stock-output-account'                    => 'Compte de sortie de stock',
+                            'journal'                                  => 'Journal des commandes',
+                            'journal-helper-text'                      => "Journal utilisé pour l'écriture de clôture de la session.",
+                            'invoice-journal'                          => 'Journal des factures',
+                            'is-closing-entry-by-product'              => 'Écriture de clôture par produit',
+                            'is-closing-entry-by-product-helper-text'  => "Afficher le détail des lignes de vente par produit dans l'écriture de clôture générée automatiquement.",
+                            'enable-fiscal-position'                   => 'Taxes flexibles',
+                            'enable-fiscal-position-helper-text'       => 'Utiliser les positions fiscales pour appliquer des taxes différentes par commande.',
+                            'fiscal-position'                          => 'Position fiscale par défaut',
+                            'fiscal-positions'                         => 'Positions fiscales',
+                            'receivable-account'                       => 'Compte intermédiaire',
+                            'receivable-account-helper-text'           => 'Laissez vide pour utiliser le compte client par défaut des paramètres du Point de vente.',
+                            'cash-movement-account'                    => "Compte d'entrée/sortie d'espèces",
+                            'balancing-account'                        => "Compte d'équilibrage",
+                            'enable-cogs'                              => 'Coût des ventes',
+                            'enable-cogs-helper-text'                  => 'Comptabiliser le coût des produits vendus à la clôture de la session.',
+                            'cogs-journal'                             => 'Journal du coût des ventes',
+                            'stock-output-account'                     => 'Compte de sortie de stock',
                         ],
                     ],
 
                     'pricing' => [
-                        'title'  => 'Tarification',
+                        'title' => 'Tarification',
 
                         'fields' => [
                             'tax-display'                            => 'Prix des produits',
@@ -135,22 +133,22 @@ return [
                     ],
 
                     'receipts' => [
-                        'title'  => 'Additions et reçus',
+                        'title' => 'Additions et reçus',
 
                         'fields' => [
-                            'enable-receipt-print'                  => 'Impression des reçus',
-                            'enable-receipt-print-helper-text'      => 'Afficher un bouton Imprimer sur l’écran du reçu après le paiement.',
-                            'enable-receipt-auto-print'             => 'Impression automatique des reçus',
-                            'enable-receipt-auto-print-helper-text' => 'Imprimer les reçus automatiquement dès que le paiement est enregistré.',
-                            'receipt-header'                        => 'En-tête du reçu',
-                            'receipt-footer'                        => 'Pied du reçu',
-                            'bills'                                 => 'Pièces/Billets',
-                            'bills-helper-text'                     => 'Coupures proposées lors du comptage de la caisse à l’ouverture et à la fermeture.',
+                            'enable-receipt-print'                   => 'Impression des reçus',
+                            'enable-receipt-print-helper-text'       => 'Afficher un bouton Imprimer sur l’écran du reçu après le paiement.',
+                            'enable-receipt-auto-print'              => 'Impression automatique des reçus',
+                            'enable-receipt-auto-print-helper-text'  => 'Imprimer les reçus automatiquement dès que le paiement est enregistré.',
+                            'receipt-header'                         => 'En-tête du reçu',
+                            'receipt-footer'                         => 'Pied du reçu',
+                            'bills'                                  => 'Pièces/Billets',
+                            'bills-helper-text'                      => 'Coupures proposées lors du comptage de la caisse à l’ouverture et à la fermeture.',
                         ],
                     ],
 
                     'preparation' => [
-                        'title'  => 'Préparation',
+                        'title' => 'Préparation',
 
                         'fields' => [
                             'printers'             => 'Imprimantes de préparation',
@@ -159,17 +157,17 @@ return [
                     ],
 
                     'inventory' => [
-                        'title'  => 'Inventaire',
+                        'title' => 'Inventaire',
 
                         'fields' => [
-                            'operation-type'                => 'Type d\'opération',
+                            'operation-type'                => "Type d'opération",
                             'operation-type-helper-text'    => 'Utilisé pour enregistrer les transferts de produits. Les produits sont consommés depuis son emplacement source par défaut.',
-                            'return-operation-type'         => 'Type d\'opération de retour',
+                            'return-operation-type'         => "Type d'opération de retour",
                             'warehouse'                     => 'Entrepôt',
                             'enable-ship-later'             => 'Autoriser la livraison ultérieure',
                             'enable-ship-later-helper-text' => 'Vendre des produits et les livrer plus tard.',
                             'ship-later-route'              => 'Route spécifique',
-                            'picking-policy'                => 'Politique d\'expédition',
+                            'picking-policy'                => "Politique d'expédition",
                         ],
                     ],
                 ],
@@ -180,7 +178,7 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'Général',
+                'title' => 'Général',
 
                 'entries' => [
                     'name'           => 'Point de vente',
@@ -202,7 +200,7 @@ return [
             'balance'        => 'Solde',
             'code'           => 'Code',
             'warehouse'      => 'Entrepôt',
-            'operation-type' => 'Type d\'opération',
+            'operation-type' => "Type d'opération",
             'journal'        => 'Journal des ventes',
             'is-restaurant'  => 'Restaurant',
             'is-active'      => 'Actif',

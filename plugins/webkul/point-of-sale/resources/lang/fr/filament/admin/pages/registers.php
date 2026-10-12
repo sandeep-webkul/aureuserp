@@ -15,7 +15,7 @@ return [
 
     'badges' => [
         'opened-by'        => 'Ouverte par :name',
-        'opening-control'  => 'Contrôle d\'ouverture',
+        'opening-control'  => "Contrôle d'ouverture",
         'closing-control'  => 'Contrôle de clôture',
         'to-close'         => 'À clôturer',
         'to-close-tooltip' => 'La session est ouverte depuis une durée inhabituellement longue. Envisagez de la clôturer.',
@@ -25,9 +25,15 @@ return [
         'open'     => 'Ouvrir la caisse',
         'continue' => 'Continuer la vente',
         'close'    => 'Fermer',
+        'orders'   => 'Commandes',
         'sessions' => 'Sessions',
         'edit'     => 'Modifier',
         'more'     => 'Plus',
+    ],
+
+    'dropdown' => [
+        'view'      => 'Afficher',
+        'reporting' => 'Rapports',
     ],
 
     'empty' => [

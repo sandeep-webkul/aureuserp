@@ -26,8 +26,9 @@ return [
         ],
 
         'mark-paid' => [
-            'already-settled'      => 'تمت تسوية الطلب :order بالفعل.',
-            'insufficient-payment' => 'الطلب :order غير مدفوع بالكامل.',
+            'already-settled'          => 'تمت تسوية الطلب :order بالفعل.',
+            'insufficient-payment'     => 'الطلب :order غير مدفوع بالكامل.',
+            'cash-method-required'     => 'لا يمكن دفع الطلب :order بأكثر من المستحق لأن نقطة البيع هذه ليس لها طريقة دفع نقدي مُهيّأة.',
         ],
 
         'cancel' => [
@@ -65,7 +66,8 @@ return [
     ],
 
     'payment-method-provisioner' => [
-        'cash' => 'نقدي',
+        'cash'         => 'نقدي',
+        'cash-journal' => 'النقد',
     ],
 
     'order-sync' => [
@@ -92,7 +94,7 @@ return [
     ],
 
     'session-preflight' => [
-        'draft-orders'       => 'ادفع هذه الطلبات أو ألغِها قبل إغلاق الجلسة: :orders.',
+        'draft-orders' => 'ادفع هذه الطلبات أو ألغِها قبل إغلاق الجلسة: :orders.',
 
         'journal' => [
             'missing'      => 'حدّد دفتر يومية مبيعات في نقطة البيع.',
@@ -120,8 +122,8 @@ return [
         ],
 
         'cash-journal' => [
-            'multiple'            => 'يُدعم استخدام طريقة دفع نقدية واحدة فقط لكل نقطة بيع.',
-            'profit-loss-missing' => 'حدّد حسابي الأرباح والخسائر في دفتر اليومية النقدي :journal.',
+            'multiple'             => 'يُدعم استخدام طريقة دفع نقدية واحدة فقط لكل نقطة بيع.',
+            'profit-loss-missing'  => 'حدّد حسابي الأرباح والخسائر في دفتر اليومية النقدي :journal.',
         ],
 
         'taxes' => [

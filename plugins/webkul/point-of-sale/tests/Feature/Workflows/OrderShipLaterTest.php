@@ -111,14 +111,14 @@ it('stamps the shipping date on the order', function () {
 });
 
 it('refuses to settle a ship later order without a customer', function () {
-    PointOfSale::syncOrder(PosHelper::orderPayload(
+    expect(fn () => PointOfSale::syncOrder(PosHelper::orderPayload(
         $this->config->refresh(),
         $this->session,
         [PosHelper::line($this->product->id, 1, 100.0)],
         [PosHelper::payment($this->cash, 100.0)],
         ['shipped_at' => now()->addWeek()->toDateString()],
-    ));
-})->throws(CustomerRequiredException::class, __('point-of-sale::system.order-workflow.customer.required-to-ship'));
+    )))->toThrow(CustomerRequiredException::class, __('point-of-sale::system.order-workflow.customer.required-to-ship'));
+});
 
 it('refuses to settle a ship later order for a customer without a delivery address', function () {
     $partnerWithoutAddress = Partner::factory()->create([
@@ -128,14 +128,14 @@ it('refuses to settle a ship later order for a customer without a delivery addre
         'industry_id'  => null,
     ]);
 
-    PointOfSale::syncOrder(PosHelper::orderPayload(
+    expect(fn () => PointOfSale::syncOrder(PosHelper::orderPayload(
         $this->config->refresh(),
         $this->session,
         [PosHelper::line($this->product->id, 1, 100.0)],
         [PosHelper::payment($this->cash, 100.0)],
         ['shipped_at' => now()->addWeek()->toDateString(), 'partner_id' => $partnerWithoutAddress->id],
-    ));
-})->throws(CustomerRequiredException::class, __('point-of-sale::system.order-workflow.customer.shipping-address-required'));
+    )))->toThrow(CustomerRequiredException::class, __('point-of-sale::system.order-workflow.customer.shipping-address-required'));
+});
 
 it('still delivers immediately when no shipping date is set', function () {
     $order = PointOfSale::syncOrder(PosHelper::orderPayload(

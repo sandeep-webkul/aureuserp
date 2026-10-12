@@ -26,8 +26,9 @@ return [
         ],
 
         'mark-paid' => [
-            'already-settled'      => 'O pedido :order já foi liquidado.',
-            'insufficient-payment' => 'O pedido :order não está totalmente pago.',
+            'already-settled'          => 'O pedido :order já foi liquidado.',
+            'insufficient-payment'     => 'O pedido :order não está totalmente pago.',
+            'cash-method-required'     => 'O pedido :order não pode ter pagamento a maior porque este terminal não tem um método de pagamento em dinheiro configurado.',
         ],
 
         'cancel' => [
@@ -65,7 +66,8 @@ return [
     ],
 
     'payment-method-provisioner' => [
-        'cash' => 'Dinheiro',
+        'cash'         => 'Dinheiro',
+        'cash-journal' => 'Dinheiro',
     ],
 
     'order-sync' => [
@@ -92,7 +94,7 @@ return [
     ],
 
     'session-preflight' => [
-        'draft-orders'       => 'Pague ou cancele estes pedidos antes de fechar a sessão: :orders.',
+        'draft-orders' => 'Pague ou cancele estes pedidos antes de fechar a sessão: :orders.',
 
         'journal' => [
             'missing'      => 'Defina um diário de vendas no ponto de venda.',
@@ -120,8 +122,8 @@ return [
         ],
 
         'cash-journal' => [
-            'multiple'            => 'Apenas um método de pagamento em dinheiro é suportado por ponto de venda.',
-            'profit-loss-missing' => 'Defina as contas de lucros e perdas no diário de caixa :journal.',
+            'multiple'             => 'Apenas um método de pagamento em dinheiro é suportado por ponto de venda.',
+            'profit-loss-missing'  => 'Defina as contas de lucros e perdas no diário de caixa :journal.',
         ],
 
         'taxes' => [

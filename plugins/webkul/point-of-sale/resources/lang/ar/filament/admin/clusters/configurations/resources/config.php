@@ -9,7 +9,7 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'عام',
+                'title' => 'عام',
 
                 'fields' => [
                     'name'             => 'نقطة البيع',
@@ -25,7 +25,7 @@ return [
 
                 'tabs' => [
                     'restaurant' => [
-                        'title'  => 'وضع المطعم',
+                        'title' => 'وضع المطعم',
 
                         'fields' => [
                             'is-restaurant'                 => 'مقهى/مطعم',
@@ -43,39 +43,37 @@ return [
                     ],
 
                     'payment' => [
-                        'title'  => 'دفعة',
+                        'title' => 'دفعة',
 
                         'fields' => [
-                            'payment-methods'                       => 'طرق الدفع',
-                            'enable-cash-control'                   => 'الرقابة النقدية',
-                            'enable-cash-control-helper-text'       => 'التحقق من مبلغ الصندوق عند الافتتاح والإغلاق.',
-                            'enable-maximum-difference'             => 'تحديد أقصى فرق',
-                            'enable-maximum-difference-helper-text' => 'حدّد أقصى فرق مسموح به بين المبلغ المتوقع والمعدود عند إغلاق الجلسة.',
-                            'amount-authorized-diff'                => 'أقصى فرق',
-                            'enable-cash-rounding'                  => 'التقريب النقدي',
-                            'enable-cash-rounding-helper-text'      => 'حدّد أصغر فئة نقدية للعملة المستخدمة في الدفع النقدي.',
-                            'cash-rounding'                         => 'طريقة التقريب',
-                            'enable-only-round-cash-method'         => 'تطبيق التقريب على النقد فقط',
-                            'enable-tip'                            => 'الإكراميات',
-                            'enable-tip-helper-text'                => 'قبول إكراميات العملاء أو تحويل الباقي إلى إكرامية.',
-                            'tip-product'                           => 'منتج الإكرامية',
+                            'payment-methods'                        => 'طرق الدفع',
+                            'enable-maximum-difference'              => 'تحديد أقصى فرق',
+                            'enable-maximum-difference-helper-text'  => 'حدّد أقصى فرق مسموح به بين المبلغ المتوقع والمعدود عند إغلاق الجلسة.',
+                            'amount-authorized-diff'                 => 'أقصى فرق',
+                            'enable-cash-rounding'                   => 'التقريب النقدي',
+                            'enable-cash-rounding-helper-text'       => 'حدّد أصغر فئة نقدية للعملة المستخدمة في الدفع النقدي.',
+                            'cash-rounding'                          => 'طريقة التقريب',
+                            'enable-only-round-cash-method'          => 'تطبيق التقريب على النقد فقط',
+                            'enable-tip'                             => 'الإكراميات',
+                            'enable-tip-helper-text'                 => 'قبول إكراميات العملاء أو تحويل الباقي إلى إكرامية.',
+                            'tip-product'                            => 'منتج الإكرامية',
                         ],
                     ],
 
                     'interface' => [
-                        'title'  => 'واجهة نقطة البيع',
+                        'title' => 'واجهة نقطة البيع',
 
                         'fields' => [
-                            'enable-customer-required'            => 'العميل مطلوب',
-                            'show-product-images'                 => 'إظهار صور المنتجات',
-                            'show-category-images'                => 'إظهار صور الفئات',
-                            'limited-products-amount'             => 'المنتجات المحمّلة',
-                            'limited-products-amount-helper-text' => 'عدد المنتجات التي تُحمّل في الطرفية عند فتح الجلسة.',
+                            'enable-customer-required'              => 'العميل مطلوب',
+                            'show-product-images'                   => 'إظهار صور المنتجات',
+                            'show-category-images'                  => 'إظهار صور الفئات',
+                            'limited-products-amount'               => 'المنتجات المحمّلة',
+                            'limited-products-amount-helper-text'   => 'عدد المنتجات التي تُحمّل في الطرفية عند فتح الجلسة.',
                         ],
                     ],
 
                     'products' => [
-                        'title'  => 'المنتجات وفئات نقطة البيع',
+                        'title' => 'المنتجات وفئات نقطة البيع',
 
                         'fields' => [
                             'show-margins-and-costs'             => 'إظهار الهوامش والتكاليف',
@@ -88,31 +86,31 @@ return [
                     ],
 
                     'accounting' => [
-                        'title'  => 'المحاسبة',
+                        'title' => 'المحاسبة',
 
                         'fields' => [
-                            'journal'                                 => 'دفتر يومية الطلبات',
-                            'journal-helper-text'                     => 'دفتر اليومية المستخدم لقيد إغلاق الجلسة.',
-                            'invoice-journal'                         => 'دفتر يومية الفواتير',
-                            'is-closing-entry-by-product'             => 'قيد الإغلاق حسب المنتج',
-                            'is-closing-entry-by-product-helper-text' => 'عرض تفصيل بنود المبيعات حسب المنتج في قيد الإغلاق المُنشأ تلقائياً.',
-                            'enable-fiscal-position'                  => 'ضرائب مرنة',
-                            'enable-fiscal-position-helper-text'      => 'استخدام الأوضاع الضريبية للحصول على ضرائب مختلفة لكل طلب.',
-                            'fiscal-position'                         => 'الوضع الضريبي الافتراضي',
-                            'fiscal-positions'                        => 'الأوضاع الضريبية',
-                            'receivable-account'                      => 'الحساب الوسيط',
-                            'receivable-account-helper-text'          => 'اتركه فارغاً لاستخدام حساب الذمم المدينة الافتراضي من إعدادات نقطة البيع.',
-                            'cash-movement-account'                   => 'حساب الإيداع/السحب النقدي',
-                            'balancing-account'                       => 'حساب الموازنة',
-                            'enable-cogs'                             => 'تكلفة البضاعة المباعة',
-                            'enable-cogs-helper-text'                 => 'ترحيل تكلفة المنتجات المباعة عند إغلاق الجلسة.',
-                            'cogs-journal'                            => 'دفتر يومية تكلفة البضاعة المباعة',
-                            'stock-output-account'                    => 'حساب إخراج المخزون',
+                            'journal'                                  => 'دفتر يومية الطلبات',
+                            'journal-helper-text'                      => 'دفتر اليومية المستخدم لقيد إغلاق الجلسة.',
+                            'invoice-journal'                          => 'دفتر يومية الفواتير',
+                            'is-closing-entry-by-product'              => 'قيد الإغلاق حسب المنتج',
+                            'is-closing-entry-by-product-helper-text'  => 'عرض تفصيل بنود المبيعات حسب المنتج في قيد الإغلاق المُنشأ تلقائياً.',
+                            'enable-fiscal-position'                   => 'ضرائب مرنة',
+                            'enable-fiscal-position-helper-text'       => 'استخدام الأوضاع الضريبية للحصول على ضرائب مختلفة لكل طلب.',
+                            'fiscal-position'                          => 'الوضع الضريبي الافتراضي',
+                            'fiscal-positions'                         => 'الأوضاع الضريبية',
+                            'receivable-account'                       => 'الحساب الوسيط',
+                            'receivable-account-helper-text'           => 'اتركه فارغاً لاستخدام حساب الذمم المدينة الافتراضي من إعدادات نقطة البيع.',
+                            'cash-movement-account'                    => 'حساب الإيداع/السحب النقدي',
+                            'balancing-account'                        => 'حساب الموازنة',
+                            'enable-cogs'                              => 'تكلفة البضاعة المباعة',
+                            'enable-cogs-helper-text'                  => 'ترحيل تكلفة المنتجات المباعة عند إغلاق الجلسة.',
+                            'cogs-journal'                             => 'دفتر يومية تكلفة البضاعة المباعة',
+                            'stock-output-account'                     => 'حساب إخراج المخزون',
                         ],
                     ],
 
                     'pricing' => [
-                        'title'  => 'التسعير',
+                        'title' => 'التسعير',
 
                         'fields' => [
                             'tax-display'                            => 'أسعار المنتجات',
@@ -135,22 +133,22 @@ return [
                     ],
 
                     'receipts' => [
-                        'title'  => 'الفواتير والإيصالات',
+                        'title' => 'الفواتير والإيصالات',
 
                         'fields' => [
-                            'enable-receipt-print'                  => 'طباعة الإيصال',
-                            'enable-receipt-print-helper-text'      => 'إظهار زر الطباعة في شاشة الإيصال بعد الدفع.',
-                            'enable-receipt-auto-print'             => 'طباعة الإيصال تلقائياً',
-                            'enable-receipt-auto-print-helper-text' => 'طباعة الإيصالات تلقائياً بمجرد تسجيل الدفعة.',
-                            'receipt-header'                        => 'ترويسة الإيصال',
-                            'receipt-footer'                        => 'تذييل الإيصال',
-                            'bills'                                 => 'العملات/الأوراق النقدية',
-                            'bills-helper-text'                     => 'الفئات النقدية المعروضة عند عدّ النقد عند الفتح والإغلاق.',
+                            'enable-receipt-print'                   => 'طباعة الإيصال',
+                            'enable-receipt-print-helper-text'       => 'إظهار زر الطباعة في شاشة الإيصال بعد الدفع.',
+                            'enable-receipt-auto-print'              => 'طباعة الإيصال تلقائياً',
+                            'enable-receipt-auto-print-helper-text'  => 'طباعة الإيصالات تلقائياً بمجرد تسجيل الدفعة.',
+                            'receipt-header'                         => 'ترويسة الإيصال',
+                            'receipt-footer'                         => 'تذييل الإيصال',
+                            'bills'                                  => 'العملات/الأوراق النقدية',
+                            'bills-helper-text'                      => 'الفئات النقدية المعروضة عند عدّ النقد عند الفتح والإغلاق.',
                         ],
                     ],
 
                     'preparation' => [
-                        'title'  => 'التحضير',
+                        'title' => 'التحضير',
 
                         'fields' => [
                             'printers'             => 'طابعات التحضير',
@@ -159,7 +157,7 @@ return [
                     ],
 
                     'inventory' => [
-                        'title'  => 'المخزون',
+                        'title' => 'المخزون',
 
                         'fields' => [
                             'operation-type'                => 'نوع العملية',
@@ -180,7 +178,7 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'عام',
+                'title' => 'عام',
 
                 'entries' => [
                     'name'           => 'نقطة البيع',

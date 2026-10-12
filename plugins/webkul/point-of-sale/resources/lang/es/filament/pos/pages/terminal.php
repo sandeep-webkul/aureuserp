@@ -19,6 +19,85 @@ return [
         'more'    => '+ :count más',
     ],
 
+    'nav' => [
+        'home'      => 'Inicio',
+        'orders'    => 'Pedidos',
+        'registers' => 'Cajas',
+    ],
+
+    'picker' => [
+        'title'       => 'Cajas',
+        'open'        => 'Abrir caja',
+        'resume'      => 'Reanudar',
+        'discard'     => 'Descartar sesión',
+        'open-by'     => 'Abierta por :name',
+        'closed'      => 'Cerrada',
+        'opening'     => 'Abriendo…',
+        'back-office' => 'Oficina administrativa',
+        'logout'      => 'Cerrar sesión',
+        'offline'     => 'Conéctate a la red para abrir una caja.',
+        'failed'      => 'No se pudo contactar con el servidor. Inténtalo de nuevo.',
+
+        'discard-confirm' => [
+            'heading' => '¿Descartar esta sesión?',
+            'confirm' => 'Descartar',
+        ],
+
+        'empty' => [
+            'heading'     => 'No hay ningún punto de venta disponible',
+            'description' => 'Crea un punto de venta activo en la oficina administrativa para empezar a vender.',
+        ],
+    ],
+
+    'history' => [
+        'heading'       => 'Pedidos',
+        'back'          => 'Atrás',
+        'search'        => 'Buscar por pedido, recibo, cliente o mesa',
+        'empty'         => 'Ningún pedido coincide con esa búsqueda.',
+        'select-order'  => 'Selecciona un pedido para ver sus detalles.',
+        'walk-in'       => 'Sin cita',
+        'invoice'       => 'Factura',
+        'invoiced'      => 'Facturado',
+        'cancel'        => 'Cancelar pedido',
+        'print'         => 'Imprimir recibo',
+        'details'       => 'Detalles',
+        'refund'        => 'Reembolso',
+        'refund-prompt' => 'Selecciona el o los productos a reembolsar y establece la cantidad.',
+        'to-refund'     => 'A reembolsar',
+        'refundable'    => 'Reembolsable: :qty',
+        'taxes'         => 'Impuestos',
+        'total'         => 'Total',
+        'paid'          => 'Pagado',
+        'lines'         => 'Líneas',
+        'payments'      => 'Pagos',
+        'prev'          => 'Anterior',
+        'next'          => 'Siguiente',
+        'page'          => 'Página :page de :total',
+        'unreachable'   => 'No se pudo contactar con el servidor. Comprueba la conexión e inténtalo de nuevo.',
+        'failed'        => 'La solicitud falló (:status).',
+
+        'columns' => [
+            'date'     => 'Fecha',
+            'receipt'  => 'Recibo',
+            'order'    => 'Pedido',
+            'customer' => 'Cliente',
+            'cashier'  => 'Cajero',
+            'tracking' => 'Seguimiento',
+            'table'    => 'Mesa',
+            'total'    => 'Total',
+            'status'   => 'Estado',
+        ],
+
+        'status' => [
+            'active'   => 'Activo',
+            'draft'    => 'En curso',
+            'paid'     => 'Pagado',
+            'done'     => 'Contabilizado',
+            'invoiced' => 'Facturado',
+            'canceled' => 'Cancelado',
+        ],
+    ],
+
     'parked' => [
         'walk-in'         => 'Sin registrar',
         'items'           => '{1} :count artículo|[2,*] :count artículos',
@@ -41,11 +120,12 @@ return [
     ],
 
     'opening-control' => [
-        'heading'     => 'Control de apertura',
-        'cash'        => 'Efectivo de apertura',
-        'note'        => 'Nota de apertura',
-        'placeholder' => 'Añade una nota de apertura…',
-        'confirm'     => 'Abrir caja',
+        'heading'                  => 'Control de apertura',
+        'cash'                     => 'Efectivo de apertura',
+        'previous-closing-balance' => 'Saldo de cierre de la sesión anterior: :amount',
+        'note'                     => 'Nota de apertura',
+        'placeholder'              => 'Añade una nota de apertura…',
+        'confirm'                  => 'Abrir caja',
     ],
 
     'tabs' => [
@@ -61,6 +141,9 @@ return [
         'create-product' => 'Crear producto',
         'back-office'    => 'Back office',
         'close-register' => 'Cerrar caja',
+        'install'        => 'Instalar aplicación',
+        'theme'          => 'Cambiar tema',
+        'logout'         => 'Cerrar sesión',
     ],
 
     'cash-movement' => [
@@ -74,6 +157,11 @@ return [
 
         'notification' => [
             'title' => 'Movimiento de efectivo registrado',
+
+            'body' => [
+                'in'  => ':amount añadidos a la caja registradora.',
+                'out' => ':amount retirados de la caja registradora.',
+            ],
         ],
     ],
 
@@ -101,6 +189,7 @@ return [
         'opening-note'             => 'Nota de apertura',
         'authorized-diff'          => 'Diferencia máxima permitida: :amount',
         'authorized-diff-exceeded' => 'La diferencia supera el límite permitido. Solo un responsable puede cerrar esta caja.',
+        'unbalanced'               => 'El asiento de cierre tiene un descuadre de :amount. Un gerente debe seleccionar una cuenta de compensación para cerrar.',
     ],
 
     'draft-orders' => [
@@ -238,18 +327,24 @@ return [
     ],
 
     'payment' => [
-        'ship-later'               => 'Enviar más tarde',
-        'ship-later-heading'       => 'Seleccione la fecha de envío',
-        'ship-later-error-heading' => 'Dirección incorrecta para el envío',
-        'ship-later-no-customer'   => 'Selecciona un cliente antes de enviar este pedido más tarde.',
-        'ship-later-no-address'    => 'El cliente seleccionado necesita una dirección.',
-        'select-method'            => 'Seleccione un método de pago',
-        'invoice'                  => 'Factura',
-        'change'                   => 'cambio',
-        'remove'                   => 'Quitar el pago de :method',
-        'validate'                 => 'Validar',
-        'incomplete-title'         => 'Método de pago requerido',
-        'incomplete-body'          => 'Seleccione un método de pago que cubra el total antes de validar este pedido.',
+        'ship-later'                            => 'Enviar más tarde',
+        'ship-later-heading'                    => 'Seleccione la fecha de envío',
+        'ship-later-error-heading'              => 'Dirección incorrecta para el envío',
+        'ship-later-no-customer'                => 'Selecciona un cliente antes de enviar este pedido más tarde.',
+        'ship-later-no-address'                 => 'El cliente seleccionado necesita una dirección.',
+        'select-method'                         => 'Seleccione un método de pago',
+        'invoice'                               => 'Factura',
+        'change'                                => 'cambio',
+        'remove'                                => 'Quitar el pago de :method',
+        'validate'                              => 'Validar',
+        'max-value-title'                       => 'Valor máximo alcanzado',
+        'max-value-body'                        => 'El importe no puede ser mayor que el importe adeudado si no tienes configurado un método de pago en efectivo.',
+        'customer-required-title'               => 'Cliente requerido',
+        'customer-required-body-terminal'       => 'Selecciona un cliente antes de validar este pedido; esta terminal lo requiere.',
+        'customer-required-body-payment-method' => 'Selecciona un cliente antes de validar este pedido; el método de pago seleccionado lo requiere.',
+        'customer-required-body-invoice'        => 'Selecciona un cliente antes de validar este pedido para generar una factura.',
+        'incomplete-title'                      => 'Método de pago requerido',
+        'incomplete-body'                       => 'Seleccione un método de pago que cubra el total antes de validar este pedido.',
     ],
 
     'floor' => [
@@ -451,6 +546,9 @@ return [
         'rejected'            => ':count pedido(s) rechazados por el servidor',
         'storage-unavailable' => 'Almacenamiento local no disponible — recarga antes de tomar más pedidos',
         'retry'               => 'Reintentar',
+        'lost-heading'        => 'Conexión perdida',
+        'lost-body'           => 'Hasta que se restablezca la conexión, el punto de venta funcionará con funcionalidad limitada.',
+        'continue'            => 'Continuar con funcionalidad limitada',
     ],
 
     'actions' => [
