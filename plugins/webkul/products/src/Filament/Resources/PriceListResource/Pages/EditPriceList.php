@@ -21,7 +21,13 @@ class EditPriceList extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('products::filament/resources/price-list/pages/edit-price-list.header-actions.delete.notification.title'))
+                        ->body(__('products::filament/resources/price-list/pages/edit-price-list.header-actions.delete.notification.body')),
+                ),
         ];
     }
 
