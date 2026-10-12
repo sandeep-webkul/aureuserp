@@ -127,6 +127,10 @@ class SaleServiceProvider extends PackageServiceProvider
      */
     protected function contributePartnerPriceList(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         PartnerSchemaRegistry::form('sales.fields', fn (): array => [
             Select::make('price_list_id')
                 ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.price-list'))
