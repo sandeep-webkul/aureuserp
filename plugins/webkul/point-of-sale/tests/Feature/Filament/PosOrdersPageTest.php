@@ -124,7 +124,8 @@ it('shows the refund prompt while an order still has something to refund', funct
 
     Livewire::test(Orders::class, ['session' => $session])
         ->set('selectedOrderId', $order->id)
-        ->assertSee(__('point-of-sale::filament/pos/pages/orders.refund.prompt'));
+        ->assertSee(__('point-of-sale::filament/pos/pages/orders.refund.prompt'))
+        ->assertSeeHtml('refundOrder(payload())');
 });
 
 it('hides the refund prompt once every line is refunded', function () {
@@ -142,5 +143,5 @@ it('hides the refund prompt once every line is refunded', function () {
     Livewire::test(Orders::class, ['session' => $session])
         ->set('selectedOrderId', $order->id)
         ->assertDontSee(__('point-of-sale::filament/pos/pages/orders.refund.prompt'))
-        ->assertDontSee(__('point-of-sale::filament/pos/pages/orders.actions.refund'));
+        ->assertDontSeeHtml('refundOrder(payload())');
 });
