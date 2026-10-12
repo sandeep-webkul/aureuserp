@@ -4,6 +4,7 @@ namespace Webkul\Product\Filament\Resources\PriceListResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Product\Filament\Resources\PriceListResource;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -22,5 +23,13 @@ class EditPriceList extends EditRecord
             ViewAction::make(),
             DeleteAction::make(),
         ];
+    }
+
+    protected function getSavedNotification(): Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title(__('products::filament/resources/price-list/pages/edit-price-list.notification.title'))
+            ->body(__('products::filament/resources/price-list/pages/edit-price-list.notification.body'));
     }
 }
