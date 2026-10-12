@@ -23,6 +23,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Js;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Configurations\Resources\ConfigResource;
+use Webkul\PointOfSale\Filament\Pos\Pages\Pos;
 use Webkul\PointOfSale\Filament\Pos\Pages\Registers;
 
 class PosPanelProvider extends PanelProvider
@@ -40,13 +41,25 @@ class PosPanelProvider extends PanelProvider
                 'primary' => Color::Blue,
             ])
             ->maxContentWidth(Width::Full)
+            ->homeUrl(fn (): string => Pos::getUrl(panel: 'pos'))
+            ->topbar(false)
             ->topNavigation()
             ->userMenuItems([
+                'orders' => Action::make('orders')
+                    ->label(fn (): string => __('point-of-sale::filament/pos/pages/terminal.menu.orders'))
+                    ->icon('heroicon-m-receipt-percent')
+                    ->url('#')
+                    ->extraAttributes([
+                        'x-on:click.prevent' => "window.dispatchEvent(new CustomEvent('pos-open-orders'))",
+                    ]),
+
                 'cashMovement' => Action::make('cashMovement')
                     ->label(fn (): string => __('point-of-sale::filament/pos/pages/terminal.menu.cash-in-out'))
                     ->icon('heroicon-m-banknotes')
-                    ->visible(fn (): bool => Registers::routeSession() !== null)
-                    ->action(fn ($livewire) => $livewire->dispatch('pos-open-cash-movement')),
+                    ->url('#')
+                    ->extraAttributes([
+                        'x-on:click.prevent' => "window.dispatchEvent(new CustomEvent('pos-open-cash-movement'))",
+                    ]),
 
                 'installApp' => Action::make('installApp')
                     ->label(fn (): string => __('point-of-sale::filament/pos/pages/terminal.install.label'))
@@ -69,8 +82,10 @@ class PosPanelProvider extends PanelProvider
                     ->label(fn (): string => __('point-of-sale::filament/pos/pages/terminal.menu.close-register'))
                     ->icon('heroicon-m-lock-closed')
                     ->color('danger')
-                    ->visible(fn (): bool => Registers::routeSession() !== null)
-                    ->action(fn ($livewire) => $livewire->dispatch('pos-close-register')),
+                    ->url('#')
+                    ->extraAttributes([
+                        'x-on:click.prevent' => "window.dispatchEvent(new CustomEvent('pos-close-register'))",
+                    ]),
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

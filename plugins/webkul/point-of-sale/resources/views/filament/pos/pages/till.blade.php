@@ -7,7 +7,10 @@
         data-boot="{{ json_encode($this->bootPayload()) }}"
         data-sync-endpoint="{{ $this->syncEndpoint() }}"
         data-access-token="{{ $this->config->access_token }}"
+        data-back-office-url="{{ $this->backOfficeUrl() }}"
+        data-logout-url="{{ $this->logoutUrl() }}"
+        data-brand-logo="{{ $this->brandLogo() }}"
+        data-user-name="{{ $this->userName() }}"
+        data-user-avatar="{{ $this->userAvatar() }}"
     ></div>
-
-    <livewire:point-of-sale-register-controls :session="$session" />
 </x-filament-panels::page>

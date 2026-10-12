@@ -20,7 +20,8 @@ use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Models\Partner;
 use Webkul\PointOfSale\Enums\PriceType;
-use Webkul\PointOfSale\Filament\Pos\Pages\Registers;
+use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\PointOfSale\Filament\Pos\Pages\Pos;
 use Webkul\PointOfSale\Models\Bill;
 use Webkul\PointOfSale\Models\Category;
 use Webkul\PointOfSale\Models\Config;
@@ -159,6 +160,11 @@ class BootLoader
             'product_endpoint'              => route('point-of-sale.till.configs.products.store', ['config' => $config->id]),
             'order_cancel_endpoint'         => route('point-of-sale.till.orders.cancel'),
             'draft_endpoint'                => route('point-of-sale.till.orders.drafts.store'),
+            'order_refundable_endpoint'     => route('point-of-sale.till.orders.refundable', ['order' => '__order__']),
+            'order_refund_endpoint'         => route('point-of-sale.till.orders.refund', ['order' => '__order__']),
+            'order_invoice_endpoint'        => route('point-of-sale.till.orders.invoice', ['order' => '__order__']),
+            'order_receipt_endpoint'        => route('point-of-sale.till.orders.receipt', ['order' => '__order__']),
+            'order_details_endpoint'        => OrderResource::getUrl('view', ['record' => '__order__'], panel: 'admin'),
             'floor_plan'                    => $this->floorPlanAccess($config),
             'preparation_printers'          => $this->preparationPrinters($config),
             'cashier_name'                  => Auth::user()?->name,
@@ -237,7 +243,19 @@ class BootLoader
             'sequence_number'             => max((int) ($session->order_count ?? 0), (int) Order::withoutGlobalScopes()->where('session_id', $session->id)->max('sequence_number')),
             'login_number'                => (int) ($session->login_number ?? 0),
             'drafts_endpoint'             => route('point-of-sale.till.sessions.drafts', ['session' => $session->id]),
-            'registers_url'               => Registers::getUrl(panel: 'pos'),
+            'orders_endpoint'             => route('point-of-sale.till.sessions.orders', ['session' => $session->id]),
+            'opening_control_endpoint'    => route('point-of-sale.till.sessions.opening-control', ['session' => $session->id]),
+            'closing_control_endpoint'    => route('point-of-sale.till.sessions.closing-control.report', ['session' => $session->id]),
+            'request_closing_endpoint'    => route('point-of-sale.till.sessions.closing-control', ['session' => $session->id]),
+            'close_endpoint'              => route('point-of-sale.till.sessions.close', ['session' => $session->id]),
+            'cash_movement_endpoint'      => route('point-of-sale.till.sessions.cash-movements', ['session' => $session->id]),
+            'cancel_drafts_endpoint'      => route('point-of-sale.till.sessions.cancel-draft-orders', ['session' => $session->id]),
+            'sales_details_endpoint'      => route('point-of-sale.till.sessions.sales-details', ['session' => $session->id]),
+            'registers_url'               => Pos::getUrl(panel: 'pos'),
+            'previous_closing_balance'    => $session->config?->lastClosedSession?->cash_balance_end_real !== null
+                ? (float) $session->config->lastClosedSession->cash_balance_end_real
+                : null,
+            'has_cash_payment_method'     => $session->config?->cashPaymentMethod() !== null,
         ];
     }
 

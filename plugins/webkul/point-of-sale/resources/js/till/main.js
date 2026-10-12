@@ -1,15 +1,15 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import PickerApp from './PickerApp.vue'
 import { Till } from './store/till.js'
+import { Picker } from './picker/picker.js'
 
 let mounted = null
 
 let activeTill = null
 
-async function mountTill(element) {
-    unmountTill()
-
-    const boot = JSON.parse(element.dataset.boot)
+function mountTillWithBoot(element, boot) {
+    unmountMounted()
 
     const till = new Till(boot.data ?? boot, {
         syncEndpoint: element.dataset.syncEndpoint,
@@ -18,26 +18,50 @@ async function mountTill(element) {
 
     activeTill = till
 
-    await till.start()
+    till.start().then(() => {
+        if (activeTill !== till) {
+            till.stop()
 
-    if (activeTill !== till) {
-        till.stop()
+            return
+        }
 
-        return
-    }
+        const app = createApp(App)
 
-    const app = createApp(App)
+        app.provide('till', till)
 
-    app.provide('till', till)
+        app.mount(element)
+
+        mounted = app
+
+        window.pointOfSaleTill = till
+    })
+}
+
+function mountPicker(element) {
+    unmountMounted()
+
+    const picker = new Picker(
+        {
+            registers: element.dataset.registersEndpoint,
+            open: element.dataset.openEndpoint,
+            discard: element.dataset.discardEndpoint,
+            terminal: element.dataset.terminalBase,
+        },
+        JSON.parse(element.dataset.strings ?? '{}'),
+    )
+
+    const app = createApp(PickerApp)
+
+    app.provide('picker', picker)
 
     app.mount(element)
 
     mounted = app
 
-    window.pointOfSaleTill = till
+    picker.load()
 }
 
-function unmountTill() {
+function unmountMounted() {
     activeTill?.stop()
 
     activeTill = null
@@ -50,7 +74,7 @@ function unmountTill() {
 }
 
 function leaveTill() {
-    unmountTill()
+    unmountMounted()
 
     document.getElementById('pos-till')?.removeAttribute('data-mounted')
 }
@@ -64,7 +88,13 @@ function boot() {
 
     element.dataset.mounted = 'true'
 
-    mountTill(element)
+    if (element.dataset.boot) {
+        mountTillWithBoot(element, JSON.parse(element.dataset.boot))
+
+        return
+    }
+
+    mountPicker(element)
 }
 
 document.addEventListener('DOMContentLoaded', boot)

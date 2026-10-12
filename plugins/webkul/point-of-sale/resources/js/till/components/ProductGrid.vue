@@ -69,27 +69,6 @@ function selectCategory(id) {
 
 <template>
     <div class="flex min-h-0 flex-col gap-3">
-        <div class="flex flex-none items-center gap-2">
-            <input
-                v-model="state.search"
-                type="search"
-                :placeholder="till.t('catalogue.search')"
-                class="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-950 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-            >
-
-            <button
-                type="button"
-                class="flex min-h-10 flex-none items-center justify-center gap-1.5 rounded-lg bg-primary-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
-                :title="till.t('catalogue.create-product')"
-                :aria-label="till.t('catalogue.create-product')"
-                @click="till.openProductForm()"
-            >
-                <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                </svg>
-            </button>
-        </div>
-
         <div v-if="categories.length && !till.config.show_category_images" class="flex flex-none flex-wrap items-center gap-2">
             <button
                 v-for="category in categories"

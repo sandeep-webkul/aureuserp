@@ -177,6 +177,46 @@ export class Till {
             productSaving: false,
             productError: null,
             rememberedOrderUnavailable: false,
+            openingOpen: boot.session.state === 'opening_control',
+            openingCash: Number(boot.session.previous_closing_balance ?? boot.session.cash_register_balance_start ?? 0),
+            openingNotes: '',
+            openingBusy: false,
+            openingError: null,
+            moneyDetailsOpen: false,
+            moneyDetailsTarget: 'opening',
+            moneyDetails: {},
+            cashOpen: false,
+            cashType: 'in',
+            cashAmount: '',
+            cashReason: '',
+            cashBusy: false,
+            cashError: null,
+            showCashMoves: false,
+            closingOpen: false,
+            closingReport: null,
+            closingBusy: false,
+            closingError: null,
+            closingNotes: '',
+            closingCashReal: '',
+            closingCounted: {},
+            closingDrafts: false,
+            closingUnbalanced: null,
+            balancingAccountId: null,
+            historyOpen: false,
+            history: [],
+            historyLoading: false,
+            historyError: null,
+            historySearch: '',
+            historyStatus: 'active',
+            historyPage: 1,
+            historyLastPage: 1,
+            historySelected: null,
+            historyBusyId: null,
+            refundLines: {},
+            refundActiveLine: null,
+            refundBuffer: '',
+            refundError: null,
+            offlineAcknowledged: false,
         })
 
         this.database = new TillDatabase(
@@ -244,6 +284,8 @@ export class Till {
         } else if (this.isRestaurant) {
             this.goToFloor()
         }
+
+        this.startMenuListeners()
 
         this.watchActiveOrder()
 
@@ -363,9 +405,7 @@ export class Till {
         }
     }
 
-    openPendingRefund() {
-        const pending = this.boot.pending_refund
-
+    openPendingRefund(pending = this.boot.pending_refund) {
         if (!pending?.lines?.length) {
             return null
         }
@@ -1336,12 +1376,6 @@ export class Till {
             return
         }
 
-        if (this.isRestaurant && !navigator.onLine) {
-            this.notifyKitchen(this.t('kitchen.offline'))
-
-            return
-        }
-
         const tickets = this.preparationTickets(order, this.preparationChanges(order))
 
         if (!tickets.length) {
@@ -1352,7 +1386,7 @@ export class Till {
 
         this.markPreparationSent(order)
 
-        if (this.isRestaurant) {
+        if (this.isRestaurant && navigator.onLine) {
             this.shareDrafts()
         }
 
@@ -1855,6 +1889,142 @@ export class Till {
         }
 
         return payload
+    }
+
+    orderEndpoint(name, orderId) {
+        return this.boot.config[name].replace('__order__', orderId)
+    }
+
+    async request(url, method = 'GET', body = null) {
+        let response
+
+        try {
+            response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: body ? JSON.stringify(body) : null,
+            })
+        } catch {
+            throw new Error(this.t('history.unreachable'))
+        }
+
+        const payload = await response.json().catch(() => ({}))
+
+        if (!response.ok) {
+            throw new Error(payload.message ?? this.t('history.failed', { status: response.status }))
+        }
+
+        return payload
+    }
+
+    async loadOrderHistory({ search = '', status = 'active', page = 1 } = {}) {
+        const url = new URL(this.boot.session.orders_endpoint, window.location.origin)
+
+        url.searchParams.set('status', status)
+        url.searchParams.set('page', String(page))
+
+        if (search) {
+            url.searchParams.set('search', search)
+        }
+
+        return this.request(url.toString(), 'GET')
+    }
+
+    async fetchRefundableLines(orderId) {
+        const payload = await this.request(this.orderEndpoint('order_refundable_endpoint', orderId), 'GET')
+
+        return payload.data ?? {}
+    }
+
+    async prepareRefund(orderId, quantities) {
+        const payload = await this.request(this.orderEndpoint('order_refund_endpoint', orderId), 'POST', { quantities })
+
+        return payload.data
+    }
+
+    async invoiceServerOrder(orderId) {
+        const payload = await this.request(this.orderEndpoint('order_invoice_endpoint', orderId), 'POST')
+
+        return payload.data
+    }
+
+    async cancelServerOrder(uuid) {
+        const payload = await this.request(this.boot.config.order_cancel_endpoint, 'POST', { uuid })
+
+        return payload.data
+    }
+
+    async fetchReceipt(orderId) {
+        const payload = await this.request(this.orderEndpoint('order_receipt_endpoint', orderId), 'GET')
+
+        return payload.data
+    }
+
+    async loadClosingControl() {
+        const payload = await this.request(this.boot.session.closing_control_endpoint, 'GET')
+
+        return payload.data
+    }
+
+    async recordCashMovement(type, amount, reason = null) {
+        const payload = await this.request(this.boot.session.cash_movement_endpoint, 'POST', { type, amount, reason })
+
+        return payload.data
+    }
+
+    async cancelDraftOrders() {
+        const payload = await this.request(this.boot.session.cancel_drafts_endpoint, 'POST')
+
+        return payload.data
+    }
+
+    async closeRegister({ cashBalanceEndReal = null, closingNotes = null, balancingAccountId = null, paymentDifferences = {} } = {}) {
+        let response
+
+        try {
+            response = await fetch(this.boot.session.close_endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({
+                    cash_balance_end_real: cashBalanceEndReal,
+                    closing_notes: closingNotes,
+                    balancing_account_id: balancingAccountId,
+                    payment_differences: paymentDifferences,
+                }),
+            })
+        } catch {
+            throw new Error(this.t('history.unreachable'))
+        }
+
+        const payload = await response.json().catch(() => ({}))
+
+        return { ok: response.ok, status: response.status, ...payload }
+    }
+
+    salesDetailsUrl() {
+        return this.boot.session.sales_details_endpoint
+    }
+
+    downloadSalesDetails() {
+        const link = document.createElement('a')
+
+        link.href = this.salesDetailsUrl()
+
+        link.rel = 'noopener'
+
+        document.body.appendChild(link)
+
+        link.click()
+
+        link.remove()
     }
 
     async tapTable(tableId) {
@@ -3956,8 +4126,579 @@ export class Till {
         this.pressNumpad(key)
     }
 
+    startMenuListeners() {
+        this.menuHandlers = {
+            'pos-open-orders': () => this.openHistory(),
+        }
+
+        for (const [event, handler] of Object.entries(this.menuHandlers)) {
+            window.addEventListener(event, handler)
+        }
+    }
+
+    stopMenuListeners() {
+        if (!this.menuHandlers) {
+            return
+        }
+
+        for (const [event, handler] of Object.entries(this.menuHandlers)) {
+            window.removeEventListener(event, handler)
+        }
+
+        this.menuHandlers = null
+    }
+
+    async confirmOpening() {
+        this.state.openingError = null
+        this.state.openingBusy = true
+
+        try {
+            await this.request(this.boot.session.opening_control_endpoint, 'POST', {
+                cash_balance_start: Number(this.state.openingCash) || 0,
+                opening_notes: this.state.openingNotes || null,
+            })
+
+            this.boot.session.state = 'opened'
+
+            this.state.openingOpen = false
+
+            if (this.isRestaurant) {
+                this.goToFloor()
+            } else {
+                this.state.screen = 'products'
+            }
+        } catch (error) {
+            this.state.openingError = error.message
+        } finally {
+            this.state.openingBusy = false
+        }
+    }
+
+    get needsOpeningControl() {
+        return this.boot.session.state === 'opening_control'
+    }
+
+    get previousClosingBalance() {
+        return this.boot.session.previous_closing_balance ?? null
+    }
+
+    get hasCashCountMethod() {
+        return Boolean(this.boot.session.has_cash_payment_method)
+    }
+
+    roundAmount(amount) {
+        return Math.round((Number(amount) || 0) * 100) / 100
+    }
+
+    get moneyBills() {
+        return this.master.bills.all().slice().sort((a, b) => Number(b.value) - Number(a.value))
+    }
+
+    openMoneyDetails(target = 'opening') {
+        this.state.moneyDetailsTarget = target
+        this.state.moneyDetailsOpen = true
+    }
+
+    stepMoneyDetail(billId, step) {
+        const current = Number(this.state.moneyDetails[billId] ?? 0)
+
+        this.state.moneyDetails[billId] = Math.max(0, current + step)
+    }
+
+    setMoneyDetail(billId, value) {
+        this.state.moneyDetails[billId] = Math.max(0, Math.trunc(Number(value) || 0))
+    }
+
+    moneyDetailsTotal() {
+        return this.roundAmount(this.moneyBills.reduce(
+            (total, bill) => total + (Number(bill.value) || 0) * Number(this.state.moneyDetails[bill.id] ?? 0),
+            0,
+        ))
+    }
+
+    moneyDetailsNote(total) {
+        if (this.roundAmount(total) === 0) {
+            return ''
+        }
+
+        const heading = this.state.moneyDetailsTarget === 'closing'
+            ? this.t('money-details.closing-heading')
+            : this.t('money-details.opening-heading')
+
+        let note = `${heading}\n`
+
+        for (const bill of this.moneyBills.slice().sort((a, b) => Number(a.value) - Number(b.value))) {
+            const quantity = Number(this.state.moneyDetails[bill.id] ?? 0)
+
+            if (quantity === 0) {
+                continue
+            }
+
+            note += `\t${quantity} x ${this.money(Number(bill.value))}\n`
+        }
+
+        return note + this.t('money-details.total', { total: this.money(total) })
+    }
+
+    confirmMoneyDetails() {
+        const total = this.moneyDetailsTotal()
+
+        if (this.state.moneyDetailsTarget === 'closing') {
+            this.state.closingCashReal = total
+            this.state.closingNotes = this.moneyDetailsNote(total)
+        } else {
+            this.state.openingCash = total
+            this.state.openingNotes = this.moneyDetailsNote(total)
+        }
+
+        this.state.moneyDetailsOpen = false
+    }
+
+    toggleCashMoves() {
+        this.state.showCashMoves = !this.state.showCashMoves
+    }
+
+    cashDifference(cash) {
+        return this.state.closingCashReal === '' || this.state.closingCashReal === null
+            ? 0
+            : this.roundAmount(Number(this.state.closingCashReal) - Number(cash.amount))
+    }
+
+    paymentDifference(method) {
+        const counted = this.state.closingCounted[method.id]
+
+        return counted === undefined || counted === null || counted === ''
+            ? 0
+            : this.roundAmount(Number(counted) - Number(method.amount))
+    }
+
+    exceedsAuthorizedDifference(control) {
+        if (control.amount_authorized_diff === null || control.amount_authorized_diff === undefined) {
+            return false
+        }
+
+        const cash = control.default_cash_details ?? null
+
+        const differences = Object.values(this.closingPaymentDifferences())
+
+        if (cash) {
+            differences.push(this.cashDifference(cash))
+        }
+
+        const largest = differences.reduce((max, value) => Math.max(max, Math.abs(Number(value) || 0)), 0)
+
+        return this.roundAmount(largest) > this.roundAmount(Number(control.amount_authorized_diff))
+    }
+
+    copyExpectedCash() {
+        const cash = this.state.closingReport?.default_cash_details
+
+        if (cash) {
+            this.state.closingCashReal = this.roundAmount(Number(cash.amount))
+        }
+    }
+
+    copyExpectedPayment(methodId, amount) {
+        this.state.closingCounted[methodId] = this.roundAmount(Number(amount))
+    }
+
+    openCash(type = 'in') {
+        this.state.cashType = type
+        this.state.cashAmount = ''
+        this.state.cashReason = ''
+        this.state.cashError = null
+        this.state.cashOpen = true
+    }
+
+    async submitCash() {
+        const amount = Number(this.state.cashAmount)
+
+        if (!(amount > 0)) {
+            this.state.cashError = this.t('cash-movement.amount')
+
+            return
+        }
+
+        this.state.cashError = null
+        this.state.cashBusy = true
+
+        try {
+            await this.recordCashMovement(this.state.cashType, amount, this.state.cashReason || null)
+
+            this.state.cashOpen = false
+        } catch (error) {
+            this.state.cashError = error.message
+        } finally {
+            this.state.cashBusy = false
+        }
+    }
+
+    async openClosing() {
+        this.state.closingOpen = true
+        this.state.closingError = null
+        this.state.closingDrafts = false
+        this.state.closingUnbalanced = null
+        this.state.closingReport = null
+        this.state.closingBusy = true
+
+        try {
+            this.state.closingReport = await this.loadClosingControl()
+        } catch (error) {
+            this.state.closingError = error.message
+        } finally {
+            this.state.closingBusy = false
+        }
+    }
+
+    closingPaymentDifferences() {
+        const report = this.state.closingReport
+
+        if (!report) {
+            return {}
+        }
+
+        const differences = {}
+
+        for (const method of report.non_cash_payment_methods ?? []) {
+            const counted = this.state.closingCounted[method.id]
+
+            if (counted !== undefined && counted !== '') {
+                differences[method.id] = Number(counted) - Number(method.amount)
+            }
+        }
+
+        return differences
+    }
+
+    async submitClose() {
+        this.state.closingError = null
+        this.state.closingDrafts = false
+        this.state.closingUnbalanced = null
+        this.state.closingBusy = true
+
+        try {
+            const result = await this.closeRegister({
+                cashBalanceEndReal: this.state.closingCashReal === '' ? null : Number(this.state.closingCashReal),
+                closingNotes: this.state.closingNotes || null,
+                balancingAccountId: this.state.balancingAccountId,
+                paymentDifferences: this.closingPaymentDifferences(),
+            })
+
+            if (result.ok) {
+                this.state.closingOpen = false
+                this.state.sessionClosed = true
+
+                window.localStorage.removeItem('pos-active-session')
+
+                return
+            }
+
+            if (result.code === 'draft-orders') {
+                this.state.closingDrafts = true
+            } else if (result.code === 'unbalanced') {
+                this.state.closingUnbalanced = result.delta ?? null
+            } else {
+                this.state.closingError = result.message ?? this.t('history.failed', { status: result.status })
+            }
+        } catch (error) {
+            this.state.closingError = error.message
+        } finally {
+            this.state.closingBusy = false
+        }
+    }
+
+    async confirmCancelDraftOrders() {
+        this.state.closingBusy = true
+
+        try {
+            await this.cancelDraftOrders()
+
+            this.state.closingDrafts = false
+
+            await this.submitClose()
+        } catch (error) {
+            this.state.closingError = error.message
+        } finally {
+            this.state.closingBusy = false
+        }
+    }
+
+    async openHistory() {
+        this.state.historyOpen = true
+        this.state.historySelected = null
+        this.state.historyPage = 1
+
+        await this.refreshHistory()
+    }
+
+    async refreshHistory() {
+        this.state.historyError = null
+
+        if (!navigator.onLine) {
+            this.state.history = this.localOrderHistory()
+            this.state.historyPage = 1
+            this.state.historyLastPage = 1
+            this.state.historyLoading = false
+
+            return
+        }
+
+        this.state.historyLoading = true
+
+        try {
+            const payload = await this.loadOrderHistory({
+                search: this.state.historySearch,
+                status: this.state.historyStatus,
+                page: this.state.historyPage,
+            })
+
+            this.state.history = payload.data ?? []
+            this.state.historyLastPage = payload.last_page ?? 1
+        } catch (error) {
+            this.state.history = this.localOrderHistory()
+            this.state.historyLastPage = 1
+            this.state.historyError = error.message
+        } finally {
+            this.state.historyLoading = false
+        }
+    }
+
+    localOrderHistory() {
+        const needle = this.state.historySearch.trim().toLowerCase()
+
+        const status = this.state.historyStatus
+
+        return this.state.orders
+            .filter((order) => order.lines.length > 0)
+            .filter((order) => {
+                if (status === 'active') {
+                    if (order.state === 'cancel') {
+                        return false
+                    }
+                } else if (order.state !== status) {
+                    return false
+                }
+
+                if (!needle) {
+                    return true
+                }
+
+                const haystack = [
+                    this.orderLabel(order),
+                    order.pos_reference,
+                    order.name,
+                    order.tracking_number,
+                    this.master.partners.get(order.partner_id)?.name,
+                    ...order.lines.map((line) => this.master.products.get(line.product_id)?.name),
+                ]
+
+                return haystack.some((field) => field && String(field).toLowerCase().includes(needle))
+            })
+            .map((order) => this.historyRowFromLocal(order))
+    }
+
+    historyRowFromLocal(order) {
+        const totals = this.orderTotals(order)
+
+        return {
+            id: order.serverId ?? order.uuid,
+            uuid: order.uuid,
+            ordered_at: order.created_at ?? null,
+            reference: order.pos_reference,
+            name: order.name ?? order.pos_reference,
+            tracking_number: order.tracking_number,
+            state: order.state,
+            amount_total: totals.total,
+            amount_tax: totals.tax,
+            is_invoiced: false,
+            cashier: '',
+            partner: order.partner_id ? { name: this.master.partners.get(order.partner_id)?.name ?? null } : null,
+            table: null,
+            lines: order.lines.map((line) => {
+                const lineTotals = this.lineTotals(line)
+
+                return {
+                    id: line.uuid,
+                    full_product_name: this.master.products.get(line.product_id)?.name ?? '',
+                    qty: line.qty,
+                    price_unit: line.price_unit,
+                    price_subtotal_incl: floatRound(lineTotals.subtotal + lineTotals.tax, { precisionDigits: 4 }),
+                }
+            }),
+        }
+    }
+
+    async goToHistoryPage(page) {
+        if (page < 1 || page > this.state.historyLastPage) {
+            return
+        }
+
+        this.state.historyPage = page
+
+        await this.refreshHistory()
+    }
+
+    async invoiceHistoryOrder(order) {
+        this.state.historyBusyId = order.id
+
+        try {
+            const updated = await this.invoiceServerOrder(order.id)
+
+            if (updated) {
+                order.is_invoiced = updated.is_invoiced ?? true
+                order.state = updated.state ?? order.state
+            }
+        } catch (error) {
+            this.state.historyError = error.message
+        } finally {
+            this.state.historyBusyId = null
+        }
+    }
+
+    async cancelHistoryOrder(order) {
+        this.state.historyBusyId = order.id
+
+        try {
+            await this.cancelServerOrder(order.uuid)
+
+            await this.refreshHistory()
+        } catch (error) {
+            this.state.historyError = error.message
+        } finally {
+            this.state.historyBusyId = null
+        }
+    }
+
+    async selectHistoryOrder(order) {
+        this.state.historySelected = order
+        this.state.refundLines = {}
+        this.state.refundActiveLine = null
+        this.state.refundBuffer = ''
+        this.state.refundError = null
+
+        if (!order || order.state === 'cancel' || order.state === 'draft' || !navigator.onLine || typeof order.id !== 'number') {
+            return
+        }
+
+        try {
+            const lines = await this.fetchRefundableLines(order.id)
+
+            const map = {}
+
+            for (const [lineId, refundable] of Object.entries(lines)) {
+                if (Number(refundable) > 0) {
+                    map[lineId] = { refundable: Number(refundable), qty: 0 }
+                }
+            }
+
+            this.state.refundLines = map
+        } catch (error) {
+            this.state.refundError = error.message
+        }
+    }
+
+    setRefundQty(lineId, value) {
+        const line = this.state.refundLines[lineId]
+
+        if (!line) {
+            return
+        }
+
+        const requested = Math.max(Number(value) || 0, 0)
+
+        line.qty = Math.min(requested, line.refundable)
+    }
+
+    selectRefundLine(lineId) {
+        if (!this.state.refundLines[lineId]) {
+            return
+        }
+
+        this.state.refundActiveLine = lineId
+        this.state.refundBuffer = ''
+    }
+
+    pressRefund(key) {
+        const lineId = this.state.refundActiveLine
+
+        const line = lineId !== null ? this.state.refundLines[lineId] : null
+
+        if (!line) {
+            return
+        }
+
+        if (key === 'backspace') {
+            this.state.refundBuffer = this.state.refundBuffer.slice(0, -1)
+        } else if (key === 'clear') {
+            this.state.refundBuffer = ''
+        } else if (key === '.') {
+            if (!this.state.refundBuffer.includes('.')) {
+                this.state.refundBuffer = (this.state.refundBuffer || '0') + '.'
+            }
+        } else {
+            this.state.refundBuffer += key
+        }
+
+        const requested = Number(this.state.refundBuffer || 0)
+
+        line.qty = Math.min(Math.max(requested, 0), line.refundable)
+    }
+
+    refundTotalQty() {
+        return Object.values(this.state.refundLines).reduce((sum, line) => sum + Number(line.qty || 0), 0)
+    }
+
+    canRefundSelected() {
+        return Object.keys(this.state.refundLines).length > 0
+    }
+
+    async submitRefund() {
+        const order = this.state.historySelected
+
+        if (!order) {
+            return
+        }
+
+        const quantities = {}
+
+        for (const [lineId, line] of Object.entries(this.state.refundLines)) {
+            if (Number(line.qty) > 0) {
+                quantities[lineId] = Number(line.qty)
+            }
+        }
+
+        if (!Object.keys(quantities).length) {
+            return
+        }
+
+        this.state.refundError = null
+        this.state.historyBusyId = order.id
+
+        try {
+            const pending = await this.prepareRefund(order.id, quantities)
+
+            const refundOrder = this.openPendingRefund(pending)
+
+            if (refundOrder) {
+                this.state.activeOrderUuid = refundOrder.uuid
+                this.state.historyOpen = false
+                this.state.historySelected = null
+                this.state.refundLines = {}
+                this.state.refundActiveLine = null
+                this.state.refundBuffer = ''
+                this.state.screen = 'products'
+            }
+        } catch (error) {
+            this.state.refundError = error.message
+        } finally {
+            this.state.historyBusyId = null
+        }
+    }
+
     stop() {
         this.queue.stop()
+
+        this.stopMenuListeners()
 
         window.removeEventListener('point-of-sale:queue-flushed', this.onQueueFlushed)
 

@@ -19,6 +19,85 @@ return [
         'more'    => '+ :count more',
     ],
 
+    'nav' => [
+        'home'      => 'Home',
+        'orders'    => 'Orders',
+        'registers' => 'Registers',
+    ],
+
+    'picker' => [
+        'title'       => 'Registers',
+        'open'        => 'Open register',
+        'resume'      => 'Resume',
+        'discard'     => 'Discard session',
+        'open-by'     => 'Open by :name',
+        'closed'      => 'Closed',
+        'opening'     => 'Opening…',
+        'back-office' => 'Back office',
+        'logout'      => 'Log out',
+        'offline'     => 'Connect to the network to open a register.',
+        'failed'      => 'Could not reach the server. Try again.',
+
+        'discard-confirm' => [
+            'heading' => 'Discard this session?',
+            'confirm' => 'Discard',
+        ],
+
+        'empty' => [
+            'heading'     => 'No point of sale available',
+            'description' => 'Create an active point of sale in the back office to start selling.',
+        ],
+    ],
+
+    'history' => [
+        'heading'       => 'Orders',
+        'back'          => 'Back',
+        'search'        => 'Search by order, receipt, customer or table',
+        'empty'         => 'No order matches that search.',
+        'select-order'  => 'Select an order to see its details.',
+        'walk-in'       => 'Walk-in',
+        'invoice'       => 'Invoice',
+        'invoiced'      => 'Invoiced',
+        'cancel'        => 'Cancel order',
+        'print'         => 'Print receipt',
+        'details'       => 'Details',
+        'refund'        => 'Refund',
+        'refund-prompt' => 'Select the product(s) to refund and set the quantity.',
+        'to-refund'     => 'To refund',
+        'refundable'    => 'Refundable: :qty',
+        'taxes'         => 'Taxes',
+        'total'         => 'Total',
+        'paid'          => 'Paid',
+        'lines'         => 'Lines',
+        'payments'      => 'Payments',
+        'prev'          => 'Previous',
+        'next'          => 'Next',
+        'page'          => 'Page :page of :total',
+        'unreachable'   => 'The server could not be reached. Check the connection and try again.',
+        'failed'        => 'The request failed (:status).',
+
+        'columns' => [
+            'date'     => 'Date',
+            'receipt'  => 'Receipt',
+            'order'    => 'Order',
+            'customer' => 'Customer',
+            'cashier'  => 'Cashier',
+            'tracking' => 'Tracking',
+            'table'    => 'Table',
+            'total'    => 'Total',
+            'status'   => 'Status',
+        ],
+
+        'status' => [
+            'active'   => 'Active',
+            'draft'    => 'Ongoing',
+            'paid'     => 'Paid',
+            'done'     => 'Posted',
+            'invoiced' => 'Invoiced',
+            'canceled' => 'Cancelled',
+        ],
+    ],
+
     'parked' => [
         'walk-in'         => 'Walk-in',
         'items'           => '{1} :count item|[2,*] :count items',
@@ -62,6 +141,9 @@ return [
         'create-product' => 'Create product',
         'back-office'    => 'Back office',
         'close-register' => 'Close register',
+        'install'        => 'Install app',
+        'theme'          => 'Toggle theme',
+        'logout'         => 'Log out',
     ],
 
     'cash-movement' => [
@@ -107,6 +189,7 @@ return [
         'opening-note'             => 'Opening note',
         'authorized-diff'          => 'Maximum allowed difference: :amount',
         'authorized-diff-exceeded' => 'The difference is above the allowed limit. Only a manager can close this register.',
+        'unbalanced'               => 'The closing entry is unbalanced by :amount. A manager must select a balancing account to close.',
     ],
 
     'draft-orders' => [
@@ -463,6 +546,9 @@ return [
         'rejected'            => ':count order(s) rejected by the server',
         'storage-unavailable' => 'Local storage unavailable — reload before taking more orders',
         'retry'               => 'Retry',
+        'lost-heading'        => 'Connection Lost',
+        'lost-body'           => 'Until the connection is reestablished, the point of sale will operate with limited functionality.',
+        'continue'            => 'Continue with limited functionality',
     ],
 
     'actions' => [

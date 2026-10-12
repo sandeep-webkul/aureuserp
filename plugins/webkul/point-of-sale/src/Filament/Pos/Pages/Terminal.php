@@ -3,8 +3,11 @@
 namespace Webkul\PointOfSale\Filament\Pos\Pages;
 
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
 use Webkul\PointOfSale\Facades\PointOfSale;
+use Webkul\PointOfSale\Filament\Admin\Pages\Registers as AdminRegisters;
 use Webkul\PointOfSale\Models\Config;
 use Webkul\PointOfSale\Models\Session;
 use Webkul\PointOfSale\Services\BootLoader;
@@ -66,5 +69,32 @@ abstract class Terminal extends Page
     public function syncEndpoint(): string
     {
         return route('point-of-sale.till.orders.sync');
+    }
+
+    public function backOfficeUrl(): string
+    {
+        return AdminRegisters::getUrl(panel: 'admin');
+    }
+
+    public function logoutUrl(): string
+    {
+        return route('filament.pos.auth.logout');
+    }
+
+    public function brandLogo(): string
+    {
+        return asset('images/logo.svg');
+    }
+
+    public function userName(): string
+    {
+        return Auth::user()?->name ?? '';
+    }
+
+    public function userAvatar(): ?string
+    {
+        $user = Auth::user();
+
+        return $user ? Filament::getUserAvatarUrl($user) : null;
     }
 }

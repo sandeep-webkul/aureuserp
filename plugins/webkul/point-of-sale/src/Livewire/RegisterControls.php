@@ -18,7 +18,7 @@ use Webkul\PointOfSale\Enums\SessionState;
 use Webkul\PointOfSale\Exceptions\SessionHasDraftOrdersException;
 use Webkul\PointOfSale\Facades\PointOfSale;
 use Webkul\PointOfSale\Filament\Pos\Pages\Orders;
-use Webkul\PointOfSale\Filament\Pos\Pages\Registers;
+use Webkul\PointOfSale\Filament\Pos\Pages\Pos;
 use Webkul\PointOfSale\Models\Bill;
 use Webkul\PointOfSale\Models\Config;
 use Webkul\PointOfSale\Models\Order;
@@ -357,7 +357,7 @@ class RegisterControls extends Component
                 $this->paymentDifferences(),
             );
 
-            $this->redirect(Registers::getUrl(), navigate: FilamentView::hasSpaMode());
+            $this->redirect(Pos::getUrl(), navigate: FilamentView::hasSpaMode());
         } catch (SessionHasDraftOrdersException $exception) {
             if (! $this->config->is_restaurant) {
                 Notification::make()

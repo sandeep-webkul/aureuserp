@@ -62,6 +62,10 @@ class SessionWorkflow
     public function confirmOpeningControl(Session $session, float $cashBalanceStart = 0.0, ?string $notes = null): Session
     {
         return DB::transaction(function () use ($session, $cashBalanceStart, $notes): Session {
+            if ($session->state === SessionState::OPENED) {
+                return $session;
+            }
+
             $this->assertState($session, [SessionState::OPENING_CONTROL]);
 
             $expectedOpening = (float) ($session->config->lastClosedSession?->cash_balance_end_real ?? 0);

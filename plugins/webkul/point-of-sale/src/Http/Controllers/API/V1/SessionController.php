@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\Rule;
 use Webkul\PointOfSale\Enums\CashMovementType;
+use Webkul\PointOfSale\Exceptions\SessionHasDraftOrdersException;
+use Webkul\PointOfSale\Exceptions\UnbalancedSessionException;
 use Webkul\PointOfSale\Facades\PointOfSale;
 use Webkul\PointOfSale\Http\Resources\V1\SessionResource;
 use Webkul\PointOfSale\Models\Config;
@@ -80,15 +82,33 @@ class SessionController extends Controller
             'cash_balance_end_real' => ['nullable', 'numeric'],
             'closing_notes'         => ['nullable', 'string'],
             'balancing_account_id'  => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'payment_differences'   => ['nullable', 'array'],
+            'payment_differences.*' => ['numeric'],
         ]);
 
-        return response()->json([
-            'data' => new SessionResource(PointOfSale::closeSessionWithAccounting(
+        try {
+            $closed = PointOfSale::closeSessionWithAccounting(
                 $session,
                 isset($data['cash_balance_end_real']) ? (float) $data['cash_balance_end_real'] : null,
                 $data['closing_notes'] ?? null,
                 isset($data['balancing_account_id']) ? (int) $data['balancing_account_id'] : null,
-            )),
+                collect($data['payment_differences'] ?? [])->mapWithKeys(fn ($difference, $methodId): array => [(int) $methodId => (float) $difference])->all(),
+            );
+        } catch (SessionHasDraftOrdersException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code'    => 'draft-orders',
+            ], $exception->getStatusCode());
+        } catch (UnbalancedSessionException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code'    => 'unbalanced',
+                'delta'   => $exception->delta,
+            ], $exception->getStatusCode());
+        }
+
+        return response()->json([
+            'data' => new SessionResource($closed),
         ]);
     }
 
