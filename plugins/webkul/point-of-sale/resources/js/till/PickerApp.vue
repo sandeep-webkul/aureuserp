@@ -21,7 +21,7 @@ const clock = reactive({ time: '', date: '' })
 
 const idle = ref(false)
 
-const IDLE_MS = 1200
+const IDLE_MS = 120000
 
 const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'scroll']
 
