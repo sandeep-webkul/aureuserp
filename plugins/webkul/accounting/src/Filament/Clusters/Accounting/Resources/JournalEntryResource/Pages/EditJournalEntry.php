@@ -63,7 +63,13 @@ class EditJournalEntry extends EditRecord
             BaseActions\CancelAction::make(),
             BaseActions\ReverseAction::make(),
             BaseActions\ResetToDraftAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounting::filament/clusters/accounting/resources/journal-entry/pages/edit-journal-entry.header-actions.delete.notification.title'))
+                        ->body(__('accounting::filament/clusters/accounting/resources/journal-entry/pages/edit-journal-entry.header-actions.delete.notification.body')),
+                ),
         ];
     }
 
