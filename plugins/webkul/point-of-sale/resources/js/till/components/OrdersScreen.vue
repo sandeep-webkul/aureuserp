@@ -1,6 +1,7 @@
 <script setup>
 import { inject, computed } from 'vue'
 import ReceiptBody from './ReceiptBody.vue'
+import InvoiceCustomerModal from './InvoiceCustomerModal.vue'
 
 const till = inject('till')
 
@@ -252,12 +253,17 @@ function back() {
                         {{ till.t('history.invoice') }}
                     </button>
 
-                    <span
+                    <a
                         v-else
-                        class="flex min-h-11 items-center justify-center rounded-lg bg-success-100 text-sm font-medium text-success-700 dark:bg-success-500/20 dark:text-success-300"
+                        :href="till.orderEndpoint('order_invoice_pdf_endpoint', state.historySelected.id)"
+                        target="_blank"
+                        rel="noopener"
+                        class="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-success-200 bg-success-50 text-sm font-medium text-success-700 hover:bg-success-100 dark:border-success-500/30 dark:bg-success-500/10 dark:text-success-300 dark:hover:bg-success-500/20"
                     >
-                        {{ till.t('history.invoiced') }}
-                    </span>
+                        <svg class="size-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.552c.377.046.752.097 1.126.153A2.212 2.212 0 0 1 18 8.653v4.097A2.25 2.25 0 0 1 15.75 15h-.241l.305 1.984A1.75 1.75 0 0 1 14.084 19H5.915a1.75 1.75 0 0 1-1.73-2.016L4.492 15H4.25A2.25 2.25 0 0 1 2 12.75V8.653c0-1.082.775-2.034 1.874-2.198.374-.056.75-.107 1.127-.153V2.75Zm8.5 3.397a41.533 41.533 0 0 0-7 0V2.75a.25.25 0 0 1 .25-.25h6.5a.25.25 0 0 1 .25.25v3.397ZM6.608 12.5a.25.25 0 0 0-.247.212l-.692 4.5a.25.25 0 0 0 .247.288h8.168a.25.25 0 0 0 .247-.288l-.692-4.5a.25.25 0 0 0-.247-.212H6.608Z" clip-rule="evenodd" /></svg>
+
+                        {{ till.t('history.print-invoice') }}
+                    </a>
 
                     <button
                         v-if="state.historySelected.state !== 'cancel'"
@@ -339,5 +345,7 @@ function back() {
                 {{ till.t('history.select-order') }}
             </div>
         </aside>
+
+        <InvoiceCustomerModal />
     </div>
 </template>

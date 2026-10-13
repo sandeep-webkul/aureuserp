@@ -58,6 +58,7 @@ return [
         'walk-in'       => 'Cliente avulso',
         'invoice'       => 'Fatura',
         'invoiced'      => 'Faturado',
+        'print-invoice' => 'Imprimir fatura',
         'cancel'        => 'Cancelar pedido',
         'print'         => 'Imprimir recibo',
         'details'       => 'Detalhes',
@@ -75,6 +76,12 @@ return [
         'page'          => 'Página :page de :total',
         'unreachable'   => 'Não foi possível acessar o servidor. Verifique a conexão e tente novamente.',
         'failed'        => 'A solicitação falhou (:status).',
+
+        'invoice-customer' => [
+            'heading'        => 'É necessário um cliente para faturar',
+            'question'       => 'Deseja abrir a lista de clientes para selecionar um?',
+            'select-heading' => 'Selecione um cliente para faturar',
+        ],
 
         'columns' => [
             'date'     => 'Data',

@@ -58,6 +58,7 @@ return [
         'walk-in'       => 'Sin cita',
         'invoice'       => 'Factura',
         'invoiced'      => 'Facturado',
+        'print-invoice' => 'Imprimir factura',
         'cancel'        => 'Cancelar pedido',
         'print'         => 'Imprimir recibo',
         'details'       => 'Detalles',
@@ -75,6 +76,12 @@ return [
         'page'          => 'Página :page de :total',
         'unreachable'   => 'No se pudo contactar con el servidor. Comprueba la conexión e inténtalo de nuevo.',
         'failed'        => 'La solicitud falló (:status).',
+
+        'invoice-customer' => [
+            'heading'        => 'Se necesita un cliente para facturar',
+            'question'       => '¿Deseas abrir la lista de clientes para seleccionar uno?',
+            'select-heading' => 'Selecciona un cliente para facturar',
+        ],
 
         'columns' => [
             'date'     => 'Fecha',

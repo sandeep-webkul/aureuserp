@@ -11,6 +11,7 @@ use Webkul\PointOfSale\Http\Controllers\API\V1\FloorPlanController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderCancelController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderHistoryController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderInvoiceController;
+use Webkul\PointOfSale\Http\Controllers\API\V1\OrderInvoicePdfController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderRefundController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderSyncController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\ReceiptController;
@@ -58,6 +59,7 @@ Route::name('point-of-sale.till.')
         Route::get('orders/{order}/refundable-lines', [OrderRefundController::class, 'refundable'])->name('orders.refundable');
         Route::post('orders/{order}/refund', [OrderRefundController::class, 'store'])->name('orders.refund');
         Route::post('orders/{order}/invoice', [OrderInvoiceController::class, 'store'])->name('orders.invoice');
+        Route::get('orders/{order}/invoice-pdf', [OrderInvoicePdfController::class, 'show'])->name('orders.invoice-pdf');
         Route::get('orders/{order}/receipt', [ReceiptController::class, 'show'])->name('orders.receipt');
     });
 

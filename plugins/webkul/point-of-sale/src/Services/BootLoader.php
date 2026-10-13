@@ -163,6 +163,7 @@ class BootLoader
             'order_refundable_endpoint'     => route('point-of-sale.till.orders.refundable', ['order' => '__order__']),
             'order_refund_endpoint'         => route('point-of-sale.till.orders.refund', ['order' => '__order__']),
             'order_invoice_endpoint'        => route('point-of-sale.till.orders.invoice', ['order' => '__order__']),
+            'order_invoice_pdf_endpoint'    => route('point-of-sale.till.orders.invoice-pdf', ['order' => '__order__']),
             'order_receipt_endpoint'        => route('point-of-sale.till.orders.receipt', ['order' => '__order__']),
             'order_details_endpoint'        => OrderResource::getUrl('view', ['record' => '__order__'], panel: 'admin'),
             'floor_plan'                    => $this->floorPlanAccess($config),

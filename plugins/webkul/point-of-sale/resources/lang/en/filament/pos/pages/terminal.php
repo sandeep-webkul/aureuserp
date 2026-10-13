@@ -58,6 +58,7 @@ return [
         'walk-in'       => 'Walk-in',
         'invoice'       => 'Invoice',
         'invoiced'      => 'Invoiced',
+        'print-invoice' => 'Print invoice',
         'cancel'        => 'Cancel order',
         'print'         => 'Print receipt',
         'details'       => 'Details',
@@ -75,6 +76,12 @@ return [
         'page'          => 'Page :page of :total',
         'unreachable'   => 'The server could not be reached. Check the connection and try again.',
         'failed'        => 'The request failed (:status).',
+
+        'invoice-customer' => [
+            'heading'        => 'Need customer to invoice',
+            'question'       => 'Do you want to open the customer list to select a customer?',
+            'select-heading' => 'Select a customer to invoice',
+        ],
 
         'columns' => [
             'date'     => 'Date',

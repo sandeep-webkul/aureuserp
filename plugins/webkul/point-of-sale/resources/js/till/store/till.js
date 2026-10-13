@@ -212,6 +212,8 @@ export class Till {
             historyLastPage: 1,
             historySelected: null,
             historyBusyId: null,
+            invoiceCustomerOrder: null,
+            invoiceCustomerStep: null,
             refundLines: {},
             refundActiveLine: null,
             refundBuffer: '',
@@ -1892,7 +1894,9 @@ export class Till {
     }
 
     orderEndpoint(name, orderId) {
-        return this.boot.config[name].replace('__order__', orderId)
+        const template = this.boot.config[name]
+
+        return template ? template.replace('__order__', orderId) : null
     }
 
     async request(url, method = 'GET', body = null) {
@@ -1946,8 +1950,8 @@ export class Till {
         return payload.data
     }
 
-    async invoiceServerOrder(orderId) {
-        const payload = await this.request(this.orderEndpoint('order_invoice_endpoint', orderId), 'POST')
+    async invoiceServerOrder(orderId, partnerId = null) {
+        const payload = await this.request(this.orderEndpoint('order_invoice_endpoint', orderId), 'POST', partnerId ? { partner_id: partnerId } : null)
 
         return payload.data
     }
@@ -4576,15 +4580,55 @@ export class Till {
         await this.refreshHistory()
     }
 
-    async invoiceHistoryOrder(order) {
+    invoiceHistoryOrder(order) {
+        if (order.partner) {
+            this.runInvoice(order)
+
+            return
+        }
+
+        this.state.customerSearch = ''
+        this.state.invoiceCustomerOrder = order
+        this.state.invoiceCustomerStep = 'confirm'
+    }
+
+    confirmInvoiceCustomer() {
+        this.state.invoiceCustomerStep = 'select'
+    }
+
+    cancelInvoiceCustomer() {
+        this.state.invoiceCustomerOrder = null
+        this.state.invoiceCustomerStep = null
+        this.state.customerSearch = ''
+    }
+
+    async chooseInvoiceCustomer(partnerId) {
+        const order = this.state.invoiceCustomerOrder
+
+        this.cancelInvoiceCustomer()
+
+        if (order) {
+            await this.runInvoice(order, partnerId)
+        }
+    }
+
+    async runInvoice(order, partnerId = null) {
         this.state.historyBusyId = order.id
 
         try {
-            const updated = await this.invoiceServerOrder(order.id)
+            const updated = await this.invoiceServerOrder(order.id, partnerId)
 
             if (updated) {
                 order.is_invoiced = updated.is_invoiced ?? true
                 order.state = updated.state ?? order.state
+
+                if (partnerId) {
+                    const partner = this.master.partners.get(partnerId)
+
+                    if (partner) {
+                        order.partner = { id: partner.id, name: partner.name }
+                    }
+                }
             }
         } catch (error) {
             this.state.historyError = error.message

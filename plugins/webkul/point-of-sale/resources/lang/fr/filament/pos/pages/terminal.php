@@ -58,6 +58,7 @@ return [
         'walk-in'       => 'Client de passage',
         'invoice'       => 'Facture',
         'invoiced'      => 'Facturée',
+        'print-invoice' => 'Imprimer la facture',
         'cancel'        => 'Annuler la commande',
         'print'         => 'Imprimer le reçu',
         'details'       => 'Détails',
@@ -75,6 +76,12 @@ return [
         'page'          => 'Page :page sur :total',
         'unreachable'   => "Le serveur n'a pas pu être joint. Vérifiez la connexion et réessayez.",
         'failed'        => 'La requête a échoué (:status).',
+
+        'invoice-customer' => [
+            'heading'        => 'Un client est requis pour facturer',
+            'question'       => 'Voulez-vous ouvrir la liste des clients pour en sélectionner un ?',
+            'select-heading' => 'Sélectionnez un client à facturer',
+        ],
 
         'columns' => [
             'date'     => 'Date',
