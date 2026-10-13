@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Dropshipping atualizado',
+                    'body'  => 'O dropshipping foi atualizado com sucesso.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

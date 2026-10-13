@@ -264,6 +264,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Colaborador atualizado',
+                    'body'  => 'O colaborador foi atualizado com sucesso.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Colaborador restaurado',
@@ -284,6 +291,11 @@ return [
                 'notification' => [
                     'title' => 'Colaboradores excluídos',
                     'body'  => 'Os colaboradores foram excluídos com sucesso.',
+
+                    'error' => [
+                        'title' => 'Os colaboradores não puderam ser excluídos',
+                        'body'  => 'Os colaboradores não podem ser excluídos porque estão em uso no momento.',
+                    ],
                 ],
             ],
 

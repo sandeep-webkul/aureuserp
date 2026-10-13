@@ -79,7 +79,13 @@ class PagesTable
                     ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
                     EditAction::make()
-                        ->hidden(fn ($record) => $record->trashed()),
+                        ->hidden(fn ($record) => $record->trashed())
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('website::filament/admin/resources/page.table.actions.edit.notification.title'))
+                                ->body(__('website::filament/admin/resources/page.table.actions.edit.notification.body')),
+                        ),
                     RestoreAction::make()
                         ->successNotification(
                             Notification::make()

@@ -144,6 +144,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Operation Type updated',
+                    'body'  => 'The operation type has been updated successfully.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Operation Type restored',

@@ -68,6 +68,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Tipo de licença atualizado',
+                    'body'  => 'O tipo de licença foi atualizado com sucesso.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de licença excluído',

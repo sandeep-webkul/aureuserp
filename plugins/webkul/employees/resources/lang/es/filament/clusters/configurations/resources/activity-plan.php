@@ -51,6 +51,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Plan de actividades actualizado',
+                    'body'  => 'El plan de actividades se ha actualizado correctamente.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Plan de actividades restaurado',

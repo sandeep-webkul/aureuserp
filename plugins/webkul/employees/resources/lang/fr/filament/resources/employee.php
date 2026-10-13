@@ -264,6 +264,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Employé mis à jour',
+                    'body'  => 'L\'employé a été mis à jour avec succès.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Employé restauré',
@@ -284,6 +291,11 @@ return [
                 'notification' => [
                     'title' => 'Employés supprimés',
                     'body'  => 'Les employés ont été supprimés avec succès.',
+
+                    'error' => [
+                        'title' => 'Les employés n\'ont pas pu être supprimés',
+                        'body'  => 'Les employés ne peuvent pas être supprimés car ils sont actuellement utilisés.',
+                    ],
                 ],
             ],
 

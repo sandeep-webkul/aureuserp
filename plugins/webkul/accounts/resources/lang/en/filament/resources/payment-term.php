@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Payment Term updated',
+                    'body'  => 'The payment term has been updated successfully.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Payment Term restored',

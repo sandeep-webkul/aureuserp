@@ -94,6 +94,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Work center updated',
+                    'body'  => 'The work center has been updated successfully.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Work center restored',

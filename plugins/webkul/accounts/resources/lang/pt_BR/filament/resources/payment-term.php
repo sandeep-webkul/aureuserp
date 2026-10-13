@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Condição de pagamento atualizada',
+                    'body'  => 'A condição de pagamento foi atualizada com sucesso.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Condição de pagamento restaurada',

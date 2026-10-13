@@ -39,6 +39,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Categoria de armazenamento atualizada',
+                    'body'  => 'A categoria de armazenamento foi atualizada com sucesso.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Categoria de armazenamento excluída',

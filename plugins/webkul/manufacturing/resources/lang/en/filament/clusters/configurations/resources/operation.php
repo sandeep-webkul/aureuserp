@@ -63,6 +63,12 @@ return [
             'worksheet-type' => 'Worksheet',
         ],
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Operation updated',
+                    'body'  => 'The operation has been updated successfully.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Operation restored',

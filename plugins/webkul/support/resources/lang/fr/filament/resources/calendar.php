@@ -92,6 +92,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Calendrier mis à jour',
+                    'body'  => 'Le calendrier a été mis à jour avec succès.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Plan de calendrier restauré',

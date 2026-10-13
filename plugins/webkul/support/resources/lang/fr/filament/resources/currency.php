@@ -81,6 +81,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Devise mise à jour',
+                    'body'  => 'La devise a été mise à jour avec succès.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title'   => 'Devise supprimée',

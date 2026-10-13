@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Entrega actualizada',
+                    'body'  => 'La entrega se ha actualizado correctamente.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

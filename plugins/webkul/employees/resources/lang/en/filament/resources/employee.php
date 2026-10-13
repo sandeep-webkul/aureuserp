@@ -264,6 +264,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Employee updated',
+                    'body'  => 'The employee has been updated successfully.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Employee restored',
@@ -284,6 +291,11 @@ return [
                 'notification' => [
                     'title' => 'Employees deleted',
                     'body'  => 'The employees has been deleted successfully.',
+
+                    'error' => [
+                        'title' => 'Employees could not be deleted',
+                        'body'  => 'The employees cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
 

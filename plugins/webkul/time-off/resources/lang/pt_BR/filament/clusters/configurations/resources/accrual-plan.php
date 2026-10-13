@@ -24,6 +24,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Plano de acúmulo atualizado',
+                    'body'  => 'O plano de acúmulo foi atualizado com sucesso.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Plano de acúmulo excluído',

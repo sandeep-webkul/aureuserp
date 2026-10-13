@@ -58,6 +58,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث الإجازة',
+                    'body'  => 'تم تحديث الإجازة بنجاح.',
+                ],
+            ],
+
             'approve' => [
                 'title' => [
                     'validate' => 'تحقق',

@@ -314,7 +314,13 @@ class BillsTable
                 ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('accounts::filament/resources/bill.table.actions.edit.notification.title'))
+                                ->body(__('accounts::filament/resources/bill.table.actions.edit.notification.body'))
+                        ),
                     DeleteAction::make()
                         ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(

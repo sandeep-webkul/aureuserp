@@ -86,6 +86,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Demande de maintenance mise à jour',
+                    'body'  => 'La demande de maintenance a été mise à jour avec succès.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Demande de maintenance restaurée',

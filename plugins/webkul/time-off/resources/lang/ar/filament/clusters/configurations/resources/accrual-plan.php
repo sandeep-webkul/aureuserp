@@ -24,6 +24,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث خطة الاستحقاق',
+                    'body'  => 'تم تحديث خطة الاستحقاق بنجاح.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف خطة الاستحقاق',

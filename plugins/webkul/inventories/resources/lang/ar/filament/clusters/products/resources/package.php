@@ -52,6 +52,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث الطرد',
+                    'body'  => 'تم تحديث الطرد بنجاح.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

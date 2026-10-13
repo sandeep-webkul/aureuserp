@@ -28,7 +28,13 @@ class ReceiptsTable
                 ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('inventories::filament/clusters/operations/resources/receipt.table.actions.edit.notification.title'))
+                                ->body(__('inventories::filament/clusters/operations/resources/receipt.table.actions.edit.notification.body')),
+                        ),
                     DeleteAction::make()
                         ->hidden(fn (Receipt $record): bool => $record->state == OperationState::DONE)
                         ->action(function (Receipt $record) {

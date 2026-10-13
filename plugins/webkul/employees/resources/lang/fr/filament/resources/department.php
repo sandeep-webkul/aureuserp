@@ -59,6 +59,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Département mis à jour',
+                    'body'  => 'Le département a été mis à jour avec succès.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Département restauré',

@@ -264,6 +264,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Empleado actualizado',
+                    'body'  => 'El empleado se ha actualizado correctamente.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Empleado restaurado',
@@ -284,6 +291,11 @@ return [
                 'notification' => [
                     'title' => 'Empleados eliminados',
                     'body'  => 'Los empleados se han eliminado correctamente.',
+
+                    'error' => [
+                        'title' => 'No se pudieron eliminar los empleados',
+                        'body'  => 'Los empleados no se pueden eliminar porque están actualmente en uso.',
+                    ],
                 ],
             ],
 

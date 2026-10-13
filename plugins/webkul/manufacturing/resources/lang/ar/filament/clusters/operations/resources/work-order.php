@@ -102,6 +102,15 @@ return [
             'created-at'          => 'تاريخ الإنشاء',
             'updated-at'          => 'تاريخ التحديث',
         ],
+
+        'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث أمر العمل',
+                    'body'  => 'تم تحديث أمر العمل بنجاح.',
+                ],
+            ],
+        ],
     ],
 
     'infolist' => [

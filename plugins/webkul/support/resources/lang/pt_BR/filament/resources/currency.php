@@ -81,6 +81,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Moeda atualizada',
+                    'body'  => 'A moeda foi atualizada com sucesso.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Moeda excluída',

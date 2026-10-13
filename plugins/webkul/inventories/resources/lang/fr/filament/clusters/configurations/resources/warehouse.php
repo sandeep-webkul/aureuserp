@@ -68,6 +68,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Entrepôt mis à jour',
+                    'body'  => "L'entrepôt a été mis à jour avec succès.",
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Entrepôt restauré',

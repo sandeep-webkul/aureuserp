@@ -42,6 +42,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Asignación actualizada',
+                    'body'  => 'La asignación se ha actualizado correctamente.',
+                ],
+            ],
+
             'approve' => [
                 'title' => [
                     'validate' => 'Validar',

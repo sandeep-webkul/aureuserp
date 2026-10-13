@@ -50,7 +50,13 @@ class PackageTypesTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('inventories::filament/clusters/configurations/resources/package-type.table.actions.edit.notification.title'))
+                            ->body(__('inventories::filament/clusters/configurations/resources/package-type.table.actions.edit.notification.body')),
+                    ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()

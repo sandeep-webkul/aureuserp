@@ -111,6 +111,15 @@ return [
                 ],
             ],
         ],
+
+        'empty-state-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'Precio de proveedor creado',
+                    'body'  => 'El precio de proveedor se ha creado correctamente.',
+                ],
+            ],
+        ],
     ],
 
     'infolist' => [

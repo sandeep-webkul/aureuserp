@@ -94,6 +94,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Poste de travail mis à jour',
+                    'body'  => 'Le poste de travail a été mis à jour avec succès.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Poste de travail restauré',

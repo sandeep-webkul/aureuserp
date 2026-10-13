@@ -86,6 +86,15 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Taxe mise à jour',
+                        'body'  => 'La taxe a été mise à jour avec succès.',
+                    ],
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

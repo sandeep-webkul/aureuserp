@@ -70,7 +70,13 @@ class PaymentTermsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('accounts::filament/resources/payment-term.table.actions.edit.notification.title'))
+                            ->body(__('accounts::filament/resources/payment-term.table.actions.edit.notification.body'))
+                    ),
                 RestoreAction::make()
                     ->successNotification(
                         Notification::make()

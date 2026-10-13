@@ -12,6 +12,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث التحويل الداخلي',
+                    'body'  => 'تم تحديث التحويل الداخلي بنجاح.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

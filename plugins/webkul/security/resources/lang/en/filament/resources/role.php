@@ -17,6 +17,12 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Role updated',
+                    'body'  => 'The role has been updated successfully.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Role deleted',

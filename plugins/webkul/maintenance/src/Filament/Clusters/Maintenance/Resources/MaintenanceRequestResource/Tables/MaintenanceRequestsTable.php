@@ -76,7 +76,13 @@ class MaintenanceRequestsTable
                     ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
                     EditAction::make()
-                        ->hidden(fn ($record) => $record->trashed()),
+                        ->hidden(fn ($record) => $record->trashed())
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.table.actions.edit.notification.title'))
+                                ->body(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.table.actions.edit.notification.body')),
+                        ),
                     RestoreAction::make()
                         ->successNotification(
                             Notification::make()

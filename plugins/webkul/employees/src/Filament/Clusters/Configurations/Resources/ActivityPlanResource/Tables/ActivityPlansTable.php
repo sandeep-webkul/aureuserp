@@ -138,7 +138,13 @@ class ActivityPlansTable
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
                 EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn ($record) => $record->trashed())
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('employees::filament/clusters/configurations/resources/activity-plan.table.actions.edit.notification.title'))
+                            ->body(__('employees::filament/clusters/configurations/resources/activity-plan.table.actions.edit.notification.body')),
+                    ),
                 RestoreAction::make()
                     ->successNotification(
                         Notification::make()

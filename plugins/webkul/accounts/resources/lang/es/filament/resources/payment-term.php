@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Término de pago actualizado',
+                    'body'  => 'El término de pago se ha actualizado correctamente.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Condición de pago restaurada',

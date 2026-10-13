@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث الاستلام',
+                    'body'  => 'تم تحديث الاستلام بنجاح.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

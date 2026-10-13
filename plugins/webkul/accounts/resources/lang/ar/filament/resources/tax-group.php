@@ -33,6 +33,15 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'تم تحديث المجموعة الضريبية',
+                        'body'  => 'تم تحديث المجموعة الضريبية بنجاح.',
+                    ],
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

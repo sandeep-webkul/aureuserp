@@ -35,7 +35,13 @@ class RolesTable
                     ->dateTime(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('security::filament/resources/role.table.actions.edit.notification.title'))
+                            ->body(__('security::filament/resources/role.table.actions.edit.notification.body')),
+                    ),
                 DeleteAction::make()
                     ->before(function (DeleteAction $action, Model $record): void {
                         if (RoleResource::isProtectedRoleRecord($record)) {

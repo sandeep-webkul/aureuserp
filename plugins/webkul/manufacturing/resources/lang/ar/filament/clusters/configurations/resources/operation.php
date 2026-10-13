@@ -63,6 +63,12 @@ return [
             'worksheet-type' => 'ورقة العمل',
         ],
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث العملية',
+                    'body'  => 'تم تحديث العملية بنجاح.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'تمت استعادة العملية',

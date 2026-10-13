@@ -26,7 +26,13 @@ class InternalsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('inventories::filament/clusters/operations/resources/internal.table.actions.edit.notification.title'))
+                                ->body(__('inventories::filament/clusters/operations/resources/internal.table.actions.edit.notification.body')),
+                        ),
                     DeleteAction::make()
                         ->hidden(fn (InternalTransfer $record): bool => $record->state == OperationState::DONE)
                         ->action(function (InternalTransfer $record) {

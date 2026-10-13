@@ -526,7 +526,13 @@ class EmployeesTable
                 ViewAction::make()
                     ->outlined(),
                 EditAction::make()
-                    ->outlined(),
+                    ->outlined()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('employees::filament/resources/employee.table.actions.edit.notification.title'))
+                            ->body(__('employees::filament/resources/employee.table.actions.edit.notification.body'))
+                    ),
                 RestoreAction::make()
                     ->outlined()
                     ->successNotification(
@@ -552,8 +558,8 @@ class EmployeesTable
                             } catch (QueryException $e) {
                                 Notification::make()
                                     ->danger()
-                                    ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.title'))
-                                    ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.body'))
+                                    ->title(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.error.body'))
                                     ->send();
                             }
                         })

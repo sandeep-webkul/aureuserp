@@ -92,6 +92,15 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Journal mis à jour',
+                        'body'  => 'Le journal a été mis à jour avec succès.',
+                    ],
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

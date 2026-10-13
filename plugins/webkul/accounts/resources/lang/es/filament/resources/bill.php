@@ -161,6 +161,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Factura de proveedor actualizada',
+                    'body'  => 'La factura de proveedor se ha actualizado correctamente.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Pago eliminado',

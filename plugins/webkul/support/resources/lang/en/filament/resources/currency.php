@@ -81,6 +81,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Currency updated',
+                    'body'  => 'The currency has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title'   => 'Currency deleted',

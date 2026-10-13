@@ -44,7 +44,13 @@ class JournalsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('accounts::filament/resources/journal.table.actions.edit.notification.success.title'))
+                            ->body(__('accounts::filament/resources/journal.table.actions.edit.notification.success.body'))
+                    ),
                 DeleteAction::make()
                     ->action(function (Journal $record, DeleteAction $action) {
                         try {

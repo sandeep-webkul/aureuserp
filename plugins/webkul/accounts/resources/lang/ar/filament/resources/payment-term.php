@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث شرط الدفع',
+                    'body'  => 'تم تحديث شرط الدفع بنجاح.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة شرط الدفع',

@@ -63,6 +63,12 @@ return [
             'worksheet-type' => 'Folha de trabalho',
         ],
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Operação atualizada',
+                    'body'  => 'A operação foi atualizada com sucesso.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Operação restaurada',

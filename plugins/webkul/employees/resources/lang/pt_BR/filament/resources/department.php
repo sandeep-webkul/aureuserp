@@ -59,6 +59,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Departamento atualizado',
+                    'body'  => 'O departamento foi atualizado com sucesso.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Departamento restaurado',

@@ -140,7 +140,13 @@ class StagesTable
             ->emptyStateActions([
                 CreateAction::make()
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.empty-state-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle'),
+                    ->icon('heroicon-o-plus-circle')
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('recruitments::filament/clusters/configurations/resources/stage.table.empty-state-actions.create.notification.title'))
+                            ->body(__('recruitments::filament/clusters/configurations/resources/stage.table.empty-state-actions.create.notification.body')),
+                    ),
             ])
             ->recordActions([
                 ViewAction::make(),

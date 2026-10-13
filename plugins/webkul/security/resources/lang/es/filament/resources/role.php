@@ -17,6 +17,12 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Rol actualizado',
+                    'body'  => 'El rol se ha actualizado correctamente.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Rol eliminado',

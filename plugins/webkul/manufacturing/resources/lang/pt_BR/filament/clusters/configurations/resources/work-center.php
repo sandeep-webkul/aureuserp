@@ -94,6 +94,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Centro de trabalho atualizado',
+                    'body'  => 'O centro de trabalho foi atualizado com sucesso.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Centro de trabalho restaurado',

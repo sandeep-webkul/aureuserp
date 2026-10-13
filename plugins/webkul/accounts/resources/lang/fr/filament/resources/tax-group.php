@@ -33,6 +33,15 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Groupe de taxes mis à jour',
+                        'body'  => 'Le groupe de taxes a été mis à jour avec succès.',
+                    ],
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

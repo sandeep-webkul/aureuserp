@@ -117,7 +117,13 @@ class ManufacturingOrdersTable
             ->recordTitleAttribute('name')
             ->actions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.actions.edit.notification.title'))
+                            ->body(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.actions.edit.notification.body')),
+                    ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()

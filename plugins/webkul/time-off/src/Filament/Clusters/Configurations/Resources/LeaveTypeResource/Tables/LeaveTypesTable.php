@@ -127,7 +127,13 @@ class LeaveTypesTable
             ->filtersFormColumns(2)
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.actions.edit.notification.title'))
+                            ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.actions.edit.notification.body')),
+                    ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()

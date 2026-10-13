@@ -39,6 +39,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Storage Category updated',
+                    'body'  => 'The storage category has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Storage Category deleted',

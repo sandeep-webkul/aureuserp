@@ -59,6 +59,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Department updated',
+                    'body'  => 'The department has been updated successfully.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Department restored',

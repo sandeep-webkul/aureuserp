@@ -92,6 +92,15 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'تم تحديث دفتر اليومية',
+                        'body'  => 'تم تحديث دفتر اليومية بنجاح.',
+                    ],
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

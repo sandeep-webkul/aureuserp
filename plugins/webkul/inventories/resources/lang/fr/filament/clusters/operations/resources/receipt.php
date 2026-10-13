@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Réception mise à jour',
+                    'body'  => 'La réception a été mise à jour avec succès.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

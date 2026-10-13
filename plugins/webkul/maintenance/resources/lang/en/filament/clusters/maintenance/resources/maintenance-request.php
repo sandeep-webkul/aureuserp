@@ -86,6 +86,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Maintenance request updated',
+                    'body'  => 'The maintenance request has been updated successfully.',
+                ],
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Maintenance request restored',

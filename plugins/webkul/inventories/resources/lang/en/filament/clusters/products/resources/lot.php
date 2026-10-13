@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Lot updated',
+                    'body'  => 'The lot has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

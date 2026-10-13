@@ -118,6 +118,12 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Orden de fabricación actualizada',
+                    'body'  => 'La orden de fabricación se ha actualizado correctamente.',
+                ],
+            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Orden de fabricación eliminada',

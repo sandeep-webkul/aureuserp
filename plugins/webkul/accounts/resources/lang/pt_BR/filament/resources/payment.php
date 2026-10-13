@@ -72,6 +72,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Pagamento atualizado',
+                    'body'  => 'O pagamento foi atualizado com sucesso.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Pagamento excluído',

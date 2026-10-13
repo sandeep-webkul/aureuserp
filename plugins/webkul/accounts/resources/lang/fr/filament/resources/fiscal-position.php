@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Position fiscale mise à jour',
+                    'body'  => 'La position fiscale a été mise à jour avec succès.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Position fiscale supprimée',

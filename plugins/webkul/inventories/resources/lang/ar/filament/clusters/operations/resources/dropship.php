@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث الدروبشيبينغ',
+                    'body'  => 'تم تحديث الدروبشيبينغ بنجاح.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

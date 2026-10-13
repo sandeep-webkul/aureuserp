@@ -95,7 +95,13 @@ class WorkCentersTable
                 ViewAction::make()
                     ->hidden(fn (WorkCenter $record): bool => $record->trashed()),
                 EditAction::make()
-                    ->hidden(fn (WorkCenter $record): bool => $record->trashed()),
+                    ->hidden(fn (WorkCenter $record): bool => $record->trashed())
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('manufacturing::filament/clusters/configurations/resources/work-center.table.actions.edit.notification.title'))
+                            ->body(__('manufacturing::filament/clusters/configurations/resources/work-center.table.actions.edit.notification.body')),
+                    ),
                 RestoreAction::make()
                     ->successNotification(
                         Notification::make()

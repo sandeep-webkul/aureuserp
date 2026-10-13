@@ -111,6 +111,15 @@ return [
                 ],
             ],
         ],
+
+        'empty-state-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'Vendor Price created',
+                    'body'  => 'The vendor price has been created successfully.',
+                ],
+            ],
+        ],
     ],
 
     'infolist' => [

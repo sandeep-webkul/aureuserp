@@ -161,6 +161,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Facture fournisseur mise à jour',
+                    'body'  => 'La facture fournisseur a été mise à jour avec succès.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Paiement supprimé',

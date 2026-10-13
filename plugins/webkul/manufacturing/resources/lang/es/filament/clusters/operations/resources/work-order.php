@@ -102,6 +102,15 @@ return [
             'created-at'          => 'Creado el',
             'updated-at'          => 'Actualizado el',
         ],
+
+        'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Orden de trabajo actualizada',
+                    'body'  => 'La orden de trabajo se ha actualizado correctamente.',
+                ],
+            ],
+        ],
     ],
 
     'infolist' => [

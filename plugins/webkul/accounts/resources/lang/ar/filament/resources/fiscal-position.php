@@ -54,6 +54,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'تم تحديث الوضع المالي',
+                    'body'  => 'تم تحديث الوضع المالي بنجاح.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف المركز المالي',

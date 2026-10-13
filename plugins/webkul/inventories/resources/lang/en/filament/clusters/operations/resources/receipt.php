@@ -13,6 +13,13 @@ return [
 
     'table' => [
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Receipt updated',
+                    'body'  => 'The receipt has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [

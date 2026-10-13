@@ -28,7 +28,13 @@ class DeliveriesTable
                 ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('inventories::filament/clusters/operations/resources/delivery.table.actions.edit.notification.title'))
+                                ->body(__('inventories::filament/clusters/operations/resources/delivery.table.actions.edit.notification.body')),
+                        ),
                     DeleteAction::make()
                         ->hidden(fn (Delivery $record) => $record->state == OperationState::DONE)
                         ->action(function (Delivery $record) {

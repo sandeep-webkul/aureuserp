@@ -112,6 +112,11 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'label' => 'Novo etapa',
+
+                'notification' => [
+                    'title' => 'Etapa criada',
+                    'body'  => 'A etapa foi criada com sucesso.',
+                ],
             ],
         ],
     ],

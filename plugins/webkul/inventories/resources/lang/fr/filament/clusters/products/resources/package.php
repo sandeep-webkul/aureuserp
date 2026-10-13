@@ -52,6 +52,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Colis mis à jour',
+                    'body'  => 'Le colis a été mis à jour avec succès.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'success' => [
