@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -44,7 +45,11 @@ class LotsTable
                     ->sortable(),
                 TextColumn::make('total_quantity')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.on-hand-qty'))
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query
+                            ->withSum('internalQuantities as total_quantity_sum', 'quantity')
+                            ->orderBy('total_quantity_sum', $direction);
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.created-at'))
                     ->dateTime()

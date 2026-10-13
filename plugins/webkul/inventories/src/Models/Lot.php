@@ -88,14 +88,18 @@ class Lot extends Model
         return $this->hasMany(ProductQuantity::class);
     }
 
-    public function getTotalQuantityAttribute()
+    public function internalQuantities(): HasMany
     {
-        return $this->quantities()
+        return $this->hasMany(ProductQuantity::class)
             ->whereHas('location', function ($query) {
                 $query->where('type', LocationType::INTERNAL)
                     ->where('is_scrap', false);
-            })
-            ->sum('quantity');
+            });
+    }
+
+    public function getTotalQuantityAttribute()
+    {
+        return $this->internalQuantities()->sum('quantity');
     }
 
     public function generateLotNames(string $firstLot, int $count): array
