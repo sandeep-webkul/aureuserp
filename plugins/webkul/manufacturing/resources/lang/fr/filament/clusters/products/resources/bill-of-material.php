@@ -117,6 +117,12 @@ return [
             'company' => 'Société',
         ],
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Nomenclature mise à jour',
+                    'body'  => 'La nomenclature a été mise à jour avec succès.',
+                ],
+            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Nomenclature restaurée',
