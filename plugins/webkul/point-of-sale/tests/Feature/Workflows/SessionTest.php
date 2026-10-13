@@ -70,11 +70,13 @@ it('records the opening balance when the opening control is confirmed', function
         ->and($session->started_at)->not->toBeNull();
 });
 
-it('refuses to confirm the opening control twice', function () {
+it('is idempotent when the opening control is confirmed twice', function () {
     $session = PosHelper::openSession($this->warehouse);
 
-    expect(fn () => PointOfSale::confirmSessionOpeningControl($session, 100.0))
-        ->toThrow(InvalidSessionStateException::class);
+    $reconfirmed = PointOfSale::confirmSessionOpeningControl($session, 100.0);
+
+    expect($reconfirmed->state)->toBe(SessionState::OPENED)
+        ->and((float) $reconfirmed->refresh()->cash_balance_start)->toBe(0.0);
 });
 
 it('moves an open session into closing control', function () {

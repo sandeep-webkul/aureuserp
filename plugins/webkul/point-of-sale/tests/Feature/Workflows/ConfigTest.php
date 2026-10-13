@@ -247,7 +247,7 @@ it('refuses to delete a payment method while a register using it has an open ses
 
     $session->forceFill(['state' => SessionState::CLOSED])->save();
 
-    $method->refresh()->delete();
+    PaymentMethod::whereKey($method->id)->firstOrFail()->delete();
 
-    expect($method->trashed())->toBeTrue();
+    expect(PaymentMethod::withTrashed()->whereKey($method->id)->firstOrFail()->trashed())->toBeTrue();
 });

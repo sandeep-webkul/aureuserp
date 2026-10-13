@@ -88,6 +88,11 @@ abstract class Terminal extends Page
         return route('point-of-sale.till.sessions.boot', ['session' => '__session__']);
     }
 
+    public function discardEndpointBase(): string
+    {
+        return route('point-of-sale.till.registers.discard', ['config' => '__config__']);
+    }
+
     public function backUrl(): string
     {
         return AdminRegisters::getUrl(panel: 'admin');

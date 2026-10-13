@@ -54,19 +54,6 @@ const overflow = computed(() => drafts.value.length - visible.value.length)
         </button>
 
         <button
-            v-else-if="drafts.length > 0"
-            type="button"
-            class="flex h-10 w-11 flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:border-gray-300 dark:hover:border-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-            :title="till.t('tabs.all')"
-            :aria-label="till.t('tabs.all')"
-            @click="till.openOrders()"
-        >
-            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75Zm0 5A.75.75 0 0 1 2.75 9h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 9.75Zm0 5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
-            </svg>
-        </button>
-
-        <button
             type="button"
             class="flex h-10 w-11 flex-none items-center justify-center rounded-lg border border-dashed border-gray-200 bg-transparent text-lg text-gray-600 transition-colors hover:border-gray-300 dark:hover:border-gray-600 dark:border-gray-700 dark:text-gray-300"
             :title="till.t('tabs.new')"

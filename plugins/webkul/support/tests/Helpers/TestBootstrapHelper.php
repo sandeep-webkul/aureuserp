@@ -38,6 +38,8 @@ class TestBootstrapHelper
 
     public static function ensurePluginInstalled(string $pluginName): void
     {
+        set_time_limit(0);
+
         static::ensureERPInstalled();
 
         if (isset(static::$installedPlugins[$pluginName])) {

@@ -4,9 +4,11 @@ namespace Webkul\PointOfSale\Filament\Admin\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
+use Throwable;
 use UnitEnum;
 use Webkul\PointOfSale\Enums\SessionState;
 use Webkul\PointOfSale\Facades\PointOfSale;
@@ -169,6 +171,17 @@ class Registers extends Page
         $config = Config::find($configId);
 
         if (! $config) {
+            return null;
+        }
+
+        try {
+            PointOfSale::liveSessionFor($config) ?? PointOfSale::openSession($config);
+        } catch (Throwable $exception) {
+            Notification::make()
+                ->danger()
+                ->body($exception->getMessage())
+                ->send();
+
             return null;
         }
 

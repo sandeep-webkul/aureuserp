@@ -14,6 +14,7 @@
         data-registers="{{ json_encode($this->registers()) }}"
         data-open-endpoint="{{ $this->openEndpointBase() }}"
         data-boot-endpoint="{{ $this->bootEndpointBase() }}"
+        data-discard-endpoint="{{ $this->discardEndpointBase() }}"
         data-back-office-url="{{ $this->backOfficeUrl() }}"
         data-logout-url="{{ $this->logoutUrl() }}"
         data-brand-logo="{{ $this->brandLogo() }}"

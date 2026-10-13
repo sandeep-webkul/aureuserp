@@ -126,6 +126,7 @@ return [
         'note'                     => 'Observação de abertura',
         'placeholder'              => 'Adicione uma observação de abertura…',
         'confirm'                  => 'Abrir caixa',
+        'cancel'                   => 'Cancelar',
     ],
 
     'tabs' => [

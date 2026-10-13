@@ -126,6 +126,7 @@ return [
         'note'                     => "Note d'ouverture",
         'placeholder'              => "Ajouter une note d'ouverture…",
         'confirm'                  => 'Ouvrir la caisse',
+        'cancel'                   => 'Annuler',
     ],
 
     'tabs' => [

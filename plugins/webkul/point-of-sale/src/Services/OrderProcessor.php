@@ -65,10 +65,12 @@ class OrderProcessor
 
             $this->assertLineRules($order, $payload['lines'] ?? []);
 
-            $this->syncLines($order, $payload['lines'] ?? []);
+            if (array_key_exists('lines', $payload)) {
+                $this->syncLines($order, $payload['lines']);
 
-            if ($existing) {
-                $this->pruneLines($order, $payload['lines'] ?? []);
+                if ($existing) {
+                    $this->pruneLines($order, $payload['lines']);
+                }
             }
 
             $this->syncTip($order);

@@ -10,7 +10,8 @@ use Webkul\PointOfSale\Enums\SessionState;
 use Webkul\PointOfSale\Exceptions\PosConfigurationException;
 use Webkul\PointOfSale\Facades\PointOfSale;
 use Webkul\PointOfSale\Filament\Pos\Pages\Home;
-use Webkul\PointOfSale\Filament\Pos\Pages\Registers;
+use Webkul\PointOfSale\Filament\Pos\Pages\Pos;
+use Webkul\PointOfSale\Filament\Pos\Pages\Register;
 use Webkul\PointOfSale\Livewire\RegisterControls;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -52,7 +53,7 @@ beforeEach(function () {
 it('renders the terminal for a live session', function () {
     $session = PosHelper::openSession($this->warehouse);
 
-    Livewire::test(Home::class, ['session' => $session])->assertOk();
+    Livewire::test(Register::class, ['config' => $session->config])->assertOk();
 });
 
 it('shows the opening control until the drawer is counted', function () {
@@ -97,7 +98,7 @@ it('records the counted drawer as the opening balance', function () {
 it('hands the catalogue to the client through the boot payload', function () {
     $session = PosHelper::openSession($this->warehouse);
 
-    $payload = Livewire::test(Home::class, ['session' => $session])
+    $payload = Livewire::test(Register::class, ['config' => $session->config])
         ->assertOk()
         ->instance()
         ->bootPayload();
@@ -110,7 +111,7 @@ it('hands the catalogue to the client through the boot payload', function () {
 it('ships the locale and translations the client renders with', function () {
     $session = PosHelper::openSession($this->warehouse);
 
-    $payload = Livewire::test(Home::class, ['session' => $session])
+    $payload = Livewire::test(Register::class, ['config' => $session->config])
         ->instance()
         ->bootPayload();
 
@@ -162,7 +163,7 @@ it('keeps a live session reachable once its register is deactivated', function (
 
     $session->config->update(['is_active' => false]);
 
-    Livewire::test(Home::class, ['session' => $session->refresh()])->assertSuccessful();
+    Livewire::test(Register::class, ['config' => $session->config->refresh()])->assertSuccessful();
 });
 
 it('forbids a closed session on a deactivated register', function () {
@@ -188,27 +189,27 @@ it('returns the cashier to the registers page after closing the register', funct
     Livewire::test(RegisterControls::class, ['session' => $session])
         ->set('closingCash', 0.0)
         ->call('closeRegister')
-        ->assertRedirect(Registers::getUrl());
+        ->assertRedirect(Pos::getUrl());
 
     expect($session->refresh()->state)->toBe(SessionState::CLOSED);
 });
 
-it('sends a closed session to the live session of the same register', function () {
+it('sends a session to the register terminal of its config', function () {
     $closed = PosHelper::openSession($this->warehouse);
 
     PointOfSale::closeSession($closed, 0.0);
 
-    $live = PointOfSale::openSession($closed->config);
+    PointOfSale::openSession($closed->config);
 
     Livewire::test(Home::class, ['session' => $closed->refresh()])
-        ->assertRedirect(Home::getUrl(['session' => $live->getKey()]));
+        ->assertRedirect(Register::getUrl(['config' => $closed->config_id], panel: 'pos'));
 });
 
-it('sends a closed session back to the registers when nothing is open', function () {
+it('sends a closed session to its register terminal when nothing is open', function () {
     $closed = PosHelper::openSession($this->warehouse);
 
     PointOfSale::closeSession($closed, 0.0);
 
     Livewire::test(Home::class, ['session' => $closed->refresh()])
-        ->assertRedirect(Registers::getUrl());
+        ->assertRedirect(Register::getUrl(['config' => $closed->config_id], panel: 'pos'));
 });

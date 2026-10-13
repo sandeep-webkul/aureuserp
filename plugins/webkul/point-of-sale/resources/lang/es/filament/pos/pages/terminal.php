@@ -126,6 +126,7 @@ return [
         'note'                     => 'Nota de apertura',
         'placeholder'              => 'Añade una nota de apertura…',
         'confirm'                  => 'Abrir caja',
+        'cancel'                   => 'Cancelar',
     ],
 
     'tabs' => [
