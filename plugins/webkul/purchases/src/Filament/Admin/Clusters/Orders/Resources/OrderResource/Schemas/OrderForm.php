@@ -680,6 +680,8 @@ class OrderForm
                     'company_id'          => $record->company_id,
                 ]);
 
+                unset($data['from_requisition']);
+
                 return $data;
             })->extraItemActions([
                 Action::make('openProduct')
