@@ -39,15 +39,17 @@ class HolidayAction extends Action
 
                         foreach ($publicHolidays as $holiday) {
                             $dateRange = $holiday->date_from === $holiday->date_to
-                                ? $holiday->date_from
-                                : "{$holiday->date_from} - {$holiday->date_to}";
+                                ? e($holiday->date_from)
+                                : e("{$holiday->date_from} - {$holiday->date_to}");
 
-                            $companyName = $holiday->calendar?->company ? $holiday->calendar?->company->name : 'N/A';
+                            $name = e($holiday->name);
+
+                            $companyName = e($holiday->calendar?->company ? $holiday->calendar?->company->name : 'N/A');
 
                             $html .= "
                                 <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
                                     <div class='flex-1'>
-                                        <h3 class='text-sm font-medium text-gray-900 dark:text-white'>{$holiday->name}</h3>
+                                        <h3 class='text-sm font-medium text-gray-900 dark:text-white'>{$name}</h3>
                                         <p class='mt-1 text-xs text-gray-600 dark:text-gray-400'>{$companyName}</p>
                                     </div>
                                     <div class='flex-1 text-right'>
@@ -75,15 +77,17 @@ class HolidayAction extends Action
 
                         foreach ($mandatoryHolidays as $mandatoryHoliday) {
                             $dateRange = $mandatoryHoliday->start_date === $mandatoryHoliday->end_date
-                                ? $mandatoryHoliday->start_date
-                                : "{$mandatoryHoliday->start_date} - {$mandatoryHoliday->end_date}";
+                                ? e($mandatoryHoliday->start_date)
+                                : e("{$mandatoryHoliday->start_date} - {$mandatoryHoliday->end_date}");
 
-                            $companyName = $mandatoryHoliday->company?->name ?? 'N/A';
+                            $name = e($mandatoryHoliday->name);
+
+                            $companyName = e($mandatoryHoliday->company?->name ?? 'N/A');
 
                             $html .= "
                                 <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
                                     <div class='flex-1'>
-                                        <h3 class='text-sm font-medium text-blue-900 dark:text-white'>{$mandatoryHoliday->name}</h3>
+                                        <h3 class='text-sm font-medium text-blue-900 dark:text-white'>{$name}</h3>
                                         <p class='mt-1 text-xs text-blue-600 dark:text-gray-400'>{$companyName}</p>
                                     </div>
                                     <div class='flex-1 text-right'>
