@@ -6,6 +6,8 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Recruitment\Models\Applicant;
@@ -125,16 +127,15 @@ class JobPositionStatsWidget extends BaseWidget
 
     protected function generateChartData($query, $startDate, $endDate): array
     {
-        $data = [];
-        $current = clone $startDate;
+        $trend = Trend::query($query)
+            ->between(
+                start: $startDate,
+                end: $endDate,
+            )
+            ->perDay()
+            ->count();
 
-        while ($current <= $endDate) {
-            $count = $query->whereDate('created_at', $current)->count();
-            $data[] = $count;
-            $current->addDay();
-        }
-
-        return $data;
+        return $trend->map(fn (TrendValue $value) => (int) $value->aggregate)->toArray();
     }
 
     protected function calculatePercentageChange($current, $previous): array
