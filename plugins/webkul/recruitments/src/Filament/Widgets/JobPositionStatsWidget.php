@@ -41,6 +41,29 @@ class JobPositionStatsWidget extends BaseWidget
             $applicantQuery->whereIn('company_id', $this->pageFilters['selectedCompanies']);
         }
 
+        if (! empty($this->pageFilters['selectedJobs'])) {
+            $query->whereIn('id', $this->pageFilters['selectedJobs']);
+            $applicantQuery->whereIn('job_id', $this->pageFilters['selectedJobs']);
+        }
+
+        if (! empty($this->pageFilters['selectedStages'])) {
+            $applicantQuery->whereIn('stage_id', $this->pageFilters['selectedStages']);
+        }
+
+        $status = $this->pageFilters['status'] ?? 'all';
+
+        if ($status !== 'all') {
+            match ($status) {
+                'hired'    => $applicantQuery->whereNotNull('date_closed'),
+                'refused'  => $applicantQuery->whereNotNull('refuse_reason_id'),
+                'ongoing'  => $applicantQuery->whereNull('refuse_reason_id')
+                    ->whereNull('date_closed')
+                    ->where('is_active', true),
+                'archived' => $applicantQuery->where('is_active', false),
+                default    => $applicantQuery,
+            };
+        }
+
         $currentPeriodStart = ! is_null($this->pageFilters['startDate'] ?? null) ?
             Carbon::parse($this->pageFilters['startDate']) :
             now()->subMonth();
