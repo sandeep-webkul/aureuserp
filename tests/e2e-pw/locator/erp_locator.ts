@@ -599,9 +599,9 @@ export class ErpLocators {
         this.usersEmailInput = page.locator('input[id="form.email"]');
         this.usersPasswordInput = page.locator('input[id="form.password"]');
         this.usersPasswordConfirmationInput = page.locator('input[id="form.password_confirmation"]');
-        this.usersRoleSelect = page.locator('div.fi-select-input-value-ctn').nth(0);
-        this.usersAllowedCompaniesSelect = page.locator('div.fi-select-input-value-ctn').nth(4);
-        this.usersCompanySelect = page.locator('div.fi-select-input-value-ctn').nth(5);
+        this.usersRoleSelect = page.locator('button[id="form.roles"]');
+        this.usersAllowedCompaniesSelect = page.locator('button[id="form.allowed_companies"]');
+        this.usersCompanySelect = page.locator('button[id="form.default_company_id"]');
         this.usersCompanySearchInput = page.locator('input[type="search"], input[placeholder*="Search"], input[placeholder*="search"]');
         this.usersRoleOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
         this.usersCompanyOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
@@ -659,18 +659,18 @@ export class ErpLocators {
         this.salesQuotationOrderLineTab = page.getByRole("tab", { name: /Order Line/i }).first();
         this.salesProductUomSelect = page.locator('input[id="form.uom_id"], [role="combobox"][aria-label*="UOM"], [role="combobox"][aria-labelledby*="UOM"]').first();
         this.salesProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
-        this.salesProductEditButton = page.getByRole('link', { name: 'Edit' });
+        this.salesProductEditButton = page.getByRole('menuitem', { name: 'Edit' });
         this.salesProductSaveButton = page.locator('button[id="key-bindings-2"]').first();
-        this.salesProductDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.salesProductDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
 
         this.salesQuotationCreateButton = page.locator("a,button").filter({ hasText: /new quotation|create quotation|add quotation|create/i }).first();
-        this.salesQuotationEditButton = page.getByRole('link', { name: 'Edit' }).first();
+        this.salesQuotationEditButton = page.getByRole('menuitem', { name: 'Edit' }).first();
         this.salesQuotationCustomerSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
         this.salesQuotationPaymentTermSelect = page.locator('[wire\\:key$="form.payment_term_id"] button.fi-select-input-btn').first();
         this.salesQuotationAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
         this.salesQuotationProductSelectInput = page.locator('[wire\\:key*=".form.products."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.salesQuotationQuantityInput = page.locator('input[id^="form.products."][id$=".product_qty"]');
-        this.salesQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
+        this.salesQuotationDeleteButton = page.getByRole('menuitem', { name: 'Delete' }).first();
         this.salesQuotationSaveButton = page.locator('button[type="submit"]').filter({ hasText: /^\s*(Create|Save changes|Submit)\s*$/i }).first();
         this.salesQuotationConfirmButton = page.getByRole("button", { name: /Confirm/i }).first();
         this.salesQuotationSendButton = page.getByRole("button", { name: /Send by Email|Send/i }).first();
@@ -854,7 +854,7 @@ export class ErpLocators {
         this.inventoryOperationTypeSelect = page.locator('[wire\\:key$="form.operation_type_id"] button.fi-select-input-btn').first();
         this.inventoryOperationSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
         this.inventoryOperationDestinationLocationSelect = page.locator('[wire\\:key$="form.destination_location_id"] button.fi-select-input-btn').first();
-        this.inventoryOperationAddMoveButton = page.getByRole("button", { name: /Add a line|Add Move|Add Item|Add to Cart|Add product|Add/i }).first();
+        this.inventoryOperationAddMoveButton = page.getByRole("button", { name: /^(Add a line|Add Move|Add Item|Add to Cart|Add product|Add to moves)$/i }).first();
         this.inventoryOperationMoveProductSelect = page.locator('[wire\\:key*=".form.moves."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.inventoryOperationMoveDemandInput = page.locator('input[id^="form.moves."][id$=".product_uom_qty"]');
         this.inventoryOperationMoveQuantityInput = page.locator('input[id^="form.moves."][id$=".quantity"]');
@@ -947,7 +947,7 @@ export class ErpLocators {
         this.inventoryPackageLocationSelect = page.locator('[wire\\:key$="form.location_id"] button.fi-select-input-btn').first();
         this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
         this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
-        this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryPackageDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         // The packages list ships with an "Internal Locations" preset view as its default;
         // "Default" is the unfiltered view that also lists shipped-out packages.
         this.inventoryPackageDefaultViewTab = page.locator("button,a").filter({ hasText: /^\s*Default\s*$/ }).first();
@@ -1004,17 +1004,17 @@ export class ErpLocators {
         this.purchaseProductsTable = page.locator("table, div.fi-ta-empty-state");
         this.purchaseProductNewCreateButton = page.locator("a,button").filter({ hasText: /new product|create product|add product|create/i }).first();
         this.purchaseProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
-        this.purchaseProductEditButton = page.getByRole('link', { name: 'Edit' });
+        this.purchaseProductEditButton = page.getByRole('menuitem', { name: 'Edit' });
         this.purchaseProductNameInput = page.locator('input[id="form.name"]').first();
         this.purchaseProductPriceInput = page.locator('input[id="form.price"]').first();
         this.purchaseProductSaveButton = page.locator('button[id="key-bindings-2"]').first();
         this.purchaseProductSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.purchaseProductDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.purchaseProductDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
 
         this.purchaseQuotationsTable = page.locator("table, div.fi-ta-empty-state");
         this.purchaseQuotationCreateButton = page.locator("a,button").filter({ hasText: /new request for quotation|New RFQ|create quotation|add quotation|create/i }).first();
-        this.purchaseQuotationEditButton = page.getByRole('link', { name: 'Edit' }).first();
-        this.purchaseQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
+        this.purchaseQuotationEditButton = page.getByRole('menuitem', { name: 'Edit' }).first();
+        this.purchaseQuotationDeleteButton = page.getByRole('menuitem', { name: 'Delete' }).first();
         this.purchaseQuotationVendorSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
         this.purchaseQuotationAgreementSelect = page.locator('[wire\\:key$="form.requisition_id"] button.fi-select-input-btn').first();
         this.purchaseQuotationAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
@@ -1040,8 +1040,8 @@ export class ErpLocators {
         this.purchaseAgreementProductSelect = page.locator('[wire\\:key*=".form.lines."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.purchaseAgreementQuantityInput = page.locator('input[id^="form.lines."][id$=".qty"]');
         this.purchaseAgreementUnitPriceInput = page.locator('input[id^="form.lines."][id$=".price_unit"]');
-        this.purchaseAgreementEditButton = page.getByRole('link', { name: 'Edit' });
-        this.purchaseAgreementDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.purchaseAgreementEditButton = page.getByRole('menuitem', { name: 'Edit' });
+        this.purchaseAgreementDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
         this.purchaseAgreementSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
         this.purchaseAgreementConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
         this.purchaseAgreementSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
