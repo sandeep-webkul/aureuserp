@@ -356,7 +356,10 @@ class CalendarWidget extends FullCalendarWidget
             ->where('user_id', $user->id)
             ->orWhere('employee_id', $user?->employee?->id)
             ->where('request_date_from', '>=', $fetchInfo['start'])
-            ->where('request_date_to', '<=', $fetchInfo['end'])
+            ->where(function ($query) use ($fetchInfo) {
+                $query->where('request_date_to', '<=', $fetchInfo['end'])
+                    ->orWhereNull('request_date_to');
+            })
             ->with('holidayStatus', 'user')
             ->get()
             ->map(function (Leave $leave) {

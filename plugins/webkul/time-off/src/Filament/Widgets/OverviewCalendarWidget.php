@@ -152,15 +152,26 @@ class OverviewCalendarWidget extends FullCalendarWidget
 
         return Leave::query()
             ->where('request_date_from', '>=', $fetchInfo['start'])
-            ->where('request_date_to', '<=', $fetchInfo['end'])
+            ->where(function ($query) use ($fetchInfo) {
+                $query->where('request_date_to', '<=', $fetchInfo['end'])
+                    ->orWhereNull('request_date_to');
+            })
             ->with('holidayStatus')
             ->get()
             ->map(function (Leave $leave) {
+                $title = $leave->holidayStatus?->name;
+
+                if ($leave->request_unit_half) {
+                    $title .= ' (0.5 day)';
+                } else {
+                    $title .= ' ('.round($leave->number_of_days, 1).'d)';
+                }
+
                 return [
                     'id'              => $leave->id,
-                    'title'           => $leave->holidayStatus?->name,
+                    'title'           => $title,
                     'start'           => $leave->request_date_from,
-                    'end'             => $leave->request_date_to,
+                    'end'             => $leave->request_date_to ? Carbon::parse($leave->request_date_to)->addDay()->toDateString() : null,
                     'allDay'          => true,
                     'backgroundColor' => $leave->holidayStatus?->color,
                     'borderColor'     => $leave->holidayStatus?->color,
