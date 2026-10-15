@@ -12,6 +12,8 @@ beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('accounts');
     TestBootstrapHelper::ensurePluginInstalled('point-of-sale');
 
+    PosHelper::ensureRoutesRegistered();
+
     $this->user = InventoryHelper::actingAsAdmin();
 
     $this->warehouse = InventoryHelper::warehouse();
@@ -74,6 +76,23 @@ it('invoices a settled order over the api', function () {
         ->assertJsonPath('data.is_invoiced', true);
 
     expect($this->order->refresh()->is_invoiced)->toBeTrue();
+});
+
+it('streams the invoice pdf for an invoiced order', function () {
+    PointOfSale::invoiceOrder($this->order);
+
+    expect($this->order->refresh()->account_move_id)->not->toBeNull();
+
+    $this->get(route('admin.api.v1.point-of-sale.orders.invoice-pdf', ['order' => $this->order->id]))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf');
+});
+
+it('rejects the invoice pdf for an order that has not been invoiced', function () {
+    expect($this->order->refresh()->account_move_id)->toBeNull();
+
+    $this->get(route('admin.api.v1.point-of-sale.orders.invoice-pdf', ['order' => $this->order->id]))
+        ->assertNotFound();
 });
 
 it('returns a receipt for an order', function () {

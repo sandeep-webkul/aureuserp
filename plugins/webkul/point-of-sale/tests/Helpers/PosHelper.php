@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DocumentType;
@@ -38,6 +39,21 @@ use Webkul\Support\Models\Company;
 
 class PosHelper
 {
+    public static function ensureRoutesRegistered(): void
+    {
+        if (Route::has('admin.api.v1.point-of-sale.orders.sync')) {
+            return;
+        }
+
+        require base_path('plugins/webkul/point-of-sale/routes/api.php');
+
+        $routes = app('router')->getRoutes();
+
+        $routes->refreshNameLookups();
+
+        $routes->refreshActionLookups();
+    }
+
     public static function company(): Company
     {
         return Company::query()->firstOrFail();
