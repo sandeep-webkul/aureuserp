@@ -715,8 +715,8 @@ export class ErpLocators {
         this.salesDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.salesConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
 
-        this.salesSelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
-        this.salesSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+        this.salesSelectSearchInput = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible input.fi-input[role="combobox"]').last();
+        this.salesSelectOption = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible [role="option"]');
         this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
 
@@ -898,15 +898,15 @@ export class ErpLocators {
          */
 
         this.inventorySearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.inventorySelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
-        this.inventorySelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+        this.inventorySelectSearchInput = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible input.fi-input[role="combobox"]').last();
+        this.inventorySelectOption = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible [role="option"]');
         this.inventorySuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.inventoryErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.inventoryValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
         this.inventoryConfirmDialogButton = anyDialog(page).getByRole("button", { name: /Confirm|Delete|Yes/i }).first();
         this.inventoryTableRows = page.locator("table tbody tr");
         this.inventoryPageHeading = page.locator("h1").first();
-        this.inventorySelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
+        this.inventorySelectPanel = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible');
 
         /**
          * Inventory - Traceability (product lot/serial tracking)
