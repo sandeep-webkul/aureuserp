@@ -34,6 +34,8 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
+    $this->withoutVite();
+
     FilamentHelper::actingAs();
 
     Filament::setCurrentPanel(Filament::getPanel('pos'));
