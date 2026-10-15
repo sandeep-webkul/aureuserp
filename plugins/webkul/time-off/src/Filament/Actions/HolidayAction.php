@@ -4,8 +4,13 @@ namespace Webkul\TimeOff\Filament\Actions;
 
 use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
-use Illuminate\Support\HtmlString;
+use Illuminate\Support\Collection;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Models\CalendarLeave;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
 
@@ -26,81 +31,81 @@ class HolidayAction extends Action
             ->modalWidth(Width::TwoExtraLarge)
             ->slideOver()
             ->schema([
-                TextEntry::make('public_holiday')
+                TextEntry::make('public_holidays_empty')
+                    ->hiddenLabel()
+                    ->state(__('time-off::filament/actions/holiday-action.form.empty.public-holiday'))
+                    ->color('gray')
+                    ->visible(fn (): bool => CalendarLeave::query()->doesntExist()),
+
+                RepeatableEntry::make('public_holidays')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.public-holiday'))
-                    ->state(function () {
-                        $publicHolidays = CalendarLeave::with('company')->get();
+                    ->state(fn (): Collection => CalendarLeave::with('company')->get())
+                    ->visible(fn (): bool => CalendarLeave::query()->exists())
+                    ->schema([
+                        Grid::make(2)
+                            ->dense()
+                            ->extraAttributes(['class' => 'items-center'])
+                            ->schema([
+                                Group::make()
+                                    ->gap(false)
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->hiddenLabel()
+                                            ->weight(FontWeight::Medium),
 
-                        if ($publicHolidays->isEmpty()) {
-                            return new HtmlString('<p class="text-gray-500 dark:text-gray-400">No public holidays found.</p>');
-                        }
+                                        TextEntry::make('company_name')
+                                            ->hiddenLabel()
+                                            ->size(TextSize::Small)
+                                            ->color('gray')
+                                            ->state(fn (CalendarLeave $record): string => $record->company?->name ?? 'N/A'),
+                                    ]),
 
-                        $html = '<div class="flex flex-col gap-4">';
+                                TextEntry::make('date_range')
+                                    ->hiddenLabel()
+                                    ->alignEnd()
+                                    ->state(fn (CalendarLeave $record): string => $record->date_from === $record->date_to
+                                        ? (string) $record->date_from
+                                        : "{$record->date_from} - {$record->date_to}"),
+                            ]),
+                    ]),
 
-                        foreach ($publicHolidays as $holiday) {
-                            $dateRange = $holiday->date_from === $holiday->date_to
-                                ? e($holiday->date_from)
-                                : e("{$holiday->date_from} - {$holiday->date_to}");
+                TextEntry::make('mandatory_holidays_empty')
+                    ->hiddenLabel()
+                    ->state(__('time-off::filament/actions/holiday-action.form.empty.mandatory-holiday'))
+                    ->color('gray')
+                    ->visible(fn (): bool => LeaveMandatoryDay::query()->doesntExist()),
 
-                            $name = e($holiday->name);
-
-                            $companyName = e($holiday->calendar?->company ? $holiday->calendar?->company->name : 'N/A');
-
-                            $html .= "
-                                <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
-                                    <div class='flex-1'>
-                                        <h3 class='text-sm font-medium text-gray-900 dark:text-white'>{$name}</h3>
-                                        <p class='mt-1 text-xs text-gray-600 dark:text-gray-400'>{$companyName}</p>
-                                    </div>
-                                    <div class='flex-1 text-right'>
-                                        <p class='text-sm text-gray-800 dark:text-gray-300'>{$dateRange}</p>
-                                    </div>
-                                </div>
-                            ";
-                        }
-
-                        $html .= '</div>';
-
-                        return new HtmlString($html);
-                    }),
-
-                TextEntry::make('mandatory_holiday')
+                RepeatableEntry::make('mandatory_holidays')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.mandatory-holiday'))
-                    ->state(function () {
-                        $mandatoryHolidays = LeaveMandatoryDay::with('company', 'creator')->get();
+                    ->state(fn (): Collection => LeaveMandatoryDay::with('company')->get())
+                    ->visible(fn (): bool => LeaveMandatoryDay::query()->exists())
+                    ->schema([
+                        Grid::make(2)
+                            ->dense()
+                            ->extraAttributes(['class' => 'items-center'])
+                            ->schema([
+                                Group::make()
+                                    ->gap(false)
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->hiddenLabel()
+                                            ->weight(FontWeight::Medium),
 
-                        if ($mandatoryHolidays->isEmpty()) {
-                            return new HtmlString('<p class="text-gray-500 dark:text-gray-400">No mandatory holidays found.</p>');
-                        }
+                                        TextEntry::make('company_name')
+                                            ->hiddenLabel()
+                                            ->size(TextSize::Small)
+                                            ->color('gray')
+                                            ->state(fn (LeaveMandatoryDay $record): string => $record->company?->name ?? 'N/A'),
+                                    ]),
 
-                        $html = '<div class="flex flex-col gap-4">';
-
-                        foreach ($mandatoryHolidays as $mandatoryHoliday) {
-                            $dateRange = $mandatoryHoliday->start_date === $mandatoryHoliday->end_date
-                                ? e($mandatoryHoliday->start_date)
-                                : e("{$mandatoryHoliday->start_date} - {$mandatoryHoliday->end_date}");
-
-                            $name = e($mandatoryHoliday->name);
-
-                            $companyName = e($mandatoryHoliday->company?->name ?? 'N/A');
-
-                            $html .= "
-                                <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
-                                    <div class='flex-1'>
-                                        <h3 class='text-sm font-medium text-blue-900 dark:text-white'>{$name}</h3>
-                                        <p class='mt-1 text-xs text-blue-600 dark:text-gray-400'>{$companyName}</p>
-                                    </div>
-                                    <div class='flex-1 text-right'>
-                                        <p class='text-sm text-blue-800 dark:text-blue-300'>{$dateRange}</p>
-                                    </div>
-                                </div>
-                            ";
-                        }
-
-                        $html .= '</div>';
-
-                        return new HtmlString($html);
-                    }),
+                                TextEntry::make('date_range')
+                                    ->hiddenLabel()
+                                    ->alignEnd()
+                                    ->state(fn (LeaveMandatoryDay $record): string => $record->start_date === $record->end_date
+                                        ? (string) $record->start_date
+                                        : "{$record->start_date} - {$record->end_date}"),
+                            ]),
+                    ]),
             ])
             ->modalIcon('heroicon-o-lifebuoy')
             ->label(__('time-off::filament/actions/holiday-action.title'))
