@@ -25,15 +25,15 @@ class RuleInfolist
                                 $operation = $record->operationType;
 
                                 $pullMessage = __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.description.pull', [
-                                    'sourceLocation'      => $operation?->sourceLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'),
-                                    'operation'           => $operation?->name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.operation-type'),
-                                    'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.source-location'),
+                                    'sourceLocation'      => e($operation?->sourceLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location')),
+                                    'operation'           => e($operation?->name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.operation-type')),
+                                    'destinationLocation' => e($operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.source-location')),
                                 ]);
 
                                 $pushMessage = __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.description.push', [
-                                    'sourceLocation'      => $operation?->sourceLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.source-location'),
-                                    'operation'           => $operation?->name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.operation-type'),
-                                    'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'),
+                                    'sourceLocation'      => e($operation?->sourceLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.source-location')),
+                                    'operation'           => e($operation?->name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.operation-type')),
+                                    'destinationLocation' => e($operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location')),
                                 ]);
 
                                 return match ($record->action) {
