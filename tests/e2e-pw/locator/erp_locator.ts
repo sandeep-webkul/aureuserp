@@ -538,8 +538,8 @@ export class ErpLocators {
         // Only the open dropdown panel is visible, so the install/uninstall
         // options below always belong to the plugin whose menu was opened.
         this.pluginDropdownPanel = page.locator('.fi-dropdown-panel:visible');
-        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Install', exact: true });
-        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Uninstall', exact: true });
+        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('menuitem', { name: 'Install', exact: true });
+        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('menuitem', { name: 'Uninstall', exact: true });
         this.pluginInstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Install Plugin' });
         this.pluginUninstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Uninstall Plugin' });
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
@@ -756,7 +756,7 @@ export class ErpLocators {
         this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1);  
-        this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryWarehouseDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.inventoryWarehouseConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
 
         this.inventoryLocationsTable = page.locator("table, div.fi-ta-empty-state");
@@ -798,7 +798,7 @@ export class ErpLocators {
         this.inventoryProductTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryProductRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryProductEditAction = page.getByRole("link", { name: /Edit/i }).first();
-        this.inventoryProductDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryProductDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.inventoryProductIsStorableToggle = page.getByRole("switch", { name: /Track Inventory|Storable/i }).first();
         this.inventoryProductQuantitiesTab = page.locator("a, li").filter({ hasText: /On Hand|Quantities/i }).first();
         this.inventoryProductMovesTab = page.getByRole('link', { name: 'IN/OUT' });
@@ -891,7 +891,7 @@ export class ErpLocators {
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryOperationEditAction = page.getByRole("link", { name: /Edit/i }).first();
-        this.inventoryOperationDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryOperationDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
 
         /**
          * Inventory - Generic UI helpers
