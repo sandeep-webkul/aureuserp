@@ -42,13 +42,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Allocation updated',
-                    'body'  => 'The allocation has been updated successfully.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Validate',

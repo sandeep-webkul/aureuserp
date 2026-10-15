@@ -86,15 +86,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'success' => [
-                        'title' => 'تم تحديث الضريبة',
-                        'body'  => 'تم تحديث الضريبة بنجاح.',
-                    ],
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

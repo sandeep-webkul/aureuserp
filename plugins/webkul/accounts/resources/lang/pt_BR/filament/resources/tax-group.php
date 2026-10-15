@@ -33,15 +33,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'success' => [
-                        'title' => 'Grupo de impostos atualizado',
-                        'body'  => 'O grupo de impostos foi atualizado com sucesso.',
-                    ],
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

@@ -54,13 +54,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Fiscal Position updated',
-                    'body'  => 'The fiscal position has been updated successfully.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Fiscal Position deleted',

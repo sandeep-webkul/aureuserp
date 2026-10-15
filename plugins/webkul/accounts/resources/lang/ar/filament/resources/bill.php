@@ -161,13 +161,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث الفاتورة',
-                    'body'  => 'تم تحديث الفاتورة بنجاح.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف الدفعة',

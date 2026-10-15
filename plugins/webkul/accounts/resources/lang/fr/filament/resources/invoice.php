@@ -171,13 +171,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Facture mise à jour',
-                    'body'  => 'La facture a été mise à jour avec succès.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Paiement supprimé',

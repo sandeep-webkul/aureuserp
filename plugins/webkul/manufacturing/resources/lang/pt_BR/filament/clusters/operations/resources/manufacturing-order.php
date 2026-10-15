@@ -118,12 +118,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Ordem de produção atualizada',
-                    'body'  => 'A ordem de produção foi atualizada com sucesso.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Ordem de produção excluída',

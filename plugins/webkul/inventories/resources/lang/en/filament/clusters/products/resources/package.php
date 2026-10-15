@@ -52,13 +52,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Package updated',
-                    'body'  => 'The package has been updated successfully.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

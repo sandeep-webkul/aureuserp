@@ -54,13 +54,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Conditions de paiement mises à jour',
-                    'body'  => 'Les conditions de paiement ont été mises à jour avec succès.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Condition de paiement restaurée',

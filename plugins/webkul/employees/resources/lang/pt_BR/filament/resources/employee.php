@@ -264,13 +264,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Colaborador atualizado',
-                    'body'  => 'O colaborador foi atualizado com sucesso.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Colaborador restaurado',

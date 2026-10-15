@@ -70,13 +70,7 @@ class TaxGroupsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('accounts::filament/resources/tax-group.table.actions.edit.notification.success.title'))
-                            ->body(__('accounts::filament/resources/tax-group.table.actions.edit.notification.success.body'))
-                    ),
+                EditAction::make(),
                 DeleteAction::make()
                     ->action(function (TaxGroup $record) {
                         try {

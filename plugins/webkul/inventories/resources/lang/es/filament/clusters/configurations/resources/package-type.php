@@ -53,13 +53,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Tipo de paquete actualizado',
-                    'body'  => 'El tipo de paquete se ha actualizado correctamente.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de paquete eliminado',

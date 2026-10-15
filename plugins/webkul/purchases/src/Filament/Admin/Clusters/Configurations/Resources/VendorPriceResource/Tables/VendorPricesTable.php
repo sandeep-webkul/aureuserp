@@ -269,13 +269,7 @@ class VendorPricesTable
             ])
             ->emptyStateActions([
                 CreateAction::make()
-                    ->icon('heroicon-o-plus-circle')
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.empty-state-actions.create.notification.title'))
-                            ->body(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.empty-state-actions.create.notification.body')),
-                    ),
+                    ->icon('heroicon-o-plus-circle'),
             ]);
     }
 }

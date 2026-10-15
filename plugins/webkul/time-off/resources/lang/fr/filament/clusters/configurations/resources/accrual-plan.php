@@ -24,12 +24,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Plan d\'acquisition mis à jour',
-                    'body'  => 'Le plan d\'acquisition a été mis à jour avec succès.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Plan d\'acquisition supprimé',

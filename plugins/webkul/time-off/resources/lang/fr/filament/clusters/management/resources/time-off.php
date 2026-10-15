@@ -58,13 +58,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Congé mis à jour',
-                    'body'  => 'Le congé a été mis à jour avec succès.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Valider',

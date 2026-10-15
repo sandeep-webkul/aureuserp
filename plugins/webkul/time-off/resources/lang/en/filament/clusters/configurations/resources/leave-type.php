@@ -68,12 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Leave Type updated',
-                    'body'  => 'The Leave type has been updated successfully.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Leave Type deleted',

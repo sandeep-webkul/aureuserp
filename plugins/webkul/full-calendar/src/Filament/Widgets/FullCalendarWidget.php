@@ -48,8 +48,8 @@ class FullCalendarWidget extends Widget implements HasActions, HasConfigurations
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title('Event created')
-                        ->body('The event has been created successfully.'),
+                        ->title(__('full-calendar::filament/widgets/full-calendar.header-actions.create.notification.title'))
+                        ->body(__('full-calendar::filament/widgets/full-calendar.header-actions.create.notification.body')),
                 ),
         ];
     }

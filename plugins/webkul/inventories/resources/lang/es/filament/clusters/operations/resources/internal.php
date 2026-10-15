@@ -12,13 +12,6 @@ return [
 
     'table' => [
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Transferencia interna actualizada',
-                    'body'  => 'La transferencia interna se ha actualizado correctamente.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

@@ -68,12 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Tipo de ausencia actualizado',
-                    'body'  => 'El tipo de ausencia se ha actualizado correctamente.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de ausencia eliminado',

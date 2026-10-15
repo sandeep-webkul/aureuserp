@@ -86,13 +86,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث طلب الصيانة',
-                    'body'  => 'تم تحديث طلب الصيانة بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تمت استعادة طلب الصيانة',

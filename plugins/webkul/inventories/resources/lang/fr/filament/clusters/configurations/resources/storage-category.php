@@ -39,13 +39,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Catégorie de stockage mise à jour',
-                    'body'  => 'La catégorie de stockage a été mise à jour avec succès.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Catégorie de stockage supprimée',

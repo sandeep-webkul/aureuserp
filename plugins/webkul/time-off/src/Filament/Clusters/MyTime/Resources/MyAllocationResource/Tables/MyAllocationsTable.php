@@ -63,13 +63,7 @@ class MyAllocationsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('time-off::filament/clusters/my-time/resources/my-allocation.table.actions.edit.notification.title'))
-                                ->body(__('time-off::filament/clusters/my-time/resources/my-allocation.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->successNotification(
                             Notification::make()

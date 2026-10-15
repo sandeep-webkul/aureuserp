@@ -42,13 +42,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Alocação atualizada',
-                    'body'  => 'A alocação foi atualizada com sucesso.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Validar',

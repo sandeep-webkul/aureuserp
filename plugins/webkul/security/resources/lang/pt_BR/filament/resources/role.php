@@ -17,12 +17,6 @@ return [
 
     'table' => [
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Função atualizada',
-                    'body'  => 'A função foi atualizada com sucesso.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Função excluída',

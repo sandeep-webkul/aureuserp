@@ -59,13 +59,7 @@ class FiscalPositionsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('accounts::filament/resources/fiscal-position.table.actions.edit.notification.title'))
-                            ->body(__('accounts::filament/resources/fiscal-position.table.actions.edit.notification.body'))
-                    ),
+                EditAction::make(),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()

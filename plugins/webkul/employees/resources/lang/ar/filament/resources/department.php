@@ -59,13 +59,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث القسم',
-                    'body'  => 'تم تحديث القسم بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة القسم',

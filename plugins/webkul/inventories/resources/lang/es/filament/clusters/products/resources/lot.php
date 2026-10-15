@@ -54,13 +54,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Lote actualizado',
-                    'body'  => 'El lote se ha actualizado correctamente.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

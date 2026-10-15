@@ -264,13 +264,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث الموظف',
-                    'body'  => 'تم تحديث الموظف بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة الموظف',

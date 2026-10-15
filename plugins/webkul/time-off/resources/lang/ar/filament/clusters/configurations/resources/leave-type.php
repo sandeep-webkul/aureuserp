@@ -68,12 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث نوع الإجازة',
-                    'body'  => 'تم تحديث نوع الإجازة بنجاح.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف نوع الإجازة',

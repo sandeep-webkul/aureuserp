@@ -24,12 +24,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Plan de acumulación actualizado',
-                    'body'  => 'El plan de acumulación se ha actualizado correctamente.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Plan de acumulación eliminado',

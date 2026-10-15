@@ -39,13 +39,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث فئة التخزين',
-                    'body'  => 'تم تحديث فئة التخزين بنجاح.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف فئة التخزين',

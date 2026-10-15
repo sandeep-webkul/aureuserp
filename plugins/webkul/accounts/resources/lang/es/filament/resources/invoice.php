@@ -171,13 +171,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Factura actualizada',
-                    'body'  => 'La factura se ha actualizado correctamente.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Pago eliminado',

@@ -264,13 +264,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Empleado actualizado',
-                    'body'  => 'El empleado se ha actualizado correctamente.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Empleado restaurado',

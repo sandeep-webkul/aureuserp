@@ -92,13 +92,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Calendar updated',
-                    'body'  => 'The calendar has been updated successfully.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Calendar Plan restored',

@@ -91,13 +91,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث نوع النشاط',
-                    'body'  => 'تم تحديث نوع النشاط بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة نوع النشاط',

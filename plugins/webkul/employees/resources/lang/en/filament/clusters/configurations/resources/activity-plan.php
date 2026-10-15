@@ -51,13 +51,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Activity Plan updated',
-                    'body'  => 'The activity plan has been updated successfully.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Activity Plan restored',

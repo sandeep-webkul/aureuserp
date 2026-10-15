@@ -81,13 +81,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث العملة',
-                    'body'  => 'تم تحديث العملة بنجاح.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title'   => 'تم حذف العملة',

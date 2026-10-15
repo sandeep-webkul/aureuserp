@@ -118,12 +118,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث أمر التصنيع',
-                    'body'  => 'تم تحديث أمر التصنيع بنجاح.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف أمر التصنيع',

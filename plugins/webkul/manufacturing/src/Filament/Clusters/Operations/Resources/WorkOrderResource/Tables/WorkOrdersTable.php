@@ -5,7 +5,6 @@ namespace Webkul\Manufacturing\Filament\Clusters\Operations\Resources\WorkOrderR
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Notifications\Notification;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -245,13 +244,7 @@ class WorkOrdersTable
                         $record->refresh();
                     }),
                 ViewAction::make(),
-                EditAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('manufacturing::filament/clusters/operations/resources/work-order.table.actions.edit.notification.title'))
-                            ->body(__('manufacturing::filament/clusters/operations/resources/work-order.table.actions.edit.notification.body')),
-                    ),
+                EditAction::make(),
             ])
             ->bulkActions([]);
     }

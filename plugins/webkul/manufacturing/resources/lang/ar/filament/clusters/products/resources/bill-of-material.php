@@ -117,12 +117,6 @@ return [
             'company' => 'الشركة',
         ],
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث قائمة المواد',
-                    'body'  => 'تم تحديث قائمة المواد بنجاح.',
-                ],
-            ],
             'restore' => [
                 'notification' => [
                     'title' => 'تمت استعادة قائمة المواد',

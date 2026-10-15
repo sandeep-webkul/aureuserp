@@ -86,15 +86,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'success' => [
-                        'title' => 'Imposto atualizado',
-                        'body'  => 'O imposto foi atualizado com sucesso.',
-                    ],
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

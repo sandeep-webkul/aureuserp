@@ -86,13 +86,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Solicitação de manutenção atualizada',
-                    'body'  => 'A solicitação de manutenção foi atualizada com sucesso.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Solicitação de manutenção restaurada',

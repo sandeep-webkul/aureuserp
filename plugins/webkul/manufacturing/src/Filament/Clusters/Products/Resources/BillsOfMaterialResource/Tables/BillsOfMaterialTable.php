@@ -83,13 +83,7 @@ class BillsOfMaterialTable
                     ->hidden(fn (BillOfMaterial $record): bool => $record->trashed()),
                 EditAction::make()
                     ->modalWidth(Width::SevenExtraLarge)
-                    ->hidden(fn (BillOfMaterial $record): bool => $record->trashed())
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('manufacturing::filament/clusters/products/resources/bill-of-material.table.actions.edit.notification.title'))
-                            ->body(__('manufacturing::filament/clusters/products/resources/bill-of-material.table.actions.edit.notification.body')),
-                    ),
+                    ->hidden(fn (BillOfMaterial $record): bool => $record->trashed()),
                 RestoreAction::make()
                     ->successNotification(
                         Notification::make()

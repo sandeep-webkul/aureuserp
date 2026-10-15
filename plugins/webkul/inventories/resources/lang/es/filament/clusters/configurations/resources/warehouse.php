@@ -68,13 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Almacén actualizado',
-                    'body'  => 'El almacén se ha actualizado correctamente.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Almacén restaurado',

@@ -51,13 +51,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث التخصيص',
-                    'body'  => 'تم تحديث التخصيص بنجاح.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'تحقق',

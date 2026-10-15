@@ -68,13 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Depósito atualizado',
-                    'body'  => 'O depósito foi atualizado com sucesso.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Armazém restaurado',

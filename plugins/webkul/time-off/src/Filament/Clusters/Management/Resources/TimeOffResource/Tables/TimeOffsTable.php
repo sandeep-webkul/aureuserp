@@ -113,13 +113,7 @@ class TimeOffsTable
                         })
                         ->label(__('time-off::filament/clusters/management/resources/time-off.table.actions.refused.title')),
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('time-off::filament/clusters/management/resources/time-off.table.actions.edit.notification.title'))
-                                ->body(__('time-off::filament/clusters/management/resources/time-off.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->successNotification(
                             Notification::make()

@@ -144,13 +144,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Type d\'opération mis à jour',
-                    'body'  => 'Le type d\'opération a été mis à jour avec succès.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Type d\'opération restauré',

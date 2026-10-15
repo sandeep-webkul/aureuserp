@@ -144,13 +144,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Tipo de operação atualizado',
-                    'body'  => 'O tipo de operação foi atualizado com sucesso.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Tipo de operação restaurado',

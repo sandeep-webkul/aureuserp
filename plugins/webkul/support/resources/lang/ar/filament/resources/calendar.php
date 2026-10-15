@@ -92,13 +92,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث التقويم',
-                    'body'  => 'تم تحديث التقويم بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة جدول العمل',

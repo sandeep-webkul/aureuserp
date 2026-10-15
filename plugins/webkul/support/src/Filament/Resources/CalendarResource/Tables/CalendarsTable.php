@@ -171,13 +171,7 @@ class CalendarsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('support::filament/resources/calendar.table.actions.edit.notification.title'))
-                                ->body(__('support::filament/resources/calendar.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     RestoreAction::make()
                         ->successNotification(
                             Notification::make()

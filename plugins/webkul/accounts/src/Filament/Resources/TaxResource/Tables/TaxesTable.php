@@ -112,13 +112,7 @@ class TaxesTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('accounts::filament/resources/tax.table.actions.edit.notification.success.title'))
-                                ->body(__('accounts::filament/resources/tax.table.actions.edit.notification.success.body'))
-                        ),
+                    EditAction::make(),
                     ViewAction::make(),
                     DeleteAction::make()
                         ->action(function (Tax $record) {

@@ -77,13 +77,7 @@ class PackagesTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('inventories::filament/clusters/products/resources/package.table.actions.edit.notification.title'))
-                                ->body(__('inventories::filament/clusters/products/resources/package.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->action(function (Package $record) {
                             try {

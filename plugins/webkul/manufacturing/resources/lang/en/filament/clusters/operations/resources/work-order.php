@@ -102,15 +102,6 @@ return [
             'created-at'          => 'Created At',
             'updated-at'          => 'Updated At',
         ],
-
-        'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Work order updated',
-                    'body'  => 'The work order has been updated successfully.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

@@ -51,13 +51,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث خطة النشاط',
-                    'body'  => 'تم تحديث خطة النشاط بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة خطة النشاط',

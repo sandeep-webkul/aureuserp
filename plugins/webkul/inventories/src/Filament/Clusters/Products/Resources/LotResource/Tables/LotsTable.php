@@ -91,13 +91,7 @@ class LotsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('inventories::filament/clusters/products/resources/lot.table.actions.edit.notification.title'))
-                                ->body(__('inventories::filament/clusters/products/resources/lot.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->action(function (Lot $record) {
                             try {

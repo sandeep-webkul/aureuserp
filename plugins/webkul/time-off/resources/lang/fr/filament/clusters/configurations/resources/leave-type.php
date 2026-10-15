@@ -68,12 +68,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Type de congé mis à jour',
-                    'body'  => 'Le type de congé a été mis à jour avec succès.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Type de congé supprimé',

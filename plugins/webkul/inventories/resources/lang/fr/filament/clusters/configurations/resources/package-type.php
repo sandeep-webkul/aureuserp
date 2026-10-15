@@ -53,13 +53,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Type de colis mis à jour',
-                    'body'  => 'Le type de colis a été mis à jour avec succès.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Type de colis supprimé',

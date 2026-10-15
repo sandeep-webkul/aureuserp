@@ -94,12 +94,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث مركز العمل',
-                    'body'  => 'تم تحديث مركز العمل بنجاح.',
-                ],
-            ],
             'restore' => [
                 'notification' => [
                     'title' => 'تمت استعادة مركز العمل',

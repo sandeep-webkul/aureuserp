@@ -53,13 +53,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث نوع الطرد',
-                    'body'  => 'تم تحديث نوع الطرد بنجاح.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف نوع الطرد',

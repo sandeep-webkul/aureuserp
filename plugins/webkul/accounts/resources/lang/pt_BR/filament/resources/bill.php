@@ -161,13 +161,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Conta atualizada',
-                    'body'  => 'A conta foi atualizada com sucesso.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Pagamento excluído',

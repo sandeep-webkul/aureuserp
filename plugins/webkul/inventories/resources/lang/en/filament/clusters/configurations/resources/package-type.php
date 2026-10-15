@@ -53,13 +53,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Package Type updated',
-                    'body'  => 'The package type has been updated successfully.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Package Type deleted',

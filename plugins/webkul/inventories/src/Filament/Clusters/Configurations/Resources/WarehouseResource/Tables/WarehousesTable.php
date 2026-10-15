@@ -83,13 +83,7 @@ class WarehousesTable
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
                 EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed())
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.edit.notification.title'))
-                            ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.edit.notification.body')),
-                    ),
+                    ->hidden(fn ($record) => $record->trashed()),
                 RestoreAction::make()
                     ->databaseTransaction(true)
                     ->successNotification(

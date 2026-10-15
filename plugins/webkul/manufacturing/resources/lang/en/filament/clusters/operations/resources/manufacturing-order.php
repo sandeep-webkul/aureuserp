@@ -118,12 +118,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Manufacturing order updated',
-                    'body'  => 'The manufacturing order has been updated successfully.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Manufacturing order deleted',

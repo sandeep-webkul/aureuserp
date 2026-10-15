@@ -144,13 +144,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث نوع العملية',
-                    'body'  => 'تم تحديث نوع العملية بنجاح.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة نوع العملية',

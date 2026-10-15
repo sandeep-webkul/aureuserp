@@ -51,13 +51,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Allocation mise à jour',
-                    'body'  => 'L\'allocation a été mise à jour avec succès.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Valider',

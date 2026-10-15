@@ -58,13 +58,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Time Off updated',
-                    'body'  => 'The time off has been updated successfully.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Validate',

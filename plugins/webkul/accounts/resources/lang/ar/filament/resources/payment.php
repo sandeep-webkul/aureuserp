@@ -72,13 +72,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'تم تحديث الدفعة',
-                    'body'  => 'تم تحديث الدفعة بنجاح.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'تم حذف الدفعة',

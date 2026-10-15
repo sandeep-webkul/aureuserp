@@ -95,13 +95,7 @@ class CurrenciesTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('support::filament/resources/currency.table.actions.edit.notification.title'))
-                                ->body(__('support::filament/resources/currency.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->successNotification(
                             Notification::make()

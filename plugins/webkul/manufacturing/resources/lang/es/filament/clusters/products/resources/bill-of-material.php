@@ -117,12 +117,6 @@ return [
             'company' => 'Empresa',
         ],
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Lista de materiales actualizada',
-                    'body'  => 'La lista de materiales ha sido actualizada correctamente.',
-                ],
-            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Lista de materiales restaurada',

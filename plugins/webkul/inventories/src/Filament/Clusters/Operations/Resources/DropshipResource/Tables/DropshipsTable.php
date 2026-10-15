@@ -26,13 +26,7 @@ class DropshipsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('inventories::filament/clusters/operations/resources/dropship.table.actions.edit.notification.title'))
-                                ->body(__('inventories::filament/clusters/operations/resources/dropship.table.actions.edit.notification.body')),
-                        ),
+                    EditAction::make(),
                     DeleteAction::make()
                         ->hidden(fn (Dropship $record): bool => $record->state == OperationState::DONE)
                         ->action(function (Dropship $record) {

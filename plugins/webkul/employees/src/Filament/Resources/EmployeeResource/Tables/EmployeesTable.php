@@ -526,13 +526,7 @@ class EmployeesTable
                 ViewAction::make()
                     ->outlined(),
                 EditAction::make()
-                    ->outlined()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('employees::filament/resources/employee.table.actions.edit.notification.title'))
-                            ->body(__('employees::filament/resources/employee.table.actions.edit.notification.body'))
-                    ),
+                    ->outlined(),
                 RestoreAction::make()
                     ->outlined()
                     ->successNotification(

@@ -13,13 +13,6 @@ return [
 
     'table' => [
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Delivery updated',
-                    'body'  => 'The delivery has been updated successfully.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

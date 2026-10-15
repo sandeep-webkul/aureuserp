@@ -97,13 +97,7 @@ class OperationsTable
                     ->hidden(fn (Operation $record): bool => $record->trashed()),
                 EditAction::make()
                     ->hidden(fn (Operation $record): bool => $record->trashed())
-                    ->modalWidth(Width::SevenExtraLarge)
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('manufacturing::filament/clusters/configurations/resources/operation.table.actions.edit.notification.title'))
-                            ->body(__('manufacturing::filament/clusters/configurations/resources/operation.table.actions.edit.notification.body')),
-                    ),
+                    ->modalWidth(Width::SevenExtraLarge),
                 RestoreAction::make()
                     ->successNotification(
                         Notification::make()

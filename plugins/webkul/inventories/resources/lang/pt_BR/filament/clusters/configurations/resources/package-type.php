@@ -53,13 +53,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Tipo de pacote atualizado',
-                    'body'  => 'O tipo de pacote foi atualizado com sucesso.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de embalagem excluído',

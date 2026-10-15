@@ -54,13 +54,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Lot mis à jour',
-                    'body'  => 'Le lot a été mis à jour avec succès.',
-                ],
-            ],
-
             'delete' => [
                 'notification' => [
                     'success' => [

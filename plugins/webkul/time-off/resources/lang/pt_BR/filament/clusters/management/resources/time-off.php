@@ -58,13 +58,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Ausência atualizada',
-                    'body'  => 'A ausência foi atualizada com sucesso.',
-                ],
-            ],
-
             'approve' => [
                 'title' => [
                     'validate' => 'Validar',

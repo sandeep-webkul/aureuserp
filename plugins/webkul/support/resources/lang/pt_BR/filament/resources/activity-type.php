@@ -91,13 +91,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Tipo de atividade atualizado',
-                    'body'  => 'O tipo de atividade foi atualizado com sucesso.',
-                ],
-            ],
-
             'restore' => [
                 'notification' => [
                     'title' => 'Tipo de atividade restaurado',

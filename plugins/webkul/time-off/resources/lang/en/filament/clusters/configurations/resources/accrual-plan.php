@@ -24,12 +24,6 @@ return [
         ],
 
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Accrual Plan updated',
-                    'body'  => 'The Accrual Plan has been updated successfully.',
-                ],
-            ],
             'delete' => [
                 'notification' => [
                     'title' => 'Accrual Plan deleted',

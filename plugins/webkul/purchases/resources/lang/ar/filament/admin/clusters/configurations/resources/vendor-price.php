@@ -111,15 +111,6 @@ return [
                 ],
             ],
         ],
-
-        'empty-state-actions' => [
-            'create' => [
-                'notification' => [
-                    'title' => 'تم إنشاء سعر المورد',
-                    'body'  => 'تم إنشاء سعر المورد بنجاح.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

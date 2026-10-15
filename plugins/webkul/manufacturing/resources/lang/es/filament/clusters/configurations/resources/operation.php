@@ -63,12 +63,6 @@ return [
             'worksheet-type' => 'Hoja de trabajo',
         ],
         'actions' => [
-            'edit' => [
-                'notification' => [
-                    'title' => 'Operación actualizada',
-                    'body'  => 'La operación se ha actualizado correctamente.',
-                ],
-            ],
             'restore' => [
                 'notification' => [
                     'title' => 'Operación restaurada',
