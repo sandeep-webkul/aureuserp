@@ -99,6 +99,10 @@ class Lot extends Model
 
     public function getTotalQuantityAttribute()
     {
+        if (array_key_exists('total_quantity', $this->attributes)) {
+            return $this->attributes['total_quantity'] ?? 0;
+        }
+
         return $this->internalQuantities()->sum('quantity');
     }
 

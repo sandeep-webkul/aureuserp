@@ -26,6 +26,7 @@ class LotsTable
     public static function configure(Table $table, array $customColumns = [], array $customFilters = []): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withSum('internalQuantities as total_quantity', 'quantity'))
             ->columns(array_merge([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.name'))
@@ -45,11 +46,7 @@ class LotsTable
                     ->sortable(),
                 TextColumn::make('total_quantity')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.on-hand-qty'))
-                    ->sortable(query: function (Builder $query, string $direction): Builder {
-                        return $query
-                            ->withSum('internalQuantities as total_quantity_sum', 'quantity')
-                            ->orderBy('total_quantity_sum', $direction);
-                    }),
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.created-at'))
                     ->dateTime()
