@@ -18,7 +18,9 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\TimeOff\Enums\AllocationType;
+use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Enums\State;
+use Webkul\TimeOff\Models\LeaveType;
 
 class AllocationForm
 {
@@ -76,6 +78,7 @@ class AllocationForm
                                             )
                                             ->searchable()
                                             ->preload()
+                                            ->live()
                                             ->required(),
                                         Select::make('employee_id')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.employee-name'))
@@ -108,7 +111,8 @@ class AllocationForm
                                     ->default(0)
                                     ->minValue(0)
                                     ->maxValue(99999999999)
-                                    ->required()
+                                    ->hidden(fn (Get $get): bool => static::isNoLimit($get('holiday_status_id')))
+                                    ->required(fn (Get $get): bool => ! static::isNoLimit($get('holiday_status_id')))
                                     ->suffix(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation-suffix')),
                                 RichEditor::make('notes')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.reason')),
@@ -116,5 +120,14 @@ class AllocationForm
                     ])->columns(1),
             ])
             ->columns(1);
+    }
+
+    protected static function isNoLimit(?int $leaveTypeId): bool
+    {
+        if (! $leaveTypeId) {
+            return false;
+        }
+
+        return LeaveType::find($leaveTypeId)?->requires_allocation === RequiresAllocation::NO->value;
     }
 }
