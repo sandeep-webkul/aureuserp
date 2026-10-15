@@ -373,6 +373,7 @@ trait TimeOffHelper
         $end = $endDate ? Carbon::parse($endDate) : $start;
 
         $query = Leave::where('employee_id', $employeeId)
+            ->where('state', '!=', State::REFUSE->value)
             ->where(function ($q) use ($start, $end) {
                 $q->whereBetween('date_from', [$start, $end])
                     ->orWhereBetween('date_to', [$start, $end])
