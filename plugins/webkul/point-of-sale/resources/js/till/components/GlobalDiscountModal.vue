@@ -13,7 +13,7 @@ const state = till.state
         :description="till.t('global-discount.hint')"
         :open="state.globalDiscountModalOpen"
         width="max-w-sm"
-        content-class="pt-0! pb-0!"
+        content-class="pb-0!"
         @close="till.closeGlobalDiscount()"
     >
         <div class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 focus-within:border-primary-500 dark:border-gray-700 dark:bg-gray-900">

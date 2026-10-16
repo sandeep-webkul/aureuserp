@@ -35,7 +35,7 @@ function press(value) {
         :description="till.t('table-selector.hint')"
         :open="state.tableSelectorOpen"
         width="max-w-sm"
-        content-class="pt-0! pb-0!"
+        content-class=" pb-0!"
         @close="till.closeTableSelector()"
     >
         <div class="flex flex-col gap-3">

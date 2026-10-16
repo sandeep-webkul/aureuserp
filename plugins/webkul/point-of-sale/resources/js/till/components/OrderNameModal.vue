@@ -12,7 +12,7 @@ const state = till.state
         :heading="till.t('order-name.heading')"
         :open="state.orderNameModalOpen"
         width="max-w-md"
-        content-class="pt-0! pb-0!"
+        content-class=" pb-0!"
         header-class="pb-0!"
         @close="till.closeOrderName()"
     >

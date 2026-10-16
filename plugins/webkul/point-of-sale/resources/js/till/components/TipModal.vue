@@ -14,7 +14,7 @@ const heading = computed(() => till.t(till.tipAmount() ? 'tip.change' : 'tip.add
         :heading="heading"
         :open="state.tipModalOpen"
         width="max-w-sm"
-        content-class="pt-0! pb-0!"
+        content-class="pb-0!"
         header-class="pb-0!"
         @close="till.closeTip()"
     >
