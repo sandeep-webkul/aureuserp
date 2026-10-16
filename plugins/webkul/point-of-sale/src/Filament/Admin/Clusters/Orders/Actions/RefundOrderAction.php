@@ -89,7 +89,8 @@ class RefundOrderAction extends Action
 
                         Checkbox::make('is_selected')
                             ->hiddenLabel()
-                            ->live(),
+                            ->live()
+                            ->extraFieldWrapperAttributes(['class' => 'px-3']),
 
                         TextEntry::make('product')
                             ->hiddenLabel(),
