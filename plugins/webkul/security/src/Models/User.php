@@ -140,12 +140,11 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
                 $user->handlePartnerUpdation($user);
             }
         });
+    }
 
-        static::updated(function ($user) {
-            if ($user->wasChanged('password')) {
-                $user->tokens()->delete();
-            }
-        });
+    public function revokeApiTokens(): void
+    {
+        $this->tokens()->delete();
     }
 
     private function handlePartnerCreation(self $user)
