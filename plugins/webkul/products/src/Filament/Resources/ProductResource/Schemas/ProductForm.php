@@ -94,6 +94,13 @@ class ProductForm
             ->schema([
                 FileUpload::make('images')
                     ->image()
+                    ->acceptedFileTypes([
+                        'image/jpeg',
+                        'image/png',
+                        'image/gif',
+                        'image/bmp',
+                        'image/webp',
+                    ])
                     ->multiple()
                     ->storeFileNamesIn('products'),
             ]);

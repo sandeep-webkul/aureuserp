@@ -3,11 +3,14 @@
 namespace Webkul\Security;
 
 use Filament\Panel;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Facades\Bouncer as BouncerFacade;
+use Webkul\Security\Models\User;
 
 class SecurityServiceProvider extends PackageServiceProvider
 {
@@ -46,6 +49,12 @@ class SecurityServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         require_once __DIR__.'/Helpers/helpers.php';
+
+        Event::listen(PasswordReset::class, function (PasswordReset $event): void {
+            if ($event->user instanceof User) {
+                $event->user->revokeApiTokens();
+            }
+        });
 
         Gate::before(function ($user, string $ability) {
             if ($ability !== 'bypass_ownership_scope') {

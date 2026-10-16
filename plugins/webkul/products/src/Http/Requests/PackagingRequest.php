@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Rules\UniqueBarcode;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PackagingRequest extends FormRequest
 {
@@ -33,7 +34,7 @@ class PackagingRequest extends FormRequest
             'qty'        => [...$requiredRule, 'numeric', 'min:0'],
             'sort'       => ['nullable', 'integer'],
             'product_id' => [...$requiredRule, 'integer', 'exists:products_products,id'],
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
 
         return $rules;
