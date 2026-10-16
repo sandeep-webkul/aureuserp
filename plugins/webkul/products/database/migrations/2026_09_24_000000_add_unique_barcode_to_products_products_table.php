@@ -13,45 +13,43 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('products_products')
-            ->where('barcode', '')
-            ->update(['barcode' => null]);
+        $duplicates = DB::table('products_products as duplicates')
+            ->whereNotNull('duplicates.barcode')
+            ->where('duplicates.barcode', '<>', '')
+            ->whereExists(function ($query) {
+                $query
+                    ->selectRaw('1')
+                    ->from('products_products as originals')
+                    ->whereRaw('LOWER(originals.barcode) = LOWER(duplicates.barcode)')
+                    ->where(function ($companyQuery) {
+                        $companyQuery
+                            ->whereColumn('originals.company_id', 'duplicates.company_id')
+                            ->orWhere(function ($nullQuery) {
+                                $nullQuery
+                                    ->whereNull('originals.company_id')
+                                    ->whereNull('duplicates.company_id');
+                            });
+                    })
+                    ->whereColumn('originals.id', '<', 'duplicates.id');
+            })
+            ->orderBy('duplicates.id')
+            ->get(['duplicates.id', 'duplicates.company_id', 'duplicates.barcode']);
 
-        $duplicateGroups = DB::table('products_products')
-            ->select('company_id', 'barcode')
-            ->whereNotNull('barcode')
-            ->groupBy('company_id', 'barcode')
-            ->havingRaw('COUNT(*) > 1')
-            ->get();
-
-        foreach ($duplicateGroups as $group) {
-            $ids = DB::table('products_products')
-                ->where('barcode', $group->barcode)
-                ->when(
-                    $group->company_id === null,
-                    fn ($query) => $query->whereNull('company_id'),
-                    fn ($query) => $query->where('company_id', $group->company_id),
-                )
-                ->orderBy('id')
-                ->pluck('id');
-
-            $clearIds = $ids->slice(1)->values();
-
-            if ($clearIds->isEmpty()) {
-                continue;
-            }
-
+        foreach ($duplicates->groupBy(fn ($row) => $row->company_id.'|'.strtolower((string) $row->barcode)) as $rows) {
             Log::warning('Cleared duplicate product barcodes to apply the unique (company_id, barcode) constraint.', [
-                'company_id'  => $group->company_id,
-                'barcode'     => $group->barcode,
-                'kept_id'     => $ids->first(),
-                'cleared_ids' => $clearIds->all(),
+                'company_id'  => $rows->first()->company_id,
+                'barcode'     => $rows->first()->barcode,
+                'cleared_ids' => $rows->pluck('id')->all(),
             ]);
-
-            DB::table('products_products')
-                ->whereIn('id', $clearIds->all())
-                ->update(['barcode' => null]);
         }
+
+        DB::table('products_products')
+            ->where(function ($query) use ($duplicates) {
+                $query
+                    ->where('barcode', '')
+                    ->orWhereIn('id', $duplicates->pluck('id')->all());
+            })
+            ->update(['barcode' => null]);
 
         Schema::table('products_products', function (Blueprint $table) {
             $table->unique(['company_id', 'barcode']);
