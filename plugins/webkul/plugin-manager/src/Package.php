@@ -204,7 +204,19 @@ class Package extends BasePackage
             Artisan::call('optimize:clear');
 
             if (app()->isProduction()) {
-                Artisan::call('optimize');
+                if (app()->runningInConsole()) {
+                    Artisan::call('optimize');
+
+                    return;
+                }
+
+                app()->terminating(static function (): void {
+                    try {
+                        Artisan::call('optimize');
+                    } catch (Throwable $e) {
+                        report($e);
+                    }
+                });
             }
         } catch (Throwable $e) {
             report($e);
