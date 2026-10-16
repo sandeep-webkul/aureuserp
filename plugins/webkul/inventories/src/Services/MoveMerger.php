@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Services;
 use BackedEnum;
 use Illuminate\Support\Collection;
 use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
@@ -79,9 +80,14 @@ class MoveMerger
 
     public function mergedAttributes(Collection $moves, bool $keepFirstQuantity = false): array
     {
+        $allDirect = $moves->pluck('operation')->every(
+            fn (?Operation $operation) => $operation?->move_type === MoveType::DIRECT
+        );
+
         return [
             'product_uom_qty'   => $keepFirstQuantity ? $moves->first()->product_uom_qty : $moves->sum('product_uom_qty'),
             'product_qty'       => $keepFirstQuantity ? $moves->first()->product_qty : $moves->sum('product_qty'),
+            'scheduled_at'      => $allDirect ? $moves->min('scheduled_at') : $moves->max('scheduled_at'),
             'state'             => $this->stateResolver()->relevantState($moves),
             'origin'            => $moves->pluck('origin')->filter()->unique()->implode('/'),
             'move_destinations' => $moves->flatMap->moveDestinations,
