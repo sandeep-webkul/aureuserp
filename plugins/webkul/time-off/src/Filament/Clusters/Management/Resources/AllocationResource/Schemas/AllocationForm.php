@@ -73,7 +73,9 @@ class AllocationForm
                                                         ? Employee::withoutGlobalScope(CompanyScope::class)->find($get('employee_id'))?->company_id
                                                         : null;
 
-                                                    return $query->where(owned_by_company($employeeCompanyId));
+                                                    return $query
+                                                        ->where('requires_allocation', RequiresAllocation::YES->value)
+                                                        ->where(owned_by_company($employeeCompanyId));
                                                 },
                                             )
                                             ->searchable()

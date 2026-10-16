@@ -69,9 +69,11 @@ class MyAllocationForm
                                             ->relationship(
                                                 'holidayStatus',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where(owned_by_company(
-                                                    Employee::withoutGlobalScope(CompanyScope::class)->where('user_id', Auth::id())->value('company_id')
-                                                )),
+                                                modifyQueryUsing: fn (Builder $query) => $query
+                                                    ->where('requires_allocation', RequiresAllocation::YES->value)
+                                                    ->where(owned_by_company(
+                                                        Employee::withoutGlobalScope(CompanyScope::class)->where('user_id', Auth::id())->value('company_id')
+                                                    )),
                                             )
                                             ->searchable()
                                             ->preload()
