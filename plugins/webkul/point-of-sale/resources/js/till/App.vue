@@ -30,6 +30,7 @@ import ShipLaterErrorModal from './components/ShipLaterErrorModal.vue'
 import RejectedOrderModal from './components/RejectedOrderModal.vue'
 import KitchenTicket from './components/KitchenTicket.vue'
 import StatusBar from './components/StatusBar.vue'
+import Toaster from './components/Toaster.vue'
 import OfflineModal from './components/OfflineModal.vue'
 import ScannerButton from './components/ScannerButton.vue'
 import AppTopbar from './components/AppTopbar.vue'
@@ -187,6 +188,8 @@ const state = till.state
         <DraftOrdersModal />
 
         <OfflineModal />
+
+        <Toaster />
 
         <div
             v-if="state.sessionClosed"

@@ -24,7 +24,7 @@ const stepper = 'flex size-14 flex-none items-center justify-center rounded-lg b
         :heading="till.t('guests.heading')"
         :open="state.guestsModalOpen"
         width="max-w-sm"
-        content-class="pt-0! pb-0!"
+        content-class="pb-0!"
         header-class="pb-0!"
         @close="till.closeGuests()"
     >

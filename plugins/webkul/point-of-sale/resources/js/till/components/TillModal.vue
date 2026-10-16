@@ -76,7 +76,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
                 >
                     <div
                         v-if="open"
-                        class="fi-modal-window fi-modal-window-has-close-btn"
+                        class="fi-modal-window fi-modal-window-has-close-btn max-h-[80vh]"
                         :class="[width, slots.footer ? 'fi-modal-window-has-footer' : '']"
                         role="dialog"
                         aria-modal="true"
@@ -99,17 +99,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
                             </svg>
                         </button>
 
-                        <div v-if="heading || slots.header" class="fi-modal-header" :class="headerClass">
+                        <div v-if="heading || slots.header" class="fi-modal-header pt-3 px-6 pb-0" :class="headerClass">
                             <slot name="header">
                                 <div>
-                                    <h2 class="fi-modal-heading">{{ heading }}</h2>
+                                    <h2 class="fi-modal-heading pt-2">{{ heading }}</h2>
 
                                     <p v-if="description" class="fi-modal-description">{{ description }}</p>
                                 </div>
                             </slot>
                         </div>
 
-                        <div ref="content" class="fi-modal-content" :class="contentClass">
+                        <div ref="content" class="fi-modal-content min-h-0 !pt-4 gap-2" :class="contentClass">
                             <slot />
                         </div>
 

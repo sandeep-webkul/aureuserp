@@ -29,7 +29,6 @@ function discard(uuid) {
         :open="state.ordersModalOpen"
         width="max-w-2xl"
         :heading="till.t('parked.heading')"
-        content-class="!gap-0"
         @close="till.closeOrders()"
     >
             <div class="flex flex-none items-center gap-2">

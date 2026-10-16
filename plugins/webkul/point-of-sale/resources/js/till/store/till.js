@@ -219,6 +219,7 @@ export class Till {
             refundBuffer: '',
             refundError: null,
             offlineAcknowledged: false,
+            toasts: [],
         })
 
         this.database = new TillDatabase(
@@ -1408,9 +1409,21 @@ export class Till {
     }
 
     notifyKitchen(message) {
-        if (window.FilamentNotification) {
-            new window.FilamentNotification().title(message).warning().send()
-        }
+        this.pushToast({ title: message, status: 'warning' })
+    }
+
+    pushToast({ title, body = '', status = 'danger', duration = 4000 }) {
+        const id = uuidv4()
+
+        this.state.toasts.push({ id, title, body, status })
+
+        window.setTimeout(() => this.dismissToast(id), duration)
+
+        return id
+    }
+
+    dismissToast(id) {
+        this.state.toasts = this.state.toasts.filter((toast) => toast.id !== id)
     }
 
     get isRestaurant() {
@@ -4465,7 +4478,12 @@ export class Till {
         }
     }
 
-    async openHistory() {
+    async openHistory(status = null) {
+        if (status) {
+            this.state.historyStatus = status
+            this.state.historySearch = ''
+        }
+
         this.state.historyOpen = true
         this.state.historySelected = null
         this.state.historyPage = 1
@@ -5040,13 +5058,10 @@ export class Till {
     }
 
     notifyMaxPaymentValue() {
-        if (window.FilamentNotification) {
-            new window.FilamentNotification()
-                .title(this.t('payment.max-value-title'))
-                .body(this.t('payment.max-value-body'))
-                .danger()
-                .send()
-        }
+        this.pushToast({
+            title: this.t('payment.max-value-title'),
+            body: this.t('payment.max-value-body'),
+        })
     }
 
     startsPaymentLine(key) {
@@ -5096,13 +5111,10 @@ export class Till {
     }
 
     notifyIncompletePayment() {
-        if (window.FilamentNotification) {
-            new window.FilamentNotification()
-                .title(this.t('payment.incomplete-title'))
-                .body(this.t('payment.incomplete-body'))
-                .danger()
-                .send()
-        }
+        this.pushToast({
+            title: this.t('payment.incomplete-title'),
+            body: this.t('payment.incomplete-body'),
+        })
     }
 
     customerRequiredReason(order) {
@@ -5122,13 +5134,10 @@ export class Till {
     }
 
     notifyCustomerRequired(reason) {
-        if (window.FilamentNotification) {
-            new window.FilamentNotification()
-                .title(this.t('payment.customer-required-title'))
-                .body(this.t(`payment.customer-required-body-${reason}`))
-                .danger()
-                .send()
-        }
+        this.pushToast({
+            title: this.t('payment.customer-required-title'),
+            body: this.t(`payment.customer-required-body-${reason}`),
+        })
     }
 
     orderPayload(order) {

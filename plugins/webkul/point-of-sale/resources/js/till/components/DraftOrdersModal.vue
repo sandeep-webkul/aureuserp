@@ -10,7 +10,7 @@ function reviewOrders() {
     state.closingDrafts = false
     state.closingOpen = false
 
-    till.openHistory()
+    till.openHistory('draft')
 }
 </script>
 
