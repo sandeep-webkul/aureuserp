@@ -40,7 +40,12 @@ class OverviewCalendarWidget extends FullCalendarWidget
     public function config(): array
     {
         return [
-            'initialView' => 'multiMonthYear',
+            'initialView'   => 'multiMonthYear',
+            'headerToolbar' => [
+                'left'   => 'prev,next today',
+                'center' => 'title',
+                'right'  => 'multiMonthYear,dayGridMonth,dayGridWeek,dayGridDay',
+            ],
         ];
     }
 

@@ -33,6 +33,7 @@ return [
             'month' => 'Mes',
             'week'  => 'Semana',
             'list'  => 'Lista',
+            'year'  => 'Año',
         ],
     ],
 
