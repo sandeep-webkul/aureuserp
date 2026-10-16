@@ -102,6 +102,7 @@ class RuleForm
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.supply-method'))
                                                     ->required()
                                                     ->options(ProcureMethod::class)
+                                                    ->default(ProcureMethod::MAKE_TO_STOCK)
                                                     ->selectablePlaceholder(false)
                                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.supply-method-hint-tooltip')))
                                                     ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PUSH),
@@ -109,6 +110,7 @@ class RuleForm
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.automatic-move'))
                                                     ->required()
                                                     ->options(RuleAuto::class)
+                                                    ->default(RuleAuto::MANUAL)
                                                     ->selectablePlaceholder(false)
                                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.automatic-move-hint-tooltip')))
                                                     ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PULL),
