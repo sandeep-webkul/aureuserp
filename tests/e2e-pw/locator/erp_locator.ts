@@ -543,12 +543,12 @@ export class ErpLocators {
         this.pluginInstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Install Plugin' });
         this.pluginUninstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Uninstall Plugin' });
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
-        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
-        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
+        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: 'Plugin Installed Successfully' }).first();
+        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: 'Plugin Uninstalled Successfully' }).first();
         // "Cannot Uninstall Plugin" is included here too: the confirm button is always rendered
         // even when dependents are installed, so submitting a blocked plugin the dependency
         // warning check below missed would otherwise never match a failure/success outcome.
-        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
+        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
         // The modal renders this block up front whenever the plugin still has installed
         // dependents, so a blocked uninstall can be detected without ever submitting.
         this.pluginUninstallDependencyWarning = anyDialog(page).getByText('Action Required').first();
@@ -622,7 +622,7 @@ export class ErpLocators {
         this.usersChangePasswordSaveButton = page.getByRole('button', { name: 'Submit' });
         this.userMenuButton = page.locator('button[aria-label="User menu"]');
         this.logoutButton = page.getByRole('textbox', { name: 'Confirm New Password' });
-        this.usersSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.usersSuccessToast = page.locator("h3.fi-no-notification-title:visible, .fi-toast-message-success:visible").first();
         this.usersErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.userFeildValidationMessage = page.locator(".fi-fo-field-wrp-error-message", { hasText: /The email has already been taken./ });
         this.usersValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
