@@ -4,6 +4,8 @@ namespace Webkul\Product\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Product\Models\Packaging;
+use Webkul\Product\Rules\UniqueBarcode;
 
 class PackagingRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class PackagingRequest extends FormRequest
 
         $rules = [
             'name'       => [...$requiredRule, 'string', 'max:255'],
-            'barcode'    => ['nullable', 'string', 'max:255'],
+            'barcode'    => ['nullable', 'string', 'max:255', new UniqueBarcode($this->input('company_id'), $this->ignoredPackaging(), Packaging::class)],
             'qty'        => [...$requiredRule, 'numeric', 'min:0'],
             'sort'       => ['nullable', 'integer'],
             'product_id' => [...$requiredRule, 'integer', 'exists:products_products,id'],
@@ -35,6 +37,13 @@ class PackagingRequest extends FormRequest
         ];
 
         return $rules;
+    }
+
+    protected function ignoredPackaging(): mixed
+    {
+        $parameters = $this->route()?->parameters() ?? [];
+
+        return end($parameters) ?: null;
     }
 
     /**
