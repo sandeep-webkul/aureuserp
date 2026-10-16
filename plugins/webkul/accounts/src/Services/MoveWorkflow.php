@@ -46,6 +46,8 @@ class MoveWorkflow
     public function post(AccountMove $move): AccountMove
     {
         return DB::transaction(function () use ($move) {
+            $move = app(MoveCalculator::class)->recompute($move);
+            
             $this->assertPostable($move);
 
             $move->state = MoveState::POSTED;
@@ -53,8 +55,6 @@ class MoveWorkflow
             $move->posted_before = true;
 
             $move->save();
-
-            $move = app(MoveCalculator::class)->recompute($move);
 
             $move->refresh();
 
