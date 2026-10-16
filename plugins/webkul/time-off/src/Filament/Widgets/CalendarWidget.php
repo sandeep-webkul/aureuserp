@@ -197,7 +197,13 @@ class CalendarWidget extends FullCalendarWidget
                 ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.title'))
                 ->modalIcon('heroicon-o-trash')
                 ->icon('heroicon-o-trash')
-                ->color('danger'),
+                ->color('danger')
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.notification.title'))
+                        ->body(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.notification.body'))
+                ),
         ];
     }
 

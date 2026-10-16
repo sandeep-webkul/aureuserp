@@ -75,7 +75,13 @@ class OverviewCalendarWidget extends FullCalendarWidget
                     }
                 ),
             DeleteAction::make()
-                ->label(__('time-off::filament/widgets/overview-calendar-widget.modal-actions.delete.title')),
+                ->label(__('time-off::filament/widgets/overview-calendar-widget.modal-actions.delete.title'))
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('time-off::filament/widgets/overview-calendar-widget.modal-actions.delete.notification.title'))
+                        ->body(__('time-off::filament/widgets/overview-calendar-widget.modal-actions.delete.notification.body'))
+                ),
         ];
     }
 

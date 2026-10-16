@@ -19,6 +19,11 @@ return [
 
         'delete' => [
             'title' => 'Supprimer',
+
+            'notification' => [
+                'title' => 'Congé supprimé',
+                'body'  => 'Votre demande de congé a été supprimée avec succès.',
+            ],
         ],
     ],
 
