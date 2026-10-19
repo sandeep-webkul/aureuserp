@@ -130,6 +130,13 @@ class UserForm
                                             ->hiddenLabel()
                                             ->automaticallyResizeImagesMode('cover')
                                             ->image()
+                                            ->acceptedFileTypes([
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/bmp',
+                                                'image/webp',
+                                            ])
                                             ->imageEditor()
                                             ->directory('users/avatars')
                                             ->visibility('public'),
@@ -167,7 +174,7 @@ class UserForm
                                             ->relationship(
                                                 'defaultCompany',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->withoutGlobalScope(AllowedCompanyScope::class),
+                                                modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->withoutGlobalScope(AllowedCompanyScope::class),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');

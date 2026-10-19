@@ -46,7 +46,14 @@ class PostForm
                                     ->required(),
                                 FileUpload::make('image')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.banner'))
-                                    ->image(),
+                                    ->image()
+                                    ->acceptedFileTypes([
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/bmp',
+                                        'image/webp',
+                                    ]),
                             ]),
 
                         Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
@@ -75,7 +82,8 @@ class PostForm
                                     ->relationship(
                                         name: 'category',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn ($query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn ($query, $state) => $query->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state)),
                                     )
                                     ->searchable()
                                     ->getOptionLabelFromRecordUsing(function ($record): string {

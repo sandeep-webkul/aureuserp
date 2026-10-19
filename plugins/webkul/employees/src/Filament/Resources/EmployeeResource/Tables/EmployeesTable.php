@@ -134,7 +134,7 @@ class EmployeesTable
                             ->label(__('employees::filament/resources/employee.table.filters.job-title'))
                             ->icon('heroicon-o-user-circle'),
                         DateConstraint::make('birthday')
-                            ->label(__('employees::filament/resources/employee.table.filters.birthdate'))
+                            ->label(__('employees::filament/resources/employee.table.filters.birth-date'))
                             ->icon('heroicon-o-cake'),
                         TextConstraint::make('work_email')
                             ->label(__('employees::filament/resources/employee.table.filters.work-email'))
@@ -552,8 +552,8 @@ class EmployeesTable
                             } catch (QueryException $e) {
                                 Notification::make()
                                     ->danger()
-                                    ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.title'))
-                                    ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.body'))
+                                    ->title(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.error.body'))
                                     ->send();
                             }
                         })
