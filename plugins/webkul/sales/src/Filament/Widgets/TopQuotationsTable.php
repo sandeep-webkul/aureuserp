@@ -45,7 +45,7 @@ class TopQuotationsTable extends TableWidget
             ->with(['partner', 'currency'])
             ->where('amount_total', '>', 0)
             ->orderByDesc('amount_total')
-            ->limit(5);
+            ->limit(10);
     }
 
     protected function getTableColumns(): array

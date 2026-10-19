@@ -22,7 +22,11 @@ class TopBillsWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        return $table->defaultKeySort(false);
+        return $table
+            ->defaultKeySort(false)
+            ->recordUrl(fn ($record): ?string => $record && BillResource::canAccess()
+                ? BillResource::getUrl('view', ['record' => $record])
+                : null);
     }
 
     protected function getTableHeading(): string|Htmlable|null
