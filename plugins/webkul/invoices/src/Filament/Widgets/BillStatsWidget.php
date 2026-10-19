@@ -32,8 +32,8 @@ class BillStatsWidget extends BaseWidget
             $this->makeStat(
                 __('invoices::filament/widgets/invoice-dashboard.bill-stats.total'),
                 'heroicon-o-currency-dollar',
-                (float) $this->scope()->sum('amount_total'),
-                (float) $this->scope($previousStart, $previousEnd)->sum('amount_total'),
+                (float) abs($this->scope()->sum('amount_total_signed')),
+                (float) abs($this->scope($previousStart, $previousEnd)->sum('amount_total_signed')),
                 money: true,
             ),
             $this->makeStat(

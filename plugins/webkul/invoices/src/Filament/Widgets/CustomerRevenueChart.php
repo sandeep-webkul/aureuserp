@@ -34,8 +34,8 @@ class CustomerRevenueChart extends ChartWidget
             ->leftJoin('partners_partners', 'partners_partners.id', '=', 'accounts_account_moves.partner_id')
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->addSelect('partners_partners.name as name')
-            ->selectRaw('SUM(accounts_account_moves.amount_total) as total_billed')
-            ->havingRaw('SUM(accounts_account_moves.amount_total) > 0')
+            ->selectRaw('SUM(accounts_account_moves.amount_total_signed) as total_billed')
+            ->havingRaw('SUM(accounts_account_moves.amount_total_signed) > 0')
             ->orderByDesc('total_billed')
             ->get();
 

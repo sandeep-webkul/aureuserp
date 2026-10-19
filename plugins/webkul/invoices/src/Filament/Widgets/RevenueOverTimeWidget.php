@@ -46,9 +46,9 @@ class RevenueOverTimeWidget extends ChartWidget
 
         $totals = $query
             ->where($query->qualifyColumn('payment_state'), 'paid')
-            ->get(['invoice_date', 'amount_total'])
+            ->get(['invoice_date', 'amount_total_signed'])
             ->groupBy(fn ($invoice) => Carbon::parse($invoice->invoice_date)->format('Y-m-d'))
-            ->map(fn ($group) => round((float) $group->sum('amount_total'), 2));
+            ->map(fn ($group) => round((float) $group->sum('amount_total_signed'), 2));
 
         $labels = [];
         $data = [];
