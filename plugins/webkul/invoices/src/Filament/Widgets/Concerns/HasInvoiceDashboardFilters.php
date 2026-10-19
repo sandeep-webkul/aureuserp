@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Widgets\Concerns;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
 
@@ -58,7 +59,8 @@ trait HasInvoiceDashboardFilters
         $query = Invoice::query();
 
         return $this->applyFilters($query, 'customer_id', $start, $end)
-            ->where($query->qualifyColumn('move_type'), MoveType::OUT_INVOICE);
+            ->where($query->qualifyColumn('move_type'), MoveType::OUT_INVOICE)
+            ->where($query->qualifyColumn('state'), MoveState::POSTED);
     }
 
     protected function vendorBills(?Carbon $start = null, ?Carbon $end = null): Builder
@@ -66,7 +68,8 @@ trait HasInvoiceDashboardFilters
         $query = Invoice::query();
 
         return $this->applyFilters($query, 'vendor_id', $start, $end)
-            ->where($query->qualifyColumn('move_type'), MoveType::IN_INVOICE);
+            ->where($query->qualifyColumn('move_type'), MoveType::IN_INVOICE)
+            ->where($query->qualifyColumn('state'), MoveState::POSTED);
     }
 
     /**
