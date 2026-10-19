@@ -20,8 +20,6 @@ class TopOrdersWidget extends BaseWidget
 
     protected static bool $isLazy = true;
 
-    protected int|string|array $columnSpan = 'full';
-
     public function table(Table $table): Table
     {
         return $table->defaultKeySort(false);

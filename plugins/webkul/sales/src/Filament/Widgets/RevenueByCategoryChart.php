@@ -33,10 +33,11 @@ class RevenueByCategoryChart extends ChartWidget
         $rows = $this->confirmedLines()
             ->leftJoin('products_products', 'products_products.id', '=', 'sales_order_lines.product_id')
             ->leftJoin('products_categories', 'products_categories.id', '=', 'products_products.category_id')
+            ->leftJoin('sales_orders', 'sales_orders.id', '=', 'sales_order_lines.order_id')
             ->groupBy('products_categories.id', 'products_categories.name')
             ->addSelect('products_categories.name as name')
-            ->selectRaw('SUM(sales_order_lines.price_total) as revenue')
-            ->havingRaw('SUM(sales_order_lines.price_total) > 0')
+            ->selectRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_order_lines.price_total / sales_orders.currency_rate ELSE sales_order_lines.price_total END) as revenue')
+            ->havingRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_order_lines.price_total / sales_orders.currency_rate ELSE sales_order_lines.price_total END) > 0')
             ->orderByDesc('revenue')
             ->get();
 

@@ -30,8 +30,6 @@ class PurchaseTrendWidget extends ChartWidget
 
     protected static bool $isLazy = false;
 
-    protected int|string|array $columnSpan = 'full';
-
     protected ?string $maxHeight = '320px';
 
     public function getHeading(): string|Htmlable|null

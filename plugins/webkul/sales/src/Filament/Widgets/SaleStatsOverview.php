@@ -40,8 +40,10 @@ class SaleStatsOverview extends BaseWidget
         $orders = $this->saleOrders()->count();
         $previousOrders = $this->saleOrders($previousStart, $previousEnd)->count();
 
-        $revenue = (float) $this->saleOrders()->sum('amount_total');
-        $previousRevenue = (float) $this->saleOrders($previousStart, $previousEnd)->sum('amount_total');
+        $ccExpr = 'SUM(CASE WHEN currency_rate > 0 THEN amount_total / currency_rate ELSE amount_total END) as cc_total';
+
+        $revenue = (float) ($this->saleOrders()->selectRaw($ccExpr)->value('cc_total') ?? 0.0);
+        $previousRevenue = (float) ($this->saleOrders($previousStart, $previousEnd)->selectRaw($ccExpr)->value('cc_total') ?? 0.0);
 
         $average = $orders > 0 ? $revenue / $orders : 0;
         $previousAverage = $previousOrders > 0 ? $previousRevenue / $previousOrders : 0;

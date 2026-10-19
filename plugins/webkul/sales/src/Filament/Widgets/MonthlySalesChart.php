@@ -37,7 +37,7 @@ class MonthlySalesChart extends ChartWidget
         $bucket = db_dialect()->monthBucket($query->qualifyColumn('date_order'));
 
         $revenues = $query
-            ->selectRaw("{$bucket} as period, SUM(amount_total) as revenue")
+            ->selectRaw("{$bucket} as period, SUM(CASE WHEN currency_rate > 0 THEN amount_total / currency_rate ELSE amount_total END) as revenue")
             ->groupByRaw($bucket)
             ->pluck('revenue', 'period');
 

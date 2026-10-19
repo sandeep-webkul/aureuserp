@@ -66,7 +66,7 @@ class PurchaseStatsWidget extends BaseWidget
 
     protected function sumByState(array $states, ?Carbon $start = null, ?Carbon $end = null): float
     {
-        return (float) $this->scopedToStates($states, $start, $end)->sum('total_amount');
+        return (float) $this->scopedToStates($states, $start, $end)->sum('total_cc_amount');
     }
 
     protected function scopedToStates(array $states, ?Carbon $start, ?Carbon $end): Builder
