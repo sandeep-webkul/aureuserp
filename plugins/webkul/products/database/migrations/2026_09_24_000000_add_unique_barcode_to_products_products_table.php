@@ -61,6 +61,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            Schema::table('products_products', function (Blueprint $table) {
+                $table->index('company_id', 'products_products_company_id_foreign');
+            });
+        }
+
         Schema::table('products_products', function (Blueprint $table) {
             $table->dropUnique(['company_id', 'barcode']);
         });
