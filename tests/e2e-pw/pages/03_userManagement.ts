@@ -174,7 +174,7 @@ export class UserManagementPage {
         await this.erpLocators.usersChangePasswordInput.fill(newPassword);
         await this.erpLocators.usersChangePasswordConfirmationInput.fill(newPassword);
         await this.erpLocators.usersChangePasswordSaveButton.click();
-        await this.expectSuccessFeedback();
+        await expect(this.erpLocators.usersChangePasswordSaveButton).toBeHidden();
     }
 
     /**
