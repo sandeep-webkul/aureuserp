@@ -36,8 +36,8 @@ class VendorSpendChart extends ChartWidget
             ->leftJoin('partners_partners', 'partners_partners.id', '=', 'purchases_orders.partner_id')
             ->groupBy('partners_partners.id', 'partners_partners.name')
             ->addSelect('partners_partners.name as name')
-            ->selectRaw('SUM(purchases_orders.total_amount) as total_purchased')
-            ->havingRaw('SUM(purchases_orders.total_amount) > 0')
+            ->selectRaw('SUM(purchases_orders.total_cc_amount) as total_purchased')
+            ->havingRaw('SUM(purchases_orders.total_cc_amount) > 0')
             ->orderByDesc('total_purchased')
             ->get();
 

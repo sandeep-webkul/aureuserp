@@ -34,8 +34,8 @@ class SalesPersonPerformanceChart extends ChartWidget
             ->leftJoin('users', 'users.id', '=', 'sales_orders.user_id')
             ->groupBy('users.id', 'users.name')
             ->addSelect('users.name as name')
-            ->selectRaw('SUM(sales_orders.amount_total) as revenue')
-            ->havingRaw('SUM(sales_orders.amount_total) > 0')
+            ->selectRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) as revenue')
+            ->havingRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) > 0')
             ->orderByDesc('revenue')
             ->limit(6)
             ->get();

@@ -43,12 +43,13 @@ class TopPurchasedProductsWidget extends BaseWidget
     {
         return $this->purchaseLines()
             ->leftJoin('products_products', 'products_products.id', '=', 'purchases_order_lines.product_id')
+            ->leftJoin('purchases_orders', 'purchases_orders.id', '=', 'purchases_order_lines.order_id')
             ->groupBy('products_products.id', 'products_products.name')
             ->selectRaw('COALESCE(products_products.id, 0) as id')
             ->addSelect('products_products.name as name')
             ->selectRaw('SUM(purchases_order_lines.product_qty) as total_quantity')
-            ->selectRaw('SUM(purchases_order_lines.price_total) as total_value')
-            ->havingRaw('SUM(purchases_order_lines.price_total) > 0')
+            ->selectRaw('SUM(CASE WHEN purchases_orders.currency_rate > 0 THEN purchases_order_lines.price_total / purchases_orders.currency_rate ELSE purchases_order_lines.price_total END) as total_value')
+            ->havingRaw('SUM(CASE WHEN purchases_orders.currency_rate > 0 THEN purchases_order_lines.price_total / purchases_orders.currency_rate ELSE purchases_order_lines.price_total END) > 0')
             ->orderByDesc('total_value')
             ->limit(10);
     }

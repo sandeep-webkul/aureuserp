@@ -52,8 +52,8 @@ class TopCustomersTable extends TableWidget
             ->selectRaw('COALESCE(partners_partners.id, 0) as id')
             ->addSelect('partners_partners.name as name')
             ->selectRaw('COUNT(*) as orders_count')
-            ->selectRaw('SUM(sales_orders.amount_total) as revenue')
-            ->havingRaw('SUM(sales_orders.amount_total) > 0')
+            ->selectRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) as revenue')
+            ->havingRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) > 0')
             ->orderByDesc('revenue')
             ->limit(5);
     }
