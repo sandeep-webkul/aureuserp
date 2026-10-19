@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
 
 class TopInvoicesWidget extends BaseWidget
@@ -47,7 +48,9 @@ class TopInvoicesWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('invoices::filament/widgets/invoice-dashboard.top-invoices.columns.reference')),
+                ->label(__('invoices::filament/widgets/invoice-dashboard.top-invoices.columns.reference'))
+                ->url(fn ($record): ?string => $record ? InvoiceResource::getUrl('view', ['record' => $record]) : null)
+                ->color('primary'),
             Tables\Columns\TextColumn::make('partner.name')
                 ->label(__('invoices::filament/widgets/invoice-dashboard.customer'))
                 ->placeholder('-')
