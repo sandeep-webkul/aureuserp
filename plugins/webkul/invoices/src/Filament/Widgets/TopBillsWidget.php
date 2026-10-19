@@ -40,7 +40,7 @@ class TopBillsWidget extends BaseWidget
         return $this->vendorBills()
             ->with(['partner', 'invoiceUser', 'currency'])
             ->where('amount_total', '>', 0)
-            ->orderByDesc('amount_total')
+            ->orderByRaw('ABS(amount_total_signed) DESC')
             ->limit(10);
     }
 

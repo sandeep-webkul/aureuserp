@@ -34,8 +34,8 @@ class SalespersonPerformanceChart extends ChartWidget
             ->leftJoin('users', 'users.id', '=', 'accounts_account_moves.invoice_user_id')
             ->groupBy('users.id', 'users.name')
             ->addSelect('users.name as name')
-            ->selectRaw('SUM(accounts_account_moves.amount_total) as total_billed')
-            ->havingRaw('SUM(accounts_account_moves.amount_total) > 0')
+            ->selectRaw('SUM(accounts_account_moves.amount_total_signed) as total_billed')
+            ->havingRaw('SUM(accounts_account_moves.amount_total_signed) > 0')
             ->orderByDesc('total_billed')
             ->limit(6)
             ->get();

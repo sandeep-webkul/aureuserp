@@ -40,7 +40,7 @@ class TopInvoicesWidget extends BaseWidget
         return $this->customerInvoices()
             ->with(['partner', 'invoiceUser', 'currency'])
             ->where('amount_total', '>', 0)
-            ->orderByDesc('amount_total')
+            ->orderByDesc('amount_total_signed')
             ->limit(10);
     }
 
