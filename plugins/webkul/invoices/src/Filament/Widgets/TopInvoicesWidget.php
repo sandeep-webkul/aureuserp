@@ -22,7 +22,11 @@ class TopInvoicesWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        return $table->defaultKeySort(false);
+        return $table
+            ->defaultKeySort(false)
+            ->recordUrl(fn ($record): ?string => $record && InvoiceResource::canAccess()
+                ? InvoiceResource::getUrl('view', ['record' => $record])
+                : null);
     }
 
     protected function getTableHeading(): string|Htmlable|null
