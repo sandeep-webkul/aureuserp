@@ -68,7 +68,7 @@ class SaleStatsOverview extends BaseWidget
                 money($revenue, $currency),
                 $revenue,
                 $previousRevenue,
-                $this->trendData($this->saleOrders(), 'SUM', 'amount_total', $start, $end),
+                $this->trendData($this->saleOrders(), 'SUM', 'CASE WHEN currency_rate > 0 THEN amount_total / currency_rate ELSE amount_total END', $start, $end),
             ),
             $this->makeStat(
                 __('sales::filament/widgets/sales-dashboard.stats.average-revenue'),
