@@ -5,6 +5,7 @@ namespace Webkul\Sale\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class OrderRequest extends FormRequest
 {
@@ -36,8 +37,9 @@ class OrderRequest extends FormRequest
             'origin'                        => ['nullable', 'string', 'max:255'],
             'note'                          => ['nullable', 'string'],
             'user_id'                       => ['nullable', 'integer', 'exists:users,id'],
-            'company_id'                    => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                    => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'currency_id'                   => ['nullable', 'integer', 'exists:currencies,id'],
+            'price_list_id'                 => ['nullable', 'integer', 'exists:products_product_price_lists,id'],
             'campaign_id'                   => ['nullable', 'integer', 'exists:utm_campaigns,id'],
             'utm_source_id'                 => ['nullable', 'integer', 'exists:utm_sources,id'],
             'medium_id'                     => ['nullable', 'integer', 'exists:utm_mediums,id'],
@@ -49,7 +51,7 @@ class OrderRequest extends FormRequest
             'lines.*.product_qty'           => ['required', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.qty_delivered'         => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.product_packaging_qty' => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
-            'lines.*.price_unit'            => ['required', 'numeric', 'min:0', 'max:99999999999'],
+            'lines.*.price_unit'            => ['required_without:price_list_id', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.discount'              => ['nullable', 'numeric', 'min:0', 'max:100'],
             'lines.*.customer_lead'         => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.product_uom_id'        => ['nullable', 'integer', 'exists:unit_of_measures,id'],
@@ -121,7 +123,11 @@ class OrderRequest extends FormRequest
                 'example'     => 1,
             ],
             'currency_id' => [
-                'description' => 'Currency ID.',
+                'description' => 'Currency ID. Ignored when a price list is given, as the order then follows the price list currency.',
+                'example'     => 1,
+            ],
+            'price_list_id' => [
+                'description' => 'Price list ID. Its currency becomes the order currency, and its rules price any line sent without a unit price.',
                 'example'     => 1,
             ],
             'sales_order_tags' => [

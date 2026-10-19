@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale;
 
+use Filament\Forms\Components\Select;
 use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
@@ -11,12 +12,16 @@ use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MovePaid;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Events\OperationDone;
+use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\PriceList;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Listeners\ComputeSaleOrderFromMoveListener;
@@ -28,6 +33,7 @@ use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Models\OrderOption;
 use Webkul\Sale\Models\OrderTemplateProduct;
 use Webkul\Sale\Models\Team;
+use Webkul\Sale\Observers\PaymentTermObserver;
 use Webkul\Support\Services\SequenceService;
 
 class SaleServiceProvider extends PackageServiceProvider
@@ -68,6 +74,7 @@ class SaleServiceProvider extends PackageServiceProvider
                 '2026_04_08_043411_add_procurement_group_id_column_in_sales_orders_table_from_sales',
                 '2026_04_08_043511_add_sale_order_id_column_in_inventories_procurement_groups_table_from_sales',
                 '2026_08_03_130000_seed_sales_sequences',
+                '2026_09_15_000200_add_price_list_id_to_sales_orders_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -112,6 +119,39 @@ class SaleServiceProvider extends PackageServiceProvider
         );
 
         $this->contributeProductUsage();
+
+        $this->registerObservers();
+    }
+
+    protected function registerObservers(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        PaymentTerm::observe(PaymentTermObserver::class);
+        
+        $this->contributePartnerPriceList();
+    }
+
+    protected function contributePartnerPriceList(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        PartnerSchemaRegistry::form('sales.fields', fn (): array => [
+            Select::make('price_list_id')
+                ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.price-list'))
+                ->options(fn (): array => PriceList::query()
+                    ->active()
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->all())
+                ->getOptionLabelUsing(fn ($value): ?string => PriceList::find($value)?->name)
+                ->searchable()
+                ->visible(fn (): bool => app(ProductSettings::class)->enable_price_lists),
+        ]);
     }
 
     protected function contributeProductUsage(): void
