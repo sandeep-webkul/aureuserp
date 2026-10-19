@@ -33,12 +33,12 @@ return [
 
     'customer-revenue'  => [
         'heading'      => 'Customer Revenue Share',
-        'total-billed' => 'Total Billed',
+        'total-billed' => 'Total Invoiced',
     ],
 
     'salespersons'      => [
         'heading'      => 'Salesperson Performance',
-        'total-billed' => 'Total Billed',
+        'total-billed' => 'Total Invoiced',
     ],
 
     'top-invoices'      => [
