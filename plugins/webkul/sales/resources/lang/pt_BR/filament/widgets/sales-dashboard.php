@@ -52,7 +52,7 @@ return [
     'top-sales-orders'    => [
         'heading' => 'Principais Pedidos de Venda',
         'columns' => [
-            'reference' => 'Referência',
+            'reference' => 'Número do Pedido',
             'customer'  => 'Cliente',
             'amount'    => 'Valor',
         ],

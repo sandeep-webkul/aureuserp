@@ -249,6 +249,12 @@ class Order extends Model
 
     public function computeCurrencyRate(): void
     {
+        if ((float) $this->currency_rate !== 0.0) {
+            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty('currency_id')) {
+                return;
+            }
+        }
+
         $companyCurrencyId = Company::withTrashed()->whereKey($this->company_id)->value('currency_id');
 
         if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {

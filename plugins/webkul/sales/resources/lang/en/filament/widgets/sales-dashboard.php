@@ -52,7 +52,7 @@ return [
     'top-sales-orders'    => [
         'heading' => 'Top Sales Orders',
         'columns' => [
-            'reference' => 'Reference',
+            'reference' => 'Order Number',
             'customer'  => 'Customer',
             'amount'    => 'Amount',
         ],
