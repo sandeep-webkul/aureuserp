@@ -2,7 +2,6 @@
 
 namespace Webkul\Purchase\Filament\Admin\Widgets;
 
-use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -58,20 +57,14 @@ class TopOrdersWidget extends BaseWidget
                 ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.vendor'))
                 ->placeholder('-')
                 ->wrap(),
-            Tables\Columns\TextColumn::make('state')
-                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.status'))
+            Tables\Columns\TextColumn::make('receipt_status')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.receipt-status'))
                 ->badge()
-                ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
-                ->color(fn ($state): string => match ($state instanceof BackedEnum ? $state->value : $state) {
-                    'purchase' => 'info',
-                    'done'     => 'success',
-                    'sent'     => 'warning',
-                    'canceled' => 'danger',
-                    default    => 'gray',
-                }),
-            Tables\Columns\TextColumn::make('ordered_at')
-                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.ordered-at'))
-                ->date(),
+                ->placeholder('-'),
+            Tables\Columns\TextColumn::make('invoice_status')
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.billing-status'))
+                ->badge()
+                ->placeholder('-'),
             Tables\Columns\TextColumn::make('total_amount')
                 ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.amount'))
                 ->money(fn (PurchaseOrder $record) => $record->currency?->name ?? $this->dashboardCurrency())

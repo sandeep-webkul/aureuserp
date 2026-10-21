@@ -5,6 +5,7 @@ return [
     'other'               => 'Other',
     'share'               => 'Share',
     'status'              => 'Status',
+    'delivery-status'     => 'Delivery Status',
     'billing'             => 'Billing',
     'stats'               => [
         'heading'            => 'Key Metrics',
@@ -52,9 +53,10 @@ return [
     'top-sales-orders'    => [
         'heading' => 'Top Sales Orders',
         'columns' => [
-            'reference' => 'Order Number',
-            'customer'  => 'Customer',
-            'amount'    => 'Amount',
+            'reference'      => 'Order Number',
+            'customer'       => 'Customer',
+            'amount'         => 'Total Amount',
+            'invoice-status' => 'Invoice Status',
         ],
     ],
 

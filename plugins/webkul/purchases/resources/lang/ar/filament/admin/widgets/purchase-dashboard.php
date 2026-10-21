@@ -1,11 +1,12 @@
 <?php
 
 return [
-    'unknown'      => 'غير معروف',
-    'other'        => 'أخرى',
-    'share'        => 'الحصة',
-    'status'       => 'الحالة',
-    'stats'        => [
+    'unknown'       => 'غير معروف',
+    'other'         => 'أخرى',
+    'share'         => 'الحصة',
+    'status'        => 'الحالة',
+    'receipt-status'=> 'حالة الاستلام',
+    'stats'         => [
         'heading'              => 'المؤشرات الرئيسية',
         'draft-rfqs'           => 'طلبات عروض أسعار مسودة',
         'sent-rfqs'            => 'طلبات عروض أسعار مرسلة',
@@ -35,10 +36,10 @@ return [
     'top-orders'   => [
         'heading' => 'أعلى الأوامر',
         'columns' => [
-            'reference'  => 'رقم الأمر',
-            'vendor'     => 'المورد',
-            'ordered-at' => 'تاريخ الطلب',
-            'amount'     => 'المبلغ الإجمالي',
+            'reference'      => 'رقم الأمر',
+            'vendor'         => 'المورد',
+            'billing-status' => 'حالة الفوترة',
+            'amount'         => 'المبلغ الإجمالي',
         ],
     ],
 

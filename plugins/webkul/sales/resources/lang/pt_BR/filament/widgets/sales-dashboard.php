@@ -5,6 +5,7 @@ return [
     'other'               => 'Outros',
     'share'               => 'Participação',
     'status'              => 'Situação',
+    'delivery-status'     => 'Situação da entrega',
     'billing'             => 'Faturamento',
     'stats'               => [
         'heading'            => 'Métricas Principais',
@@ -52,9 +53,10 @@ return [
     'top-sales-orders'    => [
         'heading' => 'Principais Pedidos de Venda',
         'columns' => [
-            'reference' => 'Número do Pedido',
-            'customer'  => 'Cliente',
-            'amount'    => 'Valor',
+            'reference'      => 'Número do Pedido',
+            'customer'       => 'Cliente',
+            'amount'         => 'Valor total',
+            'invoice-status' => 'Status da fatura',
         ],
     ],
 

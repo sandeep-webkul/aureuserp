@@ -1,11 +1,12 @@
 <?php
 
 return [
-    'unknown'      => 'Unknown',
-    'other'        => 'Other',
-    'share'        => 'Share',
-    'status'       => 'Status',
-    'stats'        => [
+    'unknown'       => 'Unknown',
+    'other'         => 'Other',
+    'share'         => 'Share',
+    'status'        => 'Status',
+    'receipt-status'=> 'Receipt Status',
+    'stats'         => [
         'heading'              => 'Key Metrics',
         'draft-rfqs'           => 'Draft RFQs',
         'sent-rfqs'            => 'Sent RFQs',
@@ -35,10 +36,10 @@ return [
     'top-orders'   => [
         'heading' => 'Top Orders',
         'columns' => [
-            'reference'  => 'Order Number',
-            'vendor'     => 'Vendor',
-            'ordered-at' => 'Ordered At',
-            'amount'     => 'Total Amount',
+            'reference'      => 'Order Number',
+            'vendor'         => 'Vendor',
+            'billing-status' => 'Billing Status',
+            'amount'         => 'Total Amount',
         ],
     ],
 

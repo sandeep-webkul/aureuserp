@@ -57,18 +57,12 @@ class TopSalesOrdersTable extends TableWidget
                 ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.customer'))
                 ->placeholder('-')
                 ->wrap(),
-            Tables\Columns\TextColumn::make('state')
-                ->label(__('sales::filament/widgets/sales-dashboard.status'))
+            Tables\Columns\TextColumn::make('delivery_status')
+                ->label(__('sales::filament/widgets/sales-dashboard.delivery-status'))
                 ->badge()
-                ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
-                ->color(fn ($state): string => match ($state instanceof BackedEnum ? $state->value : $state) {
-                    'sale'   => 'success',
-                    'sent'   => 'info',
-                    'cancel' => 'danger',
-                    default  => 'gray',
-                }),
+                ->placeholder('-'),
             Tables\Columns\TextColumn::make('invoice_status')
-                ->label(__('sales::filament/widgets/sales-dashboard.billing'))
+                ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.invoice-status'))
                 ->badge()
                 ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
                 ->color(fn ($state): string => match ($state instanceof BackedEnum ? $state->value : $state) {

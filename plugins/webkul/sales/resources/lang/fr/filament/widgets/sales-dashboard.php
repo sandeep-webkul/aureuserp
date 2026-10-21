@@ -5,6 +5,7 @@ return [
     'other'               => 'Autres',
     'share'               => 'Part',
     'status'              => 'Statut',
+    'delivery-status'     => 'Statut de livraison',
     'billing'             => 'Facturation',
     'stats'               => [
         'heading'            => 'Indicateurs Clés',
@@ -52,9 +53,10 @@ return [
     'top-sales-orders'    => [
         'heading' => 'Meilleures Commandes',
         'columns' => [
-            'reference' => 'Numéro de commande',
-            'customer'  => 'Client',
-            'amount'    => 'Montant',
+            'reference'      => 'Numéro de commande',
+            'customer'       => 'Client',
+            'amount'         => 'Montant total',
+            'invoice-status' => 'Statut de facture',
         ],
     ],
 

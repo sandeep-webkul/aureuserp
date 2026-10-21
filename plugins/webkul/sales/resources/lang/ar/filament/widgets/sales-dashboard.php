@@ -5,6 +5,7 @@ return [
     'other'               => 'أخرى',
     'share'               => 'الحصة',
     'status'              => 'الحالة',
+    'delivery-status'     => 'حالة التسليم',
     'billing'             => 'الفوترة',
     'stats'               => [
         'heading'            => 'المؤشرات الرئيسية',
@@ -52,9 +53,10 @@ return [
     'top-sales-orders'    => [
         'heading' => 'أعلى أوامر البيع',
         'columns' => [
-            'reference' => 'رقم الطلب',
-            'customer'  => 'العميل',
-            'amount'    => 'المبلغ',
+            'reference'      => 'رقم الطلب',
+            'customer'       => 'العميل',
+            'amount'         => 'المبلغ الإجمالي',
+            'invoice-status' => 'حالة الفاتورة',
         ],
     ],
 

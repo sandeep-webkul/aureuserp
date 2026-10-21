@@ -1,11 +1,12 @@
 <?php
 
 return [
-    'unknown'      => 'Inconnu',
-    'other'        => 'Autres',
-    'share'        => 'Part',
-    'status'       => 'Statut',
-    'stats'        => [
+    'unknown'       => 'Inconnu',
+    'other'         => 'Autres',
+    'share'         => 'Part',
+    'status'        => 'Statut',
+    'receipt-status'=> 'Statut de réception',
+    'stats'         => [
         'heading'              => 'Indicateurs Clés',
         'draft-rfqs'           => 'Demandes en Brouillon',
         'sent-rfqs'            => 'Demandes Envoyées',
@@ -35,10 +36,10 @@ return [
     'top-orders'   => [
         'heading' => 'Principales Commandes',
         'columns' => [
-            'reference'  => 'Numéro de Commande',
-            'vendor'     => 'Fournisseur',
-            'ordered-at' => 'Date de Commande',
-            'amount'     => 'Montant Total',
+            'reference'      => 'Numéro de Commande',
+            'vendor'         => 'Fournisseur',
+            'billing-status' => 'Statut de facturation',
+            'amount'         => 'Montant Total',
         ],
     ],
 

@@ -8,6 +8,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
 use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
 
 class TopPurchasedProductsWidget extends BaseWidget
@@ -26,7 +27,11 @@ class TopPurchasedProductsWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        return $table->defaultKeySort(false);
+        return $table
+            ->defaultKeySort(false)
+            ->recordUrl(fn ($record): ?string => $record->id && ProductResource::canAccess()
+                ? ProductResource::getUrl('view', ['record' => $record->id])
+                : null);
     }
 
     protected function getTableHeading(): string|Htmlable|null
