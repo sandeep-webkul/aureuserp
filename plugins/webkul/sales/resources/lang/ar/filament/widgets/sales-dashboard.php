@@ -52,7 +52,7 @@ return [
     'top-sales-orders'    => [
         'heading' => 'أعلى أوامر البيع',
         'columns' => [
-            'reference' => 'المرجع',
+            'reference' => 'رقم الطلب',
             'customer'  => 'العميل',
             'amount'    => 'المبلغ',
         ],
