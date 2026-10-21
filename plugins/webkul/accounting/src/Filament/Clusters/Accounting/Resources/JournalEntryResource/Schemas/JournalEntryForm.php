@@ -4,6 +4,8 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryR
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater as FilamentRepeater;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -191,7 +193,36 @@ class JournalEntryForm
             ->collapsible()
             ->defaultItems(0)
             ->deleteAction(function (Action $action) {
-                $action->requiresConfirmation();
+                $action
+                    ->requiresConfirmation()
+                    ->before(function (Action $action, array $arguments, FilamentRepeater $component): void {
+                        $items = $component->getRawState();
+                        $item = $items[$arguments['item']] ?? null;
+
+                        if (! $item) {
+                            return;
+                        }
+
+                        $isTaxLine = ($item['display_type'] ?? null) === 'tax';
+
+                        $isBalancingLine = ($item['name'] ?? null) === 'Automatic Balancing';
+
+                        $titleKey = match (true) {
+                            $isTaxLine       => 'delete-tax-line',
+                            $isBalancingLine  => 'delete-balancing-line',
+                            default          => null,
+                        };
+
+                        if ($titleKey !== null) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__("accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.{$titleKey}.title"))
+                                ->body(__("accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.{$titleKey}.body"))
+                                ->send();
+
+                            $action->cancel();
+                        }
+                    });
             })
             ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
             ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
@@ -587,7 +618,7 @@ class JournalEntryForm
         $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
 
         $linesWithoutBalancing = collect($lines)
-            ->reject(fn ($line) => ($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing')
+            ->reject(fn ($line) => ($line['name'] ?? null) === 'Automatic Balancing')
             ->values()
             ->all();
 
@@ -625,8 +656,6 @@ class JournalEntryForm
             'debit'                    => $difference < 0 ? abs($difference) : 0,
             'credit'                   => $difference > 0 ? $difference : 0,
             'discount_amount_currency' => 0,
-            'is_auto_generated'        => true,
-            'auto_type'                => 'balancing',
         ];
     }
 }
