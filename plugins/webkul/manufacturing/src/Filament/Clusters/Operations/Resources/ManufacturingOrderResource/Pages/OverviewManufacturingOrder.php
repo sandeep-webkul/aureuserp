@@ -161,7 +161,7 @@ class OverviewManufacturingOrder extends ViewRecord
     public function getComponentTotalCost(Move $move): float
     {
         $qty = $move->uom && $move->product?->uom
-            ? $move->uom->computeQuantity((float) $move->product_uom_qty, $move->product->uom)
+            ? $move->uom->computeQuantity((float) $move->product_uom_qty, $move->product->uom, false)
             : (float) $move->product_uom_qty;
 
         return round($this->getComponentUnitCost($move) * $qty, 2);
@@ -175,7 +175,7 @@ class OverviewManufacturingOrder extends ViewRecord
 
         $rawQty = (float) ($move->quantity ?: $move->product_uom_qty);
         $actualQuantity = $move->uom && $move->product?->uom
-            ? $move->uom->computeQuantity($rawQty, $move->product->uom)
+            ? $move->uom->computeQuantity($rawQty, $move->product->uom, false)
             : $rawQty;
 
         return round($this->getComponentUnitCost($move) * $actualQuantity, 2);
