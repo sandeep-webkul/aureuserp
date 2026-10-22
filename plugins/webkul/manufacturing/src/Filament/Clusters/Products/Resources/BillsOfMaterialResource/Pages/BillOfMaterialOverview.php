@@ -110,7 +110,10 @@ class BillOfMaterialOverview extends Page implements HasForms
             $billOfMaterial->getMatchedLines($selectedAttributeValueIds)
                 ->map(function (BillOfMaterialLine $line) use ($quantityMultiplier): array {
                     $unitCost = (float) ($line->product?->cost ?? 0);
-                    $totalCost = $unitCost * ((float) $line->quantity * $quantityMultiplier);
+                    $convertedQty = $line->uom && $line->product?->uom
+                        ? $line->uom->computeQuantity((float) $line->quantity, $line->product->uom)
+                        : (float) $line->quantity;
+                    $totalCost = $unitCost * ($convertedQty * $quantityMultiplier);
 
                     return [
                         'label'        => $line->product?->name ?? '—',
