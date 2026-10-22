@@ -12,8 +12,8 @@
     @endphp
 
     <x-filament::tabs
-        class="w-full"
-        style="margin-bottom: -24px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"
+        class="fi-table-views-tabs w-full"
+        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0;"
         wire:listen="filtered-list-updated"
     >
         @foreach ($tabs as $tabKey => $tab)
