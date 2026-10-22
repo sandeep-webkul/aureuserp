@@ -85,7 +85,7 @@ class DynamicLineSynchronizer
             return;
         }
 
-        if ($existing && $move->invoiceCashRounding->strategy !== ($existing->tax_repartition_line_id ? 'biggest_tax' : 'add_invoice_line')) {
+        if ($existing && $move->invoiceCashRounding->strategy !== ($existing->tax_line_id ? 'biggest_tax' : 'add_invoice_line')) {
             $existing->delete();
 
             $existing = null;

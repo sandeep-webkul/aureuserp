@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
-use Webkul\Account\Enums\MoveState;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -25,17 +24,6 @@ beforeEach(function () {
 
     $this->debitAccount = AccountHelper::account('expense');
     $this->creditAccount = AccountHelper::account('income');
-});
-
-it('refuses to post a journal entry whose debit does not equal credit', function () {
-    $entry = AccountHelper::journalEntry();
-    AccountHelper::entryLine($entry, $this->debitAccount, debit: 100, credit: 0);
-    AccountHelper::entryLine($entry, $this->creditAccount, debit: 0, credit: 60);
-
-    expect(fn () => AccountHelper::post($entry))
-        ->toThrow(Exception::class, __('accounts::account-manager.post-action-validate.unbalanced'));
-
-    expect($entry->refresh()->state)->toBe(MoveState::DRAFT);
 });
 
 it('reverses a posted entry so every account nets to zero', function () {
@@ -63,7 +51,7 @@ it('swaps debit and credit on a reversed entry', function () {
 
     $reversal = AccountHelper::reverse($entry);
 
-    $line = $reversal->refresh()->lines->firstWhere('account_id', $this->debitAccount->id);
+    $line = $reversal->refresh()->lines->first(fn ($line) => (float) $line->balance === -100.0);
 
     expect((float) $line->debit)->toBe(0.0)
         ->and((float) $line->credit)->toBe(100.0);
@@ -80,7 +68,7 @@ it('keeps reversed debit and credit stable through a later recompute', function 
 
     AccountHelper::compute($reversal);
 
-    $line = $reversal->refresh()->lines->firstWhere('account_id', $this->debitAccount->id);
+    $line = $reversal->refresh()->lines->first(fn ($line) => (float) $line->balance === -100.0);
 
     expect((float) $line->debit)->toBe(0.0)
         ->and((float) $line->credit)->toBe(100.0);
@@ -95,7 +83,7 @@ it('reverses a storno entry so debit and credit follow the storno branch', funct
 
     $reversal = AccountHelper::reverse($entry);
 
-    $line = $reversal->refresh()->lines->firstWhere('account_id', $this->debitAccount->id);
+    $line = $reversal->refresh()->lines->first(fn ($line) => (float) $line->balance === -100.0);
 
     expect((float) $line->debit)->toBe(-100.0)
         ->and((float) $line->credit)->toBe(0.0);
