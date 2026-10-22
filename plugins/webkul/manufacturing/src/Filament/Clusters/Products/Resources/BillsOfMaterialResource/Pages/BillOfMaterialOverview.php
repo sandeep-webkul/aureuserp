@@ -43,6 +43,7 @@ class BillOfMaterialOverview extends Page implements HasForms
             'product.variants',
             'product.variants.combinations.productAttributeValue.attributeOption',
             'uom',
+            'lines.uom',
             'lines.product.uom',
             'lines.attributeValues.attributeOption',
             'operations.workCenter',

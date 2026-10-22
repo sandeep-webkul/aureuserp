@@ -32,6 +32,7 @@ class OverviewManufacturingOrder extends ViewRecord
             'product.quantities',
             'uom',
             'billOfMaterial',
+            'rawMaterialMoves.uom',
             'rawMaterialMoves.product.uom',
             'rawMaterialMoves.product.quantities',
             'rawMaterialMoves.lines',
