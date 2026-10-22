@@ -12,9 +12,11 @@ const product = computed(() => till.lotProduct)
 
 const singleItem = computed(() => line.value && till.allowsOnlyOneLot(line.value.product_id))
 
+const isRefund = computed(() => Number(line.value?.qty ?? 0) < 0)
+
 const options = computed(() => (line.value ? till.existingLotsFor(line.value.product_id) : []))
 
-const available = computed(() => (line.value ? till.availableLotsFor(line.value.product_id, line.value.uuid) : []))
+const available = computed(() => (line.value && !isRefund.value ? till.availableLotsFor(line.value.product_id, line.value.uuid) : []))
 
 const captured = computed(() => (line.value?.lots ?? []).map((lot) => lot.lot_name))
 
@@ -23,6 +25,10 @@ const openIndex = ref(null)
 const highlighted = ref(0)
 
 function suggestionsFor(index) {
+    if (isRefund.value) {
+        return []
+    }
+
     const query = String(state.lotRows[index] ?? '').trim().toLowerCase()
 
     const taken = state.lotRows.filter((row, position) => position !== index).map((row) => String(row).trim())
