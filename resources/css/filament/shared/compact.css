@@ -179,3 +179,39 @@
 .fi-simple-page-content {
     @apply gap-y-4;
 }
+
+.fi-modal-window.fi-chatter-modal {
+    & .fi-modal-header {
+        @apply gap-x-3 px-4 py-3;
+    }
+
+    & .fi-modal-content {
+        @apply gap-y-3 px-4 py-3;
+    }
+
+    & .fi-modal-footer {
+        @apply px-4 py-3;
+    }
+
+    & .fi-sc {
+        @apply gap-3;
+    }
+
+    & .fi-fo-rich-editor-toolbar {
+        @apply gap-x-1 gap-y-0.5 px-2 py-1;
+    }
+
+    & .fi-fo-rich-editor-content {
+        @apply px-3 py-2;
+    }
+}
+
+.fi-sc-tabs.fi-contained {
+    & > .fi-tabs {
+        @apply px-1 py-1.5;
+    }
+
+    & > .fi-sc-tabs-tab.fi-active {
+        @apply p-4;
+    }
+}
