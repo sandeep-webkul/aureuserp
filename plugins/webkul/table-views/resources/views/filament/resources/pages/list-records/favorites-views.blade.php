@@ -1,3 +1,5 @@
+@use('Illuminate\Support\Js')
+
 @if (method_exists($this, 'getCachedFavoriteTableViews') && count($tabs = $this->getCachedFavoriteTableViews()))
     @php
         $tableViewsTriggerAction = $this->getTableViewsTriggerAction();
@@ -28,7 +30,7 @@
                     :badge-icon-position="$tab->getBadgeIconPosition()"
                     :icon="$tab->getIcon()"
                     :icon-position="$tab->getIconPosition()"
-                    :wire:click="'$call(\'loadView\', ' . (filled($tabKey) ? ('\'' . $tabKey . '\'') : 'null') . ')'"
+                    x-on:click.capture="$wire.resetTableSearch(); $wire.loadView({{ Js::from(filled($tabKey) ? $tabKey : null) }})"
                     :attributes="$tab->getExtraAttributeBag()"
                 >
                     {{ $tab->getLabel() ?? $this->generateTabLabel($tabKey) }}

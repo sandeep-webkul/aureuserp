@@ -255,7 +255,7 @@
 }
 
 .fi-page-content > .fi-sc > .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
-    @apply rounded-t-lg border border-b-0 border-gray-200 bg-white px-1 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
+    @apply rounded-t-lg border border-b-0 border-gray-200 bg-white px-0 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
 }
 
 .fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) {
@@ -362,7 +362,7 @@
     @apply flex items-center gap-x-2 rounded-t-lg border border-b-0 border-gray-200 bg-white pe-3 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
 
     & .fi-tabs:not(.fi-contained) {
-        @apply min-w-0 flex-1 border-b-0 px-1;
+        @apply min-w-0 flex-1 border-b-0 px-0;
     }
 }
 

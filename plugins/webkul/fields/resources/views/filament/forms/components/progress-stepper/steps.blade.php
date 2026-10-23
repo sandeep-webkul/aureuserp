@@ -21,7 +21,7 @@
     @foreach ($options as $value => $label)
         @php
             $inputId = "{$id}-{$value}";
-            $isOptionDisabled = $isDisabled || $isOptionDisabled($value, $label);
+            $isStepDisabled = $isDisabled || $isOptionDisabled($value, $label);
             $isComplete = $currentIndex !== false && $loop->index < $currentIndex;
             $optionIcon = $getIcon($value);
         @endphp
@@ -32,12 +32,11 @@
             @class([
                 'fi-progress-stepper-step',
                 'fi-complete' => $isComplete,
-                'fi-current' => $loop->index === $currentIndex,
-                'fi-disabled' => $isOptionDisabled,
+                'fi-disabled' => $isStepDisabled,
             ])
         >
             <input
-                @disabled($isOptionDisabled)
+                @disabled($isStepDisabled)
                 id="{{ $inputId }}"
                 @if (! $isMultiple)
                     name="{{ $id }}"

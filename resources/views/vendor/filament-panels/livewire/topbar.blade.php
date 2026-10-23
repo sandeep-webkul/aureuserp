@@ -60,11 +60,10 @@
                             x-transition.opacity.duration.150ms
                             class="fi-app-menu-overlay"
                         >
-                            <div class="fi-app-menu-backdrop" x-on:click="isOpen = false"></div>
+                            <div class="fi-app-menu-backdrop" x-on:click="if (! window.matchMedia('(min-width: 768px)').matches) isOpen = false"></div>
 
                             <nav
                                 x-trap.noscroll="isOpen"
-                                x-on:click.self="isOpen = false"
                                 aria-label="{{ __('admin.app-menu.label') }}"
                                 class="fi-app-menu-panel"
                             >
@@ -82,7 +81,7 @@
                                     @endif
                                 </div>
 
-                                <div class="fi-app-menu-grid" x-on:click.self="isOpen = false">
+                                <div class="fi-app-menu-grid">
                                     @foreach ($navigation as $group)
                                         @php
                                             $groupLabel = $group->getLabel();

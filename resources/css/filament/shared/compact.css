@@ -51,6 +51,14 @@
     @apply min-h-8 py-1;
 }
 
+.fi-input-wrp select.fi-select-input {
+    @apply py-1;
+}
+
+.fi-page-sub-navigation-sidebar {
+    @apply gap-y-2;
+}
+
 .fi-select-input .fi-select-input-ctn-multiple .fi-select-input-value-ctn {
     @apply min-h-8 py-1;
 }
