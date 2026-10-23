@@ -387,7 +387,7 @@
 }
 
 .fi-app-menu-backdrop {
-    @apply absolute inset-0 bg-gray-950/50 md:bg-gray-100 md:bg-size-[24px_24px] md:bg-center md:bg-[linear-gradient(to_right,var(--color-gray-200)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-gray-200)_1px,transparent_1px)] dark:bg-gray-950/75 md:dark:bg-gray-950 md:dark:bg-[linear-gradient(to_right,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px)];
+    @apply absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 md:bg-linear-to-r md:from-blue-50 md:via-purple-50 md:to-blue-100 md:dark:bg-gray-950 md:dark:from-gray-950 md:dark:via-purple-950/40 md:dark:to-blue-950/60;
 }
 
 .fi-app-menu-panel {
@@ -597,7 +597,7 @@
 }
 
 .fi-simple-layout {
-    @apply bg-size-[24px_24px] bg-center bg-[linear-gradient(to_right,var(--color-gray-200)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-gray-200)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px)];
+    @apply bg-linear-to-r from-blue-50 via-purple-50 to-blue-100 dark:from-gray-950 dark:via-purple-950/40 dark:to-blue-950/60;
 }
 
 .fi-no-database .fi-no-notification-unread-ctn {
