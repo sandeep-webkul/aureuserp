@@ -39,21 +39,6 @@ return [
                     'title'    => 'Itens',
                     'add-item' => 'Adicionar item',
 
-                    'delete-tax-line' => [
-                        'title' => 'Linha de imposto não pode ser excluída',
-                        'body'  => 'Esta linha foi gerada automaticamente a partir de um imposto em outra linha e é necessária para o relatório fiscal. Remova o imposto da linha de origem para remover esta entrada.',
-                    ],
-
-                    'delete-balancing-line' => [
-                        'title' => 'Linha de equilíbrio não pode ser excluída',
-                        'body'  => 'Esta linha é gerada automaticamente para manter o lançamento equilibrado. Ajuste os valores de débito ou crédito nas outras linhas para remover o desequilíbrio.',
-                    ],
-
-                    'delete-auto-line' => [
-                        'title' => 'Esta linha não pode ser excluída',
-                        'body'  => 'Esta linha é gerada automaticamente pelo sistema e não pode ser excluída manualmente.',
-                    ],
-
                     'columns' => [
                         'account'                  => 'Conta',
                         'partner'                  => 'Parceiro',

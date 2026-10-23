@@ -39,21 +39,6 @@ return [
                     'title'       => 'Éléments',
                     'add-item'    => 'Ajouter un élément',
 
-                    'delete-tax-line' => [
-                        'title' => 'La ligne de taxe ne peut pas être supprimée',
-                        'body'  => 'Cette ligne a été générée automatiquement à partir d\'une taxe sur une autre ligne et est nécessaire pour le rapport fiscal. Supprimez la taxe de la ligne source pour supprimer cette entrée.',
-                    ],
-
-                    'delete-balancing-line' => [
-                        'title' => 'La ligne d\'équilibrage ne peut pas être supprimée',
-                        'body'  => 'Cette ligne est générée automatiquement pour maintenir l\'écriture équilibrée. Ajustez les valeurs de débit ou de crédit sur les autres lignes pour supprimer le déséquilibre.',
-                    ],
-
-                    'delete-auto-line' => [
-                        'title' => 'Cette ligne ne peut pas être supprimée',
-                        'body'  => 'Cette ligne est générée automatiquement par le système et ne peut pas être supprimée manuellement.',
-                    ],
-
                     'columns' => [
                         'account'                  => 'Compte',
                         'partner'                  => 'Partenaire',

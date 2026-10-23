@@ -39,21 +39,6 @@ return [
                     'title'       => 'Apuntes',
                     'add-item'    => 'Agregar apunte',
 
-                    'delete-tax-line' => [
-                        'title' => 'No se puede eliminar la línea de impuesto',
-                        'body'  => 'Esta línea fue generada automáticamente desde un impuesto en otra línea y es necesaria para el informe fiscal. Elimine el impuesto de la línea de origen para eliminar esta entrada.',
-                    ],
-
-                    'delete-balancing-line' => [
-                        'title' => 'No se puede eliminar la línea de equilibrio',
-                        'body'  => 'Esta línea se genera automáticamente para mantener el asiento equilibrado. Ajuste los valores de débito o crédito en otras líneas para eliminar el desequilibrio.',
-                    ],
-
-                    'delete-auto-line' => [
-                        'title' => 'Esta línea no puede eliminarse',
-                        'body'  => 'Esta línea es generada automáticamente por el sistema y no puede eliminarse manualmente.',
-                    ],
-
                     'columns' => [
                         'account'                  => 'Cuenta',
                         'partner'                  => 'Contacto',
