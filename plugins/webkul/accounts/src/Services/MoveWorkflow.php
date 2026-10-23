@@ -284,6 +284,14 @@ class MoveWorkflow
         if (! $move->currency) {
             throw new Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
         }
+
+        if ($move->move_type === MoveType::ENTRY) {
+            $balance = $move->lines->sum(fn (MoveLine $line) => (float) $line->debit - (float) $line->credit);
+
+            if (! float_is_zero($balance, precisionRounding: $move->currency->rounding)) {
+                throw new Exception(__('accounts::account-manager.post-action-validate.unbalanced'));
+            }
+        }
     }
 
     protected function assertNotExchangeDifference(AccountMove $move): void
