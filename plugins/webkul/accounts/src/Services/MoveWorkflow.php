@@ -135,10 +135,13 @@ class MoveWorkflow
         foreach ($reversals as $reversal) {
             foreach ($reversal->lines as $line) {
                 if ($reversal->move_type === MoveType::ENTRY || $line->display_type === DisplayType::COGS) {
-                    $line->update([
-                        'balance'         => -$line->balance,
-                        'amount_currency' => -$line->amount_currency,
-                    ]);
+                    $line->balance = -$line->balance;
+
+                    $line->amount_currency = -$line->amount_currency;
+
+                    $line->computeCreditAndDebit();
+
+                    $line->save();
                 }
             }
         }

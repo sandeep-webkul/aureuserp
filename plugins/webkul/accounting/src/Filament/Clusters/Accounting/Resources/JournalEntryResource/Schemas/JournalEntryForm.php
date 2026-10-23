@@ -271,6 +271,7 @@ class JournalEntryForm
             ])
             ->schema([
                 Hidden::make('display_type'),
+                Hidden::make('balance'),
                 Select::make('account_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.account'))
                     ->relationship(
@@ -558,6 +559,12 @@ class JournalEntryForm
         if ($balancingLine) {
             $lines[] = $balancingLine;
         }
+
+        $lines = array_map(function (array $line): array {
+            $line['balance'] = round((float) ($line['debit'] ?? 0) - (float) ($line['credit'] ?? 0), 2);
+
+            return $line;
+        }, $lines);
 
         $set('../../lines', $lines);
     }
