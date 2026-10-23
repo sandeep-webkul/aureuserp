@@ -22,4 +22,9 @@ return [
         'point-of-sale'       => 'نقطة البيع',
         'barcode'             => 'الباركود',
     ],
+
+    'app-menu' => [
+        'label' => 'التطبيقات',
+        'close' => 'إغلاق',
+    ],
 ];
