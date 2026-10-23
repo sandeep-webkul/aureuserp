@@ -28,7 +28,7 @@
 
             & > tr {
                 & > th {
-                    @apply border-gray-200 bg-gray-50 px-3 py-2.5 text-(length:--text-2xs) font-semibold tracking-[0.04em] text-gray-500 uppercase first-of-type:rounded-tl-lg last-of-type:rounded-tr-lg dark:border-white/5 dark:bg-white/5 dark:text-gray-400 [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
+                    @apply border-gray-200 bg-gray-50 px-3 py-2 text-(length:--text-2xs) font-semibold tracking-[0.04em] text-gray-500 uppercase first-of-type:rounded-tl-lg last-of-type:rounded-tr-lg dark:border-white/5 dark:bg-white/5 dark:text-gray-400 [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
 
                     &.fi-resizable-column {
                         @apply relative;
@@ -53,7 +53,19 @@
                     }
 
                     &.fi-fo-table-repeater-empty-header-cell {
-                        @apply w-1;
+                        @apply w-1 py-0 align-middle;
+
+                        & > .fi-dropdown {
+                            @apply flex justify-center;
+
+                            & > .fi-dropdown-trigger > .fi-icon-btn {
+                                @apply m-0 size-6;
+                            }
+
+                            & .fi-dropdown-panel {
+                                @apply text-start text-sm font-normal tracking-normal text-gray-950 normal-case dark:text-white;
+                            }
+                        }
                     }
                 }
             }

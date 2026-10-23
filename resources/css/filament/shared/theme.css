@@ -249,11 +249,28 @@
     @apply lg:justify-center @xl:justify-center;
 }
 
-.fi-tabs:not(.fi-contained) {
+.fi-table-views .fi-tabs:not(.fi-contained),
+.fi-page-content > .fi-sc > .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
     @apply mx-0 gap-x-0.5 overflow-y-hidden rounded-none border-b border-gray-200 bg-transparent p-0 shadow-none ring-0 dark:border-white/10;
 }
 
-.fi-tabs:not(.fi-contained) .fi-tabs-item {
+.fi-page-content > .fi-sc > .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
+    @apply rounded-t-lg border border-b-0 border-gray-200 bg-white px-1 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
+}
+
+.fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) {
+    @apply gap-y-0;
+}
+
+.fi-page-content > .fi-sc > .fi-grid-col:has(> .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) + .fi-grid-col .fi-ta-ctn {
+    @apply rounded-t-none border border-t-0 border-gray-200 ring-0 dark:border-white/10;
+}
+
+.fi-page-content > .fi-sc > .fi-grid-col:has(> .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) + .fi-table-views {
+    @apply rounded-t-none border-t-0;
+}
+
+:is(.fi-table-views, .fi-page-content > .fi-sc > .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) .fi-tabs:not(.fi-contained) .fi-tabs-item {
     @apply rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm text-gray-600 hover:bg-transparent hover:text-gray-900 dark:text-gray-400 dark:hover:bg-transparent dark:hover:text-white;
 
     &.fi-active {
@@ -261,8 +278,148 @@
     }
 }
 
-.fi-tabs.fi-table-views-tabs:not(.fi-contained) {
-    @apply -mb-4 rounded-t-lg border-b-0 bg-white px-1 shadow-xs ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-white/10;
+.fi-tabs.fi-page-sub-navigation-tabs,
+.fi-tabs.fi-chip-tabs,
+.fi-tabs.fi-record-navigation-tabs {
+    @apply mx-0 w-fit max-w-full gap-x-1 rounded-lg border-0 bg-gray-200/70 p-1 dark:bg-white/5;
+
+    .fi-page-sub-navigation-tabs-separator {
+        @apply mx-1 my-1.5 w-px shrink-0 self-stretch bg-gray-300 dark:bg-white/10;
+    }
+
+    .fi-tabs-item {
+        @apply rounded-md border-b-0 px-3 py-1.5 text-gray-600 dark:text-gray-400;
+
+        &.fi-active {
+            @apply bg-white text-primary-600 shadow-xs ring-1 ring-gray-200 dark:bg-gray-800 dark:text-primary-400 dark:ring-white/10;
+
+            & .fi-tabs-item-label,
+            & .fi-icon {
+                @apply text-primary-600 dark:text-primary-400;
+            }
+        }
+    }
+}
+
+.fi-page-has-sub-navigation-top .fi-page-main {
+    @apply flex-row flex-wrap items-center gap-x-4;
+}
+
+.fi-page-has-sub-navigation-top .fi-page-content {
+    @apply basis-full;
+}
+
+.fi-page-record-navigation {
+    @apply flex flex-wrap items-center gap-x-4 gap-y-2;
+}
+
+.fi-progress-stepper-slot {
+    @apply ms-auto empty:hidden;
+}
+
+.fi-grid-col:has(> .fi-sc-component > .fi-progress-stepper-teleport:only-child) {
+    @apply hidden;
+}
+
+.fi-progress-stepper {
+    @apply flex flex-wrap gap-y-1;
+
+    &.fi-inline {
+        @apply ms-auto w-fit justify-end;
+    }
+}
+
+.fi-progress-stepper-step {
+    @apply -ms-2 flex min-h-8 items-center gap-1.5 bg-gray-200/70 ps-6 pe-5 text-sm font-medium whitespace-nowrap text-gray-600 [clip-path:polygon(0_0,calc(100%-0.625rem)_0,100%_50%,calc(100%-0.625rem)_100%,0_100%,0.625rem_50%)] first:ms-0 first:rounded-s-lg first:ps-4 first:[clip-path:polygon(0_0,calc(100%-0.625rem)_0,100%_50%,calc(100%-0.625rem)_100%,0_100%)] last:rounded-e-lg last:[clip-path:polygon(0_0,100%_0,100%_100%,0_100%,0.625rem_50%)] only:[clip-path:none] dark:bg-white/5 dark:text-gray-400;
+
+    &:is(label) {
+        @apply cursor-pointer hover:bg-gray-300/70 dark:hover:bg-white/10;
+    }
+
+    &:is(label).fi-disabled {
+        @apply cursor-default hover:bg-gray-200/70 dark:hover:bg-white/5;
+    }
+
+    &.fi-complete {
+        @apply text-gray-700 dark:text-gray-200;
+    }
+
+    &.fi-current,
+    &:has(> input:checked) {
+        @apply bg-primary-600 text-white hover:bg-primary-600 dark:bg-primary-500 dark:text-white dark:hover:bg-primary-500;
+
+        & .fi-progress-stepper-step-icon {
+            @apply text-white;
+        }
+    }
+}
+
+.fi-progress-stepper-step-icon {
+    @apply size-4 text-success-600 dark:text-success-400;
+}
+
+.fi-table-views {
+    @apply flex items-center gap-x-2 rounded-t-lg border border-b-0 border-gray-200 bg-white pe-3 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
+
+    & .fi-tabs:not(.fi-contained) {
+        @apply min-w-0 flex-1 border-b-0 px-1;
+    }
+}
+
+.fi-table-views-actions {
+    @apply flex shrink-0 items-center gap-x-1;
+}
+
+.fi-sc.fi-sc-has-gap:has(> .fi-table-views) {
+    @apply gap-y-0;
+}
+
+.fi-table-views + .fi-grid-col .fi-ta-ctn {
+    @apply rounded-t-none border border-t-0 border-gray-200 ring-0 dark:border-white/10;
+}
+
+.fi-topbar-app-name {
+    @apply px-2 text-lg font-semibold text-gray-950 dark:text-white;
+}
+
+.fi-app-menu-overlay {
+    @apply fixed inset-0 z-50;
+}
+
+.fi-app-menu-backdrop {
+    @apply absolute inset-0 bg-gray-950/50 md:bg-gray-100 md:bg-size-[24px_24px] md:bg-center md:bg-[linear-gradient(to_right,var(--color-gray-200)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-gray-200)_1px,transparent_1px)] dark:bg-gray-950/75 md:dark:bg-gray-950 md:dark:bg-[linear-gradient(to_right,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--color-white)_6%,transparent)_1px,transparent_1px)];
+}
+
+.fi-app-menu-panel {
+    @apply absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-xl ring-1 ring-gray-200 md:inset-x-0 md:mx-auto md:w-full md:max-w-5xl md:bg-transparent md:pt-[calc(var(--topbar-height)+6vh)] md:shadow-none md:ring-0 dark:bg-gray-900 dark:ring-white/10 md:dark:bg-transparent;
+}
+
+.fi-app-menu-header {
+    @apply flex h-(--topbar-height) shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 md:fixed md:inset-x-0 md:top-0 md:z-10 dark:border-white/10 dark:bg-gray-900;
+}
+
+.fi-app-menu-close-btn {
+    @apply -ms-2;
+}
+
+.fi-app-menu-header > .fi-user-menu {
+    @apply hidden md:block;
+}
+
+.fi-app-menu-grid {
+    @apply flex flex-col gap-0.5 p-2 md:grid md:grid-cols-4 md:gap-3 md:p-6 lg:grid-cols-6;
+}
+
+.fi-app-menu-item {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 md:flex-col md:gap-2.5 md:px-2 md:py-4 md:text-center md:hover:bg-white/80 dark:text-gray-200 dark:hover:bg-white/5;
+
+    & > .fi-icon {
+        @apply size-8 shrink-0 md:size-16;
+    }
+
+    &.fi-active {
+        @apply bg-primary-50 text-primary-700 md:bg-white md:shadow-xs md:ring-1 md:ring-gray-200 dark:bg-primary-400/10 dark:text-primary-300 md:dark:bg-white/5 md:dark:ring-white/10;
+    }
 }
 
 .fi-sc-wizard.fi-contained,
@@ -312,6 +469,18 @@
 
 .fi-modal.fi-modal-slide-over > .fi-modal-window-ctn > .fi-modal-window {
     @apply my-2 h-[calc(100dvh-1rem)];
+
+    &::-webkit-scrollbar {
+        @apply w-1.5;
+    }
+
+    &::-webkit-scrollbar-track {
+        @apply my-3 bg-transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-gray-300 dark:bg-gray-700;
+    }
 }
 
 .fi-modal.fi-modal-slide-over-from-end > .fi-modal-window-ctn > .fi-modal-window {
@@ -364,6 +533,10 @@
 
 .fi-dropdown-panel {
     @apply rounded-lg shadow-lg ring-1 ring-gray-200 dark:ring-white/10;
+}
+
+.fi-no-notification {
+    @apply transition-[opacity,transform,translate,scale];
 }
 
 .fi-no-notification:not(.fi-inline) {
@@ -453,10 +626,6 @@
 
 .fi-no-database .fi-no-notification .fi-no-notification-body {
     @apply text-[13px] leading-5;
-}
-
-.fi-no-database.fi-modal .fi-modal-window-ctn > .fi-modal-window {
-    @apply [scrollbar-width:thin];
 }
 
 .fi-quick-nav {

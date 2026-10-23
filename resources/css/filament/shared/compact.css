@@ -2,6 +2,10 @@
     @apply px-4 md:px-5 lg:px-6;
 }
 
+.fi-page-content {
+    @apply gap-y-4;
+}
+
 .fi-page-header-main-ctn {
     @apply gap-y-4 py-5;
 }
@@ -47,6 +51,14 @@
     @apply min-h-8 py-1;
 }
 
+.fi-select-input .fi-select-input-ctn-multiple .fi-select-input-value-ctn {
+    @apply min-h-8 py-1;
+}
+
+.fi-select-input .fi-select-input-value-badges-ctn {
+    @apply gap-1;
+}
+
 .fi-ta-header-cell {
     @apply py-2.5;
 }
@@ -63,7 +75,9 @@
 }
 
 .fi-ta-cell:has(.fi-ta-actions),
-.fi-ta-cell:has(.fi-ta-record-checkbox) {
+.fi-ta-cell:has(.fi-ta-record-checkbox),
+.fi-ta-cell:has(.fi-ta-page-checkbox),
+.fi-ta-cell:has(.fi-ta-group-checkbox) {
     @apply py-2.5;
 }
 
@@ -93,6 +107,53 @@
 
 .fi-ta-table > tbody > tr > .fi-ta-cell:has(.fi-ta-reorder-handle) {
     @apply w-1 ps-4 pe-2;
+}
+
+.fi-topbar-nav-groups {
+    @apply gap-x-1;
+}
+
+.fi-topbar-item-btn {
+    @apply px-2.5 py-1.5;
+}
+
+.fi-btn.fi-chatter-btn {
+    @apply px-2;
+
+    & > .fi-icon {
+        @apply size-4;
+    }
+}
+
+.fi-dropdown-list-item {
+    @apply px-2 py-1.5;
+}
+
+.fi-dropdown-header {
+    @apply px-3 py-2;
+}
+
+.fi-ta-col-manager-dropdown .fi-ta-col-manager,
+.fi-ta-ctn .fi-ta-header-toolbar .fi-ta-col-manager-dropdown .fi-ta-col-manager,
+.fi-ta-filters-dropdown .fi-ta-filters,
+.fi-ta-ctn .fi-ta-header-toolbar .fi-ta-filters-dropdown .fi-ta-filters {
+    @apply p-4;
+}
+
+.fi-ta-col-manager {
+    @apply gap-3;
+
+    & .fi-ta-col-manager-items {
+        @apply -mt-2 gap-x-4;
+    }
+
+    & .fi-ta-col-manager-item {
+        @apply gap-2 pt-2;
+    }
+}
+
+.fi-ta-filters {
+    @apply gap-4;
 }
 
 .fi-simple-main {

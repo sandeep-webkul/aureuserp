@@ -11,34 +11,34 @@
         $tableSavedViews = $this->getCachedTableViews();
     @endphp
 
-    <x-filament::tabs
-        class="fi-table-views-tabs w-full"
-        style="border-bottom-left-radius: 0; border-bottom-right-radius: 0;"
-        wire:listen="filtered-list-updated"
-    >
-        @foreach ($tabs as $tabKey => $tab)
-            @php
-                $tabKey = strval($tabKey);
-            @endphp
+    <div class="fi-table-views">
+        <x-filament::tabs wire:listen="filtered-list-updated">
+            @foreach ($tabs as $tabKey => $tab)
+                @php
+                    $tabKey = strval($tabKey);
+                @endphp
 
-            <x-table-views::tabs.item
-                class="whitespace-nowrap"
-                :active="$activeTableView === $tabKey"
-                :alpine-active="'$wire.activeTableView === \'' . $tabKey . '\''"
-                :badge="$tab->getBadge()"
-                :badge-color="$tab->getBadgeColor()"
-                :badge-icon="$tab->getBadgeIcon()"
-                :badge-icon-position="$tab->getBadgeIconPosition()"
-                :icon="$tab->getIcon()"
-                :icon-position="$tab->getIconPosition()"
-                :wire:click="'$call(\'loadView\', ' . (filled($tabKey) ? ('\'' . $tabKey . '\'') : 'null') . ')'"
-                :attributes="$tab->getExtraAttributeBag()"
-            >
-                {{ $tab->getLabel() ?? $this->generateTabLabel($tabKey) }}
-            </x-table-views::tabs.item>
-        @endforeach
+                <x-table-views::tabs.item
+                    class="whitespace-nowrap"
+                    :active="$activeTableView === $tabKey"
+                    :alpine-active="'$wire.activeTableView === \'' . $tabKey . '\''"
+                    :badge="$tab->getBadge()"
+                    :badge-color="$tab->getBadgeColor()"
+                    :badge-icon="$tab->getBadgeIcon()"
+                    :badge-icon-position="$tab->getBadgeIconPosition()"
+                    :icon="$tab->getIcon()"
+                    :icon-position="$tab->getIconPosition()"
+                    :wire:click="'$call(\'loadView\', ' . (filled($tabKey) ? ('\'' . $tabKey . '\'') : 'null') . ')'"
+                    :attributes="$tab->getExtraAttributeBag()"
+                >
+                    {{ $tab->getLabel() ?? $this->generateTabLabel($tabKey) }}
+                </x-table-views::tabs.item>
+            @endforeach
+        </x-filament::tabs>
 
-        <div class="flex items-center">
+        <div class="fi-table-views-actions">
+            {{ $this->createTableViewAction }}
+
             <x-filament::dropdown
                 :width="$tableViewsFormWidth"
                 :max-height="$tableViewsFormMaxHeight"
@@ -60,14 +60,5 @@
                 />
             </x-filament::dropdown>
         </div>
-    </x-filament::tabs>
-
-    @pushOnce('styles')
-        <style>
-            .fi-ta-ctn {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-        </style>
-    @endPushOnce
+    </div>
 @endif

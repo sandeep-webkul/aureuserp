@@ -22,4 +22,9 @@ return [
         'point-of-sale'       => 'Point de vente',
         'barcode'             => 'Code-barres',
     ],
+
+    'app-menu' => [
+        'label' => 'Applications',
+        'close' => 'Fermer',
+    ],
 ];
