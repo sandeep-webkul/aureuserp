@@ -387,7 +387,7 @@
 }
 
 .fi-app-menu-backdrop {
-    @apply absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 md:bg-linear-to-r md:from-blue-50 md:via-purple-50 md:to-blue-100 md:dark:bg-gray-950 md:dark:from-gray-950 md:dark:via-purple-950/40 md:dark:to-blue-950/60;
+    @apply absolute inset-0 bg-gray-950/50 backdrop-blur-sm dark:bg-gray-950/75 md:bg-white/85 md:bg-linear-to-r md:from-primary-50/90 md:via-white/80 md:to-primary-100/90 md:backdrop-blur-xl md:dark:bg-gray-950/90 md:dark:from-gray-950/90 md:dark:via-primary-950/50 md:dark:to-primary-950/80;
 }
 
 .fi-app-menu-panel {
@@ -597,7 +597,7 @@
 }
 
 .fi-simple-layout {
-    @apply bg-linear-to-r from-blue-50 via-purple-50 to-blue-100 dark:from-gray-950 dark:via-purple-950/40 dark:to-blue-950/60;
+    @apply bg-linear-to-r from-primary-50 via-primary-50/40 to-primary-100 dark:from-gray-950 dark:via-primary-950/30 dark:to-primary-950/60;
 }
 
 .fi-no-database .fi-no-notification-unread-ctn {
