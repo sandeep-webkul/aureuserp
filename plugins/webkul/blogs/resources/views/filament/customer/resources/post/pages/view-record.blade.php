@@ -31,7 +31,7 @@
         $subTitle = trim(strip_tags((string) $record->sub_title));
     @endphp
 
-    <article class="mx-auto flex w-full max-w-3xl flex-col gap-5">
+    <article class="flex w-full flex-col gap-5">
         <a
             href="{{ $blogResource::getUrl('index') }}"
             class="inline-flex w-fit items-center gap-1 text-xs font-medium text-gray-500 transition duration-75 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
