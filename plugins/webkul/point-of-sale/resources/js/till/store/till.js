@@ -4645,10 +4645,9 @@ export class Till {
                 const lineTotals = this.lineTotals(line)
 
                 return {
+                    ...line,
                     id: line.uuid,
                     full_product_name: this.master.products.get(line.product_id)?.name ?? '',
-                    qty: line.qty,
-                    price_unit: line.price_unit,
                     price_subtotal_incl: floatRound(lineTotals.subtotal + lineTotals.tax, { precisionDigits: 4 }),
                 }
             }),
