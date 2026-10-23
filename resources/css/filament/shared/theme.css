@@ -258,8 +258,16 @@
     @apply rounded-t-lg border border-b-0 border-gray-200 bg-white px-0 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
 }
 
-.fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) {
+.fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained):not(:has(> .fi-sc-tabs-tab))) {
     @apply gap-y-0;
+}
+
+.fi-page-content > .fi-sc > .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained) > .fi-sc-tabs-tab.fi-active {
+    @apply mt-0;
+
+    & .fi-resource-relation-manager .fi-ta-ctn {
+        @apply rounded-t-none border border-t-0 border-gray-200 ring-0 dark:border-white/10;
+    }
 }
 
 .fi-page-content > .fi-sc > .fi-grid-col:has(> .fi-sc-component > .fi-sc-tabs:not(.fi-contained)) + .fi-grid-col .fi-ta-ctn {
