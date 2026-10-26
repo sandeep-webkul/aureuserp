@@ -210,6 +210,22 @@
     @apply py-2;
 }
 
+.fi-masonry > .fi-sc {
+    @apply block gap-4 lg:columns-2;
+}
+
+.fi-masonry > .fi-sc > .fi-grid-col {
+    @apply mb-4 break-inside-avoid last:mb-0;
+}
+
+.fi-fo-checkbox-list-options {
+    @apply gap-2;
+}
+
+.fi-fo-checkbox-list-option-description {
+    @apply text-xs leading-tight;
+}
+
 .fi-sc-tabs.fi-contained {
     & > .fi-tabs {
         @apply px-1 py-1.5;
