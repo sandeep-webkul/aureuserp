@@ -12,7 +12,7 @@ return new class extends Migration
             $table->string('source_document_type', 100)->nullable()->comment('Source Document Type');
             $table->string('source_document_key', 191)->nullable()->comment('Source Document Key');
 
-            $table->unique(['company_id', 'source_document_type', 'source_document_key'], 'accounts_account_moves_source_unique');
+            $table->unique(['source_document_type', 'source_document_key', 'company_id'], 'accounts_account_moves_source_unique');
         });
     }
 
