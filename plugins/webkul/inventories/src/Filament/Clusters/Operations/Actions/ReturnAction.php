@@ -141,8 +141,16 @@ class ReturnAction extends Action
                     $this->halt(shouldRollBackDatabaseTransaction: true);
                 }
             })
-            ->visible(fn () => $this->getRecord()->state == OperationState::DONE
-                && (! $this->getRecord()->return_id || app(OperationSettings::class)->enable_returning_returns));
+            ->visible(fn () => $this->getRecord()->state == OperationState::DONE)
+            ->disabled(fn (): bool => $this->isReturnOfReturnBlocked())
+            ->tooltip(fn (): ?string => $this->isReturnOfReturnBlocked()
+                ? __('inventories::filament/clusters/operations/actions/return.return-of-return-disabled')
+                : null);
+    }
+
+    private function isReturnOfReturnBlocked(): bool
+    {
+        return (bool) $this->getRecord()->return_id && ! app(OperationSettings::class)->enable_returning_returns;
     }
 
     private function getReturnableMoves(Operation $record): Collection
