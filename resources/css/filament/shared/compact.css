@@ -206,6 +206,10 @@
     }
 }
 
+.fi-chip-tabs ~ * .fi-section-header {
+    @apply py-2;
+}
+
 .fi-sc-tabs.fi-contained {
     & > .fi-tabs {
         @apply px-1 py-1.5;
