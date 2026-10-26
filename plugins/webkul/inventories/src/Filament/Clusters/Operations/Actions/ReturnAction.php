@@ -20,6 +20,7 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 
@@ -140,7 +141,8 @@ class ReturnAction extends Action
                     $this->halt(shouldRollBackDatabaseTransaction: true);
                 }
             })
-            ->visible(fn () => $this->getRecord()->state == OperationState::DONE);
+            ->visible(fn () => $this->getRecord()->state == OperationState::DONE
+                && (! $this->getRecord()->return_id || app(OperationSettings::class)->enable_returning_returns));
     }
 
     private function getReturnableMoves(Operation $record): Collection
