@@ -1,9 +1,13 @@
 <?php
 
 use Illuminate\Routing\RouteCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Events\OperationBackOrdered;
 use Webkul\Inventory\Events\OperationDone;
@@ -14,9 +18,13 @@ use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Events\OrderConfirmed;
+use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Support\Services\CompanyContext;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../inventories/tests/Helpers/InventoryHelper.php';
+require_once __DIR__.'/../../../../accounts/tests/Helpers/AccountHelper.php';
 require_once __DIR__.'/../../Helpers/PurchaseHelper.php';
 
 beforeEach(function () {
@@ -132,4 +140,53 @@ it('bills a received purchase order without panel routes', function () {
 
     expect($bill->partner_id)->toBe($order->partner_id)
         ->and((float) $bill->invoiceLines->sum('quantity'))->toBe(10.0);
+});
+
+it('confirms, receives, bills and posts a taxed purchase order with no authenticated user', function () {
+    $tax = AccountHelper::taxWithAccounts(15, type: TypeTaxUse::PURCHASE);
+
+    $order = PurchaseHelper::order(['operation_type_id' => $this->warehouse->in_type_id]);
+
+    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 100, taxes: [$tax]);
+
+    Auth::logout();
+
+    app()->forgetInstance(CompanyContext::class);
+
+    $events = recordEvents([OrderConfirmed::class, OperationDone::class, MoveConfirmed::class]);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order->refresh());
+
+    Inventory::completeTransfer($order->operations()->first()->refresh());
+
+    $bill = PurchaseHelper::postBill(PurchaseHelper::createBill($order->refresh()));
+
+    expect(Auth::check())->toBeFalse()
+        ->and($order->refresh()->state)->toBe(OrderState::PURCHASE)
+        ->and($order->receipt_status)->toBe(OrderReceiptStatus::FULL)
+        ->and($bill->state)->toBe(MoveState::POSTED)
+        ->and((float) $bill->amount_total)->toBe(345.0)
+        ->and(dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
+        ->and(dispatchedOf($events, OperationDone::class))->not->toBeEmpty()
+        ->and(dispatchedOf($events, MoveConfirmed::class))->toHaveCount(1);
+});
+
+it('leaves an order above the approval amount waiting for approval when no user is acting', function () {
+    $settings = app(OrderSettings::class);
+    $settings->enable_order_approval = true;
+    $settings->order_validation_amount = 100;
+    $settings->save();
+
+    $order = PurchaseHelper::order(['operation_type_id' => $this->warehouse->in_type_id]);
+
+    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 100);
+
+    PurchaseHelper::compute($order->refresh());
+
+    Auth::logout();
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order->refresh());
+
+    expect($order->state)->toBe(OrderState::TO_APPROVE)
+        ->and($order->operations()->exists())->toBeFalse();
 });
