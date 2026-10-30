@@ -5,12 +5,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PostingError;
 use Webkul\Account\Enums\PostingOperation;
 use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Services\ExchangeDifferenceRecorder;
 use Webkul\Account\Support\Posting\EntryData;
 use Webkul\Account\Support\Posting\LineData;
 use Webkul\Account\Support\Posting\PostingContext;
@@ -250,4 +252,76 @@ it('passes the reversal date to validators and lets them reject a reversal', fun
         ->and($context->move->id)->toBe($original->id)
         ->and($context->date->toDateString())->toBe('2026-01-15')
         ->and(Move::where('reversed_entry_id', $original->id)->exists())->toBeFalse();
+});
+
+it('rejects the same source key when the lines differ', function () {
+    AccountFacade::posting()->post(postingEntry());
+
+    $error = postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 777),
+            new LineData(accountId: $this->creditAccount->id, credit: 777),
+        ],
+    ])));
+
+    expect($error)->toBe(PostingError::DUPLICATE_SOURCE)
+        ->and(Move::where('source_document_key', 'session-1')->count())->toBe(1);
+});
+
+it('stores line amounts at currency precision so a sub-cent residue never reaches the ledger', function () {
+    $move = AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100),
+            new LineData(accountId: $this->creditAccount->id, credit: 100.004),
+        ],
+    ]))->move;
+
+    expect((float) $move->lines->sum('debit'))->toBe(100.0)
+        ->and((float) $move->lines->sum('credit'))->toBe(100.0);
+});
+
+it('refuses to post persisted lines that differ by a sub-cent residue', function () {
+    $entry = AccountHelper::journalEntry($this->journal);
+    AccountHelper::entryLine($entry, $this->debitAccount, debit: 100, credit: 0);
+    AccountHelper::entryLine($entry, $this->creditAccount, debit: 0, credit: 100.004);
+
+    expect(postingErrorOf(fn () => AccountHelper::post($entry)))->toBe(PostingError::UNBALANCED)
+        ->and($entry->refresh()->state)->toBe(MoveState::DRAFT);
+});
+
+it('runs validators on exchange difference entries and leaves nothing behind when rejected', function () {
+    AccountFacade::posting()->registerValidator(rejectingValidator(PostingOperation::POST));
+
+    $count = Move::count();
+
+    $differences = [[
+        'move_values' => [
+            'move_type'  => MoveType::ENTRY,
+            'date'       => now()->toDateString(),
+            'journal_id' => $this->journal->id,
+            'lines'      => [
+                ['name' => 'Exchange', 'debit' => 5, 'credit' => 0, 'amount_currency' => 0, 'account_id' => $this->debitAccount->id, 'currency_id' => $this->company->currency_id],
+                ['name' => 'Exchange', 'debit' => 0, 'credit' => 5, 'amount_currency' => 0, 'account_id' => $this->creditAccount->id, 'currency_id' => $this->company->currency_id],
+            ],
+        ],
+        'to_reconcile' => [],
+    ]];
+
+    expect(postingErrorOf(fn () => app(ExchangeDifferenceRecorder::class)->postDifferences($differences)))->toBe(PostingError::REJECTED_BY_VALIDATOR)
+        ->and(Move::count())->toBe($count);
+});
+
+it('checks balance on the amounts that will be stored, before anything is written', function () {
+    $count = Move::count();
+
+    $error = postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 10.005),
+            new LineData(accountId: $this->creditAccount->id, credit: 5.0025),
+            new LineData(accountId: $this->creditAccount->id, credit: 5.0025),
+        ],
+    ])));
+
+    expect($error)->toBe(PostingError::UNBALANCED)
+        ->and(Move::count())->toBe($count);
 });

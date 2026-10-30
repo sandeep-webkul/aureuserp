@@ -12,6 +12,7 @@ return [
         'rejected-by-validator' => 'تم رفض الترحيل: :reason',
         'move-not-postable'     => 'لا يمكن ترحيل قيد اليومية: :reason',
         'move-not-reversible'   => 'لا يمكن عكس قيد اليومية :move.',
+        'duplicate-source'      => 'تم استخدام مفتاح المصدر بالفعل في قيد اليومية :move بسطور مختلفة.',
     ],
 
     'tax-formula' => [

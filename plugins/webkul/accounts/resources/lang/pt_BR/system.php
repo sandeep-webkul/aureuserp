@@ -12,6 +12,7 @@ return [
         'rejected-by-validator' => 'O lançamento foi rejeitado: :reason',
         'move-not-postable'     => 'O lançamento contábil não pode ser lançado: :reason',
         'move-not-reversible'   => 'O lançamento contábil :move não pode ser estornado.',
+        'duplicate-source'      => 'A chave de origem já foi usada pelo lançamento contábil :move com linhas diferentes.',
     ],
 
     'tax-formula' => [

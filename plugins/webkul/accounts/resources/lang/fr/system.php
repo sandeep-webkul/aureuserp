@@ -12,6 +12,7 @@ return [
         'rejected-by-validator' => 'La comptabilisation a été refusée : :reason',
         'move-not-postable'     => 'L\'écriture comptable ne peut pas être comptabilisée : :reason',
         'move-not-reversible'   => 'L\'écriture comptable :move ne peut pas être extournée.',
+        'duplicate-source'      => 'La clé source a déjà été utilisée par l\'écriture comptable :move avec des lignes différentes.',
     ],
 
     'tax-formula' => [

@@ -48,7 +48,7 @@ class JournalPoster
             $data->companyId,
             $data->userId,
             fn (): Move => $this->guard(fn (): Move => DB::transaction(fn (): Move => $this->createAndPost($data))),
-        ));
+        ), fn (Move $existing): bool => $this->hasSameLines($existing, $data));
     }
 
     public function reverse(ReversalData $data): PostingResult
@@ -57,7 +57,7 @@ class JournalPoster
             $data->companyId,
             $data->userId,
             fn (): Move => $this->guard(fn (): Move => DB::transaction(fn (): Move => $this->reverseAndPost($data))),
-        ));
+        ), fn (Move $existing): bool => $existing->reversed_entry_id === $data->moveId);
     }
 
     protected function createAndPost(EntryData $data): Move
@@ -82,16 +82,20 @@ class JournalPoster
         ]);
 
         foreach ($data->lines as $line) {
+            $debit = $company->currency->round($line->debit);
+
+            $credit = $company->currency->round($line->credit);
+
             $moveLine = MoveLine::create([
                 'move_id'         => $move->id,
                 'display_type'    => DisplayType::PRODUCT,
                 'account_id'      => $line->accountId,
                 'partner_id'      => $line->partnerId,
                 'name'            => $line->label,
-                'debit'           => $line->debit,
-                'credit'          => $line->credit,
-                'balance'         => $line->debit - $line->credit,
-                'amount_currency' => $line->amountCurrency ?? $line->debit - $line->credit,
+                'debit'           => $debit,
+                'credit'          => $credit,
+                'balance'         => $debit - $credit,
+                'amount_currency' => $line->amountCurrency === null ? $debit - $credit : $currency->round($line->amountCurrency),
                 'currency_id'     => $currency->id,
                 'tax_line_id'     => $line->taxLineId,
             ]);
@@ -171,9 +175,9 @@ class JournalPoster
                 $this->invalid("lines.{$index}");
             }
 
-            $debit += $line->debit;
+            $debit += $company->currency->round($line->debit);
 
-            $credit += $line->credit;
+            $credit += $company->currency->round($line->credit);
         }
 
         if ($company->currency->compareAmounts($debit, $credit) !== 0) {
@@ -225,25 +229,51 @@ class JournalPoster
         }
     }
 
-    protected function once(int $companyId, ?string $sourceType, ?string $sourceKey, Closure $callback): PostingResult
+    protected function once(int $companyId, ?string $sourceType, ?string $sourceKey, Closure $callback, Closure $isSameRequest): PostingResult
     {
         if (($sourceType === null) !== ($sourceKey === null) || mb_strlen((string) $sourceType) > 100 || mb_strlen((string) $sourceKey) > 191) {
             $this->invalid('source');
         }
 
         if ($existing = $this->findBySource($companyId, $sourceType, $sourceKey)) {
-            return new PostingResult($existing, replayed: true);
+            return $this->replay($existing, $isSameRequest);
         }
 
         try {
             return new PostingResult($callback());
         } catch (UniqueConstraintViolationException $exception) {
             if ($existing = $this->findBySource($companyId, $sourceType, $sourceKey)) {
-                return new PostingResult($existing, replayed: true);
+                return $this->replay($existing, $isSameRequest);
             }
 
             throw $exception;
         }
+    }
+
+    protected function replay(Move $existing, Closure $isSameRequest): PostingResult
+    {
+        if (! $isSameRequest($existing)) {
+            throw new PostingException(PostingError::DUPLICATE_SOURCE, ['move' => $existing->name]);
+        }
+
+        return new PostingResult($existing, replayed: true);
+    }
+
+    protected function hasSameLines(Move $existing, EntryData $data): bool
+    {
+        $currency = Company::withoutGlobalScopes()->find($data->companyId)->currency;
+
+        $signature = fn ($lines) => collect($lines)->map(fn (array $line): string => implode('|', $line))->sort()->values()->all();
+
+        return $signature(MoveLine::withoutGlobalScopes()->where('move_id', $existing->id)->get()->map(fn (MoveLine $line): array => [
+            $line->account_id,
+            $currency->round((float) $line->debit),
+            $currency->round((float) $line->credit),
+        ])) === $signature(collect($data->lines)->map(fn (LineData $line): array => [
+            $line->accountId,
+            $currency->round($line->debit),
+            $currency->round($line->credit),
+        ]));
     }
 
     protected function findBySource(int $companyId, ?string $sourceType, ?string $sourceKey): ?Move

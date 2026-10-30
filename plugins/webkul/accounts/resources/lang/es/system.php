@@ -12,6 +12,7 @@ return [
         'rejected-by-validator' => 'La contabilización fue rechazada: :reason',
         'move-not-postable'     => 'El asiento contable no se puede contabilizar: :reason',
         'move-not-reversible'   => 'El asiento contable :move no se puede revertir.',
+        'duplicate-source'      => 'La clave de origen ya fue utilizada por el asiento contable :move con otras líneas.',
     ],
 
     'tax-formula' => [

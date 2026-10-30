@@ -13,4 +13,6 @@ enum PostingError: string
     case MOVE_NOT_POSTABLE = 'move_not_postable';
 
     case MOVE_NOT_REVERSIBLE = 'move_not_reversible';
+
+    case DUPLICATE_SOURCE = 'duplicate_source';
 }

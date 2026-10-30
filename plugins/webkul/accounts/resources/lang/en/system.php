@@ -12,6 +12,7 @@ return [
         'rejected-by-validator' => 'Posting was rejected: :reason',
         'move-not-postable'     => 'The journal entry cannot be posted: :reason',
         'move-not-reversible'   => 'Journal entry :move cannot be reversed.',
+        'duplicate-source'      => 'The source key was already used by journal entry :move with different lines.',
     ],
 
     'tax-formula' => [

@@ -343,7 +343,7 @@ class MoveWorkflow
 
         $currency = $move->company->currency;
 
-        if ($currency->compareAmounts((float) $totals->total_debit, (float) $totals->total_credit) !== 0) {
+        if (round((float) $totals->total_debit - (float) $totals->total_credit, 4) != 0.0) {
             throw new PostingException(PostingError::UNBALANCED, [
                 'move'   => $move->name,
                 'debit'  => $currency->round((float) $totals->total_debit),
